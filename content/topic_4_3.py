@@ -7,7 +7,7 @@ itself is increasing/decreasing". Worked examples: fish population, a tank with 
 import sympy as sp
 
 from calclib import (FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num,
-                     same, selfcheck)
+                     check, same, selfcheck)
 
 x, t = sp.symbols("x t")
 D = lambda e, v=t, n=1: sp.diff(e, v, n)
@@ -137,18 +137,33 @@ same("m", [D(2 * sp.sqrt(t)).subs(t, 4), (5 + 4 * sp.sin(t) - 6).subs(t, sp.pi),
 
 FRQS = [
     FRQ("A water tank", (
-        r"Water flows into a tank at the rate $R(t) = 40 + 6t - t^2$ gallons per hour and is pumped out at the rate $D(t) = 30$ gallons per hour, "
-        r"for $0 \le t \le 8$ hours."), [
-        Part("a", r"Is the amount of water in the tank increasing or decreasing at $t = 2$? Give a reason.", selfcheck(r"\text{increasing}"),
-             r"$R(2) - D(2) = 40 + 12 - 4 - 30 = 18 > 0$, so the amount is increasing (at 18 gallons per hour).", [(1, "net rate at $t = 2$"), (1, "conclusion")], work="1.8cm"),
-        Part("b", r"At what time $t$, for $0 \le t \le 8$, is the amount of water neither increasing nor decreasing?", num(3 + sp.sqrt(19)),
-             r"$40 + 6t - t^2 = 30$ gives $t^2 - 6t - 10 = 0$, so $t = 3 + \sqrt{19} \approx 7.36$ hours.", [(1, "sets $R = D$"), (1, "$t \\approx 7.36$")], work="2cm"),
-        Part("c", r"Find $R'(5)$ and explain its meaning in context.", num(-4),
-             r"$R'(t) = 6 - 2t$, so $R'(5) = -4$: at $t = 5$ hours, the rate at which water flows in is decreasing at 4 gallons per hour per hour.",
-             [(1, "$-4$"), (1, "meaning with units")], work="2cm"),
-    ], frq_type="Rates in and out"),
+        r"Water flows into a tank at the rate $R(t) = 40 + 6t - t^2$ gallons per hour and is pumped out at the constant rate of "
+        r"$30$ gallons per hour, for $0 \le t \le 8$ hours."), [
+        Part("a", r"Is the amount of water in the tank increasing or decreasing at time $t = 2$? Give a reason for your answer.",
+             selfcheck(r"\text{Increasing}"),
+             r"$R(2) - 30 = 48 - 30 = 18 > 0$. Water flows in faster than it is pumped out, so the amount of water is increasing.",
+             [(1, "considers $R(2) - 30$"), (1, "increasing, with the reason")], work="2.2cm"),
+        Part("b", r"Find $R'(5)$. Using correct units, interpret the meaning of $R'(5)$ in the context of the problem.",
+             num(-4, display=r"-4\ \text{gallons per hour per hour}"),
+             r"$R'(t) = 6 - 2t$, so $R'(5) = -4$. At time $t = 5$ hours, the rate at which water flows into the tank is decreasing at "
+             r"$4$ gallons per hour per hour.",
+             [(1, "$R'(5) = -4$"), (1, "interpretation with units")], work="2.6cm"),
+        Part("c", r"At what time $t$, for $0 < t < 8$, does the amount of water in the tank change from increasing to decreasing? "
+                  r"Give a reason for your answer.",
+             num(3 + sp.sqrt(19), tol=0.001, display=r"3 + \sqrt{19} \approx 7.359"),
+             r"The amount changes at the rate $R(t) - 30 = 10 + 6t - t^2$. This is $0$ when $t^2 - 6t - 10 = 0$, so "
+             r"$t = 3 + \sqrt{19} \approx 7.359$ in the interval. $R(t) - 30$ changes from positive to negative there, so the amount "
+             r"changes from increasing to decreasing.",
+             [(1, "sets $R(t) - 30 = 0$"), (1, "answer with the sign change as the reason")], work="2.8cm"),
+    ], frq_type="Rate in context"),
 ]
-same("frq", [(40 + 6 * t - t**2 - 30).subs(t, 2), max(sp.solve(40 + 6 * t - t**2 - 30, t)), D(40 + 6 * t - t**2).subs(t, 5)], [18, 3 + sp.sqrt(19), -4])
+R3 = 40 + 6 * t - t**2
+net3 = R3 - 30
+same("frq a", net3.subs(t, 2), 18)
+same("frq b", sp.diff(R3, t).subs(t, 5), -4)
+root3 = [r for r in sp.solve(net3, t) if 0 < r < 8]
+same("frq c", root3, [3 + sp.sqrt(19)])
+check("frq c sign", net3.subs(t, 7) > 0 and net3.subs(t, 8) < 0)
 
 TOPIC = Topic(
     number="4.3", title="Rates of Change in Applied Contexts Other Than Motion",

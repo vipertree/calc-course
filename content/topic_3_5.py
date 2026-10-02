@@ -129,21 +129,33 @@ same("m", [D(x * sp.log(x**2)).subs(x, sp.E), sp.simplify(D(sp.exp(sp.sin(x)) * 
 
 FRQS = [
     FRQ("Choosing the rules", (
-        r"Let $f(x) = x^2 e^{-x}$ and $g(x) = \ln\left(x^2 + 1\right)$."), [
-        Part("a", r"Find $f'(x)$. Name the rules you use.", expr("2*x*exp(-x) - x**2*exp(-x)"),
-             r"Product rule, with the chain rule on $e^{-x}$: $2xe^{-x} - x^2e^{-x} = xe^{-x}(2 - x)$.", [(1, "product rule"), (1, "chain rule on $e^{-x}$")],
-             work="2.2cm"),
-        Part("b", r"At what $x > 0$ does the graph of $f$ have a horizontal tangent?", num(2),
-             r"$xe^{-x}(2 - x) = 0$ with $x > 0$ and $e^{-x} > 0$ gives $x = 2$.", [(1, "sets $f' = 0$"), (1, "$x = 2$")], work="1.8cm"),
-        Part("c", r"Find $g'(1)$.", num(1),
-             r"$g'(x) = \dfrac{2x}{x^2 + 1}$, so $g'(1) = 1$.", [(1, "chain rule and value")], work="1.6cm"),
-        Part("d", r"Find the derivative of $g\big(f(x)\big)$ at $x = 1$. Give an exact answer.", num(2 * sp.exp(-2) / (sp.exp(-2) + 1)),
-             r"$g'\big(f(1)\big)f'(1)$ with $f(1) = e^{-1}$ and $f'(1) = e^{-1}$: $\dfrac{2e^{-1}}{e^{-2} + 1}\cdot e^{-1} = \dfrac{2e^{-2}}{e^{-2} + 1}$.",
-             [(1, "outer derivative at $f(1)$"), (1, "value")], work="2.4cm"),
-    ], frq_type="Selecting procedures"),
+        r"Let $f$ be the function defined by $f(x) = x^2 e^{x - 2}$. Let $g$ be a differentiable function. The table gives values "
+        r"of $g$ and its derivative $g'$ at selected values of $x$."
+        r"\par\smallskip\centerline{\begin{tabular}{c|cc} $x$ & $2$ & $4$ \\ \hline $g(x)$ & $5$ & $-1$ \\ $g'(x)$ & $3$ & $6$"
+        r"\end{tabular}}"), [
+        Part("a", r"Find the slope of the line tangent to the graph of $f$ at $x = 2$.", num(8),
+             r"$f'(x) = 2xe^{x-2} + x^2e^{x-2}$, so $f'(2) = 4 + 4 = 8$.",
+             [(1, "$f'(x)$ with the product and chain rules"), (1, "answer $8$")], work="2.4cm"),
+        Part("b", r"Let $k$ be the function defined by $k(x) = g\big(f(x)\big)$. Find $k'(2)$.", num(48),
+             r"$k'(2) = g'\big(f(2)\big)\cdot f'(2) = g'(4)\cdot 8 = 6\cdot 8 = 48$, since $f(2) = 4$.",
+             [(1, "$k'(x) = g'\\big(f(x)\\big)f'(x)$"), (1, "answer $48$")], work="2.2cm"),
+        Part("c", r"Let $m$ be the function defined by $m(x) = \dfrac{g(2x)}{x^2 + 1}$. Find $m'(2)$. Show the work that leads to your answer.",
+             num(sp.Rational(64, 25)),
+             r"$m'(x) = \dfrac{2g'(2x)\,(x^2+1) - g(2x)\cdot 2x}{(x^2+1)^2}$, so "
+             r"$m'(2) = \dfrac{2g'(4)(5) - g(4)(4)}{25} = \dfrac{2(6)(5) - (-1)(4)}{25} = \dfrac{64}{25}$.",
+             [(1, "quotient rule"), (1, "chain rule on $g(2x)$"), (1, "answer $\\frac{64}{25}$")], work="3cm"),
+    ], frq_type="Derivatives from a table"),
 ]
-same("frq", [sp.simplify(D(x**2 * sp.exp(-x)) - x * sp.exp(-x) * (2 - x)), D(sp.log(x**2 + 1)).subs(x, 1),
-             sp.simplify(D(sp.log((x**2 * sp.exp(-x))**2 + 1)).subs(x, 1) - 2 * sp.exp(-2) / (sp.exp(-2) + 1))], [0, 1, 0])
+f5 = x**2 * sp.exp(x - 2)
+g5 = {2: (5, 3), 4: (-1, 6)}
+same("frq a", [f5.subs(x, 2), D(f5).subs(x, 2)], [4, 8])
+same("frq b", g5[4][1] * D(f5).subs(x, 2), 48)
+# a concrete cubic with the table's values stands in for g
+c5 = sp.symbols("c0:4")
+gp5 = sum(c * x**i for i, c in enumerate(c5))
+gp5 = gp5.subs(sp.solve([gp5.subs(x, 2) - 5, D(gp5).subs(x, 2) - 3, gp5.subs(x, 4) + 1, D(gp5).subs(x, 4) - 6], c5))
+same("frq b cubic", D(gp5.subs(x, f5)).subs(x, 2), 48)
+same("frq c", D(gp5.subs(x, 2 * x) / (x**2 + 1)).subs(x, 2), sp.Rational(64, 25))
 
 TOPIC = Topic(
     number="3.5", title="Selecting Procedures for Calculating Derivatives",

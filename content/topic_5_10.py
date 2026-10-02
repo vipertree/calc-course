@@ -114,17 +114,9 @@ MCQS = [
 ]
 same("m", [best(x**2 * (12 - x), 0, 12)[1], best(2 * x * (12 - x**2), 0, 2 * sp.sqrt(3))[1], best((x - 5)**2 + 4 * x**2, 0, 5, "min")[0]], [256, 32, 1])
 
-FRQS = [
-    FRQ("Fencing a pen", (r"Rafael has $240$ ft of fence to build a rectangular pen along a straight river. No fence is needed along the river. "
-                          r"Let $x$ be the length of each side perpendicular to the river."), [
-        Part("a", r"Write the area $A$ of the pen as a function of $x$, and give its domain.", expr(x * (240 - 2 * x), var="x"),
-             r"The side along the river is $240 - 2x$, so $A(x) = x(240 - 2x)$, with $0 < x < 120$.", [(1, "area function"), (1, "domain")], work="2cm"),
-        Part("b", r"Find the value of $x$ that gives the largest area. Justify that it is a maximum.", num(60),
-             r"$A'(x) = 240 - 4x = 0$ at $x = 60$. $A''(x) = -4 < 0$, and it is the only critical point, so it is the absolute maximum.", [(1, "$A' = 0$"), (1, "justification")], work="2.2cm"),
-        Part("c", r"What is the largest area?", num(7200), r"$A(60) = 60 \cdot 120 = 7200$ ft$^2$.", [(1, "value with units")], work="1.2cm"),
-    ], frq_type="Optimization"),
-]
-same("frq", list(best(x * (240 - 2 * x), 0, 120)), [60, 7200])
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="5.10", title="Introduction to Optimization Problems",

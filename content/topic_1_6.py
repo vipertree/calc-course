@@ -213,20 +213,9 @@ same("m2", L((sp.sqrt(9 + x) - 3) / x, 0), sp.Rational(1, 6))
 same("m3", L((1 - sp.cos(x)**2) / (x * sp.sin(x)), 0), 1)
 same("m4", L(((3 + h)**2 + 1 - 10) / h, 0, v=h), 6)
 
-FRQS = [
-    FRQ("A limit that needs rewriting", r"Let $f(x) = \dfrac{x^2 - 4x}{\sqrt{x} - 2}$ for $x \ge 0$, $x \ne 4$.", [
-        Part("a", r"Show that direct substitution into $f(4)$ fails, and name the form it produces.", selfcheck(r"\tfrac00"),
-             r"$\dfrac{16-16}{2-2} = \dfrac00$, an indeterminate form.", [(1, "shows $\\frac00$")], work="1.6cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to4} f(x)$. Show the algebra that leads to your answer.", num(16),
-             limchain(4, [r"\frac{x(x-4)}{\sqrt x - 2}", r"\frac{x(\sqrt x-2)(\sqrt x+2)}{\sqrt x - 2}", r"x(\sqrt x+2)"], 16),
-             [(1, "correct rewriting (difference of squares or conjugate)"), (1, "answer $16$")], work="3cm"),
-        Part("c", r"Let $g(x) = f(x)$ for $x \ne 4$ and $g(4) = 20$. Is $\displaystyle\lim_{x\to4} g(x)$ equal to $g(4)$? Explain.",
-             selfcheck(r"\text{No: } 16 \ne 20"),
-             r"No. $\displaystyle\lim_{x\to4}g(x) = \lim_{x\to4}f(x) = 16$ because $g$ agrees with $f$ near $4$, but $g(4) = 20$.",
-             [(1, "no, with the limit $16$ compared to $g(4)=20$")], work="1.6cm"),
-    ], frq_type="Limits by algebra"),
-]
-same("frq b", L((x**2 - 4 * x) / (sp.sqrt(x) - 2), 4), 16)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.6", title="Determining Limits Using Algebraic Manipulation",

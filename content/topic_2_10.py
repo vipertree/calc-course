@@ -163,19 +163,29 @@ same("m3", sp.simplify(D((1 + 1 / sp.cos(x)) / sp.tan(x)) + 1 / (1 - sp.cos(x)))
 same("m4", D(50 * sp.tan(x)).subs(x, pi / 4), 100)
 
 FRQS = [
-    FRQ("A rotating camera", (
-        r"A camera on the ground, 30 feet from the base of a rocket launch pad, tilts up to follow the rocket. When the camera makes angle "
-        r"$\theta$ radians with the ground, the rocket's height is $H(\theta) = 30\tan\theta$ feet."), [
-        Part("a", r"Find $H'(\theta)$.", expr("30/cos(t)**2", var="t"), r"$H'(\theta) = 30\sec^2\theta$.", [(1, "derivative")], work="1.4cm"),
-        Part("b", r"Find $H'\!\left(\frac\pi3\right)$ and interpret it with units.", num(120),
-             r"$30\sec^2\frac\pi3 = 30(4) = 120$. When the camera is tilted at $\frac\pi3$, the height is increasing at 120 feet per radian of tilt.",
-             [(1, "value $120$"), (1, "interpretation with units")], work="2.2cm"),
-        Part("c", r"Explain why $H'(\theta) \ge 30$ for every $\theta$ in $\left[0, \frac\pi2\right)$.", selfcheck(r"\sec^2\theta \ge 1"),
-             r"$\cos\theta \le 1$, so $\sec\theta = \frac{1}{\cos\theta} \ge 1$ on this interval, and $\sec^2\theta \ge 1$. So $30\sec^2\theta \ge 30$.",
-             [(1, "uses $|\\cos\\theta| \\le 1$ to bound $\\sec^2\\theta$")], work="2cm"),
-    ], frq_type="Rates in context"),
+    FRQ("A tilting camera", (
+        r"A camera on the ground, 30 feet from the base of a rocket launch pad, tilts up to follow a rocket. When the camera makes "
+        r"an angle of $\theta$ radians with the ground, the height of the rocket is $H(\theta) = 30\tan\theta$ feet, for "
+        r"$0 \le \theta < \frac{\pi}{2}$."), [
+        Part("a", r"Find $H'\!\left(\frac\pi3\right)$. Using correct units, interpret the meaning of $H'\!\left(\frac\pi3\right)$ in "
+                  r"the context of the problem.", num(120, display=r"120\ \text{feet per radian}"),
+             r"$H'(\theta) = 30\sec^2\theta$, so $H'\!\left(\frac\pi3\right) = 30(2)^2 = 120$. When the camera angle is $\frac\pi3$ "
+             r"radians, the rocket's height is increasing at a rate of $120$ feet per radian of camera angle.",
+             [(1, "$H'(\\theta) = 30\\sec^2\\theta$"), (1, "value $120$"), (1, "interpretation with units")], work="3cm"),
+        Part("b", r"Find the value of $\theta$, for $0 < \theta < \frac{\pi}{2}$, at which $H'(\theta) = 60$.",
+             num(sp.pi / 4, tol=0.001, display=r"\tfrac{\pi}{4}"),
+             r"$30\sec^2\theta = 60$ gives $\sec^2\theta = 2$, so $\cos\theta = \frac{1}{\sqrt2}$ and $\theta = \frac{\pi}{4}$.",
+             [(1, "sets $30\\sec^2\\theta = 60$"), (1, "answer $\\frac{\\pi}{4}$")], work="2.4cm"),
+        Part("c", r"Write an equation for the line tangent to the graph of $H$ at $\theta = \frac{\pi}{4}$.",
+             selfcheck(r"y = 30 + 60\left(\theta - \tfrac{\pi}{4}\right)"),
+             r"$H\!\left(\frac\pi4\right) = 30\tan\frac\pi4 = 30$ and $H'\!\left(\frac\pi4\right) = 60$, so the tangent line is "
+             r"$y = 30 + 60\left(\theta - \frac{\pi}{4}\right)$.",
+             [(1, "tangent line equation")], work="2cm"),
+    ], frq_type="Rate in context"),
 ]
 same("frq", [sp.diff(30 * sp.tan(t), t).subs(t, pi / 3)], [120])
+same("frq b", [r for r in sp.solve(sp.Eq(sp.diff(30 * sp.tan(t), t), 60), t) if 0 < r < pi / 2], [pi / 4])
+same("frq c", (30 * sp.tan(t)).subs(t, pi / 4), 30)
 
 TOPIC = Topic(
     number="2.10", title="Finding the Derivatives of Tangent, Cotangent, Secant, and/or Cosecant Functions",

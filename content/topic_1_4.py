@@ -264,32 +264,9 @@ MCQS = [
 ]
 same("m2", sp.limit(sp.sin(2 * x) / sp.sin(5 * x), x, 0), sp.Rational(2, 5))
 
-FRQS = [
-    FRQ("A table of values", (
-        r"The function $f$ is defined for all $x \neq 2$. Selected values are given."
-        r"\par\smallskip\centerline{\begin{tabular}{c|cccccc} $x$ & 1.9 & 1.99 & 1.999 & 2.001 & 2.01 & 2.1 \\ \hline "
-        r"$f(x)$ & 0.25158 & 0.25016 & 0.250016 & 0.249984 & 0.24984 & 0.24846\end{tabular}}"), [
-        Part("a", r"Estimate $\displaystyle\lim_{x\to2} f(x)$. Explain how the table supports your estimate.",
-             num(sp.Rational(1, 4), tol=0.001, display="0.25"),
-             r"About $0.25$. From the left ($0.25158, 0.25016, 0.250016$) and from the right ($0.24846, 0.24984, 0.249984$), "
-             r"the values close in on $0.25$.",
-             [(1, "estimate $0.25$"), (1, "cites values from both sides approaching $0.25$")], work="2.5cm"),
-        Part("b", r"Explain why the table alone cannot prove the value of the limit.",
-             selfcheck(r"\text{finitely many inputs}"),
-             r"A table shows only finitely many inputs. The function could behave differently at inputs not in the table "
-             r"(for example, by oscillating), so the table is evidence, not proof.",
-             [(1, "only finitely many inputs are checked")], work="2cm"),
-        Part("c", r"The values come from $f(x) = \dfrac{\sqrt{x+2}-2}{x-2}$. Use a calculator to find $f(2.0001)$ to five "
-                  r"decimal places.", num(sp.Rational(1, 4), tol=0.00002, display=r"0.24999"),
-             r"$f(2.0001) = \dfrac{\sqrt{4.0001}-2}{0.0001} \approx 0.24999$.",
-             [(1, "correct value $0.24999$")], work="1.8cm"),
-    ], frq_type="Limits from a table", calc=True),
-]
-F = (sp.sqrt(x + 2) - 2) / (x - 2)
-same("frq lim", sp.limit(F, x, 2), sp.Rational(1, 4))
-for v, want in [(1.9, 0.25158), (1.99, 0.25016), (1.999, 0.250016), (2.001, 0.249984), (2.01, 0.24984), (2.1, 0.24846)]:
-    close(f"frq table {v}", F.subs(x, v), want, 6e-6)
-close("frq c", F.subs(x, 2.0001), 0.24999, 1e-5)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.4", title="Estimating Limit Values from Tables",

@@ -191,22 +191,9 @@ MCQS = [
 ]
 same("m1", sp.limit((x**2 - 9) / (x**2 - 6 * x + 9), x, 3, "+"), sp.oo)
 
-FRQS = [
-    FRQ("Vertical asymptotes", r"Let $f(x) = \dfrac{2x^2 - 8}{x^2 - x - 6}$.", [
-        Part("a", r"Find the $x$-values of all vertical asymptotes of the graph of $f$. Enter the $x$-value.", num(3),
-             r"$\dfrac{2(x-2)(x+2)}{(x-3)(x+2)} = \dfrac{2(x-2)}{x-3}$ for $x\ne-2$. Only $x = 3$ remains.",
-             [(1, "factors and cancels"), (1, "$x = 3$ only")], work="2.6cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to3^-}f(x)$. Explain your reasoning.", infinite(-1),
-             r"$\dfrac{2(x-2)}{x-3}$: numerator $\to 2 > 0$, denominator $\to 0^-$. The limit is $-\infty$.",
-             [(1, "answer $-\\infty$ with sign reasoning")], work="2cm"),
-        Part("c", r"Explain why $x = -2$ is not a vertical asymptote, and find $\displaystyle\lim_{x\to-2}f(x)$.",
-             num(sp.Rational(8, 5)), r"The factor $x+2$ cancels, so there is a hole: $\dfrac{2(-4)}{-5} = \dfrac85$.",
-             [(1, "cancels; limit $\\frac85$")], work="2cm"),
-    ], frq_type="Asymptotes"),
-]
-Ff = (2 * x**2 - 8) / (x**2 - x - 6)
-same("frq b", sp.limit(Ff, x, 3, "-"), -sp.oo)
-same("frq c", sp.limit(Ff, x, -2), sp.Rational(8, 5))
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.14", title="Connecting Infinite Limits and Vertical Asymptotes",

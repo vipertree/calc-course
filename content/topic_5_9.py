@@ -7,7 +7,7 @@ f'(2) = 0 with f''(x) = (x - 2)e^x (inconclusive second derivative test resolved
 import sympy as sp
 
 from calclib import (FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, close, num,
-                     same, selfcheck)
+                     same, selfcheck, check)
 
 x = sp.symbols("x", real=True)
 
@@ -107,16 +107,30 @@ MCQS = [
 close("m", sp.sqrt(sp.pi / 3), 1.023, 5e-4)
 
 FRQS = [
-    FRQ("Three levels of one function", (r"Let $f$ be a twice-differentiable function with $f'(x) = (x - 1)^2(x - 4)$ and $f(0) = 0$."), [
-        Part("a", r"Find the $x$-coordinate of each relative extremum of $f$ and classify it. Justify.", num(4),
-             r"$f'$ changes sign only at $x = 4$, from $-$ to $+$: a relative minimum. At $x = 1$, $f' \le 0$ on both sides: no extremum.", [(1, "minimum at 4 with reason"), (1, "no extremum at 1")], work="2.4cm"),
-        Part("b", r"Find $f''(x)$, and the $x$-coordinates of the inflection points of $f$. Enter the larger.", num(3),
-             r"$f''(x) = 2(x - 1)(x - 4) + (x - 1)^2 = 3(x - 1)(x - 3)$, which changes sign at $x = 1$ and $x = 3$.", [(1, "$f''$"), (1, "both points with reason")], work="2.6cm"),
-        Part("c", r"On what intervals is $f$ both decreasing and concave up?", selfcheck(r"(-\infty, 1) \cup (3, 4)"),
-             r"Decreasing: $f' < 0$ on $(-\infty, 1) \cup (1, 4)$. Concave up: $f'' > 0$ on $(-\infty, 1) \cup (3, \infty)$. Both: $(-\infty, 1)$ and $(3, 4)$.",
-             [(1, "intervals")], work="2cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Three levels of one function", (
+        r"Let $f$ be a twice-differentiable function with $f(0) = 0$ and $f'(x) = (x - 1)^2(x - 4)$ for all real numbers $x$."), [
+        Part("a", r"Find the $x$-coordinate of each relative extremum of $f$, and classify each as a relative minimum or a relative "
+                  r"maximum. Justify your answer.", selfcheck(r"\text{relative minimum at } x = 4 \text{ only}"),
+             r"$f'(x) = 0$ at $x = 1$ and $x = 4$. $f'(x) < 0$ on both sides of $x = 1$, so there is no extremum there. $f'$ changes from "
+             r"negative to positive at $x = 4$, so $f$ has a relative minimum at $x = 4$ and no other relative extremum.",
+             [(1, "relative minimum at $x = 4$ with justification"), (1, "explains that $x = 1$ is not an extremum")], work="2.8cm"),
+        Part("b", r"Find $f''(x)$. Find the $x$-coordinates of all points of inflection of the graph of $f$. Justify your answer.",
+             selfcheck(r"f''(x) = 3(x - 1)(x - 3);\ x = 1 \text{ and } x = 3"),
+             r"$f''(x) = 2(x - 1)(x - 4) + (x - 1)^2 = 3(x - 1)(x - 3)$. $f''$ changes sign at $x = 1$ and at $x = 3$, so the graph of "
+             r"$f$ has points of inflection there.",
+             [(1, "$f''(x)$"), (1, "$x = 1$ and $x = 3$ with justification")], work="2.8cm"),
+        Part("c", r"On what open intervals, if any, is the graph of $f$ both decreasing and concave up? Give a reason for your answer.",
+             selfcheck(r"(-\infty, 1) \text{ and } (3, 4)"),
+             r"$f$ is decreasing where $f'(x) < 0$: for $x < 4$, $x \ne 1$. The graph is concave up where $f''(x) > 0$: for $x < 1$ or "
+             r"$x > 3$. Both hold on $(-\infty, 1)$ and $(3, 4)$.",
+             [(1, "intervals with reason")], work="2.4cm"),
+    ], frq_type="Function analysis"),
 ]
+fp9 = (x - 1)**2 * (x - 4)
+same("frq b", sp.factor(sp.diff(fp9, x)), 3 * (x - 1) * (x - 3))
+check("frq a", fp9.subs(x, 0) < 0 and fp9.subs(x, 2) < 0 and fp9.subs(x, 5) > 0)
+check("frq c", all(fp9.subs(x, v) < 0 and sp.diff(fp9, x).subs(x, v) > 0 for v in (-3, 0, sp.Rational(7, 2)))
+      and sp.diff(fp9, x).subs(x, 2) < 0)
 
 TOPIC = Topic(
     number="5.9", title="Connecting a Function, Its First Derivative, and Its Second Derivative",

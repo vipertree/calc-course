@@ -7,7 +7,7 @@ Worked examples: critical points of x^3 - 3x^2, of x^(2/3)(x - 5) (one where f' 
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, num,
-                     same, selfcheck)
+                     same, selfcheck, check)
 from calclib.figs import graph
 
 x = sp.symbols("x", real=True)
@@ -115,17 +115,28 @@ MCQS = [
 ]
 
 FRQS = [
-    FRQ("Critical points from a formula", (r"Let $f(x) = x^{2/3}(x - 5)$ for all real $x$. Then \[ f'(x) = \frac{5(x - 2)}{3x^{1/3}}. \]"), [
-        Part("a", r"Find the critical points of $f$. Explain why each is a critical point. Enter the larger one.", num(2),
-             r"$f'(2) = 0$, and $f'(0)$ is undefined while $f(0) = 0$ is defined. So $x = 0$ and $x = 2$.", [(1, "$x = 2$ from $f' = 0$"), (1, "$x = 0$ from $f'$ undefined")], work="2.2cm"),
-        Part("b", r"Does the Extreme Value Theorem guarantee that $f$ has an absolute minimum on $[-1, 4]$? Explain.", selfcheck(r"\text{yes}"),
-             r"Yes: $f$ is continuous (a product of continuous functions) on the closed interval $[-1, 4]$.", [(1, "yes, continuous on a closed interval")], work="1.8cm"),
-        Part("c", r"Find $f(-1)$, $f(0)$, $f(2)$ and $f(4)$. Which is smallest? (Topic 5.5 shows why that is the absolute minimum on $[-1, 4]$.) Enter the smallest value.", num(-6),
-             r"$f(-1) = -6$, $f(0) = 0$, $f(2) = -3\cdot 2^{2/3} \approx -4.762$, $f(4) = -4^{2/3} \approx -2.520$. The smallest is $-6$.", [(1, "values"), (1, "smallest")], work="2.4cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Critical points from a formula", (
+        r"Let $f$ be the function defined by $f(x) = x^{2/3}(x - 5)$ for all real numbers $x$. It can be shown that "
+        r"$f'(x) = \dfrac{5(x - 2)}{3x^{1/3}}$ for $x \ne 0$."), [
+        Part("a", r"Find the $x$-coordinates of all critical points of $f$. Give a reason for your answer.",
+             selfcheck(r"x = 0 \text{ and } x = 2"),
+             r"$f'(2) = 0$, so $x = 2$ is a critical point. $f'(0)$ does not exist while $f(0) = 0$ is defined, so $x = 0$ is also a "
+             r"critical point.",
+             [(1, "$x = 2$, where $f' = 0$"), (1, "$x = 0$, where $f'$ does not exist")], work="2.4cm"),
+        Part("b", r"Find the absolute minimum value of $f$ on the closed interval $-1 \le x \le 4$. Justify your answer.", num(-6),
+             r"Candidates: the endpoints and the critical points. $f(-1) = (1)(-6) = -6$, $f(0) = 0$, "
+             r"$f(2) = -3\cdot 2^{2/3} \approx -4.762$, $f(4) = -4^{2/3} \approx -2.520$. The absolute minimum value is $f(-1) = -6$.",
+             [(1, "considers $x = 0$, $x = 2$ and the endpoints"), (1, "answer $-6$ with justification")], work="3cm"),
+        Part("c", r"Find the absolute maximum value of $f$ on the closed interval $-1 \le x \le 4$.", num(0),
+             r"From the candidates in part (b), the absolute maximum value is $f(0) = 0$.",
+             [(1, "answer $0$")], work="1.4cm"),
+    ], frq_type="Function analysis"),
 ]
 fr = lambda v: sp.real_root(sp.Integer(v)**2, 3) * (v - 5)
 same("frq", [fr(-1), fr(0), fr(2), fr(4)], [-6, 0, -3 * 2**sp.Rational(2, 3), -(4**sp.Rational(2, 3))])
+check("frq extremes", min(float(fr(v)) for v in (-1, 0, 2, 4)) == -6 and max(float(fr(v)) for v in (-1, 0, 2, 4)) == 0)
+fx2 = sp.cbrt(x)**2 * (x - 5)
+same("frq fprime", sp.simplify(sp.diff(fx2, x).subs(x, 8) - sp.Rational(5 * 6, 3 * 2)), 0)
 
 TOPIC = Topic(
     number="5.2", title="Extreme Value Theorem, Global Versus Local Extrema, and Critical Points",

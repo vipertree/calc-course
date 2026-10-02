@@ -169,22 +169,9 @@ MCQS = [
         "A", r"On $[2, 5]$, $x - 1 > 0$, so $h(x) = 1$: continuous.", why_not={"B": "the jump is at $x = 1$, outside the interval"}),
 ]
 
-FRQS = [
-    FRQ("Continuity on an interval", (
-        r"Let $f(x) = \begin{cases} x^2 - 4x + 5, & x < 2 \\ a, & x = 2 \\ \dfrac{bx}{x+1}, & x > 2. \end{cases}$"), [
-        Part("a", r"Find $\displaystyle\lim_{x\to2^-}f(x)$.", num(1), r"$4 - 8 + 5 = 1$.", [(1, "value $1$")], work="1.4cm"),
-        Part("b", r"Find the values of $a$ and $b$ that make $f$ continuous at $x = 2$. Enter $b$.", num(sp.Rational(3, 2)),
-             r"Continuity needs $\displaystyle\lim_{x\to2^+}\frac{bx}{x+1} = \frac{2b}{3} = 1$, so $b = \frac32$, and $a = f(2) = 1$.",
-             [(1, "$a = 1$"), (1, "$b = \\frac32$")], work="2.6cm"),
-        Part("c", r"With these values, explain why $f$ is continuous on $[0, 5]$.", selfcheck(r"\text{pieces continuous; seam matches}"),
-             r"For $x < 2$, $f$ is a polynomial; for $x > 2$, it is rational with denominator $x + 1 \ne 0$ on $(2, 5]$. At the "
-             r"seam $x=2$ the limit equals $f(2) = 1$. So $f$ is continuous at every point of $[0,5]$.",
-             [(1, "addresses both pieces and the seam")], work="2.4cm"),
-    ], frq_type="Continuity"),
-]
-b = sp.symbols("b")
-same("frq b", sp.solve(sp.Eq(2 * b / 3, 1), b)[0], sp.Rational(3, 2))
-same("frq a", (x**2 - 4 * x + 5).subs(x, 2), 1)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.12", title="Confirming Continuity over an Interval",

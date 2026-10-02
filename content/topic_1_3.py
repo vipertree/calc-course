@@ -236,16 +236,18 @@ FIG_Q = graph("t1_3_q", [("x+2", -2, 1), ("4-x", 1, 3), ("3", 3, 5)], xr=(-2, 5)
               open=[(1, 3), (3, 1)], closed=[(1, 1), (3, 3)], caption=r"The graph of $q$.")
 FRQS = [
     FRQ("Reading a graph", r"The graph of the function $q$ is shown for $-2 \le x \le 5$.", [
-        Part("a", r"Find $\displaystyle\lim_{x\to1} q(x)$ and $q(1)$.", num(3),
-             r"Both pieces approach height $3$ at $x=1$, so the limit is $3$. The filled dot gives $q(1) = 1$.",
-             [(1, "limit $3$"), (1, "$q(1) = 1$")], work="2cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to3^-} q(x)$ and $\displaystyle\lim_{x\to3^+} q(x)$. Enter the left-hand limit.",
-             num(1), r"From the left, $4 - x \to 1$. From the right, the graph is at height $3$.",
-             [(1, "left-hand limit $1$"), (1, "right-hand limit $3$")], work="2cm"),
-        Part("c", r"Does $\displaystyle\lim_{x\to3} q(x)$ exist? Justify your answer.", selfcheck(r"\text{No}"),
-             r"No. $\displaystyle\lim_{x\to3^-}q(x) = 1 \ne 3 = \lim_{x\to3^+}q(x)$, so the two-sided limit does not exist.",
-             [(1, "no, with the reason that the one-sided limits are not equal")], work="2cm"),
-    ], frq_type="Graph of a function", figure=FIG_Q),
+        Part("a", r"Find $\displaystyle\lim_{x\to1} q(x)$, or state that it does not exist. Give a reason for your answer.", num(3),
+             r"As $x \to 1^-$, $q(x) = x + 2 \to 3$, and as $x \to 1^+$, $q(x) = 4 - x \to 3$. Both one-sided limits are $3$, so "
+             r"$\displaystyle\lim_{x\to1} q(x) = 3$. (The filled dot at $q(1) = 1$ does not affect the limit.)",
+             [(1, "answer $3$ with both one-sided limits")], work="2.2cm"),
+        Part("b", r"For each of $\displaystyle\lim_{x\to3^-} q(x)$, $\displaystyle\lim_{x\to3^+} q(x)$ and $\displaystyle\lim_{x\to3} q(x)$, "
+                  r"find the value or state that it does not exist.",
+             selfcheck(r"1,\ 3,\ \text{Does not exist}"),
+             r"From the left, $q(x) = 4 - x \to 1$. From the right, $q(x) = 3$. Since $\displaystyle\lim_{x\to3^-}q(x) = 1 \ne 3 = "
+             r"\lim_{x\to3^+}q(x)$, the two-sided limit $\displaystyle\lim_{x\to3} q(x)$ does not exist.",
+             [(1, "left-hand limit $1$"), (1, "right-hand limit $3$"), (1, "does not exist, because the one-sided limits differ")],
+             work="2.6cm"),
+    ], frq_type="Continuity / limits from a graph", figure=FIG_Q),
 ]
 
 TOPIC = Topic(

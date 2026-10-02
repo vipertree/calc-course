@@ -120,19 +120,33 @@ MCQS = [
 same("m", [mvt_c(x**3 - 4 * x, 0, 2)], [[2 / sp.sqrt(3)]])
 
 FRQS = [
-    FRQ("A cyclist's speed", (
-        r"Rosa rides a bike along a straight road. Her position $s(t)$, in meters, is differentiable. "
-        r"Selected values: $s(0) = 0$, $s(20) = 140$, $s(50) = 380$, $s(60) = 500$, with $t$ in seconds."), [
-        Part("a", r"Find the average velocity over $0 \le t \le 20$, with units.", num(7), r"$\frac{140 - 0}{20} = 7$ m/s.", [(1, "value with units")], work="1.4cm"),
-        Part("b", r"Must there be a time $t$ in $(50, 60)$ at which $s'(t) = 12$? Justify your answer.", selfcheck(r"\text{yes}"),
-             r"Yes. $s$ is differentiable, so it is continuous on $[50, 60]$ and differentiable on $(50, 60)$. By the Mean Value Theorem, some $t$ in $(50, 60)$ has "
-             r"$s'(t) = \frac{500 - 380}{60 - 50} = 12$.", [(1, "average rate $12$"), (1, "names the MVT with its conditions")], work="2.4cm"),
-        Part("c", r"Must there be a time in $(0, 60)$ at which Rosa's velocity is exactly $8$ m/s? Justify your answer.", selfcheck(r"\text{yes}"),
-             r"Yes. On $[20, 50]$ the average velocity is $\frac{380 - 140}{50 - 20} = 8$. $s$ is differentiable, so by the Mean Value Theorem "
-             r"$s'(t) = 8$ for some $t$ in $(20, 50)$.",
-             [(1, "finds an interval with average rate 8"), (1, "MVT")], work="2.4cm"),
-    ], frq_type="Table of values / rates"),
+    FRQ("A cyclist's ride", (
+        r"Rosa rides a bike along a straight road. Her position is modeled by a twice-differentiable function $s$, where $s(t)$ is "
+        r"measured in meters and $t$ is measured in seconds. Selected values of $s(t)$ are given in the table. Rosa's velocity is "
+        r"$v(t) = s'(t)$, and $v(0) = 5$ and $v(60) = 5$ meters per second."
+        r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $t$ (seconds) & 0 & 20 & 50 & 60 \\ \hline "
+        r"$s(t)$ (meters) & 0 & 140 & 380 & 500\end{tabular}}"), [
+        Part("a", r"Approximate $s'(10)$ using the average rate of change of $s$ over the interval $0 \le t \le 20$. Show the work "
+                  r"that leads to your answer. Indicate units of measure.",
+             num(7, display=r"7\ \text{meters per second}"),
+             r"$s'(10) \approx \dfrac{s(20) - s(0)}{20 - 0} = \dfrac{140}{20} = 7$ meters per second.",
+             [(1, "difference quotient and answer"), (1, "units")], work="2.4cm"),
+        Part("b", r"Must there be a value $c$, for $20 < c < 50$, such that $v(c) = 8$? Justify your answer.",
+             selfcheck(r"\text{Yes}"),
+             r"$\dfrac{s(50) - s(20)}{50 - 20} = \dfrac{380 - 140}{30} = 8$. Because $s$ is differentiable, $s$ is continuous on "
+             r"$20 \le t \le 50$ and differentiable on $20 < t < 50$. By the Mean Value Theorem, there must be a value $c$, with "
+             r"$20 < c < 50$, such that $v(c) = s'(c) = 8$.",
+             [(1, "average rate of change $8$ on $20 \\le t \\le 50$"), (1, "yes, using the Mean Value Theorem with its conditions")],
+             work="2.8cm"),
+        Part("c", r"Explain why there must be a value $c$, for $0 < c < 60$, such that $v'(c) = 0$.",
+             selfcheck(r"v(0) = v(60) \text{ and the Mean Value Theorem}"),
+             r"$s$ is twice differentiable, so $v = s'$ is differentiable and therefore continuous on $0 \le t \le 60$. "
+             r"$\dfrac{v(60) - v(0)}{60 - 0} = \dfrac{5 - 5}{60} = 0$. By the Mean Value Theorem, there must be a value $c$, with "
+             r"$0 < c < 60$, such that $v'(c) = 0$.",
+             [(1, "$\\frac{v(60) - v(0)}{60 - 0} = 0$"), (1, "justification using the Mean Value Theorem")], work="2.8cm"),
+    ], frq_type="Table"),
 ]
+same("frq", [sp.Rational(140, 20), sp.Rational(380 - 140, 30), sp.Rational(5 - 5, 60)], [7, 8, 0])
 
 TOPIC = Topic(
     number="5.1", title="Using the Mean Value Theorem",

@@ -7,7 +7,7 @@ the input value with units, the quantity, increasing/decreasing, and the rate wi
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, expr, num,
-                     same, selfcheck)
+                     check, same, selfcheck)
 
 x, t = sp.symbols("x t")
 
@@ -171,20 +171,35 @@ same("tp", [sp.diff(68 + 4 * sp.sin(sp.pi * t / 12), t).subs(t, 18), 200 - 30 * 
 
 FRQS = [
     FRQ("A cooling oven", (
-        r"An oven is turned off at $t = 0$. Its temperature $F(t)$, in $^\circ$F, is measured at selected times $t$, in minutes. "
-        r"\[ \begin{array}{c|ccccc} t & 0 & 5 & 12 & 20 & 30 \\ \hline F(t) & 425 & 380 & 330 & 285 & 245 \end{array} \]"), [
-        Part("a", r"Use the data to estimate $F'(16)$. Show the computation that leads to your answer, and give units.", num(sp.Rational(-45, 8)),
-             r"\[ F'(16) \approx \frac{F(20) - F(12)}{20 - 12} = \frac{285 - 330}{8} = -5.625^\circ\text{F per minute}. \]",
-             [(1, "difference quotient from the closest data"), (1, "answer with units")], work="2.4cm"),
-        Part("b", r"Interpret your answer to part (a) in the context of the problem.", selfcheck(r"\text{decreasing about 5.6 F/min at 16 min}"),
-             r"At $t = 16$ minutes, the temperature of the oven is decreasing at about $5.6^\circ$F per minute.",
-             [(1, "rate, decreasing, units, at $t = 16$")], work="1.8cm"),
-        Part("c", r"Find the average rate of change of $F$ over $[0, 30]$. Is this the rate at any particular moment? Explain.", num(-6),
-             r"\[ \frac{F(30) - F(0)}{30 - 0} = \frac{245 - 425}{30} = -6^\circ\text{F per minute}. \] It is an average over the whole half hour, "
-             r"not the rate at any one moment the data shows.", [(1, "$-6$ with units"), (1, "average, not instantaneous")], work="2.4cm"),
-    ], frq_type="Table of values / rates"),
+        r"An oven is turned off at time $t = 0$. The temperature of the oven is modeled by a differentiable function $F$, where "
+        r"$F(t)$ is measured in degrees Fahrenheit and $t$ is measured in minutes. Selected values of $F(t)$ are given in the table."
+        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (minutes) & 0 & 5 & 12 & 20 & 30 \\ \hline "
+        r"$F(t)$ ($^\circ$F) & 425 & 380 & 330 & 285 & 245\end{tabular}}"), [
+        Part("a", r"Use the data in the table to estimate $F'(16)$. Show the work that leads to your answer. Indicate units of measure.",
+             num(sp.Rational(-45, 8), tol=0.005, display=r"-\tfrac{45}{8} = -5.625\ \text{degrees Fahrenheit per minute}"),
+             r"$F'(16) \approx \dfrac{F(20) - F(12)}{20 - 12} = \dfrac{285 - 330}{8} = -5.625$ degrees Fahrenheit per minute.",
+             [(1, "difference quotient with $F(20)$ and $F(12)$, and the answer"), (1, "units")], work="2.6cm"),
+        Part("b", r"Using correct units, interpret the meaning of $F'(16)$ in the context of the problem.",
+             selfcheck(r"\text{At } t = 16\text{, the temperature is decreasing about 5.6 degrees F per minute}"),
+             r"At time $t = 16$ minutes, the temperature of the oven is decreasing at a rate of about $5.625$ degrees Fahrenheit per minute.",
+             [(1, "rate of change of temperature, at $t = 16$, with units")], work="2cm"),
+        Part("c", r"The temperature of the oven can also be modeled by $G(t) = 425 - 9.5t + 0.12t^2$ for $0 \le t \le 30$. Using this "
+                  r"model, find $G'(16)$.", num(sp.Rational(-283, 50), tol=0.005, display=r"-5.66"),
+             r"$G'(t) = -9.5 + 0.24t$, so $G'(16) = -9.5 + 3.84 = -5.66$ degrees Fahrenheit per minute.",
+             [(1, "answer $-5.66$")], work="1.8cm"),
+        Part("d", r"For $0 < t < 30$, is the temperature of the oven, as modeled by $G$, changing at an increasing rate or at a "
+                  r"decreasing rate? Give a reason for your answer.", selfcheck(r"\text{At an increasing rate}"),
+             r"$G''(t) = 0.24 > 0$, so the rate of change $G'(t)$ is increasing: the temperature is changing at an increasing rate "
+             r"(it is falling more and more slowly).",
+             [(1, "increasing rate, because $G''(t) > 0$")], work="2cm"),
+    ], frq_type="Table"),
 ]
-same("frq", [sp.Rational(285 - 330, 8), sp.Rational(245 - 425, 30)], [sp.Rational(-45, 8), -6])
+G1 = 425 - sp.Rational(19, 2) * t + sp.Rational(12, 100) * t**2
+same("frq", [sp.Rational(285 - 330, 8)], [sp.Rational(-45, 8)])
+same("frq c", sp.diff(G1, t).subs(t, 16), sp.Rational(-283, 50))
+check("frq d", sp.diff(G1, t, 2) > 0)
+# the model should resemble the data
+check("frq model", all(abs(G1.subs(t, a) - b) < 4 for a, b in [(0, 425), (5, 380), (12, 330), (20, 285), (30, 245)]))
 
 TOPIC = Topic(
     number="4.1", title="Interpreting the Meaning of the Derivative in Context",

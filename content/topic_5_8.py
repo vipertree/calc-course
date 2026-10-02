@@ -116,16 +116,37 @@ MCQS = [
 fp = (x + 2) * (x - 1) * (x - 3) / 2
 same("m", [sp.solve(fp, x), sp.solve(sp.diff(fp, x), x)], [[-2, 1, 3], [sp.Rational(2, 3) - sp.sqrt(19) / 3, sp.Rational(2, 3) + sp.sqrt(19) / 3]])
 
+FIG_FPQ = graph("t5_8_fpq", [("2*x+5", -4, -2), ("-x-1", -2, 1), ("x-3", 1, 4)], xr=(-4, 4), yr=(-3.5, 2), ylabel="f'(x)",
+                caption="The graph of $f'$.")
 FRQS = [
     FRQ("Reading the graph of a derivative", (
-        r"The figure shows the graph of $f'$, the derivative of a twice-differentiable function $f$, on $[-2, 4]$. $f'(x) = x^2 - 2x - 3$."), [
-        Part("a", r"Find the $x$-coordinate of each relative extremum of $f$ on $(-2, 4)$ and classify it. Justify. Enter the location of the relative minimum.", num(3),
-             r"$f'$ changes from $+$ to $-$ at $x = -1$ (relative maximum) and from $-$ to $+$ at $x = 3$ (relative minimum).", [(1, "max at $-1$ with reason"), (1, "min at $3$ with reason")], work="2.4cm"),
-        Part("b", r"On what interval is the graph of $f$ concave down? Justify.", selfcheck(r"(-2, 1)"),
-             r"$f'$ is decreasing on $(-2, 1)$, so $f'' < 0$ and $f$ is concave down there.", [(1, "interval with reason")], work="1.6cm"),
-        Part("c", r"Find the $x$-coordinate of the point of inflection of $f$, and say why.", num(1), r"$f'$ changes from decreasing to increasing at $x = 1$.", [(1, "answer with reason")], work="1.4cm"),
-    ], frq_type="Graph of f'", figure=FIG_FP2),
+        r"The function $f$ is defined on the closed interval $-4 \le x \le 4$. The graph of $f'$, the derivative of $f$, consists "
+        r"of three line segments, as shown in the figure."), [
+        Part("a", r"Find all values of $x$ in the open interval $-4 < x < 4$ at which $f$ has a relative minimum. Justify your answer.",
+             selfcheck(r"x = -\tfrac52 \text{ and } x = 3"),
+             r"$f'$ changes from negative to positive at $x = -\frac52$ and at $x = 3$, so $f$ has a relative minimum at each.",
+             [(1, "$x = -\\frac52$ and $x = 3$"), (1, "justification")], work="2.4cm"),
+        Part("b", r"On what open intervals, if any, is the graph of $f$ concave down? Give a reason for your answer.",
+             selfcheck(r"(-2, 1)"),
+             r"The graph of $f$ is concave down on $(-2, 1)$ because $f'$ is decreasing there.",
+             [(1, "interval $(-2, 1)$"), (1, "reason: $f'$ is decreasing")], work="2cm"),
+        Part("c", r"Find the $x$-coordinate of each point of inflection of the graph of $f$. Give a reason for your answer.",
+             selfcheck(r"x = -2 \text{ and } x = 1"),
+             r"The graph of $f$ has points of inflection at $x = -2$ and $x = 1$, because $f'$ changes from increasing to decreasing "
+             r"at $x = -2$ and from decreasing to increasing at $x = 1$.",
+             [(1, "$x = -2$ and $x = 1$"), (1, "reason")], work="2cm"),
+        Part("d", r"For each of $f''(0)$ and $f''(-2)$, find the value or explain why it does not exist.",
+             selfcheck(r"f''(0) = -1;\ f''(-2)\ \text{does not exist}"),
+             r"On $-2 < x < 1$, $f'$ is a line with slope $-1$, so $f''(0) = -1$. At $x = -2$ the slope of the graph of $f'$ is $2$ from "
+             r"the left and $-1$ from the right, so $f'$ is not differentiable there and $f''(-2)$ does not exist.",
+             [(1, "$f''(0) = -1$"), (1, "$f''(-2)$ does not exist, with explanation")], work="2.6cm"),
+    ], frq_type="Graph of f'", figure=FIG_FPQ),
 ]
+segs8 = [(2 * x + 5, -4, -2), (-x - 1, -2, 1), (x - 3, 1, 4)]
+same("frq continuity", [segs8[0][0].subs(x, -2) - segs8[1][0].subs(x, -2), segs8[1][0].subs(x, 1) - segs8[2][0].subs(x, 1)], [0, 0])
+zeros8 = [r for e, a, b in segs8 for r in sp.solve(e, x) if a <= r <= b]
+same("frq zeros", zeros8, [sp.Rational(-5, 2), -1, 3])
+same("frq d", [sp.diff(segs8[1][0], x), sp.diff(segs8[0][0], x)], [-1, 2])
 
 TOPIC = Topic(
     number="5.8", title="Sketching Graphs of Functions and Their Derivatives",

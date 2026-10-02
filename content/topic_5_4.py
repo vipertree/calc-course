@@ -8,7 +8,7 @@ f'(x) = (x - 1)(x + 2)e^x.
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, num,
-                     same, selfcheck)
+                     same, selfcheck, check, expr)
 
 x = sp.symbols("x", real=True)
 
@@ -132,15 +132,33 @@ rts = sorted(sp.nroots(x**3 - 4 * x - 1))
 same("m4", [round(float(r), 3) for r in rts], [-1.861, -0.254, 2.115])
 
 FRQS = [
-    FRQ("Extrema from a derivative", (r"The derivative of a function $f$ is $f'(x) = (x - 1)(x + 2)e^{x}$, and $f(0) = 3$."), [
-        Part("a", r"Find the $x$-coordinate of each relative extremum of $f$, and classify each. Justify your answers. Enter the location of the relative maximum.", num(-2),
-             r"$e^x > 0$, so the sign of $f'$ is the sign of $(x - 1)(x + 2)$: $+$, $-$, $+$. Relative maximum at $x = -2$ because $f'$ changes from positive to negative; "
-             r"relative minimum at $x = 1$ because $f'$ changes from negative to positive.", [(1, "critical points"), (1, "max with justification"), (1, "min with justification")], work="3cm"),
-        Part("b", r"Is $f$ increasing or decreasing at $x = 0$? Give a reason.", selfcheck(r"\text{decreasing}"),
-             r"$f'(0) = (-1)(2)(1) = -2 < 0$, so $f$ is decreasing at $x = 0$.", [(1, "answer with reason")], work="1.6cm"),
-        Part("c", r"Write an equation for the line tangent to the graph of $f$ at $x = 0$.", selfcheck(r"y = 3 - 2x"), r"$y - 3 = -2(x - 0)$, so $y = 3 - 2x$.", [(1, "tangent line")], work="1.6cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Extrema from a derivative", (
+        r"Let $f$ be a twice-differentiable function with $f(0) = 3$ and $f'(x) = (x - 1)(x + 2)e^{x}$ for all real numbers $x$. "
+        r"It can be shown that $f''(x) = (x^2 + 3x - 1)e^{x}$."), [
+        Part("a", r"Find the $x$-coordinate of each relative extremum of $f$, and classify each as a relative minimum or a relative "
+                  r"maximum. Justify your answers.",
+             selfcheck(r"\text{relative maximum at } x = -2;\ \text{relative minimum at } x = 1"),
+             r"$f'(x) = 0$ at $x = -2$ and $x = 1$. $f'$ changes from positive to negative at $x = -2$, so $f$ has a relative maximum "
+             r"there. $f'$ changes from negative to positive at $x = 1$, so $f$ has a relative minimum there.",
+             [(1, "relative maximum at $x = -2$ with justification"), (1, "relative minimum at $x = 1$ with justification")],
+             work="3cm"),
+        Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 0$.", expr("3 - 2*x"),
+             r"$f'(0) = (-1)(2)(1) = -2$ and $f(0) = 3$, so the tangent line is $y = 3 - 2x$.",
+             [(1, "$f'(0) = -2$"), (1, "tangent line equation")], work="2cm"),
+        Part("c", r"Use the tangent line from part (b) to approximate $f(0.1)$. Is this approximation an overestimate or an "
+                  r"underestimate of $f(0.1)$? Give a reason for your answer.", num(sp.Rational(14, 5)),
+             r"$f(0.1) \approx 3 - 2(0.1) = 2.8$. For $0 \le x \le 0.1$, $x^2 + 3x - 1 < 0$, so $f''(x) < 0$ and the graph of $f$ is "
+             r"concave down, lying below its tangent line. The approximation is an overestimate.",
+             [(1, "approximation $2.8$"), (1, "overestimate, because $f'' < 0$ on $0 \\le x \\le 0.1$")], work="2.6cm"),
+    ], frq_type="Function analysis"),
 ]
+fp4 = (x - 1) * (x + 2) * sp.exp(x)
+same("frq a", sorted(sp.solve(fp4, x)), [-2, 1])
+check("frq a signs", fp4.subs(x, -3) > 0 and fp4.subs(x, 0) < 0 and fp4.subs(x, 2) > 0)
+same("frq f''", sp.simplify(sp.diff(fp4, x) - (x**2 + 3 * x - 1) * sp.exp(x)), 0)
+same("frq b", fp4.subs(x, 0), -2)
+same("frq c", 3 - 2 * sp.Rational(1, 10), sp.Rational(14, 5))
+check("frq c sign", all((v**2 + 3 * v - 1) < 0 for v in (0, sp.Rational(1, 20), sp.Rational(1, 10))))
 
 TOPIC = Topic(
     number="5.4", title="Using the First Derivative Test to Determine Relative (Local) Extrema",

@@ -190,19 +190,19 @@ same("m1", sp.limit(sp.sin(3 * x) / (2 * x), x, 0), sp.Rational(3, 2))
 same("m3", sp.limit(x**2 / (1 - sp.cos(x)), x, 0), 2)
 
 FRQS = [
-    FRQ("A squeeze", r"The function $f$ satisfies $1 - \dfrac{x^2}{2} \le f(x) \le \dfrac{\sin x}{x}$ for all $x \ne 0$ in $(-1, 1)$.", [
-        Part("a", r"Find $\displaystyle\lim_{x\to0}\left(1 - \frac{x^2}{2}\right)$ and $\displaystyle\lim_{x\to0}\frac{\sin x}{x}$. "
-                  r"Enter their common value.", num(1), r"$\displaystyle\lim_{x\to0}\left(1-\frac{x^2}2\right) = 1$ and "
-                                                          r"$\displaystyle\lim_{x\to0}\frac{\sin x}{x} = 1$.",
-             [(1, "both limits equal $1$")], work="2cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to0} f(x)$. Justify your answer.", num(1),
-             r"$f$ is squeezed between two functions that both approach $1$, so by the squeeze theorem $\displaystyle\lim_{x\to0} f(x) = 1$.",
-             [(1, "answer $1$"), (1, "names the squeeze theorem with the matching bounds")], work="2.4cm"),
-        Part("c", r"Find $\displaystyle\lim_{x\to0}\frac{f(x)\sin(2x)}{x}$.", num(2),
+    FRQ("A squeeze", r"The function $f$ satisfies $1 - \dfrac{x^2}{2} \le f(x) \le \dfrac{\sin x}{x}$ for all $x \ne 0$ in the interval $-1 < x < 1$.", [
+        Part("a", r"Find $\displaystyle\lim_{x\to0} f(x)$. Justify your answer.", num(1),
+             r"$\displaystyle\lim_{x\to0}\left(1-\frac{x^2}2\right) = 1$ and $\displaystyle\lim_{x\to0}\frac{\sin x}{x} = 1$. Because "
+             r"$1 - \frac{x^2}{2} \le f(x) \le \frac{\sin x}{x}$ near $x = 0$, the squeeze theorem gives $\displaystyle\lim_{x\to0} f(x) = 1$.",
+             [(1, "both bounding limits equal $1$"), (1, "answer $1$, using the squeeze theorem")], work="2.8cm"),
+        Part("b", r"Find the value of $\displaystyle\lim_{x\to0}\frac{f(x)\sin(2x)}{x}$, or show that it does not exist. Show the work "
+                  r"that leads to your answer.", num(2),
              limchain(0, [r"\frac{f(x)\sin 2x}{x}", r"f(x)\cdot 2\cdot\frac{\sin 2x}{2x}"], r"1\cdot2\cdot1 = 2"),
-             [(1, "uses the limit of $f$ and $\\frac{\\sin 2x}{2x}\\to1$"), (1, "answer $2$")], work="2.4cm"),
-    ], frq_type="Squeeze theorem"),
+             [(1, "rewrites with $\\frac{\\sin 2x}{2x}$ and uses the limit from part (a)"), (1, "answer $2$")], work="2.6cm"),
+    ], frq_type="Limits and continuity"),
 ]
+same("frq a", [sp.limit(1 - x**2 / 2, x, 0), sp.limit(sp.sin(x) / x, x, 0)], [1, 1])
+same("frq b", sp.limit(sp.sin(2 * x) / x, x, 0), 2)
 
 TOPIC = Topic(
     number="1.8", title="Determining Limits Using the Squeeze Theorem",

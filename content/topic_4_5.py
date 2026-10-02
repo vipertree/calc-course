@@ -148,20 +148,36 @@ same("m", [solve_rate(sp.pi / 48 * h**3, V, h, {d(V): sp.pi, h: 4}), sp.Rational
      [1, 9 / sp.sqrt(2), 72, 8])
 
 FRQS = [
-    FRQ("A draining cone", (
-        r"A conical funnel (point down) has radius $6$ cm and height $12$ cm. Coffee drains out of it at $3$ cm$^3$/s. "
-        r"The volume of a cone is $V = \frac13\pi r^2h$."), [
-        Part("a", r"Write the volume of the coffee in the funnel as a function of its depth $h$ alone.", selfcheck(r"V = \frac{\pi}{12}h^3"),
-             r"Similar triangles: $\frac rh = \frac{6}{12}$, so $r = \frac h2$ and $V = \frac13\pi\left(\frac h2\right)^2h = \frac{\pi}{12}h^3$.",
-             [(1, "$r = \\frac h2$"), (1, "$V = \\frac{\\pi}{12}h^3$")], work="2.4cm"),
-        Part("b", r"How fast is the depth changing when the coffee is $4$ cm deep? Include units.", num(-3 / (4 * sp.pi)),
-             r"$\dfrac{dV}{dt} = \frac{\pi}{4}h^2\dfrac{dh}{dt}$. With $\dfrac{dV}{dt} = -3$ and $h = 4$: $-3 = 4\pi\dfrac{dh}{dt}$, so "
-             r"$\dfrac{dh}{dt} = -\frac{3}{4\pi} \approx -0.239$ cm/s.", [(1, "differentiates"), (1, "uses $-3$"), (1, "answer with units")], work="2.6cm"),
-        Part("c", r"At that moment, how fast is the radius of the coffee's surface changing?", num(-3 / (8 * sp.pi)),
-             r"$r = \frac h2$, so $\dfrac{dr}{dt} = \frac12\dfrac{dh}{dt} = -\frac{3}{8\pi}$ cm/s.", [(1, "answer")], work="1.6cm"),
+    FRQ("A draining funnel", (
+        r"A funnel has the shape of a cone with its vertex pointing down. The funnel has radius $6$ centimeters at the top and "
+        r"height $12$ centimeters. Coffee drains out of the funnel at a constant rate of $3$ cubic centimeters per second. "
+        r"Let $h$ be the depth of the coffee and $r$ be the radius of the coffee's surface, both measured in centimeters. "
+        r"(The volume $V$ of a cone with radius $r$ and height $h$ is $V = \frac13\pi r^2 h$.)"), [
+        Part("a", r"Show that the volume of the coffee in the funnel is $V = \dfrac{\pi}{12}h^3$.",
+             selfcheck(r"V = \tfrac{\pi}{12}h^3"),
+             r"By similar triangles, $\dfrac{r}{h} = \dfrac{6}{12}$, so $r = \dfrac{h}{2}$. Then "
+             r"$V = \dfrac13\pi\left(\dfrac{h}{2}\right)^2 h = \dfrac{\pi}{12}h^3$.",
+             [(1, "$r = \\frac{h}{2}$ from similar triangles"), (1, "substitutes to get $V = \\frac{\\pi}{12}h^3$")], work="2.4cm"),
+        Part("b", r"Find the rate at which the depth of the coffee is changing at the instant the coffee is $4$ centimeters deep. "
+                  r"Indicate units of measure.",
+             num(-3 / (4 * sp.pi), tol=0.001, display=r"-\tfrac{3}{4\pi}\ \text{centimeters per second}"),
+             r"$\dfrac{dV}{dt} = \dfrac{\pi}{4}h^2\dfrac{dh}{dt}$. With $\dfrac{dV}{dt} = -3$ and $h = 4$: "
+             r"$-3 = 4\pi\dfrac{dh}{dt}$, so $\dfrac{dh}{dt} = -\dfrac{3}{4\pi} \approx -0.239$ centimeters per second.",
+             [(1, "$\\frac{dV}{dt} = \\frac{\\pi}{4}h^2\\frac{dh}{dt}$"), (1, "uses $\\frac{dV}{dt} = -3$"), (1, "answer with units")],
+             work="3cm"),
+        Part("c", r"At the instant the coffee is $4$ centimeters deep, find the rate at which the radius of the coffee's surface is "
+                  r"changing.", num(-3 / (8 * sp.pi), tol=0.001, display=r"-\tfrac{3}{8\pi}"),
+             r"$r = \dfrac{h}{2}$, so $\dfrac{dr}{dt} = \dfrac12\cdot\dfrac{dh}{dt} = -\dfrac{3}{8\pi}$ centimeters per second.",
+             [(1, "answer $-\\frac{3}{8\\pi}$")], work="2cm"),
     ], frq_type="Related rates"),
 ]
-same("frq", [solve_rate(sp.pi / 12 * h**3, V, h, {d(V): -3, h: 4})], [-3 / (4 * sp.pi)])
+h5 = sp.Function("h")(t)
+V5 = sp.Rational(1, 3) * sp.pi * (h5 / 2)**2 * h5
+same("frq a", sp.expand(V5), sp.pi / 12 * h5**3)
+hp5 = sp.symbols("hp5")
+dh5 = sp.solve(sp.Eq(sp.diff(V5, t).subs(sp.diff(h5, t), hp5).subs(h5, 4), -3), hp5)
+same("frq b", dh5, [-3 / (4 * sp.pi)])
+same("frq c", dh5[0] / 2, -3 / (8 * sp.pi))
 
 TOPIC = Topic(
     number="4.5", title="Solving Related Rates Problems",

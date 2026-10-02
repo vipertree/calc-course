@@ -115,14 +115,27 @@ same("m", [extremes(x**3 - 3 * x**2 + 1, -2, 3)[0], extremes(2 * sp.sin(x) + sp.
 close("m4", extremes(x * sp.exp(-x / 2), 0, 5)[0], 0.736, 5e-4)
 
 FRQS = [
-    FRQ("Absolute extrema on an interval", (r"Let $f(x) = x^3 - 6x^2 + 9x + 2$ on the interval $[0, 5]$."), [
-        Part("a", r"Find the critical points of $f$ in $(0, 5)$. Enter the larger one.", num(3), r"$f'(x) = 3x^2 - 12x + 9 = 3(x - 1)(x - 3) = 0$ at $x = 1, 3$.", [(1, "derivative"), (1, "both points")], work="2cm"),
-        Part("b", r"Find the absolute minimum value of $f$ on $[0, 5]$. Justify your answer.", num(2),
-             r"Candidates: $f(0) = 2$, $f(1) = 6$, $f(3) = 2$, $f(5) = 22$. The absolute minimum is $2$, at $x = 0$ and $x = 3$.", [(1, "all four candidates"), (1, "minimum")], work="2.4cm"),
-        Part("c", r"Find the absolute maximum value of $f$ on $[0, 5]$.", num(22), r"The largest candidate: $f(5) = 22$.", [(1, "maximum")], work="1.2cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Water in a tank", (
+        r"The amount of water in a tank is modeled by $A(t) = 2t^3 - 15t^2 + 24t + 40$, where $A(t)$ is measured in gallons and "
+        r"$t$ is measured in hours, for $0 \le t \le 5$."), [
+        Part("a", r"Is the amount of water in the tank increasing or decreasing at time $t = 2$? Give a reason for your answer.",
+             selfcheck(r"\text{Decreasing}"),
+             r"$A'(t) = 6t^2 - 30t + 24$, so $A'(2) = 24 - 60 + 24 = -12 < 0$. The amount of water is decreasing at $t = 2$.",
+             [(1, "decreasing, because $A'(2) < 0$")], work="2cm"),
+        Part("b", r"At what time $t$, for $0 \le t \le 5$, is the amount of water in the tank least? Justify your answer.", num(4),
+             r"$A'(t) = 6(t - 1)(t - 4) = 0$ at $t = 1$ and $t = 4$. Candidates: $A(0) = 40$, $A(1) = 51$, $A(4) = 24$, $A(5) = 35$. "
+             r"The amount of water is least at $t = 4$ hours.",
+             [(1, "critical points $t = 1$ and $t = 4$"), (1, "considers the endpoints"), (1, "answer $t = 4$ with justification")],
+             work="3.2cm"),
+        Part("c", r"Find the greatest amount of water in the tank for $0 \le t \le 5$. Justify your answer.", num(51),
+             r"From the candidates in part (b), the greatest amount is $A(1) = 51$ gallons.",
+             [(1, "answer $51$ from the candidates")], work="1.6cm"),
+    ], frq_type="Rate in context"),
 ]
-same("frq", list(extremes(x**3 - 6 * x**2 + 9 * x + 2, 0, 5)), [22, 2])
+A5 = 2 * x**3 - 15 * x**2 + 24 * x + 40
+same("frq", list(extremes(A5, 0, 5)), [51, 24])
+same("frq a", sp.diff(A5, x).subs(x, 2), -12)
+same("frq cands", [A5.subs(x, v) for v in (0, 1, 4, 5)], [40, 51, 24, 35])
 
 TOPIC = Topic(
     number="5.5", title="Using the Candidates Test to Determine Absolute (Global) Extrema",

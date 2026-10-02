@@ -216,18 +216,24 @@ same("m4 VA", sp.limit((2 * x**2 - 8) / (x**2 - 4 * x + 4), x, 2, "+"), oo)
 FRQS = [
     FRQ("Long-run behavior", (
         r"The number of people who have heard a rumor $t$ days after it starts is modeled by $R(t) = \dfrac{600t^2}{t^2 + 50}$ "
-        r"for $t \ge 0$."), [
-        Part("a", r"Find $\displaystyle\lim_{t\to\infty} R(t)$.", num(600), r"Equal degrees: $\dfrac{600}{1} = 600$.",
-             [(1, "answer $600$ with method")], work="2cm"),
-        Part("b", r"Interpret your answer to part (a) in the context of the problem.", selfcheck(r"600\text{ people in the long run}"),
-             r"In the long run, the number of people who have heard the rumor approaches 600.",
-             [(1, "long run, number of people, 600")], work="1.8cm"),
-        Part("c", r"Is $R(t)$ ever equal to $600$? Explain.", selfcheck(r"\text{No}"),
-             r"No. $R(t) = 600\cdot\dfrac{t^2}{t^2+50} < 600$ because $t^2 < t^2 + 50$. The graph approaches $600$ but never reaches it.",
-             [(1, "no, with an algebraic reason")], work="2cm"),
-    ], frq_type="Limits in context"),
+        r"for $t \ge 0$. A second rumor starts at the same time, and the number of people who have heard it $t$ days after it "
+        r"starts is modeled by $S(t) = \dfrac{700t}{t + 40}$ for $t \ge 0$."), [
+        Part("a", r"Find $\displaystyle\lim_{t\to\infty} R(t)$. Using correct units, interpret the meaning of this limit in the "
+                  r"context of the problem.", num(600),
+             r"$\displaystyle\lim_{t\to\infty}\frac{600t^2}{t^2+50} = \lim_{t\to\infty}\frac{600}{1 + 50/t^2} = 600$. "
+             r"As time goes on, the number of people who have heard the first rumor approaches $600$ people.",
+             [(1, "limit $600$"), (1, "interpretation: number of people approaches 600 in the long run")], work="2.8cm"),
+        Part("b", r"Write a limit expression that describes the end behavior of $S$. Evaluate this limit expression.", num(700),
+             r"$\displaystyle\lim_{t\to\infty}\frac{700t}{t+40} = \lim_{t\to\infty}\frac{700}{1 + 40/t} = 700$.",
+             [(1, "$\\displaystyle\\lim_{t\\to\\infty} S(t)$"), (1, "value $700$")], work="2.4cm"),
+        Part("c", r"In the long run, will more people have heard the first rumor or the second rumor? Give a reason for your answer.",
+             selfcheck(r"\text{The second rumor}"),
+             r"The second rumor, because $\displaystyle\lim_{t\to\infty}S(t) = 700 > 600 = \lim_{t\to\infty}R(t)$.",
+             [(1, "second rumor, comparing the limits")], work="1.8cm"),
+    ], frq_type="Limits at infinity"),
 ]
 same("frq a", sp.limit(600 * t**2 / (t**2 + 50), t, oo), 600)
+same("frq b", sp.limit(700 * t / (t + 40), t, oo), 700)
 
 TOPIC = Topic(
     number="1.15", title="Connecting Limits at Infinity and Horizontal Asymptotes",

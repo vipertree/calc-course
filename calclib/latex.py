@@ -204,7 +204,7 @@ def _testprep_body(t, key):
            r"\sect{Multiple choice}",
            r"\begin{enumerate}"]
     out += [_mcq(q, key) for q in t.mcq]
-    out += [r"\end{enumerate}", r"\sect{Free response}"]
+    out += [r"\end{enumerate}"] + ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
     out += [_frq(f, key) for f in t.frq]
     return "\n".join(out)
 

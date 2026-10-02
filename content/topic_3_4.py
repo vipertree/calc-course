@@ -6,7 +6,7 @@ with a reference triangle, the picture used in the video; the other four are lis
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Figure, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr,
-                     num, same, selfcheck)
+                     close, num, same, selfcheck)
 
 x, t = sp.symbols("x t")
 pi = sp.pi
@@ -150,20 +150,33 @@ same("m", [D(sp.atan(x**2)).subs(x, 1), sp.simplify(D(sp.asin(x / 2)) - 1 / sp.s
            [r for r in sp.solve(sp.Eq(1 / sp.sqrt(1 - x**2), 2), x) if r > 0][0]], [1, 0, sp.Rational(1, 2), sp.sqrt(3) / 2])
 
 FRQS = [
-    FRQ("A lighthouse beam", (
-        r"A lighthouse stands 2 kilometers from a straight shoreline. Its beam lights a spot on the shore $x$ kilometers from the point "
-        r"nearest the lighthouse, and the beam's angle is $\theta(x) = \arctan\left(\dfrac{x}{2}\right)$ radians."), [
-        Part("a", r"Find $\theta'(x)$.", expr("2/(4 + x**2)"), r"$\dfrac{1/2}{1 + x^2/4} = \dfrac{2}{4 + x^2}$.", [(1, "chain rule"), (1, "simplified")],
-             work="2cm"),
-        Part("b", r"Find $\theta'(2)$ and interpret it with units.", num(sp.Rational(1, 4)),
-             r"$\dfrac{2}{8} = \dfrac14$: when the spot is 2 km down the shore, the angle grows by about $\frac14$ radian per kilometer the spot moves.",
-             [(1, "value"), (1, "units and meaning")], work="2cm"),
-        Part("c", r"Is $\theta'(x)$ larger when the spot is near the lighthouse or far away? Explain using the formula.", selfcheck(r"\text{near}"),
-             r"$\dfrac{2}{4 + x^2}$ shrinks as $x$ grows. Far down the shore, moving the spot changes the angle very little.",
-             [(1, "near, with reason from the formula")], work="1.8cm"),
-    ], frq_type="Rates in context"),
+    FRQ("Algae on a lake", (
+        r"Algae appear on a lake at time $t = 0$ and begin to spread. The area of the lake covered by algae is modeled by "
+        r"$A(t) = 12\arctan\left(\dfrac{t}{3}\right)$, where $A(t)$ is measured in acres and $t$ is measured in weeks."), [
+        Part("a", r"Find $A'(3)$. Using correct units, interpret the meaning of $A'(3)$ in the context of the problem.",
+             num(2, display=r"2\ \text{acres per week}"),
+             r"$A'(t) = 12\cdot\dfrac{1/3}{1 + (t/3)^2} = \dfrac{36}{9 + t^2}$, so $A'(3) = \dfrac{36}{18} = 2$. At time $t = 3$ weeks, "
+             r"the area covered by algae is increasing at a rate of $2$ acres per week.",
+             [(1, "$A'(t)$ with the chain rule"), (1, "$A'(3) = 2$"), (1, "interpretation with units")], work="3cm"),
+        Part("b", r"Find the time $t$, for $0 < t < 3$, when the instantaneous rate of change of $A$ equals the average rate of change "
+                  r"of $A$ over the time interval $0 \le t \le 3$.",
+             num(sp.sqrt(36 / sp.pi - 9), tol=0.001, display=r"\sqrt{\tfrac{36}{\pi} - 9} \approx 1.568"),
+             r"The average rate of change is $\dfrac{A(3) - A(0)}{3} = \dfrac{12\cdot\frac{\pi}{4} - 0}{3} = \pi$ acres per week. "
+             r"Solve $\dfrac{36}{9 + t^2} = \pi$: $t^2 = \dfrac{36}{\pi} - 9$, so $t = \sqrt{\dfrac{36}{\pi} - 9} \approx 1.568$ weeks.",
+             [(1, "average rate of change $\\pi$"), (1, "answer")], work="3cm"),
+        Part("c", r"Assume the algae continue to spread according to this model for all $t > 0$. Write a limit expression that "
+                  r"describes the end behavior of the rate of change of the area covered by algae. Evaluate this limit expression.",
+             num(0),
+             r"$\displaystyle\lim_{t\to\infty} A'(t) = \lim_{t\to\infty}\frac{36}{9 + t^2} = 0$.",
+             [(1, "$\\displaystyle\\lim_{t\\to\\infty} A'(t)$"), (1, "value $0$")], work="2.2cm"),
+    ], frq_type="Rate in context"),
 ]
-same("frq", [D(sp.atan(x / 2)), D(sp.atan(x / 2)).subs(x, 2)], [2 / (4 + x**2), sp.Rational(1, 4)])
+A4 = 12 * sp.atan(t / 3)
+same("frq a", [sp.simplify(sp.diff(A4, t) - 36 / (9 + t**2)), sp.diff(A4, t).subs(t, 3)], [0, 2])
+avg4 = (A4.subs(t, 3) - A4.subs(t, 0)) / 3
+same("frq b avg", avg4, sp.pi)
+close("frq b", sp.nsolve(sp.diff(A4, t) - avg4, t, 1.5), float(sp.sqrt(36 / sp.pi - 9)), 1e-9)
+same("frq c", sp.limit(sp.diff(A4, t), t, sp.oo), 0)
 
 TOPIC = Topic(
     number="3.4", title="Differentiating Inverse Trigonometric Functions",

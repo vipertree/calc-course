@@ -212,19 +212,21 @@ same("m1", sp.limit((x**2 - 2 * x - 3) / (x - 3), x, 3), 4)
 
 FRQS = [
     FRQ("Continuity with a parameter", (
-        r"Let $f(x) = \begin{cases} ax + 2, & x < 1 \\ x^2 + 3, & x \ge 1, \end{cases}$ where $a$ is a constant."), [
-        Part("a", r"Find $f(1)$ and $\displaystyle\lim_{x\to1^+} f(x)$. Enter $f(1)$.", num(4),
-             r"$f(1) = 1 + 3 = 4$ and the right-hand limit is also $4$.", [(1, "both values $4$")], work="1.8cm"),
-        Part("b", r"Find the value of $a$ that makes $f$ continuous at $x = 1$.", num(2),
-             r"Need $\displaystyle\lim_{x\to1^-}f(x) = a + 2 = 4$, so $a = 2$.", [(1, "sets $a + 2 = 4$"), (1, "$a = 2$")],
-             work="2cm"),
-        Part("c", r"With $a = 2$, use the definition of continuity to justify that $f$ is continuous at $x = 1$.",
-             selfcheck(r"\lim = f(1) = 4"),
-             r"$f(1) = 4$; $\displaystyle\lim_{x\to1^-}f(x) = 2 + 2 = 4$ and $\displaystyle\lim_{x\to1^+}f(x) = 4$, so "
-             r"$\displaystyle\lim_{x\to1}f(x) = 4 = f(1)$. Therefore $f$ is continuous at $x = 1$.",
-             [(1, "all three conditions stated with values"), (1, "conclusion")], work="3cm"),
-    ], frq_type="Continuity"),
+        r"Let $f$ be the function defined by $f(x) = \begin{cases} ax + 2, & x < 1 \\ x^2 + 3, & x \ge 1, \end{cases}$ "
+        r"where $a$ is a constant."), [
+        Part("a", r"Find the value of $a$ for which $f$ is continuous at $x = 1$. Show the work that leads to your answer.", num(2),
+             r"$f(1) = 1 + 3 = 4$ and $\displaystyle\lim_{x\to1^+}f(x) = \lim_{x\to1^+}(x^2+3) = 4$. "
+             r"$\displaystyle\lim_{x\to1^-}f(x) = \lim_{x\to1^-}(ax+2) = a + 2$. Continuity at $x = 1$ needs $a + 2 = 4$, so $a = 2$.",
+             [(1, "one-sided limits $a + 2$ and $4$ (or $f(1) = 4$)"), (1, "answer $a = 2$")], work="3cm"),
+        Part("b", r"Let $a = 3$. Is $f$ continuous at $x = 1$? Use the definition of continuity to explain your answer.",
+             selfcheck(r"\text{No}"),
+             r"$\displaystyle\lim_{x\to1^-}f(x) = 3(1) + 2 = 5$ and $\displaystyle\lim_{x\to1^+}f(x) = 1 + 3 = 4$. The one-sided limits "
+             r"are not equal, so $\displaystyle\lim_{x\to1}f(x)$ does not exist and $f$ is not continuous at $x = 1$.",
+             [(1, "both one-sided limits, $5$ and $4$"), (1, "answer no, because the limit does not exist")], work="3cm"),
+    ], frq_type="Limits and continuity"),
 ]
+same("frq a", sp.solve(sp.Eq(k + 2, 4), k)[0], 2)
+same("frq b", [3 * 1 + 2, 1 + 3], [5, 4])
 
 TOPIC = Topic(
     number="1.11", title="Defining Continuity at a Point",

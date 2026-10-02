@@ -117,15 +117,27 @@ cands = [sp.sqrt(sp.acos(sp.Rational(1, 5))), sp.sqrt(2 * sp.pi - sp.acos(sp.Rat
 same("m4", [int(all(0 < float(c) < 3 for c in cands)), int(float(sp.sqrt(4 * sp.pi - sp.acos(sp.Rational(1, 5)))) > 3)], [1, 1])
 
 FRQS = [
-    FRQ("Concavity and inflection", (r"Let $f(x) = x^4 - 6x^3 + 12x^2$."), [
-        Part("a", r"Find $f''(x)$.", selfcheck(r"12x^2 - 36x + 24"), r"$f'(x) = 4x^3 - 18x^2 + 24x$, so $f''(x) = 12x^2 - 36x + 24 = 12(x - 1)(x - 2)$.", [(1, "$f''$")], work="1.8cm"),
-        Part("b", r"On what interval is the graph of $f$ concave down? Justify.", selfcheck(r"(1, 2)"),
-             r"$f''(x) = 12(x - 1)(x - 2) < 0$ on $(1, 2)$, so the graph is concave down there.", [(1, "interval"), (1, "reason using $f''$")], work="2cm"),
-        Part("c", r"Find the $x$-coordinates of the points of inflection of $f$. Justify. Enter the larger one.", num(2),
-             r"$f''$ changes sign at $x = 1$ (from $+$ to $-$) and at $x = 2$ (from $-$ to $+$), so both are points of inflection.", [(1, "both $x$-values"), (1, "sign-change reason")], work="2cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Concavity and inflection", r"Let $f$ be the function defined by $f(x) = x^4 - 6x^3 + 12x^2$.", [
+        Part("a", r"On what open intervals is the graph of $f$ concave down? Give a reason for your answer.", selfcheck(r"(1, 2)"),
+             r"$f''(x) = 12x^2 - 36x + 24 = 12(x - 1)(x - 2)$. $f''(x) < 0$ for $1 < x < 2$, so the graph of $f$ is concave down on "
+             r"$(1, 2)$.",
+             [(1, "$f''(x)$"), (1, "interval $(1, 2)$ with reason")], work="2.6cm"),
+        Part("b", r"Find the $x$-coordinates of all points of inflection of the graph of $f$. Justify your answer.",
+             selfcheck(r"x = 1 \text{ and } x = 2"),
+             r"$f''$ changes sign at $x = 1$ (from positive to negative) and at $x = 2$ (from negative to positive), so the graph of $f$ "
+             r"has points of inflection at $x = 1$ and $x = 2$.",
+             [(1, "$x = 1$ and $x = 2$"), (1, "justification: $f''$ changes sign")], work="2.2cm"),
+        Part("c", r"For a constant $k$, let $h$ be the function defined by $h(x) = x^4 - 6x^3 + kx^2$. Find the value of $k$ for which "
+                  r"the graph of $h$ has a point of inflection at $x = -1$.", num(-24),
+             r"$h''(x) = 12x^2 - 36x + 2k$, and $h''(-1) = 48 + 2k = 0$ gives $k = -24$. Then $h''(x) = 12(x^2 - 3x - 4) = 12(x - 4)(x + 1)$ "
+             r"changes sign at $x = -1$, so there is a point of inflection there.",
+             [(1, "sets $h''(-1) = 0$"), (1, "answer $k = -24$")], work="2.6cm"),
+    ], frq_type="Function analysis"),
 ]
 same("frq", [inflections(x**4 - 6 * x**3 + 12 * x**2)], [[1, 2]])
+kk6 = sp.symbols("kk6")
+same("frq c", sp.solve(sp.diff(x**4 - 6 * x**3 + kk6 * x**2, x, 2).subs(x, -1), kk6), [-24])
+same("frq c check", inflections(x**4 - 6 * x**3 - 24 * x**2), [-1, 4])
 
 TOPIC = Topic(
     number="5.6", title="Determining Concavity of Functions over Their Domains",

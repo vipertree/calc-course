@@ -178,19 +178,21 @@ c = sp.symbols("c")
 same("m3", sp.solve(sp.Eq(4 + c, 2 * c + 6), c)[0], -2)
 
 FRQS = [
-    FRQ("Designing a continuous function", (
-        r"Let $f(x) = \begin{cases} \dfrac{x^2 - a^2}{x - a}, & x < 2 \\ bx + 1, & x \ge 2, \end{cases}$ where $a$ and $b$ are "
-        r"constants and $a = 2$."), [
-        Part("a", r"With $a = 2$, find $\displaystyle\lim_{x\to2^-}f(x)$.", num(4), limchain(2, [r"\frac{x^2-4}{x-2}", r"(x+2)"], 4, side="^-"),
-             [(1, "simplifies and finds $4$")], work="2cm"),
-        Part("b", r"Find $b$ so that $f$ is continuous at $x = 2$.", num(sp.Rational(3, 2)),
-             r"Need $2b + 1 = 4$, so $b = \frac32$.", [(1, "equation $2b + 1 = 4$"), (1, "$b = \\frac32$")], work="2cm"),
-        Part("c", r"Is $f$ continuous for all $x < 2$? Explain.", selfcheck(r"\text{Yes}"),
-             r"Yes. For $x < 2$, $f(x) = \dfrac{x^2-4}{x-2} = x + 2$ is defined (the denominator is never zero for $x<2$) and is "
-             r"a rational function, so it is continuous on its domain.", [(1, "yes, with reason")], work="2cm"),
-    ], frq_type="Continuity"),
+    FRQ("Removing a discontinuity", (
+        r"Let $f$ be the function defined by $f(x) = \begin{cases} \dfrac{x^2 - 2x - 3}{x - 3}, & x < 3 \\[4pt] k, & x = 3 \\ "
+        r"bx - 2, & x > 3, \end{cases}$ where $k$ and $b$ are constants."), [
+        Part("a", r"Find $\displaystyle\lim_{x\to3^-}f(x)$. Show the work that leads to your answer.", num(4),
+             limchain(3, [r"\frac{(x-3)(x+1)}{x-3}", r"(x+1)"], 4, side="^-"),
+             [(1, "factors and cancels"), (1, "answer $4$")], work="2.6cm"),
+        Part("b", r"Find the values of $k$ and $b$ for which $f$ is continuous at $x = 3$. Show the work that leads to your answer.",
+             selfcheck(r"k = 4,\ b = 2"),
+             r"Continuity at $x = 3$ needs $\displaystyle\lim_{x\to3^-}f(x) = \lim_{x\to3^+}f(x) = f(3)$. "
+             r"$\displaystyle\lim_{x\to3^+}(bx - 2) = 3b - 2$, so $3b - 2 = 4$ and $b = 2$. Also $f(3) = k = 4$.",
+             [(1, "$3b - 2 = 4$, so $b = 2$"), (1, "$k = 4$")], work="3cm"),
+    ], frq_type="Limits and continuity"),
 ]
-same("frq b", sp.solve(sp.Eq(2 * b + 1, 4), b)[0], sp.Rational(3, 2))
+same("frq a", sp.limit((x**2 - 2 * x - 3) / (x - 3), x, 3, "-"), 4)
+same("frq b", sp.solve(sp.Eq(3 * b - 2, 4), b)[0], 2)
 
 TOPIC = Topic(
     number="1.13", title="Removing Discontinuities",

@@ -207,21 +207,9 @@ MCQS = [
 same("m1", sp.limit(((3 + h)**4 - 81) / h, h, 0), 108)
 same("m3", sp.diff(1 / (x + 1), x).subs(x, 1), sp.Rational(-1, 4))
 
-FRQS = [
-    FRQ("The derivative from its definition", r"Let $f(x) = x^2 - 3x$.", [
-        Part("a", r"Use the limit definition of the derivative to find $f'(x)$.", expr("2*x-3"),
-             limchain(0, [r"\frac{(x+h)^2 - 3(x+h) - x^2 + 3x}{h}", r"\frac{2xh + h^2 - 3h}{h}", r"(2x + h - 3)"], r"2x - 3", var="h"),
-             [(1, "correct difference quotient"), (1, "simplifies and takes the limit"), (1, "$2x - 3$")], work="3.4cm"),
-        Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 4$.", expr("5*x-16"),
-             r"$f(4) = 4$ and $f'(4) = 5$: $y - 4 = 5(x - 4)$, or $y = 5x - 16$.", [(1, "point and slope"), (1, "equation")],
-             work="2.4cm"),
-        Part("c", r"At what point on the graph of $f$ is the tangent line horizontal? Enter the $x$-coordinate.", num(sp.Rational(3, 2)),
-             r"$f'(x) = 0$ when $x = \frac32$; the point is $\left(\frac32, -\frac94\right)$.", [(1, "$x = \\frac32$ with $y$")],
-             work="2cm"),
-    ], frq_type="Derivative definition / tangent line"),
-]
-same("frq a", deriv_def(x**2 - 3 * x), 2 * x - 3)
-same("frq b", sp.expand(4 + 5 * (x - 4)), 5 * x - 16)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="2.2", title="Defining the Derivative of a Function and Using Derivative Notation",

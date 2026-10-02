@@ -476,9 +476,12 @@
       card.append(ul, h("div", { class: "row" }, btn, status, it.calc ? desmosButton(card) : null), out);
       typeset(card); mcqs.append(card, h("div", { style: "height:14px" }));
     });
-    wrap.append(mcqs, h("h2", { style: "margin-top:28px" }, "Free response"),
-      h("p", { class: "muted" }, "Write full solutions on paper, as on the exam. Enter final answers to check them, then score yourself with the AP-style scoring guide."));
-    frqSection(L.frq, wrap);
+    wrap.append(mcqs);
+    if (L.frq.length) {   // some topics have no AP-style free-response question
+      wrap.append(h("h2", { style: "margin-top:28px" }, "Free response"),
+        h("p", { class: "muted" }, "Write full solutions on paper, as on the exam. Enter final answers to check them, then score yourself with the AP-style scoring guide."));
+      frqSection(L.frq, wrap);
+    }
     app.append(wrap);
   }
 

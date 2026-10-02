@@ -222,23 +222,9 @@ MCQS = [
 same("m3", sp.limit(sp.sin(x) / (1 + sp.cos(x)), x, sp.pi / 2), 1)
 same("m4", sp.solve(sp.Eq(9 + k, 11), k)[0], 2)
 
-FRQS = [
-    FRQ("Limit laws", (
-        r"The functions $f$ and $g$ satisfy $\displaystyle\lim_{x\to1} f(x) = 3$ and $\displaystyle\lim_{x\to1} g(x) = -2$."), [
-        Part("a", r"Find $\displaystyle\lim_{x\to1}[f(x)\,g(x) - 4x]$. Show the work that leads to your answer.", num(-10),
-             r"$\displaystyle\lim_{x\to1} f(x)g(x) - \lim_{x\to1}4x = (3)(-2) - 4 = -10$.",
-             [(1, "uses the product and difference laws"), (1, "answer $-10$")], work="2.5cm"),
-        Part("b", r"Can the quotient law be used to find $\displaystyle\lim_{x\to1}\frac{f(x)}{g(x)+2}$? Explain.",
-             selfcheck(r"\text{No}"),
-             r"No. $\displaystyle\lim_{x\to1}[g(x)+2] = 0$, and the quotient law requires the denominator's limit to be nonzero.",
-             [(1, "no, because the limit of the denominator is $0$")], work="2cm"),
-        Part("c", r"Let $k(x) = \begin{cases} f(x), & x < 1 \\ x^2 + c, & x > 1 \end{cases}$ for a constant $c$. Find the "
-                  r"value of $c$ for which $\displaystyle\lim_{x\to1} k(x)$ exists. Justify your answer.", num(2),
-             r"$\displaystyle\lim_{x\to1^-}k(x) = 3$ and $\displaystyle\lim_{x\to1^+}k(x) = 1 + c$. The limit exists when "
-             r"$1 + c = 3$, so $c = 2$.",
-             [(1, "sets the one-sided limits equal"), (1, "$c = 2$")], work="2.5cm"),
-    ], frq_type="Limits from given information"),
-]
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.5", title="Determining Limits Using Algebraic Properties of Limits",

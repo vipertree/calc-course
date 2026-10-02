@@ -131,15 +131,26 @@ MCQS = [
 same("m", [len(horiz(x**2 + x * y + y**2 - 12)), d2(x * y - 4).subs({x: 2, y: 2}), [p for p in vert(x**2 + 3 * y**2 - 2 * x * y - 8) if p[0] > 0][0][0]], [2, 1, 2 * sp.sqrt(3)])
 
 FRQS = [
-    FRQ("An implicitly defined curve", (r"Consider the curve given by $x^2 + y^2 - 2y = 8$ (a circle)."), [
-        Part("a", r"Show that $\dfrac{dy}{dx} = \dfrac{x}{1 - y}$.", selfcheck(r"\frac{x}{1 - y}"), r"$2x + 2y\,y' - 2y' = 0$, so $y'(2y - 2) = -2x$ and $y' = \frac{x}{1 - y}$.",
-             [(1, "implicit differentiation"), (1, "solves for $y'$")], work="2.2cm"),
-        Part("b", r"Find the points where the tangent line is horizontal. Enter the larger $y$-coordinate.", num(4),
-             r"$x = 0$: $y^2 - 2y - 8 = 0$, so $y = 4$ or $y = -2$. The points are $(0, 4)$ and $(0, -2)$.", [(1, "$x = 0$"), (1, "both points")], work="2.2cm"),
-        Part("c", r"Find the points where the tangent line is vertical. Enter the positive $x$-coordinate.", num(3),
-             r"$y = 1$: $x^2 + 1 - 2 = 8$, so $x = \pm 3$. The points are $(3, 1)$ and $(-3, 1)$.", [(1, "$y = 1$"), (1, "both points")], work="2.2cm"),
-        Part("d", r"Find $\dfrac{d^2y}{dx^2}$ at $(0, 4)$, and say what the curve does there.", num(sp.Rational(-1, 3)),
-             r"$y'' = \frac{(1 - y) + x\,y'}{(1 - y)^2}$; at $(0, 4)$, $y' = 0$: $y'' = \frac{-3}{9} = -\frac13 < 0$. The top of the circle: a relative maximum.", [(1, "value"), (1, "maximum")], work="2.4cm"),
+    FRQ("An implicitly defined curve", r"Consider the curve given by the equation $x^2 + y^2 - 2y = 8$.", [
+        Part("a", r"Show that $\dfrac{dy}{dx} = \dfrac{x}{1 - y}$.", selfcheck(r"\frac{x}{1 - y}"),
+             r"$2x + 2y\dfrac{dy}{dx} - 2\dfrac{dy}{dx} = 0$, so $(2y - 2)\dfrac{dy}{dx} = -2x$ and $\dfrac{dy}{dx} = \dfrac{x}{1 - y}$.",
+             [(1, "implicit differentiation"), (1, "verifies the expression for $\\frac{dy}{dx}$")], work="2.4cm"),
+        Part("b", r"Find the coordinates of all points on the curve at which the line tangent to the curve is horizontal.",
+             selfcheck(r"(0, 4) \text{ and } (0, -2)"),
+             r"$\dfrac{dy}{dx} = 0$ when $x = 0$ (and $y \ne 1$). Then $y^2 - 2y - 8 = 0$, so $y = 4$ or $y = -2$. The points are "
+             r"$(0, 4)$ and $(0, -2)$.",
+             [(1, "$x = 0$"), (1, "both points")], work="2.4cm"),
+        Part("c", r"Find the coordinates of all points on the curve at which the line tangent to the curve is vertical.",
+             selfcheck(r"(3, 1) \text{ and } (-3, 1)"),
+             r"The denominator $1 - y = 0$ when $y = 1$ (and $x \ne 0$). Then $x^2 + 1 - 2 = 8$, so $x = \pm 3$. The points are "
+             r"$(3, 1)$ and $(-3, 1)$.",
+             [(1, "$y = 1$"), (1, "both points")], work="2.4cm"),
+        Part("d", r"Find the value of $\dfrac{d^2y}{dx^2}$ at the point $(0, 4)$. Does the curve have a relative minimum, a relative "
+                  r"maximum, or neither at $(0, 4)$? Justify your answer.", num(sp.Rational(-1, 3)),
+             r"$\dfrac{d^2y}{dx^2} = \dfrac{(1 - y) + x\frac{dy}{dx}}{(1 - y)^2}$. At $(0, 4)$, $\dfrac{dy}{dx} = 0$, so "
+             r"$\dfrac{d^2y}{dx^2} = \dfrac{-3}{9} = -\dfrac13$. Since $\dfrac{dy}{dx} = 0$ and $\dfrac{d^2y}{dx^2} < 0$ there, the curve "
+             r"has a relative maximum at $(0, 4)$.",
+             [(1, "$\\frac{d^2y}{dx^2} = -\\frac13$"), (1, "relative maximum with justification")], work="2.8cm"),
     ], frq_type="Implicit differentiation"),
 ]
 C3 = x**2 + y**2 - 2 * y - 8

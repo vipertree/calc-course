@@ -167,20 +167,27 @@ same("m4", sorted(sp.solve(sp.diff(x / (x**2 + 4), x), x)), [-2, 2])
 
 FRQS = [
     FRQ("Concentration of a medicine", (
-        r"The concentration of a medicine in the bloodstream $t$ hours after an injection is $C(t) = \dfrac{5t}{t^2 + 4}$ mg per liter."), [
-        Part("a", r"Find $C'(t)$.", expr("(20 - 5*t**2)/(t**2+4)**2", var="t"),
-             r"$\dfrac{(t^2+4)(5) - 5t(2t)}{(t^2+4)^2} = \dfrac{20 - 5t^2}{(t^2+4)^2}$.", [(1, "quotient rule"), (1, "simplified")],
-             work="2.8cm"),
-        Part("b", r"Find $C'(1)$ and interpret it with units.", num(sp.Rational(3, 5)),
-             r"$\dfrac{15}{25} = 0.6$: one hour after the injection, the concentration is rising at 0.6 mg per liter per hour.",
-             [(1, "value"), (1, "interpretation with units")], work="2.2cm"),
-        Part("c", r"At what time is the concentration neither rising nor falling?", num(2),
-             r"$20 - 5t^2 = 0$ gives $t = 2$ hours.", [(1, "$t = 2$")], work="1.8cm"),
-    ], frq_type="Rates in context"),
+        r"The concentration of a medicine in a patient's bloodstream $t$ hours after an injection is modeled by "
+        r"$C(t) = \dfrac{5t}{t^2 + 4}$, where $C(t)$ is measured in milligrams per liter, for $t \ge 0$."), [
+        Part("a", r"Find $C'(1)$. Using correct units, interpret the meaning of $C'(1)$ in the context of the problem.",
+             num(sp.Rational(3, 5), display=r"\tfrac35\ \text{milligrams per liter per hour}"),
+             r"$C'(t) = \dfrac{5(t^2+4) - 5t(2t)}{(t^2+4)^2} = \dfrac{20 - 5t^2}{(t^2+4)^2}$, so $C'(1) = \dfrac{15}{25} = \dfrac35$. "
+             r"At time $t = 1$ hour, the concentration is increasing at a rate of $0.6$ milligrams per liter per hour.",
+             [(1, "$C'(t)$ by the quotient rule"), (1, "$C'(1) = \\frac35$"), (1, "interpretation with units")], work="3.2cm"),
+        Part("b", r"Is the concentration of the medicine increasing or decreasing at time $t = 3$? Give a reason for your answer.",
+             selfcheck(r"\text{Decreasing}"),
+             r"$C'(3) = \dfrac{20 - 45}{13^2} = -\dfrac{25}{169} < 0$, so the concentration is decreasing at $t = 3$.",
+             [(1, "decreasing, because $C'(3) < 0$")], work="2cm"),
+        Part("c", r"Write an equation for the line tangent to the graph of $C$ at $t = 1$.", expr("1 + 3*(t - 1)/5", var="t"),
+             r"$C(1) = \dfrac{5}{5} = 1$ and $C'(1) = \dfrac35$, so the tangent line is $y = 1 + \dfrac35(t - 1)$.",
+             [(1, "tangent line equation")], work="2cm"),
+    ], frq_type="Rate in context"),
 ]
 t = sp.symbols("t")
-same("frq", [sp.simplify(sp.diff(5 * t / (t**2 + 4), t) - (20 - 5 * t**2) / (t**2 + 4)**2), sp.diff(5 * t / (t**2 + 4), t).subs(t, 1)],
-     [0, sp.Rational(3, 5)])
+C9 = 5 * t / (t**2 + 4)
+same("frq", [sp.simplify(sp.diff(C9, t) - (20 - 5 * t**2) / (t**2 + 4)**2), sp.diff(C9, t).subs(t, 1)], [0, sp.Rational(3, 5)])
+same("frq b", sp.diff(C9, t).subs(t, 3), sp.Rational(-25, 169))
+same("frq c", C9.subs(t, 1), 1)
 
 TOPIC = Topic(
     number="2.9", title="The Quotient Rule",

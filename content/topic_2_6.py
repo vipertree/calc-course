@@ -145,16 +145,35 @@ MCQS = [
 same("m1", D((2 * x**4 - x) / x**2), 4 * x + x**-2)
 
 FRQS = [
-    FRQ("A polynomial model", (
-        r"The number of visitors in a museum $t$ hours after it opens is modeled by $V(t) = -4t^3 + 30t^2 + 50$ for $0 \le t \le 8$."), [
-        Part("a", r"Find $V'(t)$.", expr("-12*t**2+60*t"), r"$V'(t) = -12t^2 + 60t$.", [(1, "correct derivative")], work="1.6cm"),
-        Part("b", r"Find $V'(2)$ and interpret it with units.", num(72), r"$-48 + 120 = 72$: at 2 hours after opening, the number of "
-             r"visitors is increasing at 72 visitors per hour.", [(1, "value $72$"), (1, "interpretation with units")], work="2cm"),
-        Part("c", r"At what time $t > 0$ is the number of visitors momentarily not changing?", num(5),
-             r"$-12t^2 + 60t = -12t(t - 5) = 0$: $t = 5$ hours.", [(1, "sets $V'(t) = 0$"), (1, "$t = 5$")], work="2cm"),
-    ], frq_type="Rates in context"),
+    FRQ("Museum visitors", (
+        r"The number of visitors in a museum $t$ hours after it opens is modeled by $V(t) = -4t^3 + 30t^2 + 50$ "
+        r"for $0 \le t \le 8$."), [
+        Part("a", r"Find $V'(2)$. Using correct units, interpret the meaning of $V'(2)$ in the context of the problem.",
+             num(72, display=r"72\ \text{visitors per hour}"),
+             r"$V'(t) = -12t^2 + 60t$, so $V'(2) = -48 + 120 = 72$. At time $t = 2$ hours, the number of visitors in the museum is "
+             r"increasing at a rate of $72$ visitors per hour.",
+             [(1, "$V'(2) = 72$"), (1, "interpretation with units")], work="2.8cm"),
+        Part("b", r"Is the number of visitors in the museum increasing or decreasing at time $t = 6$? Give a reason for your answer.",
+             selfcheck(r"\text{Decreasing}"),
+             r"$V'(6) = -12(36) + 60(6) = -72 < 0$, so the number of visitors is decreasing at $t = 6$.",
+             [(1, "decreasing, because $V'(6) < 0$")], work="2cm"),
+        Part("c", r"Find the time $t$, for $0 < t < 2$, at which the instantaneous rate of change of $V$ equals the average rate of "
+                  r"change of $V$ over the interval $0 \le t \le 2$.",
+             num(sp.Rational(15, 6) - sp.sqrt(93) / 6, tol=0.001, display=r"\frac{15 - \sqrt{93}}{6} \approx 0.893"),
+             r"The average rate of change is $\dfrac{V(2) - V(0)}{2 - 0} = \dfrac{138 - 50}{2} = 44$ visitors per hour. Solve "
+             r"$-12t^2 + 60t = 44$: $3t^2 - 15t + 11 = 0$, so $t = \dfrac{15 \pm \sqrt{93}}{6}$. Only "
+             r"$t = \dfrac{15 - \sqrt{93}}{6} \approx 0.893$ is in $0 < t < 2$.",
+             [(1, "average rate of change $44$"), (1, "sets $V'(t) = 44$"), (1, "answer in the interval")], work="3.2cm"),
+    ], frq_type="Rate in context"),
 ]
-same("frq", [sp.diff(-4 * t**3 + 30 * t**2 + 50, t).subs(t, 2), sp.solve(-12 * t**2 + 60 * t, t)], [72, [0, 5]])
+t = sp.symbols("t")
+V6 = -4 * t**3 + 30 * t**2 + 50
+same("frq a", sp.diff(V6, t).subs(t, 2), 72)
+same("frq b", sp.diff(V6, t).subs(t, 6), -72)
+avg6 = (V6.subs(t, 2) - V6.subs(t, 0)) / 2
+same("frq c avg", avg6, 44)
+roots6 = [r for r in sp.solve(sp.Eq(sp.diff(V6, t), avg6), t) if 0 < r < 2]
+same("frq c", roots6, [(15 - sp.sqrt(93)) / 6])
 
 TOPIC = Topic(
     number="2.6", title="Derivative Rules: Constant, Sum, Difference, and Constant Multiple",

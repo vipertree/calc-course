@@ -154,28 +154,33 @@ same("B16", [sp.solve(sp.Eq(1 / (2 * sp.sqrt(x + 1)), sp.Rational(1, 3)), x)[0],
 
 
 # ================================================================ free response
-def motion(s, T, t_mid, t_avg, name):
+def motion(s, T, t_mid, t_avg):
     v = sp.expand(sp.diff(s, t))
     rest = sorted(sp.solve(v, t))
     vm = v.subs(t, t_mid)
     avg = sp.Rational(s.subs(t, t_avg) - s.subs(t, 0), t_avg)
     tex = sp.latex(s)
     return FRQ("Particle motion", (
-        rf"A particle moves along the $x$-axis. Its position at time $t$ seconds is $s(t) = {tex}$ meters, for $0 \le t \le {T}$."), [
-        Part("a", r"Find the velocity $v(t)$.", expr(str(v), var="t"), rf"$v(t) = s'(t) = {sp.latex(v)}$.", [(1, "derivative")], work="1.6cm"),
-        Part("b", rf"Find $v({t_mid})$. Is the particle moving left or right at $t = {t_mid}$? Explain.", num(vm),
-             rf"$v({t_mid}) = {vm}$. The velocity is negative, so the particle is moving left, at ${-vm}$ meters per second.",
-             [(1, "value"), (1, "left, because $v < 0$")], work="2cm"),
-        Part("c", r"At what times is the particle at rest? Enter the later one.", num(rest[-1]),
-             rf"$v(t) = 0$ when $t = {rest[0]}$ or $t = {rest[1]}$.", [(1, "sets $v(t) = 0$"), (1, "both times")], work="2cm"),
-        Part("d", rf"Find the average velocity of the particle over $0 \le t \le {t_avg}$.", num(avg),
+        rf"A particle moves along the $x$-axis so that its position at time $t$ is given by $s(t) = {tex}$, where $s(t)$ is "
+        rf"measured in meters and $t$ is measured in seconds, for $0 \le t \le {T}$."), [
+        Part("a", r"Find the velocity $v(t)$ of the particle at time $t$.", expr(str(v), var="t"),
+             rf"$v(t) = s'(t) = {sp.latex(v)}$.", [(1, "$v(t)$")], work="1.6cm"),
+        Part("b", rf"Find $v({t_mid})$. Is the particle moving to the left or to the right at time $t = {t_mid}$? Give a reason for your answer.",
+             num(vm),
+             rf"$v({t_mid}) = {vm}$. The velocity is negative, so the particle is moving to the left at $t = {t_mid}$.",
+             [(1, f"$v({t_mid}) = {vm}$"), (1, "left, because $v < 0$")], work="2.2cm"),
+        Part("c", r"Find all times $t$ at which the particle is at rest.", selfcheck(rf"t = {rest[0]} \text{{ and }} t = {rest[1]}"),
+             rf"$v(t) = {sp.latex(sp.factor(v))} = 0$ when $t = {rest[0]}$ or $t = {rest[1]}$.",
+             [(1, "sets $v(t) = 0$"), (1, "both times")], work="2cm"),
+        Part("d", rf"Find the average velocity of the particle over the interval $0 \le t \le {t_avg}$. Indicate units of measure.",
+             num(avg, display=sp.latex(avg) + r"\ \text{meters per second}"),
              rf"$\dfrac{{s({t_avg}) - s(0)}}{{{t_avg} - 0}} = \dfrac{{{s.subs(t, t_avg)} - 0}}{{{t_avg}}} = {sp.latex(avg)}$ meters per second.",
-             [(1, "difference quotient"), (1, "value")], work="2cm"),
+             [(1, "difference quotient and answer"), (1, "units")], work="2.2cm"),
     ], frq_type="Particle motion"), (v, rest, vm, avg)
 
 
-F1A, chkA = motion(t**3 - 6 * t**2 + 9 * t, 5, 2, 4, "A")
-F1B, chkB = motion(t**3 - 9 * t**2 + 24 * t, 6, 3, 3, "B")
+F1A, chkA = motion(t**3 - 6 * t**2 + 9 * t, 5, 2, 4)
+F1B, chkB = motion(t**3 - 9 * t**2 + 24 * t, 6, 3, 3)
 same("F1 A", [chkA[1], chkA[2], chkA[3]], [[1, 3], -3, 1])
 same("F1 B", [chkB[1], chkB[2], chkB[3]], [[2, 4], -3, 6])
 
@@ -191,21 +196,23 @@ def table_frq(c1, c2, vals):
     pp = 2 * c1 * f1 + c1**2 * df1
     rows = " \\\\ ".join(f"{c} & {vals[c][0]} & {vals[c][1]} & {vals[c][2]} & {vals[c][3]}" for c in (c1, c2))
     return FRQ("Rules from a table", (
-        r"The functions $f$ and $g$ are differentiable. Selected values are given."
+        r"The functions $f$ and $g$ are differentiable for all real numbers. The table gives values of the functions and their "
+        r"derivatives at selected values of $x$."
         r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $f(x)$ & $f'(x)$ & $g(x)$ & $g'(x)$ \\ \hline " + rows + r"\end{tabular}}"
-        r"\par Let $h(x) = f(x)g(x)$, $k(x) = \dfrac{f(x)}{g(x)}$ and $p(x) = x^2 f(x)$."), [
-        Part("a", rf"Find $h'({c2})$.", num(hp),
-             rf"$h'({c2}) = f'({c2})g({c2}) + f({c2})g'({c2}) = ({df2})({g2}) + ({f2})({dg2}) = {hp}$.", [(1, "product rule"), (1, "value")], work="2cm"),
-        Part("b", rf"Find $k'({c1})$.", num(kp),
+        r"\par Let $h$, $k$ and $p$ be the functions defined by $h(x) = f(x)g(x)$, $k(x) = \dfrac{f(x)}{g(x)}$ and $p(x) = x^2 f(x)$."), [
+        Part("a", rf"Find $h'({c2})$. Show the work that leads to your answer.", num(hp),
+             rf"$h'({c2}) = f'({c2})g({c2}) + f({c2})g'({c2}) = ({df2})({g2}) + ({f2})({dg2}) = {hp}$.",
+             [(1, "product rule"), (1, f"answer ${hp}$")], work="2cm"),
+        Part("b", rf"Find $k'({c1})$. Show the work that leads to your answer.", num(kp),
              rf"$k'({c1}) = \dfrac{{g({c1})f'({c1}) - f({c1})g'({c1})}}{{g({c1})^2}} = \dfrac{{({g1})({df1}) - ({f1})({dg1})}}{{{g1**2}}} = {sp.latex(kp)}$.",
-             [(1, "quotient rule"), (1, "value")], work="2.2cm"),
+             [(1, "quotient rule"), (1, f"answer ${sp.latex(kp)}$")], work="2.2cm"),
         Part("c", rf"Write an equation for the line tangent to the graph of $h$ at $x = {c2}$.", expr(str(line)),
-             rf"$h({c2}) = ({f2})({g2}) = {h2}$ and the slope is ${hp}$: $y - ({h2}) = {hp}(x - {c2})$.", [(1, "point and slope"), (1, "equation")],
-             work="2cm"),
-        Part("d", rf"Find $p'({c1})$.", num(pp),
-             rf"$p'(x) = 2xf(x) + x^2f'(x)$, so $p'({c1}) = 2({c1})({f1}) + ({c1**2})({df1}) = {pp}$.", [(1, "product rule with $x^2$"), (1, "value")],
-             work="2cm"),
-    ], frq_type="Table of values / rates"), (hp, kp, line, pp)
+             rf"$h({c2}) = ({f2})({g2}) = {h2}$ and $h'({c2}) = {hp}$, so the tangent line is $y = {h2} + {hp}(x - {c2})$.",
+             [(1, f"$h({c2}) = {h2}$"), (1, "tangent line equation")], work="2cm"),
+        Part("d", rf"Find $p'({c1})$. Show the work that leads to your answer.", num(pp),
+             rf"$p'(x) = 2xf(x) + x^2f'(x)$, so $p'({c1}) = 2({c1})({f1}) + ({c1**2})({df1}) = {pp}$.",
+             [(1, "product rule with $x^2$"), (1, f"answer ${pp}$")], work="2cm"),
+    ], frq_type="Derivatives from a table"), (hp, kp, line, pp)
 
 
 F2A, t2A = table_frq(1, 2, {1: (3, 2, -2, 1), 2: (-1, 4, 5, -3)})
@@ -214,31 +221,42 @@ same("F2 A", list(t2A), [23, sp.Rational(-7, 4), 23 * x - 51, 8])
 same("F2 B", list(t2B), [-2, sp.Rational(-9, 25), -2 * x - 2, 3])
 
 
-def smooth_frq(left_tex, left, right_tex, right, c, steps):
-    dl = D(left)
+def smooth_frq(left_tex, left, right_tex, right, c, dq_left, dq_right, g_c, g_m, g_n):
+    """f = left (x <= c), right (x > c). Part (c): g = a x^2 + b (x <= g_c), g_m x + g_n (x > g_c); find a, b."""
     lval, rval = left.subs(x, c), right.subs(x, c)
-    sl, sr = dl.subs(x, c), D(right).subs(x, c)
+    sl = sp.limit((left.subs(x, c + h) - lval) / h, h, 0, "-")
+    sr = sp.limit((right.subs(x, c + h) - lval) / h, h, 0, "+")
+    ga = sp.Rational(g_m, 2 * g_c)
+    gb = g_m * g_c + g_n - ga * g_c**2
     return FRQ("Continuity and differentiability", (
-        rf"Let $f(x) = \begin{{cases}} {left_tex}, & x \le {c} \\ {right_tex}, & x > {c}. \end{{cases}}$"), [
-        Part("a", rf"Use the limit definition of the derivative to find the derivative of $g(x) = {left_tex}$.", expr(str(dl)),
-             "$g'(x) = $ " + limchain(0, steps, sp.latex(dl), var="h") + ".",
-             [(1, "sets up the limit"), (1, "algebra and answer")], work="3cm"),
-        Part("b", rf"Is $f$ continuous at $x = {c}$? Justify.", selfcheck(r"\text{Yes}"),
-             rf"$f({c}) = {lval}$. The left piece heads to ${lval}$ and the right piece to ${rval}$, so the limit is ${lval} = f({c})$. Continuous.",
-             [(1, "one-sided limits and value"), (1, "conclusion")], work="2.2cm"),
-        Part("c", rf"Is $f$ differentiable at $x = {c}$? If so, enter $f'({c})$.", num(sl),
-             rf"$f$ is continuous at ${c}$, the left slope is ${sl}$ and the right slope is ${sr}$. They match, so $f'({c}) = {sl}$.",
-             [(1, "compares slopes"), (1, "continuity noted and answer")], work="2.2cm"),
-    ], frq_type="Continuity"), (lval, rval, sl, sr, dl)
+        rf"Let $f$ be the function defined by $f(x) = \begin{{cases}} {left_tex}, & x \le {c} \\ {right_tex}, & x > {c}. \end{{cases}}$"), [
+        Part("a", rf"Is $f$ continuous at $x = {c}$? Use the definition of continuity to explain your answer.", selfcheck(r"\text{Yes}"),
+             rf"$f({c}) = {lval}$. $\displaystyle\lim_{{x\to{c}^-}}f(x) = {lval}$ and $\displaystyle\lim_{{x\to{c}^+}}f(x) = {rval}$, so "
+             rf"$\displaystyle\lim_{{x\to{c}}}f(x) = {lval} = f({c})$. Therefore $f$ is continuous at $x = {c}$.",
+             [(1, "one-sided limits and $f(" + str(c) + ")$"), (1, "yes, because the limit equals the value")], work="2.6cm"),
+        Part("b", rf"Is $f$ differentiable at $x = {c}$? Justify your answer.", selfcheck(r"\text{Yes}"),
+             rf"From the left: $\displaystyle\lim_{{h\to0^-}}\frac{{f({c}+h) - f({c})}}{{h}} = \lim_{{h\to0^-}} {dq_left} = {sl}$. "
+             rf"From the right: $\displaystyle\lim_{{h\to0^+}}\frac{{f({c}+h) - f({c})}}{{h}} = \lim_{{h\to0^+}} {dq_right} = {sr}$. "
+             rf"The one-sided limits of the difference quotient are equal, so $f$ is differentiable at $x = {c}$, with $f'({c}) = {sl}$.",
+             [(1, "both one-sided derivatives"), (1, "yes, because they are equal")], work="2.8cm"),
+        Part("c", rf"Let $g$ be the function defined by $g(x) = \begin{{cases}} ax^2 + b, & x \le {g_c} \\ {g_m}x {'-' if g_n < 0 else '+'} {abs(g_n)}, & x > {g_c}, \end{{cases}}$ "
+                  rf"where $a$ and $b$ are constants. Find the values of $a$ and $b$ for which $g$ is differentiable at $x = {g_c}$.",
+             selfcheck(rf"a = {ga},\ b = {gb}"),
+             rf"Differentiable implies continuous, so ${g_c**2}a + b = {g_m * g_c + g_n}$. The slopes must match: ${2 * g_c}a = {g_m}$, so "
+             rf"$a = {ga}$. Then $b = {g_m * g_c + g_n} - {g_c**2}({ga}) = {gb}$.",
+             [(1, "continuity equation"), (1, "slope equation"), (1, f"$a = {ga}$ and $b = {gb}$")], work="3cm"),
+    ], frq_type="Limits and continuity"), (lval, rval, sl, sr, ga, gb)
 
 
-F3A, s3A = smooth_frq(r"x^2 + 1", x**2 + 1, r"2x", 2 * x, 1,
-                      [r"\frac{(x+h)^2 + 1 - x^2 - 1}{h}", r"\frac{2xh + h^2}{h}", r"(2x + h)"])
-F3B, s3B = smooth_frq(r"x^3", x**3, r"3x - 2", 3 * x - 2, 1,
-                      [r"\frac{(x+h)^3 - x^3}{h}", r"\frac{3x^2h + 3xh^2 + h^3}{h}", r"(3x^2 + 3xh + h^2)"])
-same("F3 A", list(s3A), [2, 2, 2, 2, 2 * x])
-same("F3 B", list(s3B), [1, 1, 3, 3, 3 * x**2])
-same("F3 defs", [sp.limit(((x + h)**2 + 1 - x**2 - 1) / h, h, 0), sp.limit(((x + h)**3 - x**3) / h, h, 0)], [2 * x, 3 * x**2])
+F3A, s3A = smooth_frq(r"x^2 + 1", x**2 + 1, r"2x", 2 * x, 1, r"\frac{(1+h)^2 + 1 - 2}{h} = \lim_{h\to0^-}(2 + h)",
+                      r"\frac{2(1+h) - 2}{h}", 2, 4, -3)
+F3B, s3B = smooth_frq(r"x^3", x**3, r"3x - 2", 3 * x - 2, 1, r"\frac{(1+h)^3 - 1}{h} = \lim_{h\to0^-}(3 + 3h + h^2)",
+                      r"\frac{3(1+h) - 2 - 1}{h}", 1, 6, -1)
+same("F3 A", list(s3A), [2, 2, 2, 2, 1, 1])
+same("F3 B", list(s3B), [1, 1, 3, 3, 3, 2])
+for (ga, gb, gc, gm, gn) in [(1, 1, 2, 4, -3), (3, 2, 1, 6, -1)]:
+    same("F3 g continuous", ga * gc**2 + gb, gm * gc + gn)
+    same("F3 g slopes", 2 * ga * gc, gm)
 
 TEST = UnitTest(unit=2, title="Differentiation: Definition and Fundamental Properties", mcq_a=A, mcq_b=B,
                 frq=[Variants(F1A, F1B), Variants(F2A, F2B), Variants(F3A, F3B)])

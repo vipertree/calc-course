@@ -179,18 +179,15 @@ same("m4", sp.diff(sp.Rational(4, 3) * pi * u**3, u).subs(u, 5) * 2, 200 * pi)
 TAB = (r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $f(x)$ & $f'(x)$ & $g(x)$ & $g'(x)$ \\ \hline "
        r"$0$ & $2$ & $-1$ & $3$ & $4$ \\ $2$ & $3$ & $5$ & $0$ & $-2$ \\ $3$ & $0$ & $6$ & $2$ & $1$\end{tabular}}")
 FRQS = [
-    FRQ("Composite functions from a table", r"The functions $f$ and $g$ are differentiable. Selected values are given." + TAB, [
-        Part("a", r"Let $h(x) = f\big(g(x)\big)$. Find $h'(2)$.", num(2),
-             r"$h'(2) = f'\big(g(2)\big)\cdot g'(2) = f'(0)\cdot(-2) = (-1)(-2) = 2$.", [(1, "chain rule"), (1, "value")], work="2cm"),
-        Part("b", r"Let $k(x) = \big[g(x)\big]^3$. Find $k'(3)$.", num(12),
-             r"$k'(3) = 3\big[g(3)\big]^2\cdot g'(3) = 3(2)^2(1) = 12$.", [(1, "chain rule on the power"), (1, "value")], work="2cm"),
-        Part("c", r"Let $m(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $m$ at $x = 3$.", expr("24*x-69"),
+    FRQ("Composite functions from a table", r"The functions $f$ and $g$ are differentiable for all real numbers. The table gives values of the functions and their derivatives at selected values of $x$." + TAB, [
+        Part("a", r"Let $h$ be the function defined by $h(x) = f\big(g(x)\big)$. Find $h'(2)$. Show the work that leads to your answer.", num(2),
+             r"$h'(2) = f'\big(g(2)\big)\cdot g'(2) = f'(0)\cdot(-2) = (-1)(-2) = 2$.", [(1, "chain rule"), (1, "answer $2$")], work="2.2cm"),
+        Part("b", r"Let $k$ be the function defined by $k(x) = \big[g(x)\big]^3$. Find $k'(3)$. Show the work that leads to your answer.", num(12),
+             r"$k'(3) = 3\big[g(3)\big]^2\cdot g'(3) = 3(2)^2(1) = 12$.", [(1, "chain rule on the power"), (1, "answer $12$")], work="2.2cm"),
+        Part("c", r"Let $m$ be the function defined by $m(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $m$ at $x = 3$.", expr("24*x-69"),
              r"$m(3) = g\big(f(3)\big) = g(0) = 3$, and $m'(3) = g'\big(f(3)\big)\cdot f'(3) = g'(0)\cdot 6 = 4\cdot 6 = 24$. "
-             r"So $y - 3 = 24(x - 3)$.", [(1, "point"), (1, "slope"), (1, "equation")], work="2.4cm"),
-        Part("d", r"Explain why $f'\big(g(2)\big)\cdot g'(2)$ is not the same as $f'(2)\cdot g'(2)$.", selfcheck(r"f' \text{ is read at } g(2) = 0"),
-             r"The outer derivative is measured at the inside value $g(2) = 0$, so we need $f'(0) = -1$, not $f'(2) = 5$.",
-             [(1, "outer derivative at $g(2)$")], work="1.8cm"),
-    ], frq_type="Table of values / rates"),
+             r"So $y - 3 = 24(x - 3)$.", [(1, "$m(3) = 3$"), (1, "$m'(3) = 24$"), (1, "tangent line equation")], work="2.6cm"),
+    ], frq_type="Derivatives from a table"),
 ]
 same("frq", [(-1) * (-2), 3 * 2**2 * 1, 4 * 6], [2, 12, 24])
 

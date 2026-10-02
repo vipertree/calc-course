@@ -165,17 +165,28 @@ MCQS = [
 same("m3", sp.limit(((2 + x)**5 - 32) / x, x, 0), 80)
 
 FRQS = [
-    FRQ("Tangent lines to a power function", r"Let $f(x) = x^{2/3}$ for all real $x$.", [
-        Part("a", r"Find $f'(x)$.", expr("2*x**(-1/3)/3"), r"$f'(x) = \dfrac23 x^{-1/3}$.", [(1, "correct derivative")], work="1.6cm"),
-        Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 8$.", expr("x/3+4/3"),
-             r"$f(8) = 4$, $f'(8) = \dfrac23\cdot\dfrac12 = \dfrac13$. So $y - 4 = \frac13(x - 8)$, or $y = \frac13x + \frac43$.",
-             [(1, "slope $\\frac13$"), (1, "equation")], work="2.4cm"),
-        Part("c", r"Explain why $f$ is not differentiable at $x = 0$.", selfcheck(r"\text{cusp}"),
-             r"$f'(x) = \dfrac{2}{3\sqrt[3]{x}}$ is undefined at $0$ and grows without bound in size near it: the graph has a cusp.",
-             [(1, "cusp or unbounded derivative")], work="2cm"),
-    ], frq_type="Tangent lines"),
+    FRQ("Tangent lines to a power function", r"Let $f$ be the function defined by $f(x) = x^{2/3}$ for all real numbers $x$.", [
+        Part("a", r"Write an equation for the line tangent to the graph of $f$ at $x = 8$.", expr("x/3 + 4/3"),
+             r"$f'(x) = \frac23 x^{-1/3}$, so $f'(8) = \frac23\cdot\frac12 = \frac13$, and $f(8) = 4$. The tangent line is "
+             r"$y = 4 + \frac13(x - 8)$.",
+             [(1, "$f'(8) = \\frac13$"), (1, "tangent line equation")], work="2.6cm"),
+        Part("b", r"Find the $x$-coordinate of the point on the graph of $f$ at which the line tangent to the graph is parallel to "
+                  r"the line $y = \frac23 x + 5$.", num(1),
+             r"Parallel lines have equal slopes: $\dfrac{2}{3x^{1/3}} = \dfrac23$, so $x^{1/3} = 1$ and $x = 1$.",
+             [(1, "sets $f'(x) = \\frac23$"), (1, "answer $x = 1$")], work="2.4cm"),
+        Part("c", r"For each of $f'(-1)$ and $f'(0)$, find the value or explain why it does not exist.",
+             selfcheck(r"f'(-1) = -\tfrac23;\ f'(0)\ \text{does not exist}"),
+             r"$f'(-1) = \dfrac{2}{3(-1)^{1/3}} = -\dfrac23$. At $x = 0$, $\dfrac{f(0+h) - f(0)}{h} = \dfrac{h^{2/3}}{h} = \dfrac{1}{h^{1/3}}$, "
+             r"which is unbounded as $h \to 0$ (it approaches $-\infty$ from the left and $\infty$ from the right). The limit does not "
+             r"exist, so $f'(0)$ does not exist.",
+             [(1, "$f'(-1) = -\\frac23$"), (1, "$f'(0)$ does not exist, with a reason")], work="2.8cm"),
+    ], frq_type="Function analysis"),
 ]
-same("frq b", sp.expand(4 + sp.Rational(1, 3) * (X - 8)), X / 3 + sp.Rational(4, 3))
+xr_ = sp.symbols("xr_", real=True)
+fr_ = sp.cbrt(xr_)**2
+same("frq a", sp.expand(4 + sp.Rational(1, 3) * (xr_ - 8)), sp.expand(fr_.subs(xr_, 8) + sp.diff(fr_, xr_).subs(xr_, 8) * (xr_ - 8)))
+same("frq b", sp.solve(sp.Eq(sp.Rational(2, 3) / sp.cbrt(X), sp.Rational(2, 3)), X), [1])
+same("frq c", sp.Rational(2, 3) / sp.Integer(-1), sp.Rational(-2, 3))
 
 TOPIC = Topic(
     number="2.5", title="Applying the Power Rule",

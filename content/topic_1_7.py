@@ -187,26 +187,9 @@ same("m2", lim(x / (sp.sqrt(x + 1) - 1), 0), 2)
 same("m3", lim((x - 1) / (x + 2), -2, "+"), -sp.oo)
 same("m4", lim(sp.sin(x)**2 / (1 - sp.cos(x)), 0), 2)
 
-FRQS = [
-    FRQ("Choosing methods", r"Evaluate each limit, or explain why it does not exist. Show the method you use.", [
-        Part("a", r"$\displaystyle\lim_{x\to3}\frac{x^2-9}{x^2-2x-3}$", num(sp.Rational(3, 2)),
-             limchain(3, [r"\frac{(x-3)(x+3)}{(x-3)(x+1)}", r"\frac{x+3}{x+1}"], r"\frac64 = \frac32"),
-             [(1, "factors and cancels"), (1, "answer $\\frac32$")], work="2.5cm"),
-        Part("b", r"$\displaystyle\lim_{x\to3}\frac{x^2-9}{x^2-6x+9}$. Type DNE if it does not exist.", dne(),
-             r"$\dfrac{x^2-9}{x^2-6x+9} = \dfrac{x+3}{x-3}$ for $x \ne 3$, so the limit equals $\displaystyle\lim_{x\to3}\frac{x+3}{x-3}$, "
-             r"which has the form $\frac60$. The denominator changes sign at $3$: the left-hand limit is $-\infty$ and the right-hand "
-             r"limit is $\infty$. The limit does not exist.",
-             [(1, "simplifies to $\\frac{x+3}{x-3}$ (or shows $\\frac{\\text{nonzero}}{0}$)"), (1, "does not exist, with the sign argument")],
-             work="2.8cm"),
-        Part("c", r"$\displaystyle\lim_{x\to3}\frac{|x-3|(x+3)}{x-3}$. Type DNE if it does not exist.", dne(),
-             r"$\displaystyle\lim_{x\to3^-}\frac{-(x-3)(x+3)}{x-3} = \lim_{x\to3^-}(-(x+3)) = -6$ and "
-             r"$\displaystyle\lim_{x\to3^+}\frac{(x-3)(x+3)}{x-3} = \lim_{x\to3^+}(x+3) = 6$. The limit does not exist.",
-             [(1, "both one-sided limits, $-6$ and $6$, with the conclusion")], work="2.5cm"),
-    ], frq_type="Limits by algebra"),
-]
-same("frq a", lim((x**2 - 9) / (x**2 - 2 * x - 3), 3), sp.Rational(3, 2))
-check("frq b", lim((x**2 - 9) / (x - 3)**2, 3, "-") == -sp.oo)
-check("frq c", lim(sp.Abs(x - 3) * (x + 3) / (x - 3), 3, "-") == -6)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.7", title="Selecting Procedures for Determining Limits",

@@ -94,17 +94,13 @@
 [data-design="transit"] .goals { color: var(--ink); font-size: 1.12rem; line-height: 1.5; margin: -6px 0 28px; max-width: 42em; }
 
 /* ---------- side rail as a strip map */
-[data-design="transit"] .rail ol { background: linear-gradient(var(--line, var(--ink)), var(--line, var(--ink))) 10px 12px / 4px calc(100% - 24px) no-repeat; }
 [data-design="transit"] .rail li { padding: 7px 0; color: var(--ink-2); font-weight: 500; }
 [data-design="transit"] .rail li::before { background: var(--bg); border: 3px solid var(--ink); font-weight: 800; }
 [data-design="transit"] .rail li.done::before { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 [data-design="transit"] .rail li.cur { font-weight: 800; }
 [data-design="transit"] .rail li.cur::before { border-color: var(--ink); background: var(--line, var(--ink)); color: var(--line-ink, #fff); }
 [data-design="transit"] .rail .bar { height: 6px; border-radius: 0; background: var(--soft); }
-@media (min-width: 1300px) {   /* two to a row: a vertical route line would join the wrong stops */
-  [data-design="transit"] .rail ol { background: none; }
-  [data-design="transit"] .rail li { padding: 4px 0; }
-}
+@media (min-width: 1300px) { [data-design="transit"] .rail li { padding: 4px 0; } }   /* no route line on the step list (Adder) */
 [data-design="transit"] .rail .bar i { background: var(--ink); }
 [data-design="transit"] .video { border-radius: 0; }
 [data-design="transit"] .vtitle { color: var(--ink); font-weight: 700; }

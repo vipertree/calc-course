@@ -10,4 +10,4 @@
      data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>
 {{ lesson_json|json_script:"lesson" }}{{ state_json|json_script:"state" }}
 {% endblock %}
-{% block scripts %}<script>window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/lesson.js' %}"></script>{% endblock %}
+{% block scripts %}<script>window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/lesson.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>{% endblock %}

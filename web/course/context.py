@@ -14,6 +14,17 @@ DESIGN_FONTS = {
 }
 
 
+def _asset_version():
+    """Dev only: the newest CSS/JS mtime, appended as ?v= so the browser never keeps a stale stylesheet after an
+    edit. Production needs none: the manifest storage puts a content hash in every static file name."""
+    if not settings.DEBUG:
+        return ""
+    import glob, os
+    files = glob.glob(str(settings.BASE_DIR / "static" / "css" / "**" / "*.css"), recursive=True) + \
+        glob.glob(str(settings.BASE_DIR / "static" / "js" / "*.js"))
+    return str(int(max((os.path.getmtime(f) for f in files), default=0)))
+
+
 def site(request):
     theme = request.COOKIES.get("theme", "")
     if theme not in dict(THEMES):
@@ -22,7 +33,7 @@ def site(request):
     if design not in dict(DESIGNS):
         design = "classic"
     profile = getattr(request.user, "profile", None) if request.user.is_authenticated else None
-    return {"THEME": theme, "THEMES": THEMES,
+    return {"ASSET_V": _asset_version(), "THEME": theme, "THEMES": THEMES,
             "DESIGN": design, "DESIGNS": DESIGNS, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),

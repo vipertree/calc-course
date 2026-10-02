@@ -251,6 +251,37 @@ class Designs(TestCase):
         self.client.cookies["design"] = "../evil"
         self.assertNotIn("data-design", self.client.get("/course/").content.decode())
 
+    def test_transit_map_layout(self):
+        from .context import MAP_LAYOUTS
+        page = self.client.get("/course/").content.decode()        # classic: no toggle, no layout hooks
+        self.assertNotIn("map-layout", page)
+        self.assertNotIn("data-layout", page)
+        self.assertNotIn('class="track"', page)
+        self.client.get("/design/transit/?next=/course/")
+        page = self.client.get("/course/").content.decode()
+        self.assertIn('aria-label="Course map layout"', page)     # toggle is real links, default is rows
+        self.assertIn('data-layout="rows"', page)
+        self.assertIn('href="/map-layout/columns/?next=/course/"', page)
+        self.assertIn('class="on" aria-current="true">Rows</a>', page)
+        for key, label in MAP_LAYOUTS:
+            r = self.client.get(f"/map-layout/{key}/?next=/course/%23unit-2")
+            self.assertEqual(r.status_code, 302)
+            self.assertEqual(r["Location"], "/course/#unit-2")
+            page = self.client.get("/course/").content.decode()
+            self.assertIn(f'data-layout="{key}"', page)
+            self.assertNotIn(f'data-layout="{"rows" if key == "columns" else "columns"}"', page)
+            self.assertIn(f'class="on" aria-current="true">{label}</a>', page)
+        self.client.get("/map-layout/sideways/?next=/course/")      # unknown names are ignored
+        self.assertIn('data-layout="columns"', self.client.get("/course/").content.decode())
+        r = self.client.get("/map-layout/rows/?next=https://evil.example/")
+        self.assertEqual(r["Location"], "/course/")                 # no open redirect
+        self.client.cookies["maplayout"] = "<script>"
+        self.assertIn('data-layout="rows"', self.client.get("/course/").content.decode())
+        self.client.get("/design/drafting/?next=/course/")          # other designs never see it
+        page = self.client.get("/course/").content.decode()
+        self.assertNotIn("map-layout", page)
+        self.assertNotIn("data-layout", page)
+
 
 class Assessments(TestCase):
     """Quiz variants: individual users draw per attempt with instant results; a class shares one form and

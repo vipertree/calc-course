@@ -66,11 +66,13 @@ def _font():
     return pymupdf.Font(fontfile=str(FONT)) if FONT.is_file() else pymupdf.Font("helv")
 
 
-def stamp(path, name, code):
-    """The base packet at path with 'Packet printed for <name>' and 'Packet ID <code>' on every page -> PDF bytes."""
+def stamp(path, name, code, what="Packet"):
+    """The PDF at path with '<what> printed for <name>' and '<what> ID <code>' on every page -> PDF bytes.
+    Student packets say "Packet ..."; a teacher's handouts (what="") just say "Printed for <name>" and "ID <code>"."""
     doc = pymupdf.open(path)
     font = _font()
-    left, right = f"Packet printed for {name}", f"Packet ID {code}"
+    left = f"{what} printed for {name}" if what else f"Printed for {name}"
+    right = f"{what} ID {code}" if what else f"ID {code}"
     for page in doc:
         r = page.rect
         y = r.height - FOOT_BASELINE
@@ -80,7 +82,7 @@ def stamp(path, name, code):
         tw.write_text(page, color=INK)
     meta = doc.metadata or {}
     doc.set_metadata({**{k: v for k, v in meta.items() if k in ("title", "author", "creator", "producer")},
-                      "subject": f"Packet {code}, printed for {name}", "keywords": f"packet {code}"})
+                      "subject": f"{what or 'Handout'} {code}, printed for {name}", "keywords": f"packet {code}"})
     doc.subset_fonts()
     data = doc.tobytes(garbage=3, deflate=True)
     doc.close()

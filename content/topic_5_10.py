@@ -116,7 +116,18 @@ same("m", [best(x**2 * (12 - x), 0, 12)[1], best(2 * x * (12 - x**2), 0, 2 * sp.
 
 # AP does not ask this topic as free response; the multiple-choice questions above cover it.
 # See .claude/skills/ap-frq/SKILL.md.
-FRQS = []
+FRQS = [
+    FRQ("Fencing a pen", (r"Rafael has $240$ feet of fence to build a rectangular pen along a straight river. No fence is needed along the river. "
+                          r"Let $x$ be the length, in feet, of each side perpendicular to the river."), [
+        Part("a", r"Write an expression for the area $A$ of the pen in terms of $x$, and give the domain of $A$.", expr(x * (240 - 2 * x), var="x"),
+             r"The side along the river is $240 - 2x$, so $A(x) = x(240 - 2x)$, with $0 < x < 120$.", [(1, "area function"), (1, "domain")], work="2cm"),
+        Part("b", r"Find the value of $x$ that maximizes the area of the pen. Justify your answer.", num(60),
+             r"$A'(x) = 240 - 4x = 0$ at $x = 60$. $A'(x) > 0$ for $0 < x < 60$ and $A'(x) < 0$ for $60 < x < 120$, so $A$ has its absolute maximum on $0 < x < 120$ at $x = 60$.",
+             [(1, "$A'(x) = 0$"), (1, "answer with justification")], work="2.4cm"),
+        Part("c", r"What is the maximum area of the pen? Indicate units of measure.", num(7200), r"$A(60) = 60 \cdot 120 = 7200$ square feet.", [(1, "value with units")], work="1.2cm"),
+    ], frq_type="Function analysis"),
+]
+same("frq", list(best(x * (240 - 2 * x), 0, 120)), [60, 7200])
 
 TOPIC = Topic(
     number="5.10", title="Introduction to Optimization Problems",

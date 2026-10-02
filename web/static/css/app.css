@@ -115,6 +115,11 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { displ
 /* lesson: notes on the left, the video (and step list) pinned on the right while the notes scroll */
 .lesson-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 40%); gap: 32px; align-items: start; }
 .side { position: sticky; top: 64px; display: grid; gap: 12px; }
+/* wide screens: the lesson page grows past the usual 1180px and the video gets half of it (Adder, 2026-10-02) */
+@media (min-width: 1300px) {
+  body:has(.lesson-grid) .wrap, body:has(.lesson-grid) .top .in { max-width: 1680px; }
+  .lesson-grid { grid-template-columns: minmax(0, 1fr) minmax(300px, 50%); }
+}
 .side-toggle { display: none; justify-self: end; }
 .rail { font-family: var(--font-ui); font-size: .92rem; max-height: 42vh; overflow: auto; }
 @media (max-width: 1000px) {

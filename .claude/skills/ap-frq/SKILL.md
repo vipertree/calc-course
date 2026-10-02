@@ -43,8 +43,13 @@ motion (BC), Taylor polynomials, error bounds and interval of convergence (BC).
 **Topics with no FRQ.** Leave `FRQS = []` when AP does not ask the topic as free response: estimating limits from a
 table (1.4), limit definitions and limit laws (1.2, 1.5), limit algebra drills (1.6, 1.7), composite limits (1.9),
 naming discontinuity types (1.10), continuity on an interval (1.12), vertical asymptotes (1.14), the limit
-definition of the derivative (2.2), and building an optimization model from a word problem (5.10). Those are MCQ
-material. Builds and the site handle an empty list.
+definition of the derivative (2.2). Those are MCQ material. Builds and the site handle an empty list.
+
+**Classic optimization stays (Adder, 2026-10-02).** Geometric optimization (fence a pen, open-top box, can of
+least surface area) is rare in released FRQs since 2002, but Adder wants it in 5.10, 5.11 and the Unit 5 materials
+because it is a classic. Write it in exam phrasing: "Write an expression for ... in terms of x", "Find the value of x
+that maximizes ... Justify your answer.", "Indicate units of measure." Justify with the candidates test or a sign
+chart of the derivative, as for any absolute extremum.
 
 ## 2. Phrasings the exam uses
 

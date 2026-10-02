@@ -124,8 +124,10 @@
     \par\nopagebreak{\color{soft}\footnotesize\hfont SOLUTION}\par\nopagebreak\vspace{3pt}%
     {\small\setlength{\jot}{4pt}\linespread{1.35}\selectfont #2\par}
   \else
-    \par\vspace*{#1}\par
+    \par\setlength{\worklen}{#1}\vspace*{\workscale\worklen}\par
   \fi}
+\newlength{\worklen}
+\newcommand{\workscale}{1}   % frqwhole shrinks the student work space when a whole FRQ would not fit on a page
 
 % \answerline{answer}: keys only. The final answer sits flush left under the worked solution;
 % the student copy has no answer line, students just write in the work space.
@@ -140,6 +142,39 @@
 % \begin{frqpart}{a} ... \end{frqpart}: one lettered part of a free-response question, kept whole.
 \newenvironment{frqpart}[1]{\par\addvspace{0.3em}\noindent\makebox[2em][l]{(#1)}%
   \begin{minipage}[t]{\dimexpr\linewidth-2em\relax}\setlength{\parskip}{0.55em}}{\par\kern0pt\end{minipage}\par}
+
+% \begin{frqwhole}...\end{frqwhole}: a whole free-response question on one page (Adder, 2026-10-02).
+% The question is set in a box; if it is taller than a page, the student copy shrinks every work space
+% in it by the same factor until it fits. A key can't shrink its solutions, so a key question that is too
+% tall falls back to breaking between lettered parts.
+\newsavebox{\frqbox}
+\newlength{\frqfixed}\newlength{\frqfull}\newlength{\frqroom}
+\NewDocumentEnvironment{frqwhole}{+b}{%
+  \par\setlength{\frqroom}{\dimexpr\textheight-2\baselineskip\relax}%
+  \renewcommand{\workscale}{1}\sbox{\frqbox}{\begin{minipage}[t]{\linewidth}#1\end{minipage}}%
+  \setlength{\frqfull}{\dimexpr\ht\frqbox+\dp\frqbox\relax}%
+  \ifdim\frqfull>\frqroom
+    \ifkey
+      \noindent #1\par
+    \else
+      \renewcommand{\workscale}{0}\sbox{\frqbox}{\begin{minipage}[t]{\linewidth}#1\end{minipage}}%
+      \setlength{\frqfixed}{\dimexpr\ht\frqbox+\dp\frqbox\relax}%
+      \edef\workscale{\fpeval{max(0, round((\frqroom-\frqfixed)/(\frqfull-\frqfixed), 3))}}%
+      \typeout{frqwhole: work space scaled to \workscale}%
+      \sbox{\frqbox}{\begin{minipage}[t]{\linewidth}#1\end{minipage}}%
+      \noindent\usebox{\frqbox}\par
+    \fi
+  \else
+    \noindent\usebox{\frqbox}\par
+  \fi
+  \renewcommand{\workscale}{1}}{}
+
+% \fitwidth{...}: a figure or table scaled down to the line width when it is wider (two-column packets).
+\newsavebox{\fitbox}
+\newcommand{\fitwidth}[1]{\sbox{\fitbox}{#1}\ifdim\wd\fitbox>\linewidth\resizebox{\linewidth}{!}{\usebox{\fitbox}}\else\usebox{\fitbox}\fi}
+
+% twocol: short questions (practice, multiple choice) two to a row in the compact packet
+\newenvironment{twocol}{\begin{multicols}{2}\setlength{\columnsep}{0.32in}\raggedcolumns}{\end{multicols}}
 
 % ---------------------------------------------------------- four-meaning panel
 % \meanings{da,dg}: highlight any of da, dg, ia, ig. Add "inv" for the inverse arrow.

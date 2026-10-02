@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
 from accounts.models import Classroom, Enrollment, Profile
-from . import content, grading
+from . import content, grading, packets
 from .models import FRQScore, QuizAttempt, Response
 
 
@@ -455,6 +455,12 @@ class Packets(Assessments):
         r = self.client.get("/teacher/handouts/")
         self.assertContains(r, "/teacher/handouts/1.1/1.1-packet-classic.pdf")
         self.assertContains(r, "/teacher/handouts/1.1/1.1-packet-key-classic.pdf")
+        import pymupdf
+        r = self.client.get("/teacher/handouts/1.1/1.1-packet-classic.pdf")       # the teacher's copy is stamped too
+        mine = IssuedPacket.objects.filter(user=self.teacher).get()
+        text = pymupdf.open(stream=r.content).load_page(0).get_text()
+        self.assertIn(f"Printed for {packets.holder_name(self.teacher)}", text)
+        self.assertIn(f"ID {mine.code}", text)
         r = self.client.get("/teacher/handouts/", {"packet": code.lower().replace("-", "")})
         self.assertEqual(r.context["lookup"]["found"]["username"], "ana")
         self.assertContains(r, "was printed by <strong>Ana</strong>")

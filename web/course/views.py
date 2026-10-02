@@ -441,7 +441,7 @@ def test_pdf(request, num, form, kind):
 
 
 # ------------------------------------------------------------------ teacher handouts: every printable PDF in one place
-_KINDS = [("packet", "Packet"), ("notes", "Guided notes"), ("practice", "Practice"), ("quiz-formA", "Quiz A"),
+_KINDS = [("packet", "Packet"), ("packetcompact", "Compact packet (trial)"), ("notes", "Guided notes"), ("practice", "Practice"), ("quiz-formA", "Quiz A"),
           ("quiz-formB", "Quiz B"), ("quiz-formC", "Quiz C"), ("testprep", "AP test prep"), ("unittest-formA", "Unit test A"), ("unittest-formB", "Unit test B"),
           ("unittest-formC", "Unit test C")]
 
@@ -494,7 +494,12 @@ def handout_pdf(request, num, name):
     path = (PDF_DIR / num / name).resolve()
     if path.parent != (PDF_DIR / num).resolve() or path.suffix != ".pdf" or not path.is_file():
         raise Http404
-    return FileResponse(open(path, "rb"), content_type="application/pdf", filename=name)
+    # a teacher's copy says who printed it too (Adder, 2026-10-02); the Name line stays for the student
+    p = packets.issue(request.user, num)
+    data = packets.stamp(path, packets.holder_name(request.user), p.code, what="")
+    resp = HttpResponse(data, content_type="application/pdf")
+    resp["Content-Disposition"] = f'inline; filename="{name[:-4]}-{p.code}.pdf"'
+    return resp
 
 
 # ------------------------------------------------------------------ personalized packets
@@ -502,7 +507,8 @@ def handout_pdf(request, num, name):
 @require_POST
 def packet(request, num):
     """The topic's lesson, practice and AP test prep as one PDF, stamped on every page with who it was printed for
-    and a packet ID that is recorded, so a leaked copy can be traced. Teachers get blank masters from Handouts."""
+    and a packet ID that is recorded, so a leaked copy can be traced. Teachers print from Handouts, stamped with
+    their own name."""
     if not has_full_access(request.user):
         return HttpResponseForbidden("Members only.")
     if not packets.available(num):

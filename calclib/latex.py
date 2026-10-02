@@ -127,7 +127,8 @@ def _fig(f):
     if f is None:
         return ""
     cap = rf"\par{{\small\itshape {f.caption}}}" if f.caption else ""
-    return r"\par\nopagebreak\begin{center}" + f.tikz + cap + r"\end{center}" + "\n"
+    # \fitwidth: a figure wider than its column (two-column packet) is scaled down to fit
+    return r"\par\nopagebreak\begin{center}\fitwidth{" + f.tikz + r"}" + cap + r"\end{center}" + "\n"
 
 
 def _item(i, it: Item, key):
@@ -160,7 +161,8 @@ def _mcq(q: MCQ, key):
 def _frq(f: FRQ, key, n=None):
     """A free-response question. Test prep heads it with its title. A unit test numbers it instead
     (Question n) so the title can't hint at the method; the key keeps the title as a short descriptor.
-    The heading, intro, figure and part (a) stay together, and every later part stays whole."""
+    The whole question stays on one page (frqwhole shrinks the student work space if it must); a key too tall
+    for a page breaks between parts, keeping the heading, intro, figure and part (a) together."""
     calc = "Calculator allowed" if f.calc else "No calculator"
     head = f.title if n is None else f"Question {n}" + (
         rf"\enspace{{\mdseries\color{{soft}}\textperiodcentered\enspace {f.title}}}" if key else "")
@@ -173,14 +175,20 @@ def _frq(f: FRQ, key, n=None):
             s += r"\par{\small\hfont\color{soft} Scoring}\par{\small\begin{tabular}{@{}p{1.1cm}p{13cm}@{}}"
             s += r" \\ ".join(rf"{pts} pt & {desc}" for pts, desc in p.rubric) + r"\end{tabular}}" + "\n"
         parts.append(s + r"\end{frqpart}" + "\n")
-    return r"\begin{keep}" + lead + parts[0] + r"\end{keep}" + "\n" + "".join(parts[1:]) + r"\medskip" + "\n"
+    return (r"\begin{frqwhole}\begin{keep}" + lead + parts[0] + r"\end{keep}" + "\n" + "".join(parts[1:])
+            + r"\end{frqwhole}\medskip" + "\n")
 
 
-def _practice_body(t, key):
+def _cols(compact, body):
+    """Short questions two to a row in the compact packet."""
+    return [r"\begin{twocol}"] + body + [r"\end{twocol}"] if compact else body
+
+
+def _practice_body(t, key, compact=False):
     return "\n".join([rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
-                      r"Give exact answers unless a problem says to round.",
-                      r"\begin{enumerate}"] + [_item(i, it, key) for i, it in enumerate(t.practice)]
-                     + [r"\end{enumerate}"])
+                      r"Give exact answers unless a problem says to round."]
+                     + _cols(compact, [r"\begin{enumerate}"] + [_item(i, it, key) for i, it in enumerate(t.practice)]
+                             + [r"\end{enumerate}"]))
 
 
 def practice_tex(t, key, theme):
@@ -199,12 +207,11 @@ def quiz_tex(t, key, theme, k=0):
     return "\n".join(out)
 
 
-def _testprep_body(t, key):
+def _testprep_body(t, key, compact=False):
     out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
-           r"\sect{Multiple choice}",
-           r"\begin{enumerate}"]
-    out += [_mcq(q, key) for q in t.mcq]
-    out += [r"\end{enumerate}"] + ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
+           r"\sect{Multiple choice}"]
+    out += _cols(compact, [r"\begin{enumerate}"] + [_mcq(q, key) for q in t.mcq] + [r"\end{enumerate}"])
+    out += ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
     out += [_frq(f, key) for f in t.frq]
     return "\n".join(out)
 
@@ -213,14 +220,20 @@ def testprep_tex(t, key, theme):
     return "\n".join([preamble(theme, key, f"Topic {t.number} Test Prep"), _testprep_body(t, key), r"\end{document}"])
 
 
-def packet_tex(t, key, theme):
+def packet_tex(t, key, theme, compact=False):
     """Lesson, practice and AP test prep in one printable packet. Page numbers run through the whole packet;
-    the web app stamps each student's copy with their name and a packet ID in the footer."""
-    parts = [("Lesson", _notes_body(t)), ("Practice", _practice_body(t, key)), ("AP Test Prep", _testprep_body(t, key))]
+    the web app stamps each student's copy with their name and a packet ID in the footer.
+    Practice starts on a new page; test prep follows straight on from it (Adder, 2026-10-02). The compact
+    packet (a paper-saving trial) also runs practice on from the lesson and sets practice and multiple choice
+    in two columns."""
+    parts = [("Lesson", _notes_body(t)), ("Practice", _practice_body(t, key, compact)),
+             ("AP Test Prep", _testprep_body(t, key, compact))]
     out = [preamble(theme, key, f"Topic {t.number} Packet")]
     for k, (name, body) in enumerate(parts):
-        if k:
+        if k == 1 and not compact:
             out.append(r"\clearpage")
+        elif k:
+            out.append(r"\par\bigskip")
         out += [rf"\renewcommand{{\docline}}{{Topic {t.number} Packet\enspace\textperiodcentered\enspace {name}}}",
                 r"\setcounter{calcsec}{0}\setcounter{calcex}{0}", body]
     out.append(r"\end{document}")
@@ -260,7 +273,8 @@ def _count(n, word):
 
 
 DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testprep": testprep_tex,
-        "packet": packet_tex, "unittest": unittest_tex}
+        "packet": packet_tex, "packetcompact": lambda t, key, theme: packet_tex(t, key, theme, compact=True),
+        "unittest": unittest_tex}
 
 
 # ------------------------------------------------------------------ compile

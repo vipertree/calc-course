@@ -22,8 +22,9 @@ PALETTES = {
     "dark": dict(BG="#0E1216", INK="#ECE7DC", DIM="#7D8791", PANEL="#1A2128", FUNC="#58C4DD", SECANT="#FFD166",
                  TANGENT="#FF6B5A", AREA="#2EC4B6", ACCUM="#B39DDB", DERIV="#9CD96B"),
     # warm aged paper, sepia ink, a double rule border, logo bottom right
-    "parchment": dict(BG="#EEE2C6", INK="#33261A", DIM="#86735A", PANEL="#E4D4B0", FUNC="#1D5C8F", SECANT="#A86B00",
-                      TANGENT="#B5332A", AREA="#1C7F74", ACCUM="#6A4C9C", DERIV="#3E7B26"),
+    # (inks darkened 2026-10-02 so every role is at least 5.5:1 against the paper)
+    "parchment": dict(BG="#F1E6CC", INK="#1F150C", DIM="#5E4D37", PANEL="#E6D7B3", FUNC="#154A79", SECANT="#7E4F00",
+                      TANGENT="#962419", AREA="#0F5E55", ACCUM="#4F347E", DERIV="#2C5F17"),
     # clean off-white graph paper, navy ink, a rounded slate frame, logo top right
     "graphpaper": dict(BG="#F8F6F0", INK="#1C2733", DIM="#7C8794", PANEL="#ECE8DE", FUNC="#1F6FB2", SECANT="#B9820A",
                        TANGENT="#CF4430", AREA="#178A80", ACCUM="#7A5BC2", DERIV="#2E8B45"),
@@ -35,6 +36,11 @@ PALETTES = {
 
 def current():
     return os.environ.get("CALC_THEME", "dark")
+
+
+def border():
+    """Parchment border style, env CALC_BORDER: double (the first draft), none, rule (one thin line), deckle (darkened edges)."""
+    return os.environ.get("CALC_BORDER", "double")
 
 
 def palette(theme=None):
@@ -79,21 +85,35 @@ def _paper(w, h, base, grain, blotch, vignette, seed=7):
 
 def background(theme, w, h):
     """The painted background for a paper theme at w x h pixels (cached in assets/)."""
-    out = HERE / "assets" / f"bg_{theme}_{w}x{h}.png"
+    out = HERE / "assets" / f"bg_{theme}{'_' + border() if theme == 'parchment' else ''}_{w}x{h}.png"
     if out.exists() and out.stat().st_mtime > max(Path(__file__).stat().st_mtime, LOGO.stat().st_mtime if LOGO.exists() else 0):
         return str(out)
     p = PALETTES[theme]
     s = w / 1920                       # every size below is in 1080p pixels, scaled to the render
     if theme == "parchment":
-        img = _paper(w, h, p["BG"], 0.025, 0.05, 0.9)
+        style = border()
+        img = _paper(w, h, p["BG"], 0.025, 0.05, 0.45)
         d = ImageDraw.Draw(img)
-        m, rule = int(26 * s), tuple(int(c) for c in _rgb("#7A5A36"))
-        d.rectangle([m, m, w - m, h - m], outline=rule, width=max(2, int(5 * s)))
+        rule = tuple(int(c) for c in _rgb("#6B4E2E"))
+        m = int(26 * s)
         m2 = m + int(12 * s)
-        d.rectangle([m2, m2, w - m2, h - m2], outline=rule, width=max(1, int(2 * s)))
-        for cx, cy in ((m2, m2), (w - m2, m2), (m2, h - m2), (w - m2, h - m2)):      # small diamonds at the corners
-            r = int(9 * s)
-            d.polygon([(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)], fill=rule)
+        if style == "double":
+            d.rectangle([m, m, w - m, h - m], outline=rule, width=max(2, int(5 * s)))
+            d.rectangle([m2, m2, w - m2, h - m2], outline=rule, width=max(1, int(2 * s)))
+            for cx, cy in ((m2, m2), (w - m2, m2), (m2, h - m2), (w - m2, h - m2)):      # small diamonds at the corners
+                r = int(9 * s)
+                d.polygon([(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)], fill=rule)
+        elif style == "rule":
+            d.rectangle([m2, m2, w - m2, h - m2], outline=rule, width=max(1, int(2 * s)))
+        elif style == "deckle":
+            # a burnt, uneven edge: darken a noisy band around the sides instead of drawing a line
+            arr = np.asarray(img, dtype=float)
+            yy, xx = np.mgrid[0:h, 0:w]
+            edge = np.minimum(np.minimum(xx, w - 1 - xx), np.minimum(yy, h - 1 - yy)) / (26 * s)
+            edge = edge + 0.35 * _noise(w, h, max(4, int(18 * s)), 11)
+            burn = np.clip(1 - edge, 0, 1) ** 2
+            arr[..., :3] *= (1 - 0.3 * burn)[..., None]
+            img = Image.fromarray(arr.astype(np.uint8), "RGBA")
         logo = _logo(int(70 * s), p["INK"])
         img.alpha_composite(logo, (w - m2 - int(24 * s) - logo.width, h - m2 - int(18 * s) - logo.height))
     elif theme == "graphpaper":

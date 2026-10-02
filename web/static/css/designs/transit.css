@@ -163,6 +163,54 @@
 [data-design="transit"] .topic.ready:hover::after { background: var(--line, var(--ink)); }
 [data-design="transit"] .topic .prog { height: 5px; border-radius: 0; background: var(--soft); max-width: 200px; }
 [data-design="transit"] .topic .prog i { background: var(--ink); }
+[data-design="transit"] .topic:first-child::before { top: 24px; }                 /* the line starts and ends at a station */
+[data-design="transit"] .topic:last-child::before { bottom: auto; height: 24px; }
+[data-design="transit"] .topic:only-child::before { display: none; }
+
+/* map layout toggle (course map only) */
+[data-design="transit"] .map-layout { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 4px 0 30px; font-weight: 600; }
+[data-design="transit"] .map-layout span { margin-right: 12px; color: var(--ink-2); }
+[data-design="transit"] .map-layout a { color: var(--ink); text-decoration: none; border: 2px solid var(--ink); padding: 4px 14px; font-size: .9rem; }
+[data-design="transit"] .map-layout a + a { border-left: 0; }
+[data-design="transit"] .map-layout a.on { background: var(--ink); color: var(--bg); }
+[data-design="transit"] .map-layout a:hover:not(.on) { background: var(--panel); }
+
+/* "columns": stations run down each column, then on to the next, so the vertical lines are the reading order */
+[data-design="transit"] .topics[data-layout="columns"] { display: block; columns: 3 300px; column-gap: 36px; }
+[data-design="transit"] .topics[data-layout="columns"] .topic { break-inside: avoid; }
+
+/* "rows": stations run across each row; the line goes along the row, turns down at its end and returns
+   under it to the start of the next row, like a line of text. Station names sit under the line. */
+@media (min-width: 561px) {
+  [data-design="transit"] .topics[data-layout="rows"] { --cols: 2; --cg: 36px; --rg: 30px;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--rg) var(--cg); margin-top: 18px; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic { padding: 44px 22px 10px 8px; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic::before, [data-design="transit"] .topics[data-layout="rows"] .track::before { box-sizing: border-box; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic::before { top: 21px; bottom: auto; left: 16px; right: calc(-1 * var(--cg)); width: auto; height: 6px; }  /* on to the next station */
+  [data-design="transit"] .topics[data-layout="rows"] .topic.soon::after { width: 5px; height: 18px; left: 14px; top: 15px; }
+}
+@media (min-width: 561px) and (max-width: 999px) {
+  [data-design="transit"] .topics[data-layout="rows"] .topic:nth-child(2n)::before {                       /* end of a row: turn down */
+    right: 4px; height: auto; bottom: calc(-1 * (var(--rg) / 2 + 3px)); background: transparent;
+    border: 6px solid var(--line, var(--ink)); border-left: 0; border-radius: 0 16px 16px 0; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic:nth-child(2n+1):not(:first-child) .track::before {  /* back to the start of the next row */
+    content: ""; position: absolute; left: 13px; top: calc(-1 * (var(--rg) / 2 + 3px));
+    width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--cg) - 33px); height: calc(var(--rg) / 2 + 27px);
+    border-top: 6px solid var(--line, var(--ink)); border-left: 6px solid var(--line, var(--ink)); border-radius: 16px 0 0 0; }
+}
+@media (min-width: 1000px) {
+  [data-design="transit"] .topics[data-layout="rows"] { --cols: 3; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic:nth-child(3n)::before {                       /* end of a row: turn down */
+    right: 4px; height: auto; bottom: calc(-1 * (var(--rg) / 2 + 3px)); background: transparent;
+    border: 6px solid var(--line, var(--ink)); border-left: 0; border-radius: 0 16px 16px 0; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic:nth-child(3n+1):not(:first-child) .track::before {  /* back to the start of the next row */
+    content: ""; position: absolute; left: 13px; top: calc(-1 * (var(--rg) / 2 + 3px));
+    width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--cg) - 33px); height: calc(var(--rg) / 2 + 27px);
+    border-top: 6px solid var(--line, var(--ink)); border-left: 6px solid var(--line, var(--ink)); border-radius: 16px 0 0 0; }
+}
+@media (min-width: 561px) {
+  [data-design="transit"] .topics[data-layout="rows"] .topic:last-child::before { display: none; }
+}
 [data-design="transit"] .mathy > .muted:first-of-type { color: var(--ink-2); font-size: 1.1rem; max-width: 36em; }
 
 /* ---------- auth + teacher */

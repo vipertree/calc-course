@@ -31,5 +31,6 @@ urlpatterns = [
     re_path(r"^video/(?P<name>[\w.-]+)$", v.video, name="video"),
     path("theme/<str:theme>/", v.set_theme, name="theme"),
     path("design/<str:design>/", v.set_design, name="design"),
+    path("map-layout/<str:layout>/", v.set_map_layout, name="map_layout"),
     path("admin/", admin.site.urls),
 ]

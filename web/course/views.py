@@ -341,6 +341,18 @@ def set_design(request, design):
     return resp
 
 
+def set_map_layout(request, layout):
+    from django.utils.http import url_has_allowed_host_and_scheme
+    from .context import MAP_LAYOUTS
+    nxt = request.GET.get("next") or ""
+    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+        nxt = "map"
+    resp = redirect(nxt)
+    if layout in dict(MAP_LAYOUTS):
+        resp.set_cookie("maplayout", layout, max_age=365 * 24 * 3600, samesite="Lax")
+    return resp
+
+
 # ------------------------------------------------------------------ transcripts (review before rendering)
 def _transcripts():
     import glob, os, sys

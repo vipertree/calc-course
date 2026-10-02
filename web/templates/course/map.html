@@ -3,20 +3,21 @@
 {% block main %}
 <div class="mathy"><h1>Course map</h1>
 <p class="muted">One lesson per topic in the College Board course description. Lessons that are ready are highlighted.</p>
+{% if DESIGN == "transit" %}<nav class="map-layout" aria-label="Course map layout"><span>Map layout</span>{% for k, label in MAP_LAYOUTS %}<a href="{% url 'map_layout' k %}?next={{ request.get_full_path|urlencode }}"{% if k == MAP_LAYOUT %} class="on" aria-current="true"{% endif %}>{{ label }}</a>{% endfor %}</nav>{% endif %}
 {% for u in units %}
 <section class="unit" id="unit-{{ u.n }}" data-unit="{{ u.n }}">
   <h2>Unit {{ u.n }}. {{ u.title }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2>
-  <div class="topics">
+  <div class="topics"{% if DESIGN == "transit" %} data-layout="{{ MAP_LAYOUT }}"{% endif %}>
   {% for t in u.topics %}
     {% if t.ready %}<a class="topic ready" href="{% url 'lesson' t.n %}">{% else %}<div class="topic soon">{% endif %}
-      <span class="n">{{ t.n }}</span>
+      {% if DESIGN == "transit" %}<i class="track" aria-hidden="true"></i>{% endif %}<span class="n">{{ t.n }}</span>
       <span style="flex:1">{{ t.title }}{% if t.bc and not u.bc %} <span class="bc-tag">BC</span>{% endif %}
         {% if t.ready %}<div class="prog"><i style="width:{% widthratio t.done t.steps 100 %}%"></i></div>{% endif %}
         {% if t.quiz %}<small class="muted">Quiz best {{ t.quiz.best }}/{{ t.quiz.total }}</small>{% endif %}
       </span>
     {% if t.ready %}</a>{% else %}</div>{% endif %}
   {% endfor %}
-  {% if u.test %}<a class="topic ready" href="{% url 'unit_test' u.test_num %}"><span class="n">Test</span>
+  {% if u.test %}<a class="topic ready" href="{% url 'unit_test' u.test_num %}">{% if DESIGN == "transit" %}<i class="track" aria-hidden="true"></i>{% endif %}<span class="n">Test</span>
     <span style="flex:1"><strong>Unit {{ u.n }} test</strong>{% if u.test_best %}<br><small class="muted">Multiple-choice best {{ u.test_best.best }}/{{ u.test_best.total }}</small>{% endif %}</span></a>{% endif %}
   </div>
 </section>

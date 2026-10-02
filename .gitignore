@@ -19,3 +19,4 @@ web/db.sqlite3
 ap-calculus-ab-and-bc-course-and-exam-description.pdf
 voice/
 .env
+.claude/worktrees/

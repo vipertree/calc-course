@@ -158,14 +158,13 @@ def _mcq(q: MCQ, key):
     return s + r"\end{keepitem}" + "\n"
 
 
-def _frq(f: FRQ, key, n=None):
-    """A free-response question. Test prep heads it with its title. A unit test numbers it instead
-    (Question n) so the title can't hint at the method; the key keeps the title as a short descriptor.
+def _frq(f: FRQ, key, n):
+    """A free-response question, headed "Question n" only: no title anywhere, on student copies or keys,
+    since a title hints at the method (Adder, 2026-10-02).
     The whole question stays on one page (frqwhole shrinks the student work space if it must); a key too tall
     for a page breaks between parts, keeping the heading, intro, figure and part (a) together."""
     calc = "Calculator allowed" if f.calc else "No calculator"
-    head = f.title if n is None else f"Question {n}" + (
-        rf"\enspace{{\mdseries\color{{soft}}\textperiodcentered\enspace {f.title}}}" if key else "")
+    head = f"Question {n}"
     lead = (r"{\hfont\bfseries " + head + r"}\hfill{\small\hfont " + calc
             + rf"\enspace\textperiodcentered\enspace {f.points} points}}\par" + "\n" + f.intro + "\n" + _fig(f.figure))
     parts = []
@@ -215,7 +214,7 @@ def _testprep_body(t, key, compact=False):
            r"\sect{Multiple choice}"]
     out += _list([_mcq(q, key) for q in t.mcq], compact)
     out += ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
-    out += [_frq(f, key) for f in t.frq]
+    out += [_frq(f, key, i + 1) for i, f in enumerate(t.frq)]
     return "\n".join(out)
 
 

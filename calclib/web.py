@@ -358,7 +358,7 @@ def export(t: Topic, outdir, figdir):
                           "points": sum(x for x, _ in p.rubric)})
             priv["items"][pid] = {"answer": _answer(p.answer), "solution": html(p.solution),
                                   "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
-        frqs.append({"id": fid, "title": f.title, "html": para(f.intro), "calc": f.calc, "figure": figpub(f.figure),
+        frqs.append({"id": fid, "title": f"Question {len(frqs) + 1}", "html": para(f.intro), "calc": f.calc, "figure": figpub(f.figure),
                      "type": f.frq_type, "points": f.points, "parts": parts})
     pub["frq"] = frqs
 

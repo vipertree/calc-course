@@ -1,4 +1,5 @@
 import json
+import json
 import re
 
 from django.contrib.auth.models import User
@@ -508,7 +509,11 @@ class PrintedDocs(TestCase):
         for n, f in enumerate(frqs, 1):
             self.assertNotIn(f.title, student)
             self.assertIn(f"Question {n}", student)
-            self.assertIn(f.title, key)
+            self.assertNotIn(f.title, key)                    # no titles anywhere, keys included
+        for f in self.topic.frq:                              # nor in test prep, on paper or on the web
+            self.assertNotIn(f.title, self.latex.testprep_tex(self.topic, False, "classic"))
+            self.assertNotIn(f.title, self.latex.testprep_tex(self.topic, True, "classic"))
+            self.assertNotIn(f.title, json.dumps(content.public("1.1")))
         total = len(form(self.test.mcq_a, 0)) + len(form(self.test.mcq_b, 0)) + sum(f.points for f in frqs)
         self.assertIn(f"Total: {total} points", student)
         self.assertIn("1 point each", student)

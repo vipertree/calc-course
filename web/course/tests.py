@@ -374,3 +374,131 @@ class Handouts(Assessments):
         self.client.force_login(self.student("stu", in_class=False))
         self.assertEqual(self.client.get("/teacher/handouts/").status_code, 403)
         self.assertEqual(self.client.get("/teacher/handouts/1.1/1.1-notes-key-classic.pdf").status_code, 403)
+
+
+class Packets(Assessments):
+    """Lesson + practice + test prep in one PDF, stamped per download with the student's name and a traceable ID."""
+
+    def setUp(self):
+        super().setUp()
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+
+        import pymupdf
+        from . import packets, views
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "1.1").mkdir()
+        for name in ("1.1-packet-classic.pdf", "1.1-packet-key-classic.pdf"):
+            doc = pymupdf.open()
+            for i in range(3):
+                doc.new_page(width=612, height=792).insert_text((72, 100), f"base page {i + 1}")
+            doc.save(root / "1.1" / name)
+        for patch in (mock.patch.object(packets, "PDF_DIR", root), mock.patch.object(views, "PDF_DIR", root)):
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    def download(self, num="1.1"):
+        return self.client.post(f"/topic/{num}/packet/")
+
+    def test_lesson_page_offers_the_packet(self):
+        self.client.force_login(self.student("ana"))
+        self.assertContains(self.client.get("/topic/1.1/"), 'action="/topic/1.1/packet/"')
+        self.assertNotContains(self.client.get("/topic/1.2/"), "/packet/")      # no base PDF for 1.2 here
+
+    def test_download_is_stamped_and_recorded(self):
+        import pymupdf
+        from .models import IssuedPacket
+        self.client.force_login(self.student("ana"))
+        r = self.download()
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r["Content-Type"], "application/pdf")
+        p = IssuedPacket.objects.get()
+        self.assertEqual((p.user.username, p.topic), ("ana", "1.1"))
+        self.assertRegex(p.code, r"^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$")
+        self.assertIn(p.code, r["Content-Disposition"])
+        doc = pymupdf.open(stream=r.content, filetype="pdf")
+        self.assertEqual(len(doc), 3)
+        for page in doc:                                 # every page carries the name and the ID
+            text = page.get_text()
+            self.assertIn("Packet printed for Ana", text)
+            self.assertIn(f"Packet ID {p.code}", text)
+            self.assertIn("base page", text)
+        self.download()
+        self.assertEqual(len(set(IssuedPacket.objects.values_list("code", flat=True))), 2)   # one ID per download
+
+    def test_only_members_by_post(self):
+        self.assertEqual(self.download().status_code, 302)                       # visitors go to the login page
+        self.client.force_login(self.student("ana"))
+        self.assertEqual(self.client.get("/topic/1.1/packet/").status_code, 405)
+        self.assertEqual(self.download("1.2").status_code, 404)
+        nobody = User.objects.create_user("nob", password="pw123456")
+        Profile.objects.create(user=nobody, display_name="Nob")
+        self.client.force_login(nobody)
+        self.assertEqual(self.download().status_code, 403)
+
+    def test_teacher_gets_masters_and_traces_codes(self):
+        from .models import IssuedPacket
+        self.client.force_login(self.student("ana"))
+        self.download()
+        code = IssuedPacket.objects.get().code
+        self.client.force_login(self.teacher)
+        r = self.client.get("/teacher/handouts/")
+        self.assertContains(r, "/teacher/handouts/1.1/1.1-packet-classic.pdf")
+        self.assertContains(r, "/teacher/handouts/1.1/1.1-packet-key-classic.pdf")
+        r = self.client.get("/teacher/handouts/", {"packet": code.lower().replace("-", "")})
+        self.assertEqual(r.context["lookup"]["found"]["username"], "ana")
+        self.assertContains(r, "was printed by <strong>Ana</strong>")
+        other = User.objects.create_user("other", password="pw123456")
+        Profile.objects.create(user=other, role="teacher", display_name="Mr. Other")
+        self.client.force_login(other)
+        r = self.client.get("/teacher/handouts/", {"packet": code})
+        self.assertIsNone(r.context["lookup"]["found"])          # not one of their students
+
+
+class PrintedDocs(TestCase):
+    """The LaTeX the build compiles: no answer lines for students, keys put the answer under the solution,
+    unit tests number FRQs without titles and spell out the scoring."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        import importlib
+        import sys
+        from django.conf import settings
+        sys.path.insert(0, str(settings.BASE_DIR.parent))
+        cls.latex = importlib.import_module("calclib.latex")
+        cls.topic = importlib.import_module("content.topic_1_1").TOPIC
+        cls.test = importlib.import_module("content.unit_1").TEST
+
+    def test_answer_line_is_key_only_and_flush_left(self):
+        import os
+        with open(os.path.join(self.latex.ROOT, "pdf", "calc.sty")) as f:
+            line = next(l for l in f if l.startswith(r"\newcommand{\answerline}"))
+        self.assertIn(r"\ifkey", line)
+        self.assertNotIn(r"\hfill", line)
+        self.assertIn(r"\begin{keepitem}", self.latex.practice_tex(self.topic, False, "classic"))
+
+    def test_packet_has_all_three_parts(self):
+        tex = self.latex.packet_tex(self.topic, False, "classic")
+        for part in ("{Guided Notes}", "{Practice}", "{AP Test Prep}"):
+            self.assertIn(part, tex)
+        self.assertEqual(tex.count(r"\begin{document}"), 1)
+
+    def test_unit_test_hides_frq_titles_and_states_scoring(self):
+        from calclib import form
+        student = self.latex.unittest_tex(self.test, False, "classic")
+        key = self.latex.unittest_tex(self.test, True, "classic")
+        frqs = form(self.test.frq, 0)
+        for n, f in enumerate(frqs, 1):
+            self.assertNotIn(f.title, student)
+            self.assertIn(f"Question {n}", student)
+            self.assertIn(f.title, key)
+        total = len(form(self.test.mcq_a, 0)) + len(form(self.test.mcq_b, 0)) + sum(f.points for f in frqs)
+        self.assertIn(f"Total: {total} points", student)
+        self.assertIn("1 point each", student)
+        for f in content.public("U1")["frq"]:                 # the web test doesn't name them either
+            self.assertRegex(f["title"], r"^Question \d+$")
+            self.assertNotIn("type", f)

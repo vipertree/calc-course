@@ -403,7 +403,8 @@ def export_test(u: UnitTest, outdir, figdir):
                           "points": sum(x for x, _ in p.rubric)})
             priv["items"][pid] = {"answer": _answer(p.answer), "solution": html(p.solution),
                                   "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
-        frqs.append({"id": fid, "title": f.title, "html": para(f.intro), "calc": f.calc, "type": f.frq_type,
+        # the student sees "Question n" only: a title or FRQ type would hint at the method
+        frqs.append({"id": fid, "title": f"Question {i + 1}", "html": para(f.intro), "calc": f.calc,
                      "points": f.points, "parts": parts,
                      "figure": {"src": figure_svg(f.figure, figdir), "caption": html(f.figure.caption)} if f.figure else None})
       frq_rows.append(frqs)

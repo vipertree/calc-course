@@ -15,6 +15,7 @@ urlpatterns = [
     path("course/", v.course_map, name="map"),
     re_path(rf"^topic/{NUM}/$", v.lesson, name="lesson"),
     re_path(rf"^topic/{NUM}/(?P<area>practice|quiz|testprep)/$", v.lesson, name="lesson_area"),
+    re_path(r"^topic/(?P<num>\d{1,2}\.\d{1,2})/packet/$", v.packet, name="packet"),
     re_path(rf"^api/{NUM}/check/$", v.api_check, name="api_check"),
     re_path(rf"^api/{NUM}/step/$", v.api_step, name="api_step"),
     re_path(rf"^api/{NUM}/quiz/$", v.api_quiz, name="api_quiz"),

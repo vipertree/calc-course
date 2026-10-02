@@ -59,14 +59,24 @@ def preamble(theme, key, docline):
 
 # ------------------------------------------------------------------ notes
 def notes_tex(t: Topic, key, theme):
-    out = [preamble(theme, key, f"Topic {t.number}"),
-           rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Guided Notes}}",
+    return "\n\n".join([preamble(theme, key, f"Topic {t.number}"), _notes_body(t), r"\end{document}"])
+
+
+def _notes_body(t: Topic):
+    out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Guided Notes}}",
            rf"\objectives{{{t.goals}}}"]
-    for b in t.notes:
+    blocks = list(t.notes)
+    for k, b in enumerate(blocks):
+        if isinstance(b, Example) and k and isinstance(blocks[k - 1], Figure):
+            continue                       # drawn with the figure before it
         if not isinstance(b, Text):
             out.append(r"\blockbreak")
-        out.append(_block(b))
-    out.append(r"\end{document}")
+        nxt = blocks[k + 1] if k + 1 < len(blocks) else None
+        if isinstance(b, Figure) and isinstance(nxt, Example):
+            # an example's graph and the example itself stay on one page
+            out.append(r"\begin{keep}" + _block(b) + "\n" + _block(nxt) + r"\end{keep}")
+        else:
+            out.append(_block(b))
     return "\n\n".join(out)
 
 
@@ -122,16 +132,16 @@ def _fig(f):
 
 def _item(i, it: Item, key):
     calc = r"\enspace{\small\hfont[calculator]}" if it.calc else ""
-    s = rf"\item {it.stem}{calc}" + "\n" + _fig(it.figure)
+    s = rf"\item\begin{{keepitem}}{it.stem}{calc}" + "\n" + _fig(it.figure)
     s += rf"\work{{{it.work}}}{{{it.solution}}}" + "\n"
     if it.answer.kind != "self":
-        s += rf"\answerline{{${it.answer.tex()}$}}"
-    return s
+        s += rf"\answerline{{${it.answer.tex()}$}}"     # keys only: the final answer, flush left
+    return s + r"\end{keepitem}" + "\n"
 
 
 def _mcq(q: MCQ, key):
     calc = r"\enspace{\small\hfont[calculator]}" if q.calc else ""
-    s = (r"\needspace{9\baselineskip}" + rf"\item {q.stem}{calc}" + "\n" + _fig(q.figure)
+    s = (rf"\item\begin{{keepitem}}{q.stem}{calc}" + "\n" + _fig(q.figure)
          + r"\begin{choices}" + "\n")
     for i, c in enumerate(q.choices):
         letter = "ABCD"[i]
@@ -143,32 +153,38 @@ def _mcq(q: MCQ, key):
         if q.why_not:
             s += r"\par\smallskip{\color{soft}\hfont Common wrong answers:} " + "; ".join(
                 f"({k}) {v}" for k, v in sorted(q.why_not.items()))
-        s += "}\n"
-    return s
+        s += r"\par}" + "\n"
+    return s + r"\end{keepitem}" + "\n"
 
 
-def _frq(f: FRQ, key):
+def _frq(f: FRQ, key, n=None):
+    """A free-response question. Test prep heads it with its title. A unit test numbers it instead
+    (Question n) so the title can't hint at the method; the key keeps the title as a short descriptor.
+    The heading, intro, figure and part (a) stay together, and every later part stays whole."""
     calc = "Calculator allowed" if f.calc else "No calculator"
-    s = (r"\needspace{10\baselineskip}{\hfont\bfseries " + f.title + r"}\hfill{\small\hfont " + calc
-         + rf"\enspace\textperiodcentered\enspace {f.points} points}}\par" + "\n" + f.intro + "\n" + _fig(f.figure))
-    s += r"\begin{enumerate}[label=(\alph*), leftmargin=2em]" + "\n"
+    head = f.title if n is None else f"Question {n}" + (
+        rf"\enspace{{\mdseries\color{{soft}}\textperiodcentered\enspace {f.title}}}" if key else "")
+    lead = (r"{\hfont\bfseries " + head + r"}\hfill{\small\hfont " + calc
+            + rf"\enspace\textperiodcentered\enspace {f.points} points}}\par" + "\n" + f.intro + "\n" + _fig(f.figure))
+    parts = []
     for p in f.parts:
-        s += rf"\item {p.prompt}" + "\n" + rf"\work{{{p.work}}}{{{p.solution}}}" + "\n"
+        s = rf"\begin{{frqpart}}{{{p.label}}}{p.prompt}" + "\n" + rf"\work{{{p.work}}}{{{p.solution}}}" + "\n"
         if key:
             s += r"\par{\small\hfont\color{soft} Scoring}\par{\small\begin{tabular}{@{}p{1.1cm}p{13cm}@{}}"
             s += r" \\ ".join(rf"{pts} pt & {desc}" for pts, desc in p.rubric) + r"\end{tabular}}" + "\n"
-    s += r"\end{enumerate}" + "\n"
-    return s
+        parts.append(s + r"\end{frqpart}" + "\n")
+    return r"\begin{keep}" + lead + parts[0] + r"\end{keep}" + "\n" + "".join(parts[1:]) + r"\medskip" + "\n"
+
+
+def _practice_body(t, key):
+    return "\n".join([rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
+                      r"Give exact answers unless a problem says to round.",
+                      r"\begin{enumerate}"] + [_item(i, it, key) for i, it in enumerate(t.practice)]
+                     + [r"\end{enumerate}"])
 
 
 def practice_tex(t, key, theme):
-    out = [preamble(theme, key, f"Topic {t.number} Practice"),
-           rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
-           r"Give exact answers unless a problem says to round.",
-           r"\begin{enumerate}"]
-    out += [_item(i, it, key) for i, it in enumerate(t.practice)]
-    out += [r"\end{enumerate}", r"\end{document}"]
-    return "\n".join(out)
+    return "\n".join([preamble(theme, key, f"Topic {t.number} Practice"), _practice_body(t, key), r"\end{document}"])
 
 
 def quiz_tex(t, key, theme, k=0):
@@ -183,39 +199,68 @@ def quiz_tex(t, key, theme, k=0):
     return "\n".join(out)
 
 
-def testprep_tex(t, key, theme):
-    out = [preamble(theme, key, f"Topic {t.number} Test Prep"),
-           rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
+def _testprep_body(t, key):
+    out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
            r"\sect{Multiple choice}",
            r"\begin{enumerate}"]
     out += [_mcq(q, key) for q in t.mcq]
     out += [r"\end{enumerate}", r"\sect{Free response}"]
     out += [_frq(f, key) for f in t.frq]
-    out.append(r"\end{document}")
     return "\n".join(out)
+
+
+def testprep_tex(t, key, theme):
+    return "\n".join([preamble(theme, key, f"Topic {t.number} Test Prep"), _testprep_body(t, key), r"\end{document}"])
+
+
+def packet_tex(t, key, theme):
+    """Lesson, practice and AP test prep in one printable packet. Page numbers run through the whole packet;
+    the web app stamps each student's copy with their name and a packet ID in the footer."""
+    parts = [("Lesson", _notes_body(t)), ("Practice", _practice_body(t, key)), ("AP Test Prep", _testprep_body(t, key))]
+    out = [preamble(theme, key, f"Topic {t.number} Packet")]
+    for k, (name, body) in enumerate(parts):
+        if k:
+            out.append(r"\clearpage")
+        out += [rf"\renewcommand{{\docline}}{{Topic {t.number} Packet\enspace\textperiodcentered\enspace {name}}}",
+                r"\setcounter{calcsec}{0}\setcounter{calcex}{0}", body]
+    out.append(r"\end{document}")
+    return "\n\n".join(out)
 
 
 def unittest_tex(u, key, theme, k=0):
     title = f"Unit {u.unit} Test" + (f", Form {'ABCDEF'[k]}" if n_forms(u.mcq_a, u.mcq_b, u.frq) > 1 else "")
     mcq_a, mcq_b, frqs = form(u.mcq_a, k), form(u.mcq_b, k), form(u.frq, k)
+    na, nb, fpts = len(mcq_a), len(mcq_b), sum(f.points for f in frqs)
     out = [preamble(theme, key, title),
-           rf"\topictitle{{U{u.unit}}}{{{u.title}}}{{Unit {u.unit} Test\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}"]
+           rf"\topictitle{{U{u.unit}}}{{{u.title}}}{{Unit {u.unit} Test\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}",
+           # the scoring, up front: every multiple-choice question is 1 point; each FRQ shows its own points
+           r"{\small\hfont\textbf{Scoring}\enspace "
+           + rf"Part A: {_count(na, 'question')}, 1 point each ({_count(na, 'point')}).\enspace "
+           + rf"Part B: {_count(nb, 'question')}, 1 point each ({_count(nb, 'point')}).\enspace "
+           + rf"Part C: {_count(len(frqs), 'question')} ({_count(fpts, 'point')}).\enspace "
+           + rf"\textbf{{Total: {na + nb + fpts} points.}}}}\par"]
     if key:
         letters = [q.correct for q in mcq_a + mcq_b]
-        cells = " & ".join(f"{i + 1}\,{l}" for i, l in enumerate(letters))
         out.append(r"{\small\hfont Answer key:\enspace " + ", ".join(f"{i + 1}{l}" for i, l in enumerate(letters)) + r"}\par")
-    n = len(mcq_a)
-    out += [rf"\sect{{Part A: multiple choice, no calculator}}",
+    part = lambda n, pts: rf"{{\small\hfont {_count(n, 'question')}, 1 point each\enspace\textperiodcentered\enspace {_count(pts, 'point')}}}\par"
+    out += [r"\sect{Part A: multiple choice, no calculator}", part(na, na),
             r"\begin{enumerate}"] + [_mcq(q, key) for q in mcq_a] + [r"\end{enumerate}",
-            rf"\sect{{Part B: multiple choice, calculator allowed}}",
-            rf"\begin{{enumerate}}\setcounter{{enumi}}{{{n}}}"] + [_mcq(q, key) for q in mcq_b] + [r"\end{enumerate}",
-            r"\sect{Part C: free response}", r"Show your work. Justify answers where asked."]
-    out += [_frq(f, key) for f in frqs]
+            r"\sect{Part B: multiple choice, calculator allowed}", part(nb, nb),
+            rf"\begin{{enumerate}}\setcounter{{enumi}}{{{na}}}"] + [_mcq(q, key) for q in mcq_b] + [r"\end{enumerate}",
+            r"\sect{Part C: free response}",
+            rf"{{\small\hfont {_count(len(frqs), 'question')}\enspace\textperiodcentered\enspace {_count(fpts, 'point')}}}\par",
+            r"Show your work. Justify answers where asked."]
+    out += [_frq(f, key, n) for n, f in enumerate(frqs, 1)]
     out.append(r"\end{document}")
     return "\n".join(out)
 
 
-DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testprep": testprep_tex, "unittest": unittest_tex}
+def _count(n, word):
+    return f"{n}~{word}{'' if n == 1 else 's'}"         # ~: the number never ends a line
+
+
+DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testprep": testprep_tex,
+        "packet": packet_tex, "unittest": unittest_tex}
 
 
 # ------------------------------------------------------------------ compile

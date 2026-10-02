@@ -119,6 +119,9 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { displ
 @media (min-width: 1300px) {
   body:has(.lesson-grid) .wrap, body:has(.lesson-grid) .top .in { max-width: 1680px; }
   .lesson-grid { grid-template-columns: minmax(0, 1fr) minmax(300px, 50%); }
+  /* the step list under the big video: two to a row, read left to right, so it fits under the video */
+  .rail ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; }
+  .rail li { padding: 4px 0; line-height: 1.25; }
 }
 .side-toggle { display: none; justify-self: end; }
 .rail { font-family: var(--font-ui); font-size: .92rem; max-height: 42vh; overflow: auto; }

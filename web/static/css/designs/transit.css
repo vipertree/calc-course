@@ -101,6 +101,10 @@
 [data-design="transit"] .rail li.cur { font-weight: 800; }
 [data-design="transit"] .rail li.cur::before { border-color: var(--ink); background: var(--line, var(--ink)); color: var(--line-ink, #fff); }
 [data-design="transit"] .rail .bar { height: 6px; border-radius: 0; background: var(--soft); }
+@media (min-width: 1300px) {   /* two to a row: a vertical route line would join the wrong stops */
+  [data-design="transit"] .rail ol { background: none; }
+  [data-design="transit"] .rail li { padding: 4px 0; }
+}
 [data-design="transit"] .rail .bar i { background: var(--ink); }
 [data-design="transit"] .video { border-radius: 0; }
 [data-design="transit"] .vtitle { color: var(--ink); font-weight: 700; }

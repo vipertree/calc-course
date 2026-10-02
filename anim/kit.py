@@ -443,6 +443,34 @@ def path_angle(f, x, dx=1e-3):
 FLIGHT_TILT = 0.2   # radians: a snapshot of the arrow early in its flight, still climbing
 
 
+def pencil_prop(length=1.6):
+    """A drawn pencil leaning up and to the right, its point at the origin. pencil.tip() is where it writes."""
+    body = Rectangle(width=length, height=length * 0.16, color=INK, stroke_width=2, fill_color=SECANT, fill_opacity=1)
+    cone = Polygon(body.get_corner(UL), body.get_corner(DL), body.get_left() + LEFT * length * 0.22, color=INK,
+                   stroke_width=2, fill_color=PANEL, fill_opacity=1)
+    lead = Polygon(cone.get_vertices()[2], cone.get_vertices()[2] + RIGHT * length * 0.07 + UP * length * 0.03,
+                   cone.get_vertices()[2] + RIGHT * length * 0.07 + DOWN * length * 0.03, color=INK, fill_color=INK, fill_opacity=1)
+    eraser = Rectangle(width=length * 0.14, height=length * 0.16, color=INK, stroke_width=2, fill_color=TANGENT,
+                       fill_opacity=1).next_to(body, RIGHT, buff=0)
+    p = VGroup(body, cone, lead, eraser)
+    tip = cone.get_vertices()[2].copy()
+    p.rotate(PI / 4, about_point=tip).shift(-tip)
+    p.tip = lambda: p[1].get_vertices()[2]
+    return p
+
+
+def trace_with_pencil(scene, pencil, path, run_time=1.6, ink=None):
+    """Move the pencil's point along `path`, drawing it as it goes. Returns the inked stroke."""
+    stroke = path.copy().set_stroke(ink or FUNC, width=5, opacity=1)
+    pencil.shift(path.get_start() - pencil.tip())
+    dot = Dot(path.get_start(), radius=0.001)
+    pencil.add_updater(lambda m: m.shift(dot.get_center() - m.tip()))
+    scene.add(pencil)
+    scene.play(MoveAlongPath(dot, path), Create(stroke), run_time=run_time, rate_func=linear)
+    pencil.clear_updaters()
+    return stroke
+
+
 def zeno_bust(height=5.6):
     """Jan de Bisschop's etching of a bust of Zeno of Elea (c. 1670, Rijksmuseum, CC0); see assets/CREDITS.md."""
     return ImageMobject(os.path.join(ASSETS, "zeno.png")).set_height(height)

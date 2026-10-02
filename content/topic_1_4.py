@@ -39,7 +39,7 @@ NOTES = [
     Video("s1_4.py::Lesson", "Limits from tables", 3.5),
 
     Section("Building a table"),
-    Text(r"Substituting $x = 0$ into $\dfrac{\sin x}{x}$ gives $\dfrac00$. A calculator in \textbf{radian mode} "
+    Text(r"Substituting $x = 0$ into $\dfrac{\sin x}{x}$ yields $\dfrac00$. A calculator in \textbf{radian mode} "
          r"gives these values."),
     Table(r"$x$ & " + row_x + r" \\ $\dfrac{\sin x}{x}$ & " + row_y, "c|cccccc"),
     Text(r"From both sides the outputs close in on \blank{$1$}, so we estimate "

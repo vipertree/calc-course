@@ -25,7 +25,7 @@ NOTES = [
     Formula("Removing a discontinuity", (
         r"If $\displaystyle \lim_{x\to c} f(x) = L$ exists but $f(c) \ne L$ (or $f(c)$ is undefined), the discontinuity is "
         r"\blank{removable}: redefine $f(c) = L$.\par "
-        r"Jump and infinite discontinuities \blank{cannot} be removed by changing one value, because the limit does not exist.")),
+        r"Nonremovable discontinuities, jumps and vertical asymptotes, \blank{cannot} be removed by changing one value, because the limit does not exist.")),
 
     Section("Matching pieces at a seam"),
     Text(r"For \[ f(x) = \begin{cases} kx + 1, & x < 2 \\ x^2 - 1, & x \ge 2, \end{cases} \] continuity at $x = 2$ requires the "

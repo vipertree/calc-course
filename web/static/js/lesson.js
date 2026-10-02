@@ -557,6 +557,9 @@
             });
             ul.append(h("li", {}, cb, h("span", { class: "pts" }, `${line.points} pt`), h("span", { html: line.html })));
           });
+          // the complete sample solution to score against, unless this part already shows it (Adder, 2026-10-02)
+          if (r.solution && !part.querySelector(".solution"))
+            rub.append(solutionBox(r.solution + (r.display ? `<div class="muted" style="margin-top:6px">Answer: $${r.display}$</div>` : ""), "Sample solution"));
           rub.append(h("div", { class: "solution" }, h("div", { class: "lbl" }, "Scoring guide: check each point you earned"), ul));
           typeset(rub);
         });

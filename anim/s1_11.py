@@ -27,11 +27,49 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("From pencils to precision") as b:
-            pen = Dot(color=SECANT, radius=0.14).shift(UP * 0.5)
-            self.play(FadeIn(pen), run_time=0.6)
-            self.play(pen.animate.shift(RIGHT * 2), run_time=1)
-            self.play(FadeOut(pen), run_time=0.6)
+            # three graphs, drawn faint: one continuous, one with a hole, one with a jump (Adder: show the test, then
+            # say plainly that it is a quick check, not the definition)
+            kinds = ["continuous", "hole", "jump"]
+            panels, paths = VGroup(), []
+            for kind in kinds:
+                a_, _ = plot_axes([0, 2, 1], [0, 3, 1], w=3.4, h=2.5, coords=False)
+                if kind == "continuous":
+                    segs = [a_.plot(lambda x: 1.2 + 0.6 * np.sin(2.2 * x), x_range=[0, 2])]
+                    extra = VGroup()
+                elif kind == "hole":
+                    segs = [a_.plot(lambda x: 0.6 + 0.9 * x, x_range=[0, 0.96]), a_.plot(lambda x: 0.6 + 0.9 * x, x_range=[1.04, 2])]
+                    extra = VGroup(open_dot(a_, 1, 1.5))
+                else:
+                    segs = [a_.plot(lambda x: 0.7 + 0.2 * x, x_range=[0, 1]), a_.plot(lambda x: 2.0 + 0.3 * (x - 1), x_range=[1, 2])]
+                    extra = VGroup(open_dot(a_, 1, 0.9), closed_dot(a_, 1, 2.0, FUNC))
+                faint = VGroup(*[sg.copy().set_stroke(DIM, width=3, opacity=0.6) for sg in segs])
+                panels.add(VGroup(a_, faint, extra))
+                paths.append(list(faint))          # trace the copies that are on the panels (they move with them)
+            panels.arrange(RIGHT, buff=0.7).shift(UP * 0.4)
+            heads = VGroup(*[T(k, 30, DIM).next_to(pn, UP, buff=0.2) for k, pn in zip(kinds, panels)])
+            q = T("Can you trace it without lifting your pencil?", 38).to_edge(UP, buff=0.4)
+            self.play(FadeIn(q), FadeIn(panels), FadeIn(heads), run_time=1.4)
+            pen = pencil_prop(1.4)
             b.line(1)
+            trace_with_pencil(self, pen, paths[0][0], run_time=2)
+            ok = T(r"no lift: continuous", 30, DERIV).next_to(panels[0], DOWN, buff=0.3)
+            self.play(FadeIn(ok), run_time=0.5)
+            b.line(2)
+            for k in (1, 2):
+                first, second = paths[k]
+                trace_with_pencil(self, pen, first, run_time=1.2)
+                # the pencil has to come off the page to get past the break
+                self.play(pen.animate.shift(UP * 0.45), run_time=0.35)
+                self.play(pen.animate.shift(second.get_start() - pen.tip() + UP * 0.45), run_time=0.45)
+                self.play(pen.animate.shift(DOWN * 0.45), run_time=0.3)
+                trace_with_pencil(self, pen, second, run_time=1.0)
+                self.play(FadeIn(T("lift!", 30, TANGENT).next_to(panels[k], DOWN, buff=0.3)), run_time=0.5)
+            self.play(FadeOut(pen), run_time=0.4)
+            b.line(3)
+            note = T(r"a quick picture, \emph{not} a formal definition", 34, SECANT).to_edge(DOWN, buff=0.4)
+            self.play(FadeIn(note), run_time=0.8)
+            b.line(4)
+            self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.6)
             boxes = VGroup(*[Square(side_length=0.6, color=INK, stroke_width=3) for _ in range(3)]).arrange(RIGHT, buff=0.8)
             self.play(LaggedStart(*[Create(bx) for bx in boxes], lag_ratio=0.3), run_time=1.4)
         self.clear()

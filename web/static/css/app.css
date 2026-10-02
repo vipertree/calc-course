@@ -113,12 +113,13 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { displ
 .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; }
 @media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 /* lesson: notes on the left, the video (and step list) pinned on the right while the notes scroll */
-.lesson-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 40%); gap: 32px; align-items: start; }
+/* the video column grows with the window: about 320px just before the one-column switch, 820px at 1920px wide
+   (Adder, 2026-10-02: big on a wide screen, but not swamping a half-width window) */
+.lesson-grid { display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, calc(62vw - 370px), 840px); gap: 32px; align-items: start; }
 .side { position: sticky; top: 64px; display: grid; gap: 12px; }
 /* wide screens: the lesson page grows past the usual 1180px and the video gets half of it (Adder, 2026-10-02) */
 @media (min-width: 1300px) {
   body:has(.lesson-grid) .wrap, body:has(.lesson-grid) .top .in { max-width: 1680px; }
-  .lesson-grid { grid-template-columns: minmax(0, 1fr) minmax(300px, 50%); }
   /* the step list under the big video: two to a row, read left to right, so it fits under the video */
   .rail ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; }
   .rail li { padding: 4px 0; line-height: 1.25; }
@@ -131,6 +132,8 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { displ
   .side .rail { display: none; }
   .side-toggle { display: inline-flex; }
   .side-video .vtitle { display: none; }
+  /* one column: the pinned video stays a moderate size, centered, so it doesn't fill the screen */
+  .side .side-video { width: min(100%, 600px, 80vh); justify-self: center; }
 }
 .rail ol { list-style: none; padding: 0; margin: 0; counter-reset: s; }
 .rail li { counter-increment: s; display: flex; gap: 10px; align-items: center; padding: 6px 0; color: var(--dim); cursor: pointer; }
@@ -295,6 +298,7 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 
 /* a display line that holds fill-in blanks: centered, display-style pieces with the inputs between them */
 .dline { display: block; text-align: center; margin: .7em 0; line-height: 2.4; }
+.nobr { white-space: nowrap; }
 /* one piece of a display that may wrap: pieces share a line when they fit, otherwise stack, never scroll */
 .dline .dpiece { display: inline-block; margin: 0 .9em; line-height: normal; vertical-align: middle; }
 /* on wide screens the test slides left so the docked calculator doesn't cover it */

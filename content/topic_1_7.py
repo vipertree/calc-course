@@ -1,8 +1,8 @@
 """Topic 1.7: Selecting procedures for determining limits.
 
-CED: LIM-1.D, LIM-1.E (synthesis topic). The lesson is a decision procedure: substitute,
-read the result (number / 0/0 / nonzero/0), and let the form pick the tool. Absolute values
-and piecewise functions get split by side. Every practice answer is computed by sympy, and
+CED: LIM-1.D, LIM-1.E (synthesis topic). The lesson is a toolkit (Adder, 2026-10-02: a toolkit, not a
+decision tree): direct substitution, rewrite and cancel, special identities, split into sides (with
+sign analysis for nonzero/0), and a nod to L'Hospital's Rule later in the year. Every practice answer is computed by sympy, and
 every solution keeps limit notation on each line.
 """
 import sympy as sp
@@ -33,17 +33,21 @@ same("sign L", lim((x + 1) / (x - 2)**2, 2, "-"), sp.oo)
 NOTES = [
     Video("s1_7.py::Lesson", "Choosing a method", 3),
 
-    Section("Substitute, then read the result"),
-    Formula(r"A decision procedure for $\displaystyle\lim_{x\to c} f(x)$", (
-        r"\textbf{1. Substitute} $x = c$. \par "
-        r"\quad $\bullet$ A number (and $f$ is a single nice formula near $c$): that number is the limit. \par "
-        r"\quad $\bullet$ $\frac00$ (or $\frac{\infty}{\infty}$, which shows up when $x \to \infty$; see Topic 1.15): these forms are "
-        r"\emph{indeterminate}, so rewrite. Factor, use a conjugate, combine fractions, or use an identity. Then substitute again, and read "
-        r"the new result the same way: it can still come out $\displaystyle \dfrac{\text{nonzero}}{0}$, and the limit may not exist. \par "
-        r"\quad $\bullet$ $\displaystyle \dfrac{\text{nonzero}}{0}$: the function is unbounded near $c$. Check the sign on each side. \par "
-        r"\textbf{2. Split into sides} whenever the formula changes at $c$: piecewise functions and absolute values. \par "
-        r"\textbf{Coming later:} once we can take derivatives (Unit 4), \emph{L'Hôpital's rule} gives one more tool for "
-        r"$\frac00$ and $\frac{\infty}{\infty}$.")),
+    Section("A toolkit for limits"),
+    Formula(r"A limit toolkit for $\displaystyle\lim_{x\to c} f(x)$", (
+        r"\textbf{Direct substitution.} Plug in $x = c$. If $f$ is a single nice formula near $c$ and you get a number, "
+        r"that number is the limit. If not, the result tells you which tool to reach for: $\frac00$ is "
+        r"\emph{indeterminate} (so is $\frac{\infty}{\infty}$, which shows up when $x \to \infty$; see Topic 1.15), and "
+        r"$\dfrac{\text{nonzero}}{0}$ means the function is unbounded near $c$. \par "
+        r"\textbf{Rewrite and cancel.} Factor, multiply by a conjugate, or clear the fractions inside a fraction. Cancel the "
+        r"factor that made $\frac00$, then substitute again. \par "
+        r"\textbf{Special identities.} Trig identities such as $\sin^2 x + \cos^2 x = 1$ can turn a $\frac00$ form into one "
+        r"that cancels. \par "
+        r"\textbf{Split into sides.} When the formula changes at $c$ (piecewise functions, absolute values), or substitution "
+        r"yields $\dfrac{\text{nonzero}}{0}$, find each one-sided limit. For $\dfrac{\text{nonzero}}{0}$, the sign on each side "
+        r"decides: the same sign gives $\infty$ or $-\infty$, and opposite signs mean the limit does not exist. \par "
+        r"\textbf{Coming later:} there's another handy tool, \emph{L'Hospital's Rule}, that we'll learn later in the year "
+        r"(Topic 4.7). It uses derivatives to handle $\frac00$ and $\frac{\infty}{\infty}$.")),
     VideoExample('Signs near a zero denominator', work="3cm"),
     VideoExample('Absolute value', work="2.4cm"),
     VideoExample('Two tools in one', work="3.4cm"),
@@ -139,16 +143,16 @@ QUIZ = [
     Variants(
         MCQ(r"Which method fits $\displaystyle\lim_{x\to4}\frac{x-4}{\sqrt x - 2}$ best?",
             [r"Direct substitution", r"Multiply by the conjugate $\sqrt x + 2$", r"Combine fractions", r"Split into sides"], "B",
-            r"Substitution gives $\frac00$ and there is a square root: use the conjugate. "
-            + limchain(4, [r"\frac{(x-4)(\sqrt x+2)}{x-4}", r"(\sqrt x+2)"], 4), why_not={"A": "substitution gives $\\frac00$"}),
+            r"Substitution yields $\frac00$ and there is a square root: use the conjugate. "
+            + limchain(4, [r"\frac{(x-4)(\sqrt x+2)}{x-4}", r"(\sqrt x+2)"], 4), why_not={"A": "substitution yields $\\frac00$"}),
         MCQ(r"Which method fits $\displaystyle\lim_{x\to0}\frac{\frac{1}{x+3}-\frac13}{x}$ best?",
             [r"Direct substitution", r"Multiply by a conjugate", r"Combine the fractions in the numerator", r"Split into sides"], "C",
-            r"Substitution gives $\frac00$, and the numerator is a difference of fractions: combine them over $3(x+3)$ first.",
-            why_not={"A": "substitution gives $\\frac00$", "B": "there is no square root"}),
+            r"Substitution yields $\frac00$, and the numerator is a difference of fractions: combine them over $3(x+3)$ first.",
+            why_not={"A": "substitution yields $\\frac00$", "B": "there is no square root"}),
         MCQ(r"Which method fits $\displaystyle\lim_{x\to2}\frac{|x-2|}{x-2}$ best?",
             [r"Split into sides", r"Factor and cancel", r"Multiply by a conjugate", r"Direct substitution"], "A",
             r"An absolute value changes its formula at $x = 2$, so find each one-sided limit.",
-            why_not={"D": "substitution gives $\\frac00$", "B": "nothing factors out of an absolute value"}),
+            why_not={"D": "substitution yields $\\frac00$", "B": "nothing factors out of an absolute value"}),
     ),
     Variants(
         MCQ(r"$\displaystyle\lim_{x\to-5}\frac{|x+5|}{x+5}$ is", [r"$-1$", r"$0$", r"$1$", r"Does not exist"], "D",

@@ -27,11 +27,12 @@ NOTES = [
 
     Section("Three kinds of discontinuity"),
     Text(r"Informally, a function is \textbf{continuous} where you can draw its graph without lifting your pencil. "
-         r"Where you must lift it, the function has a \textbf{discontinuity}."),
+         r"Where you must lift it, the function has a \textbf{discontinuity}. Discontinuities come in two families: "
+         r"\textbf{removable} (a hole) and \textbf{nonremovable} (a jump or a vertical asymptote)."),
     FIG_ALL,
     Table(r"\textbf{Removable} & $x = \mblank{-1}$ & a hole; the limit \blank{exists} but differs from the value (or the value is missing) \\ "
           r"\textbf{Jump} & $x = \mblank{2}$ & the one-sided limits exist but are \blank{not equal} \\ "
-          r"\textbf{Infinite} & $x = \mblank{4}$ & the function is \blank{unbounded}: a vertical asymptote",
+          r"\textbf{Vertical asymptote} & $x = \mblank{4}$ & the function is \blank{unbounded} near $x = 4$",
           "lcl", header=r"type & where & what happens"),
     Text(r"A fourth kind, \emph{oscillating}, appears in functions like $\sin\frac1x$ at $0$. It is less common on the exam."),
 
@@ -42,11 +43,12 @@ NOTES = [
     FIG_RAT,
     Formula("Rational functions", (
         r"After factoring $\dfrac{p(x)}{q(x)}$: a zero of $q$ that \textbf{cancels} gives a \blank{removable} discontinuity; "
-        r"a zero of $q$ that \textbf{remains} in the denominator gives an \blank{infinite} discontinuity.")),
+        r"a zero of $q$ that \textbf{remains} in the denominator gives a vertical \blank{asymptote}.")),
 
     Section("Piecewise functions"),
     VideoExample('Where the pieces meet', work="2.2cm"),
-    BigIdea(r"Removable: the limit exists. Jump: the one-sided limits disagree. Infinite: the outputs are unbounded."),
+    BigIdea(r"Removable (a hole): the limit exists. Nonremovable: a jump, where the one-sided limits disagree, or a "
+            r"vertical asymptote, where the outputs are unbounded."),
     Check(r"$\displaystyle g(x) = \dfrac{x^2-5x+6}{x-3}$ has a removable discontinuity at $x = 3$. What is the $y$-coordinate of the hole?",
           num(1), limchain(3, [r"\frac{(x-3)(x-2)}{x-3}", r"(x-2)"], 1) + r", so the hole is at height $1$."),
 ]
@@ -59,7 +61,7 @@ PRACTICE = [
     Item(r"The graph from the notes (three breaks) is shown. At what $x$-value is the removable discontinuity?", num(-1),
          r"At $x = -1$ both sides approach $1.5$, but the value is $3.5$.", figure=FIG_ALL, work="1cm"),
     Item(r"At what $x$-value is the jump discontinuity?", num(2), r"At $x = 2$ the sides approach $3$ and $-1$.", work="1cm"),
-    Item(r"At what $x$-value is the infinite discontinuity?", num(4), r"At $x = 4$ the graph is unbounded.", work="1cm"),
+    Item(r"At what $x$-value is the vertical asymptote?", num(4), r"At $x = 4$ the graph is unbounded.", work="1cm"),
     Item(r"Let $r(x) = \dfrac{x^2-9}{x^2-x-6}$. Find the $y$-coordinate of the hole in its graph.", num(sp.Rational(6, 5)),
          limchain(3, [r"\frac{(x-3)(x+3)}{(x-3)(x+2)}", r"\frac{x+3}{x+2}"], r"\frac65"), work="2cm"),
     Item(r"Where is the vertical asymptote of $r$ from Problem 4?", num(-2), r"The factor $x + 2$ remains in the denominator.",
@@ -71,8 +73,8 @@ PRACTICE = [
          r"Both sides give $3$ and $f(2) = 3$. There is no discontinuity at $x = 2$.", work="1.8cm"),
     Item(r"Classify the discontinuity of $\dfrac{|x|}{x}$ at $x = 0$.", selfcheck(r"\text{jump}"),
          r"Jump: the left-hand limit is $-1$ and the right-hand limit is $1$.", work="1.2cm"),
-    Item(r"Classify the discontinuity of $\dfrac{1}{(x-5)^2}$ at $x = 5$.", selfcheck(r"\text{infinite}"),
-         r"Infinite: the function grows without bound; $x = 5$ is a vertical asymptote.", work="1.2cm"),
+    Item(r"Classify the discontinuity of $\dfrac{1}{(x-5)^2}$ at $x = 5$.", selfcheck(r"\text{vertical asymptote}"),
+         r"A vertical asymptote: the function grows without bound near $x = 5$. It is nonremovable.", work="1.2cm"),
     Item(r"Write a formula for a function with a removable discontinuity at $x = 4$ and a vertical asymptote at $x = -1$.",
          selfcheck(r"\text{e.g. } \dfrac{x-4}{(x-4)(x+1)}"),
          r"One answer: $\dfrac{x-4}{(x-4)(x+1)}$. The factor $x - 4$ cancels (hole); $x + 1$ remains (asymptote).", work="2cm"),
@@ -95,11 +97,11 @@ PRACTICE += [
          r"Removable: the limit is $1$, but the function is undefined at $0$.", work="1.2cm"),
     Item(r"Classify the discontinuity of $\dfrac{x - 3}{|x - 3|}$ at $x = 3$.", selfcheck(r"\text{jump}"),
          r"Jump: the one-sided limits are $-1$ and $1$.", work="1.2cm"),
-    Item(r"Classify the discontinuity of $\tan x$ at $x = \frac\pi2$.", selfcheck(r"\text{infinite}"),
-         r"Infinite: $\tan x$ is unbounded near $\frac\pi2$.", work="1.2cm"),
+    Item(r"Classify the discontinuity of $\tan x$ at $x = \frac\pi2$.", selfcheck(r"\text{vertical asymptote}"),
+         r"A vertical asymptote: $\tan x$ is unbounded near $\frac\pi2$.", work="1.2cm"),
     Item(r"How many $x$-values give a removable discontinuity for $\dfrac{x^2 - x}{x^3 - x}$?", num(2),
          r"$\dfrac{x(x-1)}{x(x-1)(x+1)}$: the factors $x$ and $x - 1$ cancel (two holes); $x = -1$ is an asymptote.", work="2cm"),
-    Item(r"Sketch a graph with a removable discontinuity at $x = -1$, a jump at $x = 2$, and an infinite discontinuity at $x = 4$.",
+    Item(r"Sketch a graph with a removable discontinuity at $x = -1$, a jump at $x = 2$, and a vertical asymptote at $x = 4$.",
          selfcheck(r"\text{hole, jump, asymptote}"), r"Any graph with a hole at $x = -1$, pieces that don't meet at $x = 2$, and a "
                                                          r"vertical asymptote at $x = 4$.", work="3cm"),
 ]
@@ -134,22 +136,22 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"$\displaystyle\lim_{x\to c^-}f(x) = 4$ and $\displaystyle\lim_{x\to c^+}f(x) = 1$. What kind of discontinuity does $f$ have at $c$?",
-            [r"removable", r"jump", r"infinite", r"none"], "B", r"Both one-sided limits exist but differ."),
+            [r"removable", r"jump", r"vertical asymptote", r"none"], "B", r"Both one-sided limits exist but differ."),
         MCQ(r"$\displaystyle\lim_{x\to c}f(x) = 5$ but $f(c) = 2$. What kind of discontinuity does $f$ have at $c$?",
-            [r"removable", r"jump", r"infinite", r"none"], "A", r"The limit exists; only the value is misplaced. Moving one point fixes it."),
+            [r"removable", r"jump", r"vertical asymptote", r"none"], "A", r"The limit exists; only the value is misplaced. Moving one point fixes it."),
         MCQ(r"$\displaystyle\lim_{x\to c^+}f(x) = \infty$. What kind of discontinuity does $f$ have at $c$?",
-            [r"removable", r"jump", r"infinite", r"none"], "C", r"An unbounded side means a vertical asymptote: an infinite discontinuity."),
+            [r"removable", r"jump", r"vertical asymptote", r"none"], "C", r"An unbounded side means a vertical asymptote, a nonremovable discontinuity."),
     ),
     Variants(
         MCQ(r"Which function has a removable discontinuity at $x = 2$?",
             [r"$\dfrac{1}{x-2}$", r"$\dfrac{x}{x-2}$", r"$\dfrac{x^2-4}{x-2}$", r"$\dfrac{x-2}{x^2+4}$"], "C",
             r"The factor $x - 2$ cancels, so the limit at $2$ exists: a hole at $(2, 4)$.",
-            why_not={"A": "infinite discontinuity", "B": "infinite discontinuity", "D": "continuous everywhere"}),
+            why_not={"A": "vertical asymptote", "B": "vertical asymptote", "D": "continuous everywhere"}),
         MCQ(r"Which function has a jump discontinuity at $x = 0$?",
             [r"$\dfrac{x^2}{x}$", r"$\dfrac{|x|}{x}$", r"$\dfrac{1}{x^2}$", r"$\dfrac{\sin x}{x}$"], "B",
             r"$\frac{|x|}{x}$ is $-1$ on the left and $1$ on the right.",
-            why_not={"A": "removable", "C": "infinite", "D": "removable"}),
-        MCQ(r"Which function has an infinite discontinuity at $x = -1$?",
+            why_not={"A": "removable", "C": "vertical asymptote", "D": "removable"}),
+        MCQ(r"Which function has a vertical asymptote at $x = -1$?",
             [r"$\dfrac{x+1}{x^2-1}$", r"$\dfrac{x^2-1}{x+1}$", r"$\dfrac{x-1}{x+1}$", r"$|x+1|$"], "C",
             r"At $x = -1$ the top is $-2$ and the bottom is $0$: the function blows up.",
             why_not={"A": "the factor $x+1$ cancels: removable at $-1$", "B": "removable", "D": "continuous"}),
@@ -164,17 +166,17 @@ same("q versions", [sp.limit((x**2 + 2 * x - 8) / (x + 4), x, -4), sp.limit((2 *
 # ---------------------------------------------------------------- test prep
 MCQS = [
     MCQ(r"Let $f(x) = \dfrac{x^2+x-6}{x^2-4}$. Which describes the discontinuities of $f$?",
-        [r"Removable at $x = 2$ and infinite at $x = -2$", r"Infinite at $x = 2$ and $x = -2$",
-         r"Removable at $x = -2$ and infinite at $x = 2$", r"Removable at $x = 2$ and $x = -2$"], "A",
+        [r"Removable at $x = 2$; vertical asymptote at $x = -2$", r"Vertical asymptotes at $x = 2$ and $x = -2$",
+         r"Removable at $x = -2$; vertical asymptote at $x = 2$", r"Removable at $x = 2$ and $x = -2$"], "A",
         r"$\dfrac{(x+3)(x-2)}{(x-2)(x+2)}$: $x - 2$ cancels, $x + 2$ remains."),
     MCQ(r"Let $g(x) = \dfrac{\sin x}{x}$ for $x \ne 0$ and $g(0) = 0$. At $x = 0$, $g$ has",
-        [r"a jump discontinuity", r"an infinite discontinuity", r"a removable discontinuity", r"no discontinuity"], "C",
+        [r"a jump discontinuity", r"a discontinuity due to a vertical asymptote", r"a removable discontinuity", r"no discontinuity"], "C",
         r"$\displaystyle\lim_{x\to0}g(x) = 1 \ne 0 = g(0)$. The limit exists, so the discontinuity is removable.",
         why_not={"D": "the limit is $1$ but $g(0) = 0$"}),
     MCQ(r"Which function has a jump discontinuity at $x = 0$?",
         [r"$\dfrac{1}{x^2}$", r"$\dfrac{x^2}{x}$", r"$x\sin\dfrac1x$", r"$\dfrac{x}{|x|}$"], "D",
         r"$\dfrac{x}{|x|}$ is $-1$ for $x<0$ and $1$ for $x > 0$.",
-        why_not={"A": "infinite", "B": "removable", "C": "removable (the limit is $0$)"}),
+        why_not={"A": "vertical asymptote", "B": "removable", "C": "removable (the limit is $0$)"}),
     MCQ(r"Let $k(x) = \begin{cases} x^2 + 1, & x < 2 \\ 7 - x, & x \ge 2. \end{cases}$ At $x = 2$, $k$ is",
         [r"continuous", r"discontinuous with a jump", r"discontinuous with a removable discontinuity", r"undefined"], "A",
         r"Left: $5$. Right: $5$. And $k(2) = 5$. No break.", why_not={"B": "the pieces meet at height 5"}),
@@ -189,5 +191,5 @@ FRQS = []
 TOPIC = Topic(
     number="1.10", title="Exploring Types of Discontinuities",
     unit="Unit 1: Limits and Continuity", ced=["LIM-2.A", "LIM-2.A.1"],
-    goals=r"Identify and classify removable, jump and infinite discontinuities from graphs and formulas.",
+    goals=r"Identify and classify discontinuities, removable (holes) and nonremovable (jumps and vertical asymptotes), from graphs and formulas.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

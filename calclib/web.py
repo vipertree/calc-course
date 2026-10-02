@@ -278,6 +278,11 @@ def html(s, blanks=None):
         i = s.rfind("<div class='center'>")
         j = s.find("}", i)
         s = s[:j] + "</div>" + s[j + 1:]
+    # a blank never wraps away from the short formula it completes ("lim f(u) = [blank]"), nor from the
+    # punctuation after it (Adder, 2026-10-02, 1.9)
+    s = re.sub(r'(?<!\\)\$([^$]{1,80}?)\$\s*\x00(<span class="blank"[^\x00]*)\x00([.,;:!?)]?)',
+               lambda m: f"<span class='nobr'>${m.group(1)}${m.group(2)}{m.group(3)}</span>", s)
+    s = re.sub(r'\x00(<span class="blank"[^\x00]*)\x00([.,;:!?)])', r"<span class='nobr'>\1\2</span>", s)
     s = s.replace("\x00", "").replace("\x02", "<span class='dline'>").replace("\x03", "</span>")
     left = [m for n, part in enumerate(_MATH.split(s)) if n % 2 == 0
             for m in re.findall(r"\\[A-Za-z]+", re.sub(r"<[^>]*>", "", part))]

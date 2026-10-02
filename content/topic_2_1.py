@@ -108,7 +108,7 @@ NOTES = [
            {"left": -0.5, "right": 5.5, "bottom": -2, "top": 26}),
     Text(r"From both sides, the average rates approach \blank{$9$}. We say her "
          r"\textbf{instantaneous rate of change} at $t=1$ is $9$ miles per hour."),
-    Text(r"Setting $h = 0$ directly gives $\dfrac{0}{0}$, which has no value. "
+    Text(r"Setting $h = 0$ directly yields $\dfrac{0}{0}$, which has no value. "
          r"A \blank{limit} lets $h$ get close to $0$ without ever equaling $0$."),
 
     Section("The derivative at a point"),

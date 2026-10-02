@@ -163,7 +163,7 @@ MCQS = [
         [r"$-1$", r"$0$", r"$1$", r"$\pi$"], "C", r"$\cos 0 = 1$, so $k = 1$."),
     MCQ(r"How many points of discontinuity does $\dfrac{x^2-4}{x^3-4x}$ have?", [r"$0$", r"$1$", r"$2$", r"$3$"], "D",
         r"$x^3 - 4x = x(x-2)(x+2)$ is zero at three points; the function is undefined at each (two are removable).",
-        why_not={"B": "counted only the non-removable one"}),
+        why_not={"B": "counted only the nonremovable one"}),
     MCQ(r"Which statement is true about $h(x) = \dfrac{|x-1|}{x-1}$ on $[2, 5]$?",
         [r"$h$ is continuous on $[2,5]$", r"$h$ has a jump in $[2,5]$", r"$h$ is undefined at $x = 2$", r"$h$ is unbounded on $[2,5]$"],
         "A", r"On $[2, 5]$, $x - 1 > 0$, so $h(x) = 1$: continuous.", why_not={"B": "the jump is at $x = 1$, outside the interval"}),

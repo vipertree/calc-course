@@ -37,7 +37,7 @@ NOTES = [
     Video("s1_2.py::Lesson", "Defining limits", 4),
 
     Section("Approaching a value"),
-    Text(r"Let \[ g(x) = \frac{x^2-1}{x-1}. \] At $x = 1$ the formula gives \mblank{\tfrac00}, so $g(1)$ is "
+    Text(r"Let \[ g(x) = \frac{x^2-1}{x-1}. \] At $x = 1$ the formula yields \mblank{\tfrac00}, so $g(1)$ is "
          r"\blank{undefined}. The table shows what $g(x)$ does \emph{near} $x=1$."),
     Table(r"$x$ & " + rows_x + r" \\ $g(x)$ & " + rows_y, "c|cccccc"),
     FIG_HOLE,

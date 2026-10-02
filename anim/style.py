@@ -182,7 +182,7 @@ def title_card(topic, title, unit):
 
 # ---------------------------------------------------------- narration (TTS)
 KOKORO_DIR = os.path.expanduser("~/opt/kokoro")
-PAUSE_SECONDS = {"P": 0.7, "Q": 1.4, "W": 3.0}     # [pause], [long pause], and W: the think pause after a worked example's problem
+PAUSE_SECONDS = {"P": 0.7, "Q": 1.4, "W": 5.0}     # [pause], [long pause], and W: the "pause and try it" think time (Adder: +2 s, 2026-10-02)
 _BOOK = r"(<bookmark\s*mark\s*=[\'\"]\w*[\"\']\s*/>)"
 
 

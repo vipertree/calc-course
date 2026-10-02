@@ -148,7 +148,7 @@ QUIZ = [
             "C", r"From the left, $9$; from the right, $8$. The limit doesn't exist, so condition 2 fails.",
             why_not={"A": CONT["A"], "B": "each piece is continuous, but they must meet at the seam", "D": "$f(3) = 8$ exists"}),
         MCQ(r"Let $f(x) = \dfrac{x^2 - 9}{x - 3}$ for $x \ne 3$ and $f(3) = 6$. Which statement is correct?",
-            [r"$f$ is not continuous at $x = 3$ because the formula gives $\frac00$ there.", r"$f$ is not continuous at $x = 3$ because $f(3) \ne 0$.",
+            [r"$f$ is not continuous at $x = 3$ because the formula yields $\frac00$ there.", r"$f$ is not continuous at $x = 3$ because $f(3) \ne 0$.",
              r"$f$ is continuous everywhere except $x = 3$.", r"$f$ is continuous at $x = 3$ because $\displaystyle\lim_{x\to3}f(x) = 6 = f(3)$."], "D",
             r"The limit at $3$ is $3 + 3 = 6$, and $f(3)$ was defined to be $6$. They match.",
             why_not={"A": "$f(3)$ is defined separately as $6$", "C": "it is continuous at $3$ too"}),
@@ -176,11 +176,11 @@ QUIZ = [
             [r"$\dfrac{|x|}{x}$", r"$\dfrac1x$", r"$\begin{cases}\frac{\sin x}{x}, & x\ne0\\ 1, & x=0\end{cases}$",
              r"$\begin{cases}x^2, & x\ne0\\ 1, & x=0\end{cases}$"], "C",
             r"$\displaystyle\lim_{x\to0}\frac{\sin x}{x} = 1$, which matches the value $1$.",
-            why_not={"A": "jump", "B": "infinite discontinuity", "D": "the limit is $0$ but the value is $1$"}),
+            why_not={"A": "jump", "B": "vertical asymptote", "D": "the limit is $0$ but the value is $1$"}),
         MCQ(r"Which function is continuous at $x = 2$?",
             [r"$\begin{cases}x+1, & x<2\\ 2x-1, & x\ge2\end{cases}$", r"$\dfrac{1}{x-2}$", r"$\begin{cases}x^2, & x\ne2\\ 0, & x=2\end{cases}$",
              r"$\dfrac{x-2}{|x-2|}$"], "A", r"Both pieces give $3$ at $x = 2$, and $f(2) = 3$.",
-            why_not={"B": "infinite discontinuity", "C": "the limit is $4$ but the value is $0$", "D": "jump"}),
+            why_not={"B": "vertical asymptote", "C": "the limit is $4$ but the value is $0$", "D": "jump"}),
         MCQ(r"Which function is continuous from the right at $x = 0$ but not continuous at $x = 0$?",
             [r"$\sqrt{x}$ on $[0, \infty)$", r"$\begin{cases}-1, & x<0\\ x+2, & x\ge0\end{cases}$", r"$x^2$", r"$\dfrac1x$"], "B",
             r"From the right the limit is $2 = f(0)$, but from the left it is $-1$.",
@@ -205,7 +205,7 @@ MCQS = [
         why_not={"D": "the right-hand limit already matches $g(1) = 4$, so one value of $b$ works"}),
     MCQ(r"The function $h$ has $\displaystyle\lim_{x\to2^-}h(x) = 3$, $\displaystyle\lim_{x\to2^+}h(x) = 3$ and $h(2)$ undefined. "
         r"Which statement is true?", [r"$h$ is continuous at $2$", r"$h$ has a jump at $2$",
-                                      r"$h$ has a removable discontinuity at $2$", r"$h$ has an infinite discontinuity at $2$"], "C",
+                                      r"$h$ has a removable discontinuity at $2$", r"$h$ has a vertical asymptote at $2$"], "C",
         r"The limit exists ($3$), but $h(2)$ does not: a hole."),
 ]
 same("m1", sp.limit((x**2 - 2 * x - 3) / (x - 3), x, 3), 4)

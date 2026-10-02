@@ -108,7 +108,7 @@ PRACTICE = [
     Item(r"Rosa graphs $y = \dfrac{x^2-4}{x-2}$ on her calculator and sees a straight line. She concludes "
          r"``$f(2) = 4$.'' What is wrong, and what is true instead?",
          selfcheck(r"f(2)\text{ undefined; } \lim_{x\to2}=4"),
-         r"The function is undefined at $x=2$ (it gives $\frac00$). The screen is too coarse to show the hole. What is "
+         r"The function is undefined at $x=2$ (it yields $\frac00$). The screen is too coarse to show the hole. What is "
          r"true is $\displaystyle\lim_{x\to2}\frac{x^2-4}{x-2} = 4$.", work="2.2cm"),
 ]
 same("p7", sp.limit(sp.Abs(x - 3) / (x - 3), x, 3, "+"), 1)

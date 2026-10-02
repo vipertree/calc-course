@@ -29,37 +29,65 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
-        sub = box("Substitute", SECANT).to_edge(UP, buff=0.5)
-        outs = VGroup(box("a number", DERIV), box(r"$\frac00$", SECANT), box(r"$\frac{\text{nonzero}}{0}$", TANGENT)).arrange(RIGHT, buff=1.4).next_to(sub, DOWN, buff=1.0)
-        arr = VGroup(*[Arrow(sub.get_bottom(), o.get_top(), color=DIM, buff=0.1) for o in outs])
-        with self.beat("Step one is always the same") as b:
-            self.play(FadeIn(sub), run_time=0.8)
-            self.play(LaggedStart(*[AnimationGroup(GrowArrow(a), FadeIn(o)) for a, o in zip(arr, outs)], lag_ratio=0.3), run_time=1.8)
-            b.line(1)
-            done = T("done", 36, DERIV).next_to(outs[0], DOWN, buff=0.4)
-            self.play(FadeIn(done), Indicate(outs[0], color=DERIV), run_time=1)
+        # the toolkit tray: four slots along the bottom, a tool card drops into each (Adder: a toolkit, not a decision tree)
+        names = ["Direct substitution", "Rewrite and cancel", "Special identities", "Split into sides"]
+        colors = [DERIV, SECANT, ACCUM, TANGENT]
+        slots = VGroup(*[RoundedRectangle(width=3.1, height=0.95, corner_radius=0.12, color=DIM, stroke_width=2) for _ in names]
+                       ).arrange(RIGHT, buff=0.25).to_edge(DOWN, buff=0.35)
+        tools = [box(n, c, w=3.1, size=28).move_to(sl) for n, c, sl in zip(names, colors, slots)]
+        tray = VGroup(slots)
 
-        with self.beat("When you get zero over zero") as b:
-            tools = VGroup(*[box(t_, SECANT, size=28) for t_ in ["factor", "conjugate", "combine fractions", "identity"]]).arrange(DOWN, buff=0.18).next_to(outs[1], DOWN, buff=0.5)
-            self.play(FadeIn(tools[0], shift=DOWN * 0.2), run_time=0.5)
+        def drop(k):
+            card = tools[k]
+            self.play(FadeIn(card, shift=DOWN * 1.2), run_time=0.7)
+            tray.add(card)
+
+        def detail(*mobs):
+            g = VGroup(*mobs).arrange(DOWN, buff=0.45).move_to(UP * 1.1)
+            self.play(LaggedStart(*[FadeIn(m, shift=UP * 0.2) for m in g], lag_ratio=0.35), run_time=1.6)
+            return g
+
+        with self.beat("Tool one: direct substitution") as b:
+            self.play(Create(slots), run_time=1)
+            drop(0)
+            res = VGroup(box("a number", DERIV, size=30), box(r"$\frac00$", SECANT, size=30), box(r"$\frac{\text{nonzero}}{0}$", TANGENT, size=30)).arrange(RIGHT, buff=0.8)
+            d = detail(M(r"\lim_{x\to c} f(x) \ \to\ f(c)", 48, INK), res)
             b.line(1)
-            for m in tools[1:]:
-                self.play(FadeIn(m, shift=DOWN * 0.2), run_time=0.5)
+            self.play(Indicate(res[0], color=DERIV), run_time=0.8)
             b.line(2)
-            back = CurvedArrow(tools.get_left() + LEFT * 0.1, sub.get_left() + LEFT * 0.1, angle=-PI / 2.4, color=SECANT)
-            self.play(Create(back), run_time=1.2)
-            b.line(3)
-            inf = M(r"\text{also } \frac{\infty}{\infty}", 34, SECANT).next_to(outs[1], RIGHT, buff=0.25)
-            self.play(FadeIn(inf, shift=LEFT * 0.2), run_time=0.8)
+            self.play(Indicate(res[1], color=SECANT), Indicate(res[2], color=TANGENT), run_time=1)
+            self.play(FadeOut(d), run_time=0.5)
 
-        with self.beat("When you get nonzero over zero") as b:
-            sg = box("check signs on each side", TANGENT, size=28).next_to(outs[2], DOWN, buff=0.5)
-            self.play(FadeIn(sg), run_time=0.8)
-            nl = NumberLine(x_range=[-1, 1, 1], length=3, color=DIM, include_numbers=False).next_to(sg, DOWN, buff=0.5)
-            signs = VGroup(M("-", 40, TANGENT).next_to(nl.n2p(-0.5), UP), M("+", 40, DERIV).next_to(nl.n2p(0.5), UP))
-            self.play(Create(nl), FadeIn(signs), run_time=1)
+        with self.beat("Tool two: rewrite and cancel") as b:
+            drop(1)
             b.line(1)
-            res = T(r"same: $\pm\infty$ \quad different: DNE", 28, INK).next_to(nl, DOWN, buff=0.3)
+            ex = VGroup(M(r"\frac{x^2 - 1}{x - 1} = \frac{(x - 1)(x + 1)}{x - 1}", 38),
+                        M(r"\frac{\sqrt x - 2}{x - 4}\cdot\frac{\sqrt x + 2}{\sqrt x + 2}", 38),
+                        M(r"\frac{\frac{1}{x + 2} - \frac12}{x} = \frac{-x}{2x(x + 2)}", 38))
+            d = detail(*ex)
+            b.line(2)
+            self.play(Indicate(d, color=SECANT, scale_factor=1.02), run_time=1)
+            b.line(3)
+            inf = M(r"\text{also } \frac{\infty}{\infty} \text{ (Topic 1.15)}", 34, SECANT).next_to(d, RIGHT, buff=0.4)
+            self.play(FadeIn(inf, shift=LEFT * 0.2), run_time=0.8)
+            self.play(FadeOut(d), FadeOut(inf), run_time=0.5)
+
+        with self.beat("Tool three: special identities") as b:
+            drop(2)
+            b.line(1)
+            d = detail(M(r"\sin^2 x + \cos^2 x = 1", 48, ACCUM),
+                       M(r"\sin^2 x = 1 - \cos^2 x = (1 - \cos x)(1 + \cos x)", 40))
+            self.play(FadeOut(d), run_time=0.5)
+
+        with self.beat("Tool four: split into sides") as b:
+            drop(3)
+            b.line(1)
+            nl = NumberLine(x_range=[-1, 1, 1], length=4.5, color=DIM, include_numbers=False)
+            c_lab = M("c", 34).next_to(nl.n2p(0), DOWN, buff=0.15)
+            signs = VGroup(M("-", 44, TANGENT).next_to(nl.n2p(-0.5), UP), M("+", 44, DERIV).next_to(nl.n2p(0.5), UP))
+            d = detail(T(r"piecewise \quad absolute value \quad $\frac{\text{nonzero}}{0}$", 34), VGroup(nl, c_lab, signs))
+            b.line(2)
+            res = T(r"same sign: $\pm\infty$ \quad opposite signs: DNE", 32).next_to(d, DOWN, buff=0.3)
             self.play(FadeIn(res), run_time=0.8)
         self.clear()
         self.example("Signs near a zero denominator", r"Find (a) $\displaystyle\lim_{x\to2}\frac{x + 1}{(x - 2)^2}$ and (b) $\displaystyle\lim_{x\to2}\frac{x + 1}{x - 2}$.",
@@ -88,13 +116,16 @@ class Lesson(TranscriptScene):
                      [r"\lim_{x\to-4}\frac{(x + 4)(x - 2)}{\sqrt{x + 5} - 1}\cdot\frac{\sqrt{x + 5} + 1}{\sqrt{x + 5} + 1}", r"= \lim_{x\to-4}\frac{\cancel{(x + 4)}(x - 2)\left(\sqrt{x + 5} + 1\right)}{\cancel{x + 4}}", r"= \lim_{x\to-4}(x - 2)\left(\sqrt{x + 5} + 1\right) = (-6)(2) = -12"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
-            sub2 = box("Substitute", SECANT).to_edge(UP, buff=0.8)
-            outs2 = VGroup(box("done", DERIV), box("rewrite, then try again", SECANT), box("check signs", TANGENT)).arrange(RIGHT, buff=0.8).next_to(sub2, DOWN, buff=1.2)
-            arr2 = VGroup(*[Arrow(sub2.get_bottom(), o.get_top(), color=DIM, buff=0.1) for o in outs2])
-            self.play(FadeIn(sub2), LaggedStart(*[AnimationGroup(GrowArrow(a), FadeIn(o)) for a, o in zip(arr2, outs2)], lag_ratio=0.3), run_time=2.2)
+            names2 = ["Direct substitution", "Rewrite and cancel", "Special identities", "Split into sides"]
+            kit_ = VGroup(*[box(n, c, w=4.6, size=32) for n, c in zip(names2, [DERIV, SECANT, ACCUM, TANGENT])])
+            later = VGroup(DashedVMobject(RoundedRectangle(width=4.6, height=0.95, corner_radius=0.12, color=DIM), num_dashes=40),
+                           T(r"coming later: L'Hospital's Rule", 28, DIM))
+            later[1].move_to(later[0])
+            grid = VGroup(*kit_, later).arrange_in_grid(3, 2, buff=(0.5, 0.35)).move_to(ORIGIN)
+            head = T("A toolkit for limits", 44).next_to(grid, UP, buff=0.5)
+            self.play(FadeIn(head), LaggedStart(*[FadeIn(m, shift=DOWN * 0.3) for m in kit_], lag_ratio=0.25), run_time=2)
             b.line(1)
-            lh = T(r"coming in Unit 4: L'Hôpital's rule", 30, DIM).next_to(outs2[1], DOWN, buff=0.5)
-            self.play(FadeIn(lh), run_time=0.8)
+            self.play(Create(later[0]), FadeIn(later[1]), run_time=1)
         self.clear()
 
         self.examples_card()

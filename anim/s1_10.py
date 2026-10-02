@@ -62,9 +62,9 @@ class Lesson(TranscriptScene):
             self.play(self.camera.frame.animate.move_to(ax.c2p(0, 2.1)), run_time=1.4)
             gap = Line(ax.c2p(0, pB(0)), ax.c2p(0, 3), color=TANGENT, stroke_width=6)
             self.play(Create(gap), FadeIn(T("jump", 30, TANGENT).next_to(gap, RIGHT, buff=0.2)), run_time=0.9)
-        with self.beat("Infinite") as b:
+        with self.beat("Vertical asymptote") as b:
             self.play(self.camera.frame.animate.move_to(ax.c2p(3, 1)), run_time=1.4)
-            self.play(FadeIn(T("infinite", 30, DERIV).next_to(ax.c2p(3.2, 4.5), RIGHT)), run_time=0.8)
+            self.play(FadeIn(T("vertical asymptote", 30, DERIV).next_to(ax.c2p(3.2, 4.5), LEFT)), run_time=0.8)
         self.play(self.camera.frame.animate.scale(1 / 0.45).move_to(ORIGIN + DOWN * (config.frame_height * 0.22 / 2 - 0.45)), run_time=1.2)
         self.clear()
 
@@ -93,17 +93,21 @@ class Lesson(TranscriptScene):
                      [r"\lim_{x\to1^-}(x + 1) = 2", r"\lim_{x\to1^+}x^2 = 1", r"\text{the one-sided limits differ: a jump discontinuity}"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
-            names = ["removable", "jump", "infinite"]
-            subs = ["limit exists", "one-sided limits disagree", "unbounded"]
+            names = ["removable", "jump", "vertical asymptote"]
+            subs = ["a hole: limit exists", "one-sided limits disagree", "unbounded"]
             cols = [SECANT, TANGENT, DERIV]
             cards = VGroup(*[VGroup(T(n_, 44, c_), T(s_, 30, DIM)).arrange(DOWN, buff=0.25) for n_, s_, c_ in zip(names, subs, cols)]).arrange(RIGHT, buff=1.2)
             self.play(LaggedStart(*[FadeIn(cd) for cd in cards], lag_ratio=0.4), run_time=2)
+            b.line(1)
+            # two families: removable (a hole) and nonremovable (a jump or a vertical asymptote)
+            br = Brace(cards[1:], UP, color=TANGENT)
+            self.play(GrowFromCenter(br), FadeIn(T("nonremovable", 36, TANGENT).next_to(br, UP, buff=0.15)), run_time=1)
         self.clear()
 
         self.examples_card()
         self.example("Example 1: Classify from a formula", r"Find and classify the discontinuities of $f(x) = \dfrac{x^2 + 2x - 15}{x^2 - 9}$.",
                      [r"x^2 - 9 = 0 \text{ at } x = \pm3", r"\frac{(x + 5)(x - 3)}{(x - 3)(x + 3)}", r"x = 3:\ \text{removable, hole at height } \frac86 = \frac43",
-                      r"x = -3:\ \text{infinite (vertical asymptote)}"], at=[1, 2, 3, 4])
+                      r"x = -3:\ \text{vertical asymptote (nonremovable)}"], at=[1, 2, 3, 4])
         a3, _ = plot_axes([0, 4, 1], [0, 8, 2], w=4.6, h=4)
         fig3 = VGroup(a3, a3.plot(lambda x: 2 * x - 1, x_range=[0, 2], color=FUNC), a3.plot(lambda x: x * x - 1, x_range=[2, 3], color=FUNC),
                       open_dot(a3, 2, 3), closed_dot(a3, 2, 5, SECANT))

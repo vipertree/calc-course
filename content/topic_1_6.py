@@ -29,7 +29,7 @@ NOTES = [
     Video("s1_6.py::Lesson", "Algebra for 0/0 limits", 4),
 
     Section("What 0/0 tells you"),
-    Text(r"Substituting $x = 3$ into $\dfrac{x^2-9}{x-3}$ gives \mblank{\tfrac00}. This is called an "
+    Text(r"Substituting $x = 3$ into $\dfrac{x^2-9}{x-3}$ yields \mblank{\tfrac00}. This is called an "
          r"\textbf{indeterminate form}: it gives no answer yet. It means \blank{rewrite the expression}. After rewriting, the "
          r"limit may turn out to be a number, or it may still \blank{not exist}: "
          r"\[ \lim_{x\to1}\frac{x-1}{(x-1)^2} = \lim_{x\to1}\frac{1}{x-1}, \] and that goes to $-\infty$ from the left "
@@ -64,8 +64,8 @@ NOTES = [
         r"$1 - \cos^2 x = \mblank{\sin^2 x}$ and $1 - \sin^2 x = \mblank{\cos^2 x}$.")),
     VideoExample('Identity', work="2.6cm"),
 
-    Section("When substitution gives nonzero over zero"),
-    Text(r"At $x = 3$, $\dfrac{x+1}{x-3}$ gives $\dfrac40$. No rewriting helps: the numerator stays near $4$ while the "
+    Section("When substitution yields nonzero over zero"),
+    Text(r"At $x = 3$, $\dfrac{x+1}{x-3}$ yields $\dfrac40$. No rewriting helps: the numerator stays near $4$ while the "
          r"denominator shrinks to $0$, so the quotient grows without bound. Here "
          r"$\displaystyle \lim_{x\to3^-}\frac{x+1}{x-3} = \mblank{-\infty}$ and "
          r"$\displaystyle \lim_{x\to3^+}\frac{x+1}{x-3} = \mblank{\infty}$, so the two-sided limit \blank{does not exist}."),
@@ -112,7 +112,7 @@ PRACTICE += [
     Item(r"Find $\displaystyle\lim_{h\to0}\frac{\frac{1}{3+h}-\frac13}{h}$.", num(sp.Rational(-1, 9)),
          limchain(0, [r"\frac{\frac{3-(3+h)}{3(3+h)}}{h}", r"\frac{-h}{3h(3+h)}", r"\frac{-1}{3(3+h)}"], r"-\frac19", var="h")),
     Item(r"Find $\displaystyle\lim_{x\to2^+}\frac{x+3}{x-2}$.", infinite(1),
-         r"Substitution gives $\frac50$. For $x$ slightly above $2$, the denominator is a small positive number, so the quotient "
+         r"Substitution yields $\frac50$. For $x$ slightly above $2$, the denominator is a small positive number, so the quotient "
          r"grows without bound: $\displaystyle\lim_{x\to2^+}\frac{x+3}{x-2} = \infty$."),
     Item(r"Find $\displaystyle\lim_{x\to1}\frac{x+1}{x-1}$, or type DNE.", dne(),
          r"$\frac20$. The denominator is negative for $x<1$ and positive for $x > 1$, so the one-sided limits are $-\infty$ and "
@@ -126,9 +126,9 @@ same("p18", L((x + 3) / (x - 2), 2, "+"), sp.oo)
 same("p19", [L((x + 1) / (x - 1), 1, "-"), L((x + 1) / (x - 1), 1, "+")], [-sp.oo, sp.oo])
 
 PRACTICE += [
-    Item(r"Find $\displaystyle\lim_{x\to2}\frac{x-2}{x^2-4x+4}$, or type DNE. Substitution gives $\frac00$, so rewrite first.", dne(),
+    Item(r"Find $\displaystyle\lim_{x\to2}\frac{x-2}{x^2-4x+4}$, or type DNE. Substitution yields $\frac00$, so rewrite first.", dne(),
          limchain(2, [r"\frac{x-2}{(x-2)^2}", r"\frac{1}{x-2}"], r"?") .replace(" = ?$", "$")
-         + r". Now substitution gives $\frac10$: the function goes to $-\infty$ from the left and $\infty$ from the right, so "
+         + r". Now substitution yields $\frac10$: the function goes to $-\infty$ from the left and $\infty$ from the right, so "
          r"the limit does not exist. The $\frac00$ at the start did not promise a number.", work="2cm"),
 ]
 same("0/0 then DNE", [sp.limit((x - 2) / (x**2 - 4 * x + 4), x, 2, "-"), sp.limit((x - 2) / (x**2 - 4 * x + 4), x, 2, "+")],
@@ -162,11 +162,11 @@ QUIZ = [
              limchain(-1, [r"\frac{\frac{3-(x+4)}{x+4}}{x+1}", r"\frac{-(x+1)}{(x+4)(x+1)}", r"\frac{-1}{x+4}"], r"-\frac13"), work="2cm"),
     ),
     Variants(
-        MCQ(r"Direct substitution into a limit gives $\dfrac00$. What can you conclude?",
+        MCQ(r"Direct substitution into a limit yields $\dfrac00$. What can you conclude?",
             [r"The limit is $0$.", r"The limit does not exist.", r"The limit is $1$.",
              r"Nothing yet; rewrite the expression and try again."], "D",
             r"$\frac00$ is indeterminate. Limits giving $\frac00$ can equal any number, or fail to exist.", why_not=ZERO),
-        MCQ(r"$\displaystyle\lim_{x\to1}\frac{x-1}{x^2-2x+1}$: substitution gives $\frac00$. After rewriting, what is the limit?",
+        MCQ(r"$\displaystyle\lim_{x\to1}\frac{x-1}{x^2-2x+1}$: substitution yields $\frac00$. After rewriting, what is the limit?",
             [r"$0$", r"$1$", r"$\frac12$", r"Does not exist."], "D",
             r"It rewrites to $\frac{1}{x-1}$, which heads to $-\infty$ from the left and $\infty$ from the right. $\frac00$ never promised a number.",
             why_not={"A": ZERO["A"], "B": ZERO["C"]}),

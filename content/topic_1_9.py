@@ -37,8 +37,10 @@ NOTES = [
          r"to $2$, $f(x)$ gets close to $4$, even though $f(2) = 1$."),
     FIG_HOLE,
     Formula("What each view is good at", (
-        r"\textbf{Formula:} exact values and algebra. \quad \textbf{Graph:} one-sided behavior, jumps, holes, asymptotes. \par "
-        r"\textbf{Table:} numerical evidence near a point. \quad \textbf{Words:} meaning and units in context.")),
+        r"\textbf{Formula:} exact values and algebra. \par "
+        r"\textbf{Graph:} one-sided behavior, jumps, holes, asymptotes. \par "
+        r"\textbf{Table:} numerical evidence near a point. \par "
+        r"\textbf{Words:} meaning and units in context.")),
 
     Section("Composite limits across representations"),
     FigureRow([FIG_G, FIG_H]),

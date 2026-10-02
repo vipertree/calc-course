@@ -14,3 +14,7 @@
   <a class="up" href="{% url 'map' %}#unit-{{ unit.n }}">Unit {{ unit.n }}</a>
   {% if next %}<a class="next" href="{% url 'lesson' next.n %}"><span class="dir">Next →</span> <span class="mathy">{{ next.n }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
 </nav>
+{% if packet %}<form class="packet-dl" method="post" action="{% url 'packet' num %}">{% csrf_token %}
+  <button class="btn small" type="submit">Download printable packet (PDF)</button>
+  <span class="muted">The lesson, practice and AP test prep in one file, printed with your name.</span>
+</form>{% endif %}

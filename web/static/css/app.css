@@ -298,3 +298,9 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 .handout-table .doc { display: inline-block; margin-right: 16px; white-space: nowrap; }
 .handout-table .chip-sm { font-family: var(--font-ui); font-size: .8rem; padding: 1px 6px; border-radius: 4px; background: var(--panel-2); margin-right: 4px; }
 @media (max-width: 640px) { .handout-table th { display: block; width: auto; padding-bottom: 0; } .handout-table td { display: block; } }
+
+/* printable packet download on lesson pages */
+.packet-dl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 18px; font-family: var(--font-ui); font-size: .88rem; }
+/* unit test scoring summary */
+.scoring { font-family: var(--font-ui); font-size: .92rem; }
+.scoring ul { margin: 6px 0 0; padding-left: 1.2em; }

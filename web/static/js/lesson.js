@@ -350,7 +350,8 @@
     if (L.preview) { app.append(h("div", { class: "narrow" }, lockedCard("Quizzes"))); return; }
     const fields = {};
     const cards = L.quiz.map((it) => {
-      const card = h("div", { class: "card q", id: it.id }, h("div", { class: "tag" }, it.calc ? h("span", { class: "calc" }, "calculator") : null), h("div", { html: it.html }), figureEl(it.figure));
+      const card = h("div", { class: "card q", id: it.id }, h("div", { class: "tag" }, it.calc ? h("span", { class: "calc" }, "calculator") : null,
+        opts.points ? h("span", { class: "muted", style: "font-weight:400" }, "1 point") : null), h("div", { html: it.html }), figureEl(it.figure));
       if (it.type === "mcq") {
         const ul = h("ul", { class: "choices" });
         it.choices.forEach((c, j) => { const L_ = "ABCD"[j];
@@ -371,7 +372,8 @@
     const showResults = (r, again) => {
       wrap.querySelectorAll(".test-part[hidden]").forEach((s) => { s.hidden = false; });
       wrap.querySelectorAll(".part-gate").forEach((g) => g.remove());
-      status.replaceChildren(h("div", { class: "card" }, h("div", { class: "score" }, `${r.score} / ${r.total}`),
+      status.replaceChildren(h("div", { class: "card" }, opts.points ? h("div", { class: "muted" }, "Multiple choice") : null,
+        h("div", { class: "score" }, `${r.score} / ${r.total}${opts.points ? " points" : ""}`),
         h("p", { class: "muted" }, r.score === r.total ? "Every question right." : (again ? "Review the solutions below, then try again." : "Review the solutions below.")),
         again ? h("button", { class: "btn", type: "button", onclick: () => location.reload() }, "Take it again") : null));
       cards.forEach((card) => {
@@ -483,7 +485,7 @@
   function frqSection(frqs, wrap, locked = false) {
     frqs.forEach((f) => {
       const card = h("div", { class: "card" }, h("div", { class: "tag" }, f.title, h("span", { class: "calc" }, f.calc ? "calculator allowed" : "no calculator"),
-        h("span", { class: "muted", style: "font-weight:400" }, `${f.points} points · ${f.type}`)), h("div", { html: f.html }), figureEl(f.figure));
+        h("span", { class: "muted", style: "font-weight:400" }, `${f.points} points` + (f.type ? ` · ${f.type}` : ""))), h("div", { html: f.html }), figureEl(f.figure));
       let earned = 0; const total = h("strong");
       const upd = () => { total.textContent = `${earned} / ${f.points}`; };
       f.parts.forEach((p) => {
@@ -526,7 +528,8 @@
     const fA = L.frq.filter((f) => !f.calc), fB = L.frq.filter((f) => f.calc);
     const locked = A.mode === "class" && !A.released;
     if (S.print && A.mode !== "class") app.append(printCard(S.print));
-    quiz({ what: "test",
+    app.append(h("div", { class: "narrow" }, scoringCard(nA, nB, fA, fB)));
+    quiz({ what: "test", points: true,
       intro: `Part 1, no calculator: ${nA} multiple choice${fA.length ? ` and ${fA.length} free response` : ""}. `
         + `Part 2, calculator allowed: ${nB} multiple choice${fB.length ? ` and ${fB.length} free response` : ""}.`
         + (A.mode === "class" ? "" : " Multiple choice is graded when you submit; score the free response yourself with the rubric."),
@@ -543,6 +546,21 @@
           frqSection(fB, box, locked);
         }
       } });
+  }
+
+  // how the unit test is scored: every multiple-choice question is 1 point, each free-response question shows its points
+  function scoringCard(nA, nB, fA, fB) {
+    const pts = (n) => `${n} point${n === 1 ? "" : "s"}`;
+    const frqs = (fs) => fs.map((f) => `${f.title} (${pts(f.points)})`).join(", ");
+    const sum = (fs) => fs.reduce((s, f) => s + f.points, 0);
+    const lines = [
+      `Part 1 multiple choice: ${nA} question${nA === 1 ? "" : "s"}, 1 point each (${pts(nA)})`,
+      fA.length ? `Part 1 free response: ${frqs(fA)}` : null,
+      `Part 2 multiple choice: ${nB} question${nB === 1 ? "" : "s"}, 1 point each (${pts(nB)})`,
+      fB.length ? `Part 2 free response: ${frqs(fB)}` : null,
+    ].filter(Boolean);
+    return h("div", { class: "card scoring" }, h("strong", {}, "Scoring"), h("ul", {}, ...lines.map((l) => h("li", {}, l))),
+      h("p", { style: "margin-bottom:0" }, h("strong", {}, `Total: ${pts(nA + nB + sum(fA) + sum(fB))}`)));
   }
 
   // a docked graphing calculator for calculator sections (Desmos, like the AP exam's Bluebook)

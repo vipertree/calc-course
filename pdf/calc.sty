@@ -109,7 +109,7 @@
   boxrule=0.5pt, arc=2pt, left=9pt, right=9pt, top=6pt, bottom=6pt,
   before upper={\stepcounter{calcex}{\hfont\bfseries Example \thecalcex\ifstrempty{#1}{}{\enspace\textperiodcentered\enspace #1}}\par\smallskip}}
 
-\newtcolorbox{checkbox}[1][Check your understanding]{enhanced, breakable, colback=wash2,
+\newtcolorbox{checkbox}[1][Check your understanding]{enhanced, breakable=false, colback=wash2,
   colframe=faint, boxrule=0.5pt, arc=2pt, borderline={0.5pt}{2pt}{faint,dashed},
   left=9pt, right=9pt, top=6pt, bottom=6pt, fonttitle=\hfont\small\bfseries, coltitle=ink,
   colbacktitle=wash2, title={#1}, titlerule=0pt}
@@ -127,8 +127,19 @@
     \par\vspace*{#1}\par
   \fi}
 
-% \answerline{answer}: a labelled final-answer line.
-\newcommand{\answerline}[1]{\par\hfill\hfont\small Answer:\ \blank[4cm]{#1}\par}
+% \answerline{answer}: keys only. The final answer sits flush left under the worked solution;
+% the student copy has no answer line, students just write in the work space.
+\newcommand{\answerline}[1]{\ifkey\par\nopagebreak{\hfont\small\bfseries Answer:}\enspace #1\par\fi}
+
+% ------------------------------------------------------- keeping problems whole
+% A problem (stem, figure, work space and, on keys, its solution) never splits across pages.
+% keepitem goes straight after \item; keep is the same for a block outside a list.
+% The \kern0pt stops the minipage's closing \unskip from eating the student work space.
+\newenvironment{keepitem}{\begin{minipage}[t]{\linewidth}\setlength{\parskip}{0.55em}}{\par\kern0pt\end{minipage}}
+\newenvironment{keep}{\par\noindent\begin{minipage}[t]{\linewidth}\setlength{\parskip}{0.55em}}{\par\kern0pt\end{minipage}\par}
+% \begin{frqpart}{a} ... \end{frqpart}: one lettered part of a free-response question, kept whole.
+\newenvironment{frqpart}[1]{\par\addvspace{0.3em}\noindent\makebox[2em][l]{(#1)}%
+  \begin{minipage}[t]{\dimexpr\linewidth-2em\relax}\setlength{\parskip}{0.55em}}{\par\kern0pt\end{minipage}\par}
 
 % ---------------------------------------------------------- four-meaning panel
 % \meanings{da,dg}: highlight any of da, dg, ia, ig. Add "inv" for the inverse arrow.

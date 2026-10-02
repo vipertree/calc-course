@@ -66,3 +66,18 @@ class Release(models.Model):
 
     class Meta:
         unique_together = [("classroom", "topic")]
+
+
+class IssuedPacket(models.Model):
+    """A personalized topic packet someone downloaded. The code is printed on every page of their copy,
+    so a copy found elsewhere can be traced back to who printed it."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="packets")
+    topic = models.CharField(max_length=8)
+    code = models.CharField(max_length=9, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.code} ({self.topic}, {self.user})"

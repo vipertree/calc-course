@@ -11,8 +11,8 @@ from django.views.decorators.http import require_POST
 
 from accounts.models import Classroom, class_for, has_full_access
 from . import content, grading
-from . import assess
-from .models import FRQScore, QuizAttempt, Release, Response, StepDone
+from . import assess, packets
+from .models import FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
 FREE_PRACTICE = 4          # practice problems anyone can try without an account
@@ -98,7 +98,7 @@ def lesson(request, num, area="notes"):
         state = {"steps_done": [], "correct": [], "frq": {}, "quiz": [], "full": False}
         return render(request, f"course/{area}.html", {
             "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-            "lesson_json": pub, "state_json": state})
+            "lesson_json": pub, "state_json": state, "packet": False})
     info = None
     if area == "quiz":
         pub, info = assess.draw(request, num, _lesson(num)[0])
@@ -116,7 +116,7 @@ def lesson(request, num, area="notes"):
             state["quiz"] = []
     return render(request, f"course/{area}.html", {
         "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-        "lesson_json": pub, "state_json": state,
+        "lesson_json": pub, "state_json": state, "packet": packets.available(num),
     })
 
 
@@ -441,8 +441,8 @@ def test_pdf(request, num, form, kind):
 
 
 # ------------------------------------------------------------------ teacher handouts: every printable PDF in one place
-_KINDS = [("notes", "Guided notes"), ("practice", "Practice"), ("quiz-formA", "Quiz A"), ("quiz-formB", "Quiz B"),
-          ("quiz-formC", "Quiz C"), ("testprep", "AP test prep"), ("unittest-formA", "Unit test A"), ("unittest-formB", "Unit test B"),
+_KINDS = [("packet", "Packet"), ("notes", "Guided notes"), ("practice", "Practice"), ("quiz-formA", "Quiz A"),
+          ("quiz-formB", "Quiz B"), ("quiz-formC", "Quiz C"), ("testprep", "AP test prep"), ("unittest-formA", "Unit test A"), ("unittest-formB", "Unit test B"),
           ("unittest-formC", "Unit test C")]
 
 
@@ -468,7 +468,24 @@ def handouts(request):
         test = _handout_rows(f"U{u['n']}", "Unit test") if u["n"] in tests else None
         if rows or (test and test["docs"]):
             units.append({"n": u["n"], "title": u["title"], "rows": rows, "test": test})
-    return render(request, "teacher/handouts.html", {"units": units})
+    lookup = None
+    if request.GET.get("packet"):
+        lookup = {"code": request.GET["packet"].strip()[:20], "found": _find_packet(request.user, request.GET["packet"])}
+    return render(request, "teacher/handouts.html", {"units": units, "lookup": lookup})
+
+
+def _find_packet(teacher, raw):
+    """A packet a student in one of this teacher's classes (or the teacher) printed, by its ID, or None."""
+    code = re.sub(r"[^A-Z0-9]", "", raw.upper())
+    if len(code) != 8:
+        return None
+    p = IssuedPacket.objects.select_related("user__profile").filter(code=f"{code[:4]}-{code[4:]}").first()
+    if p is None:
+        return None
+    if p.user != teacher and not p.user.enrollments.filter(classroom__teacher=teacher).exists():
+        return None
+    return {"code": p.code, "topic": p.topic, "created": p.created, "username": p.user.get_username(),
+            "name": packets.holder_name(p.user)}
 
 
 def handout_pdf(request, num, name):
@@ -478,3 +495,20 @@ def handout_pdf(request, num, name):
     if path.parent != (PDF_DIR / num).resolve() or path.suffix != ".pdf" or not path.is_file():
         raise Http404
     return FileResponse(open(path, "rb"), content_type="application/pdf", filename=name)
+
+
+# ------------------------------------------------------------------ personalized packets
+@login_required
+@require_POST
+def packet(request, num):
+    """The topic's lesson, practice and AP test prep as one PDF, stamped on every page with who it was printed for
+    and a packet ID that is recorded, so a leaked copy can be traced. Teachers get blank masters from Handouts."""
+    if not has_full_access(request.user):
+        return HttpResponseForbidden("Members only.")
+    if not packets.available(num):
+        raise Http404
+    p = packets.issue(request.user, num)
+    data = packets.stamp(packets.base_path(num), packets.holder_name(request.user), p.code)
+    resp = HttpResponse(data, content_type="application/pdf")
+    resp["Content-Disposition"] = f'attachment; filename="{num}-packet-{p.code}.pdf"'
+    return resp

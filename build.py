@@ -4,6 +4,9 @@
     python3 build.py 2.1 --theme modern     # another theme
     python3 build.py 2.1 --docs notes       # just the guided notes
     python3 build.py 2.1 --preview          # also write PNG previews to the scratch dir
+
+The packet (lesson + practice + AP test prep in one PDF) is the base the web app stamps with each
+student's name and packet ID on download; build/pdf/fonts/ gets the font that stamp is set in.
 """
 import argparse
 import importlib
@@ -30,7 +33,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("topics", nargs="+")
     ap.add_argument("--theme", default="classic", choices=sorted(latex.THEMES))
-    ap.add_argument("--docs", default="notes,practice,quiz,testprep")
+    ap.add_argument("--docs", default="notes,practice,quiz,testprep,packet")
     ap.add_argument("--preview", action="store_true")
     ap.add_argument("--web", action="store_true", help="also export lesson JSON + SVG figures for the site")
     ap.add_argument("--no-pdf", action="store_true")
@@ -50,6 +53,7 @@ def main():
             print("  " + os.path.relpath(p, ROOT))
     if a.no_pdf:
         return
+    stamp_font()
     for t in topics:
         outdir = os.path.join(ROOT, "build", "pdf", t.number)
         docs = ["unittest"] if isinstance(t, calclib.UnitTest) else a.docs.split(",")
@@ -75,6 +79,20 @@ def main():
                     print(f"  {os.path.relpath(pdf, ROOT)}: {len(fitz.open(pdf))} pages")
                     if a.preview:
                         latex.preview(pdf, PREVIEW_DIR)
+
+
+def stamp_font():
+    """The web app stamps packets in the heading font; it reads it from here so the server needs no TeX."""
+    import shutil
+    import subprocess
+    dest = os.path.join(ROOT, "build", "pdf", "fonts", "LibertinusSans-Regular.otf")
+    if os.path.exists(dest):
+        return
+    env = dict(os.environ, PATH=latex.TEXBIN + ":" + os.environ["PATH"])
+    src = subprocess.run(["kpsewhich", "LibertinusSans-Regular.otf"], capture_output=True, text=True, env=env).stdout.strip()
+    if src:
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copy(src, dest)
 
 
 if __name__ == "__main__":

@@ -89,6 +89,11 @@
       {\setlength{\blankw}{#1}}%
     \rule[-0.25em]{\blankw}{0.5pt}%
   \fi}
+% \pickopt{label} / \pickyes{label}: one choice of a check-box blank (\pick{a|b}{answer} in content; the build
+% expands it). Students see empty boxes; the key fills the right one.
+\newcommand{\pickopt}[1]{\mbox{\tikz[baseline=0]\draw[line width=0.6pt] (0,0) rectangle (0.8em,0.8em);\,#1}}
+\newcommand{\pickyes}[1]{\mbox{\tikz[baseline=0]{\draw[line width=0.6pt] (0,0) rectangle (0.8em,0.8em);
+  \ifkey\fill (0.17em,0.17em) rectangle (0.63em,0.63em);\fi}\,#1}}
 % \mblank{answer}: a blank inside math mode.
 \newcommand{\mblank}[2][]{\text{\blank[#1]{$#2$}}}
 

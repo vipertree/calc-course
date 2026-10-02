@@ -32,10 +32,10 @@ NOTES = [
         r"\quad 3. $\displaystyle \lim_{x\to c} f(x) = \mblank{f(c)}$.")),
     Text(r"In one sentence: the limit equals the \blank{value}. If any condition fails, $f$ is discontinuous at $c$."),
     FIG_T,
-    Table(r"$x = -1$ & $f(-1) = \mblank{3}$ & limit \blank{does not exist} & condition \mblank{2} fails \\ "
-          r"$x = 1$ & $f(1) = \mblank{3}$ & limit $= \mblank{4}$ & condition \mblank{3} fails \\ "
-          r"$x = 3$ & $f(3) = \mblank{3}$ & limit $= \mblank{2}$ & condition \mblank{3} fails \\ "
-          r"$x = 0$ & $f(0) = \mblank{3}$ & limit $= \mblank{3}$ & \blank{continuous}",
+    Table(r"$x = -1$ & $f(-1) = \mblank{3}$ & limit $=$ \blank{does not exist} & \pick{continuous|not continuous}{not continuous} \\ "
+          r"$x = 1$ & $f(1) = \mblank{3}$ & limit $= \mblank{4}$ & \pick{continuous|not continuous}{not continuous} \\ "
+          r"$x = 3$ & $f(3) = \mblank{3}$ & limit $= \mblank{2}$ & \pick{continuous|not continuous}{not continuous} \\ "
+          r"$x = 0$ & $f(0) = \mblank{3}$ & limit $= \mblank{3}$ & \pick{continuous|not continuous}{continuous}",
           "llll", header=r"point & value & limit & verdict"),
 
     Section("Writing a justification"),

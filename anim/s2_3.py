@@ -67,15 +67,22 @@ class Lesson(TranscriptScene):
         dg = lambda x: 0.36 * (x - 1) ** 2 - 0.3
         a2, _ = plot_axes([0, 5, 1], [0, 6, 1], w=7.4, h=5, coords=False)
         a2.shift(DOWN * 0.3)
-        with self.beat("Symmetric intervals") as b:
-            a, h = 3, 1
+        with self.beat("Pick nearby points") as b:
+            # Adder: no centered formula; just pick data close to the point, on one side or straddling it
+            a = 3
+            sec = lambda p, q, xr, col: VGroup(a2.plot(lambda x: g(p) + (g(q) - g(p)) / (q - p) * (x - p), x_range=xr, color=col, stroke_width=4),
+                                                closed_dot(a2, p, g(p), col), closed_dot(a2, q, g(q), col))
             self.play(FadeIn(a2), Create(a2.plot(g, x_range=[0, 5], color=FUNC, stroke_width=5)), FadeIn(closed_dot(a2, a, g(a), INK)), run_time=1.2)
             self.play(Create(tangent_line(a2, g, a, dg(a), [1.5, 4.5])), run_time=0.8)
-            one = a2.plot(lambda x: g(a) + (g(a + h) - g(a)) / h * (x - a), x_range=[2, 4.6], color=DIM, stroke_width=4)
-            self.play(Create(one), FadeIn(T("one-sided", 30, DIM).next_to(a2.c2p(4.6, 6), DOWN)), run_time=1)
-            sym = a2.plot(lambda x: g(a) + (g(a + h) - g(a - h)) / (2 * h) * (x - a), x_range=[1.6, 4.4], color=SECANT, stroke_width=4)
-            self.play(Create(sym), FadeIn(closed_dot(a2, a - h, g(a - h), SECANT)), FadeIn(closed_dot(a2, a + h, g(a + h), SECANT)),
-                      FadeIn(T("centered", 30, SECANT).to_edge(RIGHT, buff=0.8).shift(DOWN * 0.5)), run_time=1)
+            far = sec(0.4, 4.9, [0.2, 5], DIM)
+            far_l = T("far away", 30, DIM).next_to(a2.c2p(5, 0.6), UP)
+            self.play(Create(far), FadeIn(far_l), run_time=1)
+            b.line(1)
+            one = sec(3.2, 3.6, [2.2, 4.4], SECANT)
+            both = sec(2.8, 3.25, [2.0, 4.2], DERIV)
+            self.play(FadeOut(far), FadeOut(far_l), run_time=0.4)
+            self.play(Create(one), FadeIn(T("close, one side", 30, SECANT).to_edge(RIGHT, buff=0.6).shift(UP * 0.8)), run_time=1)
+            self.play(Create(both), FadeIn(T("close, both sides", 30, DERIV).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.2)), run_time=1)
         self.clear()
 
         tab = table(["t", "0", "2", "5", "7", "10"], [["T(t)", "48", "55", "63", "66", "64"]], size=36)
@@ -148,6 +155,6 @@ class Lesson(TranscriptScene):
                      figure=fig, at=[1, 2, 3],
                      notes_graph=dict(fns=[("3.5-0.5*(x-1)+0.1*(x-1)^2", -3, 5), ("3.5-0.5*(x-1)", -3, 5, "dashed")], xr=(-3, 5), yr=(0, 8),
                                       closed=[(-2, 5), (4, 2)]))
-        self.example("Example 3: A centered estimate", r"Estimate $f'(4)$ for $f(x) = \sqrt{x}$ using $x = 3.99$ and $x = 4.01$.",
+        self.example("Example 3: Points on both sides", r"Estimate $f'(4)$ for $f(x) = \sqrt{x}$ using $x = 3.99$ and $x = 4.01$.",
                      [r"\frac{\sqrt{4.01} - \sqrt{3.99}}{4.01 - 3.99}", r"\approx 0.25000", r"\text{exact: } f'(4) = \frac14"], at=[1, 2, 3])
         self.finish()

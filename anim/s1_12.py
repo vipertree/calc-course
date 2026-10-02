@@ -48,6 +48,12 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(a), Create(a.plot(lambda x: 2 + 0.5 * np.cos(x), x_range=[0, 6], color=FUNC, stroke_width=5)), FadeIn(band), FadeIn(ab), run_time=1.6)
             t = T("continuous at every point of the interval", 40, SECANT).to_edge(DOWN, buff=0.6)
             self.play(FadeIn(t), run_time=0.8)
+            b.line(1)
+            # a closed interval: at each end only the inside side counts
+            ends = VGroup(closed_dot(a, 1.5, 0, SECANT), closed_dot(a, 4.5, 0, SECANT))
+            ins = VGroup(Arrow(a.c2p(1.5, 0.9), a.c2p(2.3, 0.9), color=SECANT, buff=0), Arrow(a.c2p(4.5, 0.9), a.c2p(3.7, 0.9), color=SECANT, buff=0))
+            note = T("one-sided at the endpoints", 32, SECANT).next_to(t, UP, buff=0.25)
+            self.play(FadeIn(ends), GrowArrow(ins[0]), GrowArrow(ins[1]), FadeIn(note), run_time=1.2)
         self.clear()
 
         sh = shelf()

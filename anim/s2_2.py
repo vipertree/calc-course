@@ -198,7 +198,8 @@ class Lesson(TranscriptScene):
                       r"TEXT:Point-slope form is fine unless a form is asked for, or you are matching a simplified choice."], figure=fig2, at=[1, 2, 3, 4, 5])
         self.example("Units", r"$V(t)$ is the volume of water in a tank, in liters, $t$ minutes after it starts draining. Interpret $V'(4) = -12$.",
                      [r"\text{units of } V' = \frac{\text{liters}}{\text{minute}}", r"-12 < 0:\ \text{decreasing}",
-                      r"TEXT:At $t = 4$ minutes, the volume of water is decreasing at $12$ liters per minute."], at=[1, 2, 3])
+                      r"TEXT:At $t = 4$ minutes, the volume of water is decreasing at $12$ liters per minute.",
+                      r"TEXT:On the AP exam you must write a sentence like this: when, how fast with units, and increasing or decreasing."], at=[1, 2, 3, 4])
 
         top, tl, bot, bl, g = self.stacked()
         x = ValueTracker(-1.8)

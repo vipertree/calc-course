@@ -42,7 +42,7 @@ NOTES = [
         r"exactly when \blank{both one-sided limits exist and are equal} to $L$. If the one-sided limits are different, the "
         r"limit \blank{does not exist}.")),
     Text(r"For the jump above, $\displaystyle \lim_{x\to2^-}f(x)=3$ and $\displaystyle \lim_{x\to2^+}f(x)=4$, so "
-         r"$\displaystyle \lim_{x\to2}f(x)$ \blank{does not exist}, even though $f(2) = 4$."),
+         r"$\displaystyle \lim_{x\to2}f(x) = $ \blank{does not exist}, even though $f(2) = 4$."),
 
     Text(r"\textbf{At the edge of a domain.} $\sqrt{x}$ is only defined for $x \ge 0$, so near $x = 0$ there is no left side "
          r"to approach from. At an endpoint like this, the limit is the one-sided limit from the side where the function "
@@ -66,7 +66,7 @@ NOTES = [
     FigureRow([FIG_ABS, FIG_INV2, FIG_SIN]),
     Text(r"Writing $\displaystyle \lim_{x\to0}\frac1{x^2} = \infty$ describes \emph{how} the limit fails: $\infty$ is not "
          r"a real number, so the limit still does not exist. For $\dfrac1x$, the left side goes to $-\infty$ and the "
-         r"right side to $\infty$, so we can only say $\displaystyle \lim_{x\to0}\frac1x$ \blank{does not exist}."),
+         r"right side to $\infty$, so all we can say is $\displaystyle \lim_{x\to0}\frac1x = $ \blank{does not exist}."),
 
     Section("Graphs can hide behavior"),
     Text(r"A calculator draws a graph from finitely many points. Graph $y = \dfrac{x^2-1}{x-1}$ and the hole at $(1,2)$ "

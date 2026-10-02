@@ -68,7 +68,7 @@ NOTES = [
     Text(r"At $x = 3$, $\dfrac{x+1}{x-3}$ yields $\dfrac40$. No rewriting helps: the numerator stays near $4$ while the "
          r"denominator shrinks to $0$, so the quotient grows without bound. Here "
          r"$\displaystyle \lim_{x\to3^-}\frac{x+1}{x-3} = \mblank{-\infty}$ and "
-         r"$\displaystyle \lim_{x\to3^+}\frac{x+1}{x-3} = \mblank{\infty}$, so the two-sided limit \blank{does not exist}."),
+         r"$\displaystyle \lim_{x\to3^+}\frac{x+1}{x-3} = \mblank{\infty}$, so $\displaystyle \lim_{x\to3}\frac{x+1}{x-3} = $ \blank{does not exist}."),
     BigIdea(r"Substitute first and read the result: a number means done; $\frac00$ means rewrite and try again; "
             r"$\displaystyle \dfrac{\text{nonzero}}{0}$ means unbounded behavior (Topic 1.14). Keep writing $\lim$ until the last step."),
     Check(r"Find \[ \lim_{h\to0}\frac{(3+h)^2-9}{h}. \]", num(6),

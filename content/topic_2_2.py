@@ -61,6 +61,8 @@ NOTES = [
     Text(r"Leaving a tangent line in point-slope form is fine, \blank{unless} the question asks for a form, or you need to match a simplified multiple-choice answer."),
     VideoExample("A tangent line", work="2.6cm"),
     VideoExample("Units", work="2cm"),
+    Text(r"\textbf{On the AP exam.} Interpreting a derivative in context is a big part of the exam. You need to be able "
+         r"to write a sentence like this one: when, how fast (with units), and whether the quantity is increasing or decreasing."),
     BigIdea(r"$f'$ is a function. Each of its values is both a rate of change and a slope."),
     Check(r"Use the definition to find $f'(x)$ for $f(x) = 3x^2 - x$.", expr("6*x-1"),
           limchain(0, [r"\frac{3(x+h)^2 - (x+h) - 3x^2 + x}{h}", r"\frac{6xh + 3h^2 - h}{h}", r"(6x + 3h - 1)"], r"6x - 1", var="h")),

@@ -16,14 +16,12 @@ NOTES = [
 
     Section("Continuity on an interval"),
     Definition("Continuous on an interval", (
-        r"A function is \textbf{continuous on an interval} if it is continuous at \blank{every point} of the interval. On a closed "
-        r"interval $[a, b]$, continuity at the endpoints means \blank{one-sided} continuity: from the right at $a$ and from the "
-        r"left at $b$.")),
+        r"A function is \textbf{continuous on an interval} if it is continuous at \blank{every point} of the interval.")),
     Formula("Functions that are continuous on their domains", (
         r"Polynomials, rational functions, powers and roots, exponentials, logarithms, $\sin x$, $\cos x$ and $\tan x$ are "
         r"continuous at every point in their \blank{domains}.\par "
-        r"Sums, differences, products and \blank{compositions} of continuous functions are continuous; quotients are too, "
-        r"except where the \blank{denominator is zero}.")),
+        r"Sums, differences, products and compositions of continuous functions are continuous; quotients are too, "
+        r"except where the denominator is zero.")),
 
     Section("Finding intervals of continuity"),
     VideoExample('Read the domain', work="2.8cm"),

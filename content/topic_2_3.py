@@ -25,10 +25,9 @@ NOTES = [
     Text(r"To estimate $T'(6)$, use the data \blank{closest} to $t = 6$ on each side: "
          r"\[ T'(6) \approx \frac{T(7) - T(5)}{7 - 5} = \mblank{1.5} \] \blank{degrees per hour}."),
     Formula("Estimating $f'(c)$ from data", (
-        r"Use the average rate of change over the data points closest to $c$, one on each side when possible:"
-        r"\[ f'(c) \approx \frac{f(b) - f(a)}{b - a}, \qquad a < c < b. \]"
-        r"The average rate of change (a \blank{secant} slope) is your \textbf{estimate} of the instantaneous rate of change (a \blank{tangent} slope). "
-        r"If data are equally spaced around $c$, the centered average rate \[ \frac{f(c+h) - f(c-h)}{2h} \] is usually most accurate.")),
+        r"Pick data points close to $c$, on one side of $c$ or on both sides, and use their average rate of change:"
+        r"\[ f'(c) \approx \frac{f(b) - f(a)}{b - a}. \]"
+        r"The average rate of change (a \blank{secant} slope) is your \textbf{estimate} of the instantaneous rate of change (a \blank{tangent} slope).")),
     VideoExample("Only one side", work="2cm"),
 
     Section("From a graph"),
@@ -44,7 +43,7 @@ NOTES = [
             {"id": "tan", "latex": r"y=f(a)+m(x-a)", "color": "#c74440"},
             {"id": "P", "latex": r"(a,f(a))", "color": "#000000"}],
            {"left": -3, "right": 3, "bottom": -8, "top": 8}),
-    Text(r"A calculator can be fooled at a corner. For $|x|$ at $x = 0$, the centered quotient $\displaystyle \frac{|h| - |-h|}{2h} = \mblank{0}$, "
+    Text(r"A calculator can be fooled at a corner. For $|x|$ at $x = 0$, the average rate of change from $x = -0.001$ to $x = 0.001$ is \mblank{0}, "
          r"but $|x|$ has no tangent line at $0$. Topic 2.4 explains when a derivative fails to exist."),
     BigIdea(r"Without a formula, a derivative is estimated by a secant slope over the smallest interval the data allow, with units "
             r"of output per input."),
@@ -75,7 +74,7 @@ PRACTICE = [
     Item(r"A calculator reports that the derivative of $|x - 2|$ at $x = 2$ is $0$. Explain why this is misleading.",
          selfcheck(r"\text{corner: no tangent line}"),
          r"The graph has a corner at $x = 2$: slope $-1$ on the left and $1$ on the right. There is no tangent line, so the "
-         r"derivative does not exist; the calculator's centered quotient averages $-1$ and $1$ to get $0$.", work="2.2cm"),
+         r"derivative does not exist; a calculator using points on both sides averages $-1$ and $1$ to get $0$.", work="2.2cm"),
     Item(r"$D(t)$ is the depth of snow, in inches, $t$ hours after midnight. $D(4) = 6.2$ and $D(5) = 7.0$. Estimate $D'(4.5)$ and "
          r"interpret it with units.", num(sp.Rational(4, 5), tol=0.001, display=r"0.8\text{ in/hr}"),
          r"$\dfrac{7.0 - 6.2}{1} = 0.8$. At 4:30 AM the snow depth is increasing at about 0.8 inches per hour.", work="2cm"),
@@ -121,9 +120,9 @@ PRACTICE += [
          r"Estimate $A'(3)$ and interpret it with units.", num(40, display=r"40\ \text{m}^2\text{/hr}"),
          r"$\dfrac{230 - 150}{4 - 2} = 40$. Three hours after the leak starts, the spill is growing by about $40$ square meters "
          r"per hour.", work="2cm"),
-    Item(r"For $f(x) = \sqrt[3]{x}$, compute $\dfrac{f(h) - f(-h)}{2h}$ for $h = 0.001$. What happens as $h$ shrinks, and what "
+    Item(r"For $f(x) = \sqrt[3]{x}$, compute the average rate of change from $x = -0.001$ to $x = 0.001$. What happens as the interval shrinks, and what "
          r"does that say about $f'(0)$?", selfcheck(r"\text{grows without bound; } f'(0) \text{ does not exist}"),
-         r"For $h = 0.001$ the quotient is $\dfrac{0.1 - (-0.1)}{0.002} = 100$, and it keeps growing as $h$ shrinks. The tangent "
+         r"It is $\dfrac{0.1 - (-0.1)}{0.002} = 100$, and it keeps growing as the interval shrinks. The tangent "
          r"line at $x = 0$ is vertical, so $f'(0)$ does not exist.", calc=True, work="2.2cm"),
 ]
 same("x1 R", [sp.Rational(17 - 20, 2), sp.Rational(26 - 30, 4), sp.Rational(5 - 17, 8), sp.Rational(17 - 26, 8)],
@@ -150,16 +149,16 @@ QUIZ = [
         Item(r"Values of $K$ are shown." + TK + r"\par Estimate $K'(8)$.", num(-2), r"$\dfrac{12 - 20}{10 - 6} = -2$.", work="1.6cm"),
     ),
     Variants(
-        MCQ(r"Which is the best reason to estimate $f'(c)$ with data points on both sides of $c$?",
-            [r"It is required by the definition", r"A centered secant usually tracks the tangent line more closely",
-             r"It always gives the exact derivative", r"One-sided quotients are undefined"], "B",
-            r"Centered secants balance the curvature on each side."),
+        MCQ(r"A table gives $f(x)$ at $x = 1, 4, 6, 9$. Which gives the best estimate of $f'(5)$?",
+            [r"$\dfrac{f(9) - f(1)}{8}$", r"$\dfrac{f(6) - f(4)}{2}$", r"$\dfrac{f(9) - f(6)}{3}$", r"$\dfrac{f(4) - f(1)}{3}$"], "B",
+            r"Use the data points closest to $5$: $x = 4$ and $x = 6$.",
+            why_not={"A": "points far from 5 give a poor estimate", "C": "both points are past 5, and not the closest", "D": "both points are before 5, and not the closest"}),
         MCQ(r"A table gives $f$ at $x = 1, 3, 4, 8$. Which quotient gives the best estimate of $f'(3.5)$?",
             [r"$\dfrac{f(8) - f(1)}{7}$", r"$\dfrac{f(4) - f(1)}{3}$", r"$\dfrac{f(4) - f(3)}{1}$", r"$\dfrac{f(8) - f(3)}{5}$"], "C",
             r"Use the closest data on each side of $3.5$: $x = 3$ and $x = 4$.", why_not={"A": "far too wide"}),
         MCQ(r"A calculator reports the derivative of $|x - 1|$ at $x = 1$ as $0$. What is true?",
             [r"The derivative is $0$.", r"The derivative is $1$.", r"The graph has a corner at $x = 1$, so the derivative does not exist.",
-             r"The derivative is $-1$."], "C", r"The left slope is $-1$ and the right slope is $1$. A centered quotient averages them to $0$, which is misleading."),
+             r"The derivative is $-1$."], "C", r"The left slope is $-1$ and the right slope is $1$. Points on both sides average them to $0$, which is misleading."),
     ),
     Variants(
         Item(r"A tangent line to the graph of $f$ at $x = 2$ passes through $(0, 1)$ and $(4, 7)$. Estimate $f'(2)$.",
@@ -194,7 +193,7 @@ MCQS = [
         r"It approximates $f'(2) = 3(4) - 1 = 11$. (Exactly $11.0001$.)", why_not={"C": "forgot the $-x$ term"}),
     MCQ(r"The graph of $g$ has a sharp corner at $x = 3$. Which is true?",
         [r"$g'(3) = 0$", r"$g(3)$ does not exist", r"$g$ is not continuous at $x = 3$", r"$g'(3)$ does not exist"], "D",
-        r"A corner has no single tangent line.", why_not={"A": "a calculator's centered quotient can suggest this, wrongly"}),
+        r"A corner has no single tangent line.", why_not={"A": "a calculator using points on both sides can suggest this, wrongly"}),
     MCQ(r"A student estimates $f'(4)$ using $f(3.9) = 2.73$ and $f(4.1) = 2.81$. The estimate is", [r"$0.08$", r"$0.8$", r"$0.4$", r"$0.04$"], "C",
         r"$\dfrac{2.81 - 2.73}{0.2} = 0.4$.", why_not={"A": "forgot to divide", "B": "divided by $0.1$"}),
 ]

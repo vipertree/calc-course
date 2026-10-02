@@ -52,8 +52,8 @@ NOTES = [
     Section("When tables mislead"),
     Text(r"\textbf{Unlucky inputs.} For $\displaystyle f(x) = \sin\dfrac{\pi}{x}$, the inputs $x = 0.1, 0.01, 0.001$ give "
          r"$\sin(10\pi), \sin(100\pi), \sin(1000\pi)$, which all equal \mblank{0}. But at $\displaystyle x = \dfrac{2}{21} \approx 0.095$, "
-         r"$f(x) = \sin(10.5\pi) = \mblank{1}$. The function oscillates, and \[ \lim_{x\to0}\sin\frac\pi x \] "
-         r"\blank{does not exist}."),
+         r"$f(x) = \sin(10.5\pi) = \mblank{1}$. The function oscillates, so "
+         r"$\displaystyle \lim_{x\to0}\sin\frac\pi x = $ \blank{does not exist}."),
     Text(r"\textbf{Rounding.} \[ \lim_{x\to0}\frac{1-\cos x}{x^2} = \frac12, \] but at $x = 10^{-9}$ a calculator "
          r"rounds $\cos x$ to exactly $1$ and reports $0$. When outputs suddenly collapse or jump at very small inputs, "
          r"suspect \blank{rounding}."),
@@ -63,7 +63,7 @@ NOTES = [
     Table(r"$x$ & $1.9$ & $1.99$ & $1.999$ & $2.001$ & $2.01$ & $2.1$ \\ "
           r"$g(x)$ & $3.9$ & $3.99$ & $3.999$ & $5.001$ & $5.01$ & $5.1$", "c|cccccc"),
     Text(r"$\displaystyle \lim_{x\to2^-} g(x) \approx \mblank{4}$, \quad $\displaystyle \lim_{x\to2^+} g(x) \approx \mblank{5}$, "
-         r"\quad so $\displaystyle \lim_{x\to2} g(x)$ \blank{does not exist}."),
+         r"\quad so $\displaystyle \lim_{x\to2} g(x) = $ \blank{does not exist}."),
     VideoExample('Your own table', work="3cm"),
     Check(r"Use a table to estimate $\displaystyle \lim_{x\to0}\frac{2^x-1}{x}$ to three decimal places.",
           num(sp.log(2), tol=0.0015, display=r"\approx 0.693"),

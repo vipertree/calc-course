@@ -6,6 +6,7 @@ The page never receives answers. lesson.json is split in two:
 """
 from calclib import glue_punct
 import json
+from html import escape as html_escape
 import os
 import re
 import shutil
@@ -46,9 +47,19 @@ class Blanks:
         return bid
 
 
+DNE_WORDS = ("does not exist", "dne")
+
+
+def _pick_html(bid, opts):
+    """A check-box blank: the page shows one box per option; the answer stays on the server."""
+    return f'<span class="blank pick" data-blank="{bid}" data-kind="pick" data-options="{html_escape(json.dumps(opts))}"></span>'
+
+
 def _blank_html(bid, answer):
     kind = "math" if answer.strip().startswith("$") else "text"
     width = max(4, min(28, len(re.sub(r"[${}\\]", "", answer)) + 2))
+    if answer.strip().lower() in DNE_WORDS:
+        width = 6                      # "does not exist" gets a number-sized blank: its length mustn't give it away
     return f'<span class="blank" data-blank="{bid}" data-kind="{kind}" style="--w:{width}ch"></span>'
 
 
@@ -231,6 +242,13 @@ def html(s, blanks=None):
         return ""
     s = _lift_mblanks(_display_wrap(glue_punct(s)))
     out, pos = [], 0
+    # check-box blanks: \pick{a|b}{answer}
+    def _pick(m):
+        opts = [o.strip() for o in m.group(1).split("|")]
+        if blanks is None:
+            return m.group(2)
+        return "\x00" + _pick_html(blanks.add("pick:" + m.group(2).strip()), opts) + "\x00"
+    s = re.sub(r"\\pick\{([^{}]*)\}\{([^{}]*)\}", _pick, s)
     # pull \blank{} out first, since its argument may itself contain math
     while True:
         i = s.find(r"\blank", pos)

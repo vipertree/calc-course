@@ -299,6 +299,12 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 /* a display line that holds fill-in blanks: centered, display-style pieces with the inputs between them */
 .dline { display: block; text-align: center; margin: .7em 0; line-height: 2.4; }
 .nobr { white-space: nowrap; }
+/* a check-box blank: its options sit side by side, each option's box and words kept together */
+.blank.pick { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; border: 0; background: none; min-width: 0; padding: 0; }
+.blank.pick .pick-opt { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; cursor: pointer; font-family: var(--font-ui); font-size: .95em; }
+.blank.pick input { width: auto; min-width: 0; padding: 0; margin: 0 4px 0 0; border: 0; background: none; vertical-align: middle; }
+.blank.pick.good .pick-opt:has(input:checked) { color: var(--good); font-weight: 600; }
+.blank.pick.bad .pick-opt:has(input:checked) { color: var(--bad); }
 /* one piece of a display that may wrap: pieces share a line when they fit, otherwise stack, never scroll */
 .dline .dpiece { display: inline-block; margin: 0 .9em; line-height: normal; vertical-align: middle; }
 /* on wide screens the test slides left so the docked calculator doesn't cover it */

@@ -413,6 +413,21 @@ def fail_if_needed():
 _PUNCT_AFTER_DISPLAY = re.compile(r"\\\]\s*([.,;:?!])")
 
 
+_PICK = re.compile(r"\\pick\{([^{}]*)\}\{([^{}]*)\}")
+_DNE_BLANK = re.compile(r"\\blank\{((?:[Dd]oes not exist|DNE))\}")
+
+
+def expand_for_print(tex):
+    """Printed form of the course's extra blank kinds:
+    \\pick{a|b}{answer} -> check boxes, the right one filled on the key;
+    a "does not exist" blank -> the standard 2.2cm width, so its length doesn't give the answer away."""
+    def pick(m):
+        opts, ans = [o.strip() for o in m.group(1).split("|")], m.group(2).strip()
+        return r"\quad ".join((r"\pickyes{%s}" if o == ans else r"\pickopt{%s}") % o for o in opts)
+    tex = _PICK.sub(pick, tex)
+    return _DNE_BLANK.sub(r"\\blank[2.2cm]{\1}", tex)
+
+
 def glue_punct(s):
     """Move punctuation that follows a displayed formula inside it: "... \\[ f'(3) = 6 \\]." becomes
     "... \\[ f'(3) = 6. \\]", so a line never starts with the sentence's period (Adder, 2026-10-02).

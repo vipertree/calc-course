@@ -232,8 +232,16 @@ def _plain(s):
     return s.replace("{", "").replace("}", "").replace("(", "").replace(")", "").replace("−", "-")
 
 
+DNE = {"does not exist", "doesnt exist", "doesn t exist", "dne", "does not exists", "nonexistent", "no limit"}
+
+
 def check_blank(given, answer):
-    """A notes blank: math if the key is in $...$, words otherwise."""
+    """A notes blank: math if the key is in $...$, words otherwise. A check-box blank ("pick:") must match exactly;
+    a "does not exist" blank also takes DNE."""
+    if answer.startswith("pick:"):
+        return (given or "").strip() == answer[5:]
+    if _norm(answer) in DNE:
+        return _norm(given) in DNE
     if answer.strip().startswith("$"):
         try:
             want = to_sympy(latex_to_ascii(answer))

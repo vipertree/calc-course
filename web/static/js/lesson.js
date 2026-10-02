@@ -127,8 +127,39 @@
   }
 
   // ------------------------------------------------------------ blanks
+  // a check-box blank (\pick in the notes): one box per option, checked like any other blank
+  function wirePick(span) {
+    const id = span.dataset.blank;
+    const opts = JSON.parse(span.dataset.options || "[]");
+    const name = "pick-" + id;
+    const boxes = opts.map((o) => h("label", { class: "pick-opt" }, h("input", { type: "radio", name, value: o }), o));
+    span.append(...boxes);
+    const reveal = h("button", { class: "reveal", type: "button", hidden: true }, "show");
+    span.append(reveal);
+    const settle = (value) => {
+      span.classList.remove("bad"); span.classList.add("good");
+      span.querySelectorAll("input").forEach((r) => { r.checked = r.value === value; r.disabled = true; });
+      reveal.hidden = true;
+    };
+    const known = S.shown && S.shown[id];
+    if (known) { settle(known.replace(/^pick:/, "")); return; }
+    keepChoice(span, id);
+    span.addEventListener("change", async (e) => {
+      if (e.target.type !== "radio") return;
+      const r = await post(app.dataset.check, { item: id, given: e.target.value, area: "notes" });
+      if (r.correct) settle(e.target.value);
+      else { span.classList.add("bad"); reveal.hidden = false; }
+    });
+    reveal.addEventListener("click", async () => {
+      const r = await post(app.dataset.check, { item: id, given: "", reveal: true, area: "notes" });
+      draftPut(id, "", true);
+      settle((r.answer || "").replace(/^pick:/, ""));
+    });
+  }
+
   function wireBlanks(root) {
     root.querySelectorAll(".blank[data-blank]").forEach((span) => {
+      if (span.dataset.kind === "pick") { wirePick(span); return; }
       const id = span.dataset.blank;
       const input = span.dataset.kind === "math" ? mathField() : h("input", { type: "text", autocomplete: "off", "aria-label": "Fill in the blank" });
       span.append(input);
@@ -252,6 +283,19 @@
   function matchLook(v, src) {
     let dark = wantsDark();
     v.src = videoUrl(lookSrc(src, dark));
+    // keep the viewer's place across a reload, which is what the Dark/Light toggle does (Adder, 2026-10-02)
+    const tkey = "calc.vtime." + src;
+    let lastSave = 0;
+    v.addEventListener("timeupdate", () => {
+      if (Date.now() - lastSave < 1000) return;
+      lastSave = Date.now();
+      try { sessionStorage.setItem(tkey, String(v.currentTime)); } catch (e) { /* storage blocked */ }
+    });
+    v.addEventListener("loadedmetadata", () => {
+      let t = 0;
+      try { t = parseFloat(sessionStorage.getItem(tkey)) || 0; } catch (e) { /* storage blocked */ }
+      if (t > 1 && t < v.duration - 2 && v.currentTime < 0.5) v.currentTime = t;
+    }, { once: true });
     v.addEventListener("error", (e) => {          // no dark render yet: fall back to the light one
       if (dark && v.src.includes("-dark.mp4")) { e.stopImmediatePropagation(); dark = false; v.src = videoUrl(src); }
     });

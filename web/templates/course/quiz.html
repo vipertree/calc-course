@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% load static course_text %}
+{% block title %}{{ L.number }} {{ L.title|plaintext }} · AP Calculus{% endblock %}
+{% block crumbs %}<a class="muted crumb" href="{% url 'map' %}" style="font-family:var(--font-ui);font-size:.9rem">Course map</a>{% endblock %}
+{% block head %}<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.105.3/mathlive.min.js"></script>
+{% if DESMOS_API_KEY %}<script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey={{ DESMOS_API_KEY }}"></script>{% endif %}{% endblock %}
+{% block main %}
+{% include "course/_head.html" %}
+<div id="app" data-area="quiz" data-num="{{ num }}"
+     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-step="{% url 'api_step' num %}"
+     data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>
+{{ lesson_json|json_script:"lesson" }}{{ state_json|json_script:"state" }}
+{% endblock %}
+{% block scripts %}<script>window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/lesson.js' %}"></script>{% endblock %}

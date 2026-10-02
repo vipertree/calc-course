@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Transcripts · AP Calculus{% endblock %}
+{% block main %}
+<div class="layout">
+  <aside class="rail" style="max-height:80vh;overflow:auto">
+    <div class="muted" style="font-weight:700;margin-bottom:6px">{{ items|length }} transcripts · ~{{ total }} min</div>
+    <ol style="counter-reset:none">{% for t in items %}
+      <li style="counter-increment:none" class="{% if cur and cur.num == t.num %}cur{% endif %}"><a href="?t={{ t.num }}" style="color:inherit;text-decoration:none">{{ t.num }} · {{ t.title|slice:"4:" }}</a></li>
+    {% endfor %}</ol>
+  </aside>
+  <div class="narrow" style="margin:0">
+  {% if cur %}
+    <h1>{{ cur.title }}</h1>
+    <p class="muted">{{ cur.beats|length }} beats · about {{ cur.minutes }} minutes of narration</p>
+    {% for b in cur.beats %}
+      {% ifchanged b.part %}{% if b.part == "examples" %}<h2 style="margin:24px 0 10px">Worked examples</h2>{% endif %}{% endifchanged %}
+      <section class="card" style="margin-bottom:14px">
+        <div class="tag">{{ forloop.counter }}. {{ b.name }}</div>
+        <p class="muted" style="font-style:italic;margin:0 0 8px">{{ b.screen|join:" " }}</p>
+        {% for line in b.say %}<p style="margin:0 0 6px">{{ line }}</p>{% endfor %}
+      </section>
+    {% endfor %}
+  {% else %}
+    <h1>Video transcripts</h1>
+    <p>These are the narration scripts for each lesson video, written for review before anything is animated or voiced.
+       Italic lines describe what's on screen; regular text is exactly what the narrator says. Pick a topic on the left.</p>
+  {% endif %}
+  </div>
+</div>
+{% endblock %}

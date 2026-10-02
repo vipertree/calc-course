@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sign in · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  <h1>Sign in</h1>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<ul class="errorlist"><li>That username and password don't match.</li></ul>{% endif %}
+    <label for="id_username">Username</label><input type="text" name="username" id="id_username" autocomplete="username" required autofocus>
+    <label for="id_password">Password</label><input type="password" name="password" id="id_password" autocomplete="current-password" required>
+    <p><button class="btn primary">Sign in</button></p>
+  </form>
+  <p class="muted">New here? <a href="{% url 'join' %}">Join your class with a code</a>.</p>
+</div></div>
+{% endblock %}

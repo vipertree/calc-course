@@ -1,0 +1,182 @@
+/* Textbook: a LaTeX-set math book (amsthm, hyperref, booktabs). Text and math share one face,
+   Computer Modern, taken from the KaTeX fonts the page already loads. Brief: web/design/BRIEFS.md */
+
+:root[data-design="textbook"] {
+  --bg: #FFFFFF; --panel: #FFFFFF; --panel-2: #F2F2F2; --ink: #000000; --ink-2: #222222; --dim: #595959;
+  --rule: #000000; --soft: #BDBDBD; --focus: #0071BC;
+  --func: #0071BC; --secant: #C86B00; --tangent: #B6321C; --area: #3C8031; --accum: #92268F; --deriv: #3C8031;
+  --accent: #0071BC; --accent-ink: #FFFFFF;
+  --good: #3C8031; --good-bg: #EAF3E7; --bad: #B6321C; --bad-bg: #F8E8E5;
+  --font-body: KaTeX_Main, "Latin Modern Roman", "CMU Serif", "Times New Roman", serif; --font-head: var(--font-body);
+  --font-ui: KaTeX_SansSerif, "Latin Modern Sans", "CMU Sans Serif", sans-serif;
+  --radius: 0; --shadow: none;
+  color-scheme: light;
+}
+:root[data-design="textbook"][data-theme="slate"] {
+  --bg: #1D2025; --panel: #1D2025; --panel-2: #282C33; --ink: #E9E6E0; --ink-2: #CAC6BF; --dim: #A29E97;
+  --rule: #E9E6E0; --soft: #4A4F58; --focus: #6DB8F2;
+  --func: #6DB8F2; --secant: #F2A85A; --tangent: #F08C78; --area: #8FCB7F; --accum: #D98ED6; --deriv: #8FCB7F;
+  --accent: #6DB8F2; --accent-ink: #1D2025;
+  --good: #8FCB7F; --good-bg: #24352A; --bad: #F08C78; --bad-bg: #3D2723;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-design="textbook"]:not([data-theme]) {
+  --bg: #1D2025; --panel: #1D2025; --panel-2: #282C33; --ink: #E9E6E0; --ink-2: #CAC6BF; --dim: #A29E97;
+  --rule: #E9E6E0; --soft: #4A4F58; --focus: #6DB8F2;
+  --func: #6DB8F2; --secant: #F2A85A; --tangent: #F08C78; --area: #8FCB7F; --accum: #D98ED6; --deriv: #8FCB7F;
+  --accent: #6DB8F2; --accent-ink: #1D2025;
+  --good: #8FCB7F; --good-bg: #24352A; --bad: #F08C78; --bad-bg: #3D2723;
+  color-scheme: dark;
+  }
+}
+
+[data-design="textbook"] body { font-size: 19px; line-height: 1.5; }
+[data-design="textbook"] h1, [data-design="textbook"] h2, [data-design="textbook"] h3 { font-weight: 700; }
+[data-design="textbook"] a { color: var(--accent); text-decoration: none; }
+[data-design="textbook"] a:hover { text-decoration: underline; }
+[data-design="textbook"] .katex { font-size: 1.04em; }
+
+/* ---------- running head */
+[data-design="textbook"] .top { background: var(--bg); backdrop-filter: none; border-bottom: 1px solid var(--ink); font-size: 16px; }
+[data-design="textbook"] .brand { color: var(--ink); font: italic 400 1.1rem var(--font-body); }
+[data-design="textbook"] .top .crumb { font-family: var(--font-body) !important; font-size: 1rem !important; }
+[data-design="textbook"] .themes { gap: 0; }
+[data-design="textbook"] .themes a, [data-design="textbook"] .design-pick summary { border: 0; border-radius: 0; padding: 0 6px; font-size: .92rem; color: var(--dim); }
+[data-design="textbook"] .themes a + a { border-left: 1px solid var(--soft); }
+[data-design="textbook"] .themes a.on, [data-design="textbook"] .design-pick[open] summary { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+[data-design="textbook"] .design-pick { border-left: 1px solid var(--soft); }
+[data-design="textbook"] .design-menu { border-radius: 0; border: 1px solid var(--ink); box-shadow: none; background: var(--bg); padding: 4px 0; }
+[data-design="textbook"] .design-menu a { font-family: var(--font-body); border-radius: 0; font-size: 1rem; }
+[data-design="textbook"] .design-menu a.on { font-weight: 700; }
+[data-design="textbook"] .linkbtn, [data-design="textbook"] .top .who { font-size: .92rem; }
+
+/* ---------- buttons + fields: \fbox */
+[data-design="textbook"] .btn { border-radius: 0; border: 1px solid var(--ink); background: transparent; color: var(--ink);
+  font: 400 .92rem var(--font-ui); padding: 5px 12px; }
+[data-design="textbook"] .btn:hover { background: var(--panel-2); border-color: var(--ink); }
+[data-design="textbook"] .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 400; }
+[data-design="textbook"] .btn.primary:hover { background: var(--ink-2); }
+[data-design="textbook"] input[type=text], [data-design="textbook"] input[type=password], [data-design="textbook"] select,
+[data-design="textbook"] math-field { background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; }
+[data-design="textbook"] .auth input[type=text], [data-design="textbook"] .auth input[type=password] { background: var(--panel-2); }
+[data-design="textbook"] math-field { background: var(--panel-2); }
+[data-design="textbook"] .kbd-btn { border-radius: 0; border: 1px solid var(--ink); background: var(--bg); box-shadow: none; font: 400 .9rem var(--font-ui); }
+[data-design="textbook"] .lock, [data-design="textbook"] .calc, [data-design="textbook"] .unit h2 .bc, [data-design="textbook"] .bc-tag {
+  text-transform: none; letter-spacing: 0; border: 0; border-radius: 0; padding: 0; color: var(--dim); font: italic 400 .85em var(--font-body); vertical-align: 0; }
+[data-design="textbook"] .lock::before, [data-design="textbook"] .calc::before, [data-design="textbook"] .bc::before, [data-design="textbook"] .bc-tag::before { content: "("; }
+[data-design="textbook"] .lock::after, [data-design="textbook"] .calc::after, [data-design="textbook"] .bc::after, [data-design="textbook"] .bc-tag::after { content: ")"; }
+
+/* ---------- section opening */
+[data-design="textbook"] .lesson-head { gap: 0 .9em; margin: 18px 0 14px; align-items: baseline; }
+[data-design="textbook"] .chip { grid-row: 2; grid-column: 1; background: none; color: var(--ink); padding: 0; border-radius: 0;
+  font: 700 clamp(1.6rem, 3.6vw, 2.3rem) var(--font-head); }
+[data-design="textbook"] .lesson-head .unit { grid-row: 1; grid-column: 1 / -1; font: italic 400 1rem var(--font-body); color: var(--dim); margin-bottom: 4px; }
+[data-design="textbook"] .lesson-head h1 { grid-row: 2; grid-column: 2; font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.15; }
+[data-design="textbook"] .tabs { border-bottom: 1px solid var(--ink); gap: 4px; margin: 10px 0 26px; }
+[data-design="textbook"] .tabs a { font-family: var(--font-ui); font-size: .95rem; color: var(--dim); border-bottom: 2px solid transparent; padding: 8px 12px; }
+[data-design="textbook"] .tabs a.on { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+/* goal as an abstract */
+[data-design="textbook"] .goals { font-size: .92em; color: var(--ink); margin: 0 2.2em 26px; }
+
+[data-design="textbook"] .rail { font-family: var(--font-body); font-size: 1rem; }
+[data-design="textbook"] .rail li::before { content: counter(s) "."; border: 0; border-radius: 0; width: 1.4em; place-items: start; font-size: 1rem; }
+[data-design="textbook"] .rail li.done::before { content: counter(s) "."; background: none; color: var(--good); }
+[data-design="textbook"] .rail li.done { color: var(--ink-2); }
+[data-design="textbook"] .rail li.cur { font-weight: 700; }
+[data-design="textbook"] .rail li.cur::before { color: var(--ink); }
+[data-design="textbook"] .rail .bar { height: 2px; border-radius: 0; background: var(--soft); }
+[data-design="textbook"] .rail .bar i { background: var(--ink); }
+[data-design="textbook"] .rail .muted { font-style: italic; }
+[data-design="textbook"] .video { border-radius: 0; }
+[data-design="textbook"] .vtitle { font: italic 400 .95rem var(--font-body); color: var(--dim); }
+
+/* ---------- sections and amsthm environments */
+[data-design="textbook"] .step > h2 { font-size: 1.45rem; gap: .6em; }
+[data-design="textbook"] .step > h2 .n { width: auto; height: auto; border: 0; border-radius: 0; font: 700 1.45rem var(--font-head); display: inline; }
+[data-design="textbook"] .step > h2 .n::before { content: "\00a7"; margin-right: .1em; }
+[data-design="textbook"] .formula { border: 1px solid var(--ink); border-radius: 0; background: none; padding: 12px 18px 6px; margin-top: 18px; }
+[data-design="textbook"] .formula > .tag { position: static; display: block; background: none; color: var(--ink); padding: 0; border-radius: 0;
+  font: 700 1rem var(--font-body); letter-spacing: 0; margin-bottom: 2px; }
+[data-design="textbook"] .definition { border: 0; background: none; padding: 0; border-radius: 0; }
+[data-design="textbook"] .definition > .tag { display: inline; font: 700 1rem var(--font-body); margin-right: .45em; }
+[data-design="textbook"] .definition > .tag::after { content: "."; }
+[data-design="textbook"] .definition > div:last-child { display: inline; font-style: italic; }
+[data-design="textbook"] .bigidea { border: 0; padding: 0 0 0 1.6em; font-size: 1rem; font-style: italic; }
+[data-design="textbook"] .bigidea::before { content: "Remark. "; font-style: normal; font-weight: 700; }
+[data-design="textbook"] .card { background: none; border: 0; border-radius: 0; box-shadow: none; padding: 4px 0; }
+[data-design="textbook"] .card > .tag { font: 700 1rem var(--font-body); }
+[data-design="textbook"] .card.check { border-left: 2px solid var(--ink); padding-left: 16px; }
+[data-design="textbook"] .locked-card { border: 1px solid var(--ink); padding: 14px 18px; }
+[data-design="textbook"] .solution { background: none; border-radius: 0; padding: 4px 0 4px 1.6em; }
+[data-design="textbook"] .solution > .lbl { display: inline; font: italic 400 1rem var(--font-body); letter-spacing: 0; text-transform: none; color: var(--ink); }
+[data-design="textbook"] .solution > .lbl::after { content: "."; }
+[data-design="textbook"] .solution::after { content: "\220E"; display: block; text-align: right; line-height: 1; margin-top: -1.1em; }
+[data-design="textbook"] .fb { border-radius: 0; background: none !important; padding: 0; font: italic 400 1rem var(--font-body); }
+[data-design="textbook"] figcaption { color: var(--ink-2); font-size: .92rem; }
+[data-design="textbook"] figcaption::before { content: "Figure. "; font-style: normal; font-weight: 700; }
+/* booktabs */
+[data-design="textbook"] table.data { border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+[data-design="textbook"] table.data th { font: 700 .95rem var(--font-body); color: var(--ink); border-bottom: 1px solid var(--ink); }
+[data-design="textbook"] table.data td { border-bottom: 0; }
+[data-design="textbook"] .blank input, [data-design="textbook"] .blank math-field { border-radius: 0; background: var(--panel-2); border-bottom: 1px solid var(--ink); }
+[data-design="textbook"] .blank .reveal { font-family: var(--font-body); font-size: .85rem; }
+[data-design="textbook"] .meanings { font-family: var(--font-body); }
+[data-design="textbook"] .meanings .c { border: 1px solid var(--soft); border-radius: 0; opacity: .55; }
+[data-design="textbook"] .meanings .c.on { border: 1px solid var(--ink); background: none; opacity: 1; }
+[data-design="textbook"] .meanings .h, [data-design="textbook"] .meanings .r { font-style: italic; font-weight: 400; }
+[data-design="textbook"] .desmos-box { border-radius: 0; border-color: var(--ink); }
+
+/* ---------- exercises */
+[data-design="textbook"] .q > .tag::before { content: counter(q) "."; width: auto; height: auto; background: none; color: var(--ink); border-radius: 0;
+  font: 700 1rem var(--font-body); display: inline; }
+[data-design="textbook"] .items > .q + div { height: 22px !important; }
+[data-design="textbook"] .choices { gap: 2px; margin-left: 1.2em; }
+[data-design="textbook"] .choices label { border: 0; border-radius: 0; background: none; padding: 3px 6px; }
+[data-design="textbook"] .choices label:hover { background: var(--panel-2); }
+[data-design="textbook"] .choices .L { font: 400 1rem var(--font-body); color: var(--ink); width: auto; }
+[data-design="textbook"] .choices .L::before { content: "("; } [data-design="textbook"] .choices .L::after { content: ")"; }
+[data-design="textbook"] .choices label.right { background: var(--good-bg); }
+[data-design="textbook"] .choices label.wrong { background: var(--bad-bg); }
+[data-design="textbook"] .score { font: 700 2rem var(--font-body); }
+[data-design="textbook"] .rubric li { border-top: 0; }
+[data-design="textbook"] .rubric .pts { font: italic 400 .95rem var(--font-body); }
+[data-design="textbook"] .units { font-style: italic; color: var(--ink-2); }
+
+/* ---------- course map: a table of contents with dot leaders */
+[data-design="textbook"] .wrap > .mathy:has(section.unit) { max-width: 46em; margin: 0 auto; }
+[data-design="textbook"] .wrap > .mathy:has(section.unit) > h1 { font-size: 2rem; margin-top: 12px; }
+[data-design="textbook"] .unit { margin-bottom: 30px; }
+[data-design="textbook"] .unit h2 { font-size: 1.25rem; margin-bottom: .5em; }
+[data-design="textbook"] .topics { display: block; }
+[data-design="textbook"] .topic { position: relative; border: 0; border-radius: 0; background: none; padding: 3px 5.4em 3px 0;
+  font: 400 1rem var(--font-body); line-height: 1.4; gap: .8em; align-items: baseline; }
+[data-design="textbook"] .topic > span[style] { flex: 0 1 auto !important; }
+[data-design="textbook"] .topic::after { content: ""; flex: 1 1 1.5em; min-width: 1.5em; border-bottom: 2px dotted var(--soft); transform: translateY(-.3em); }
+[data-design="textbook"] .topic .n { color: var(--ink); font-weight: 400; min-width: 2.5em; }
+[data-design="textbook"] .topic.ready .n { font-weight: 700; }
+[data-design="textbook"] .topic.soon { opacity: 1; color: var(--dim); }
+[data-design="textbook"] .topic.soon .n { color: var(--dim); }
+[data-design="textbook"] a.topic { color: var(--ink); text-decoration: none; }
+[data-design="textbook"] a.topic.ready:hover { color: var(--accent); }
+[data-design="textbook"] .topic .prog { position: absolute; right: 0; top: .8em; width: 4.6em; height: 3px; margin: 0; border-radius: 0; background: var(--soft); }
+[data-design="textbook"] .topic .prog i { background: var(--ink); }
+[data-design="textbook"] .topic small { display: block; font-style: italic; }
+
+/* ---------- auth + teacher */
+[data-design="textbook"] .auth .card { border: 1px solid var(--ink); padding: 26px; }
+[data-design="textbook"] .auth label { font: 400 1rem var(--font-body); font-style: italic; }
+[data-design="textbook"] .roster table { font-family: var(--font-body); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+[data-design="textbook"] .roster th { border-bottom: 1px solid var(--ink); }
+[data-design="textbook"] .roster td { border-bottom: 0; }
+[data-design="textbook"] .roster .meter { border-radius: 0; height: 3px; }
+[data-design="textbook"] .code { border-radius: 0; background: none; border: 1px solid var(--ink); font-family: KaTeX_Typewriter, monospace; }
+
+@media (max-width: 560px) {
+  [data-design="textbook"] body { font-size: 18px; }
+  [data-design="textbook"] .goals { margin: 0 .6em 22px; }
+  [data-design="textbook"] .topic { padding-right: 0; flex-wrap: wrap; }
+  [data-design="textbook"] .topic::after { display: none; }
+  [data-design="textbook"] .topic .prog { position: static; width: 100%; margin-top: 4px; }
+  [data-design="textbook"] .tabs a { padding: 8px 9px; }
+}

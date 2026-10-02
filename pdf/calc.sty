@@ -1,0 +1,184 @@
+% calc.sty: shared look for every printed page in the course.
+% Grayscale-safe by construction: nothing is told apart by hue. Formula boxes,
+% examples and checks differ by frame weight and fill; curves by dash pattern.
+% The theme (fonts, heading treatment) is injected by calclib/latex.py.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{calc}
+
+\RequirePackage[letterpaper,margin=0.7in,top=0.85in,bottom=0.8in,headsep=0.25in]{geometry}
+\RequirePackage{fontspec}
+\RequirePackage{unicode-math}
+\RequirePackage{xcolor}
+\RequirePackage{cancel}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{calc,arrows.meta,patterns,positioning}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{enumitem}
+\RequirePackage{fancyhdr}
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{multicol}
+\RequirePackage{needspace}
+\RequirePackage{etoolbox}
+
+% ------------------------------------------------------------------ inks
+\definecolor{ink}{gray}{0}
+\definecolor{soft}{gray}{0.35}
+\definecolor{faint}{gray}{0.62}
+\definecolor{wash}{gray}{0.93}
+\definecolor{wash2}{gray}{0.965}
+
+\newif\ifkey \keyfalse
+\newcommand{\calctheme}{}   % set by the generator
+\newcommand{\hfont}{}       % heading font switch, set by the theme
+
+\setlength{\parindent}{0pt}
+\raggedbottom
+% A free page break between blocks: breaking here costs nothing, so the page
+% fills to the last block that fits instead of breaking early (a \filbreak).
+\newcommand{\blockbreak}{\par\vskip 0pt plus 1fil\penalty-200\vskip 0pt plus -1fil\relax}
+\setlength{\parskip}{0.55em}
+\linespread{1.08}
+
+% ----------------------------------------------------------- header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\newcommand{\coursename}{AP Calculus AB/BC}
+\newcommand{\docline}{}
+\fancyhead[L]{\small\hfont\color{soft}\coursename\enspace\textperiodcentered\enspace\docline}
+\fancyhead[R]{\small\hfont\color{soft}\ifkey\textbf{TEACHER KEY}\else Name \rule[-0.2em]{1.9in}{0.4pt}\fi}
+\fancyfoot[C]{\small\color{soft}\thepage}
+
+% ------------------------------------------------------------------ title
+% \topictitle{2.1}{Average and Instantaneous Rates of Change}{Unit 2: ...}{Guided Notes}
+\newcommand{\topictitle}[4]{%
+  {\hfont
+  \begin{tikzpicture}[remember picture]
+    \node[anchor=west, fill=ink, text=white, inner xsep=8pt, inner ysep=5pt, font=\hfont\large\bfseries] (num) at (0,0) {#1};
+    \node[anchor=west, font=\hfont\small, text=soft] at ($(num.east)+(8pt,6pt)$) {#3\enspace\textperiodcentered\enspace #4};
+    \node[anchor=north west, inner sep=0pt, font=\hfont\LARGE\bfseries, text=ink, text width=\linewidth-2.4cm, align=left]
+      at ($(num.east)+(8pt,-1pt)$) {#2};   % long titles wrap instead of running off the page
+  \end{tikzpicture}}\par
+  \vspace{2pt}{\color{ink}\rule{\linewidth}{1.2pt}}\par\vspace{2pt}}
+
+\newcommand{\objectives}[1]{%
+  {\small\color{soft}\hfont\textbf{Goals}\enspace}{\small #1}\par}
+
+% --------------------------------------------------------------- sections
+\newcounter{calcsec}
+\newcommand{\sect}[1]{%
+  \needspace{6\baselineskip}\stepcounter{calcsec}\vspace{0.6em}%
+  {\hfont\large\bfseries\color{ink}%
+   \tikz[baseline=(n.base)]\node[circle,draw=ink,line width=1pt,inner sep=1.5pt,minimum size=1.35em,font=\hfont\normalsize\bfseries](n){\thecalcsec};%
+   \enspace #1}\par\vspace{-0.2em}}
+
+% ------------------------------------------------------------------ blanks
+% \blank{answer} or \blank[3cm]{answer}. Student: an empty rule. Key: the answer.
+\newlength{\blankw}
+\newcommand{\blank}[2][]{%
+  \ifkey
+    \underline{\,\textbf{#2}\,}%
+  \else
+    \ifstrempty{#1}%
+      {\settowidth{\blankw}{#2}\setlength{\blankw}{1.6\blankw}%
+       \ifdim\blankw<2.2cm\setlength{\blankw}{2.2cm}\fi
+       \ifdim\blankw>0.42\linewidth\setlength{\blankw}{0.42\linewidth}\fi}%
+      {\setlength{\blankw}{#1}}%
+    \rule[-0.25em]{\blankw}{0.5pt}%
+  \fi}
+% \mblank{answer}: a blank inside math mode.
+\newcommand{\mblank}[2][]{\text{\blank[#1]{$#2$}}}
+
+% --------------------------------------------------------------- boxes
+\newtcolorbox{formula}[1][]{enhanced, breakable=false, colback=wash, colframe=ink,
+  boxrule=1.3pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fonttitle=\hfont\small\bfseries, coltitle=white, colbacktitle=ink,
+  attach boxed title to top left={xshift=10pt, yshift=-7pt},
+  boxed title style={arc=2pt, boxrule=0pt}, title={#1}}
+
+\newtcolorbox{definition}[1][]{enhanced, colback=white, colframe=ink,
+  boxrule=0.6pt, arc=0pt, leftrule=4pt, left=10pt, top=6pt, bottom=6pt,
+  fonttitle=\hfont\small\bfseries, coltitle=ink, title={#1}, colbacktitle=white,
+  titlerule=0pt, toptitle=2pt, bottomtitle=-2pt}
+
+\newcounter{calcex}
+\newtcolorbox{example}[1][]{enhanced, colback=white, colframe=soft,
+  boxrule=0.5pt, arc=2pt, left=9pt, right=9pt, top=6pt, bottom=6pt,
+  before upper={\stepcounter{calcex}{\hfont\bfseries Example \thecalcex\ifstrempty{#1}{}{\enspace\textperiodcentered\enspace #1}}\par\smallskip}}
+
+\newtcolorbox{checkbox}[1][Check your understanding]{enhanced, breakable, colback=wash2,
+  colframe=faint, boxrule=0.5pt, arc=2pt, borderline={0.5pt}{2pt}{faint,dashed},
+  left=9pt, right=9pt, top=6pt, bottom=6pt, fonttitle=\hfont\small\bfseries, coltitle=ink,
+  colbacktitle=wash2, title={#1}, titlerule=0pt}
+
+\newtcolorbox{bigidea}{enhanced, colback=white, colframe=ink, boxrule=0pt,
+  toprule=1.2pt, bottomrule=1.2pt, arc=0pt, left=4pt, right=4pt, top=6pt, bottom=6pt,
+  fontupper=\itshape}
+
+% \work{height}{solution}: blank space on the student copy, worked solution on the key.
+\newcommand{\work}[2]{%
+  \ifkey
+    \par\nopagebreak{\color{soft}\footnotesize\hfont SOLUTION}\par\nopagebreak\vspace{3pt}%
+    {\small\setlength{\jot}{4pt}\linespread{1.35}\selectfont #2\par}
+  \else
+    \par\vspace*{#1}\par
+  \fi}
+
+% \answerline{answer}: a labelled final-answer line.
+\newcommand{\answerline}[1]{\par\hfill\hfont\small Answer:\ \blank[4cm]{#1}\par}
+
+% ---------------------------------------------------------- four-meaning panel
+% \meanings{da,dg}: highlight any of da, dg, ia, ig. Add "inv" for the inverse arrow.
+% The integral row is drawn only when ia, ig or inv is given: no integral hints before Unit 6.
+\newcommand{\meanings}[1]{%
+  \gdef\mA{off}\gdef\mB{off}\gdef\mC{off}\gdef\mD{off}\gdef\mI{0}\gdef\mR{0}%
+  \foreach \k in {#1}{%
+    \ifdefstring{\k}{da}{\gdef\mA{on}}{}\ifdefstring{\k}{dg}{\gdef\mB{on}}{}%
+    \ifdefstring{\k}{ia}{\gdef\mC{on}\gdef\mR{1}}{}\ifdefstring{\k}{ig}{\gdef\mD{on}\gdef\mR{1}}{}%
+    \ifdefstring{\k}{inv}{\gdef\mI{1}\gdef\mR{1}}{}}%
+  \begin{center}\begin{tikzpicture}[font=\hfont\small,
+      cell/.style={draw, minimum width=5.6cm, minimum height=1.25cm, align=center, rounded corners=2pt},
+      on/.style={line width=1.8pt, draw=ink, fill=wash, text=ink},
+      off/.style={line width=0.4pt, draw=faint, text=faint}]
+    \node[cell, \mA] (da) at (0,0) {\textbf{Instantaneous rate of change}\\[-1pt]{\footnotesize how fast is it changing right now?}};
+    \node[cell, \mB] (dg) at (6.0,0) {\textbf{Slope of the tangent line}\\[-1pt]{\footnotesize how steep is the graph at a point?}};
+    \node[above=1pt of da, text=soft] {Analytically};
+    \node[above=1pt of dg, text=soft] {Graphically};
+    \node[anchor=east, text=soft, font=\hfont\small\bfseries] at ($(da.west)+(-0.15,0)$) {Derivative};
+    \ifnum\mR=1
+    \node[cell, \mC] (ia) at (0,-1.5) {\textbf{Accumulation}\\[-1pt]{\footnotesize how much has built up?}};
+    \node[cell, \mD] (ig) at (6.0,-1.5) {\textbf{Area under the curve}\\[-1pt]{\footnotesize what region does it fill?}};
+    \node[anchor=east, text=soft, font=\hfont\small\bfseries] at ($(ia.west)+(-0.15,0)$) {Integral};
+    \fi
+    \ifnum\mI=1
+      \draw[{Latex[length=6pt]}-{Latex[length=6pt]}, line width=1.4pt] ($(dg.east)+(0.25,0)$) to[bend left=50]
+        node[right, align=left, font=\hfont\footnotesize\bfseries]{inverse\\operations} ($(ig.east)+(0.25,0)$);
+    \fi
+  \end{tikzpicture}\end{center}}
+
+% ------------------------------------------------------------ graphs
+\pgfplotsset{calcaxes/.style={axis lines=middle, axis line style={-{Latex[length=4pt]}, line width=0.6pt},
+  tick style={line width=0.4pt}, tick label style={font=\footnotesize}, label style={font=\small},
+  xlabel style={anchor=west}, ylabel style={anchor=south}, clip=false,
+  grid=major, major grid style={line width=0.2pt, draw=black!18}},
+  fn/.style={line width=1.4pt, ink, smooth, samples=120},
+  secant/.style={line width=1pt, dashed, ink},
+  tangent/.style={line width=1.2pt, ink, densely dash dot},
+  pt/.style={only marks, mark=*, mark size=2pt, ink},
+  closed/.style={only marks, mark=*, mark size=2.3pt, ink},
+  open/.style={only marks, mark=*, mark size=2.3pt, mark options={fill=white, draw=ink, line width=0.9pt}},
+  fn2/.style={line width=1.4pt, ink, dashed, smooth, samples=120}}
+
+\tikzset{asym/.style={densely dashed, line width=0.7pt, ink!60}}
+
+% ------------------------------------------------------------- lists
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.6em, topsep=0.4em}
+\setlist[itemize]{leftmargin=1.2em, itemsep=0.2em}
+\newlist{choices}{enumerate}{1}
+\setlist[choices]{label=(\Alph*), leftmargin=2.2em, itemsep=0.15em, topsep=0.3em}
+
+% the key's marker for the right multiple-choice answer (drawn, so every font has it)
+\newcommand{\correctmark}{\tikz[baseline=-0.6ex]\draw[line width=1.3pt, line cap=round, line join=round](0,0)--(0.09,-0.1)--(0.28,0.14);}

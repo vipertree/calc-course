@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Printable handouts · AP Calculus{% endblock %}
+{% block crumbs %}<a class="muted crumb" href="{% url 'teacher' %}" style="font-family:var(--font-ui);font-size:.9rem">Teacher dashboard</a>{% endblock %}
+{% block main %}
+<div class="mathy">
+<h1>Printable handouts</h1>
+<p class="muted">Every lesson's PDFs, ready to print. Each document has a student copy and a teacher key with answers and worked solutions.
+  The quiz and unit test forms are parallel versions of the same assessment.</p>
+{% for u in units %}
+<section class="card handouts" style="margin-bottom:18px">
+  <h2 style="margin-top:0">Unit {{ u.n }}. {{ u.title }}</h2>
+  <table class="handout-table">
+    {% for r in u.rows %}
+    <tr>
+      <th><span class="chip-sm">{{ r.num }}</span> {{ r.title }}</th>
+      <td>{% for d in r.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
+    </tr>
+    {% endfor %}
+    {% if u.test %}
+    <tr class="unit-test-row">
+      <th><span class="chip-sm">U{{ u.n }}</span> Unit test</th>
+      <td>{% for d in u.test.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
+    </tr>
+    {% endif %}
+  </table>
+</section>
+{% endfor %}
+</div>
+{% endblock %}

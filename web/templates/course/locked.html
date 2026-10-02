@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Members only · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  <h1>{{ what }} are for members</h1>
+  <p>Videos and the first few practice problems in every lesson are free. Guided notes, the full practice sets, quizzes,
+     AP test prep and unit tests come with a membership.</p>
+  <p><a class="btn primary" href="{% url 'join' %}">Join with a class code</a> &nbsp; <a class="btn" href="{% url 'login' %}">Sign in</a></p>
+</div></div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Teacher dashboard · AP Calculus{% endblock %}
+{% block main %}
+<h1>Your classes</h1>
+<p><a href="{% url 'handouts' %}"><strong>Printable handouts (PDF)</strong></a> · <a href="{% url 'transcripts' %}">Review video transcripts</a> · <a href="{% url 'map' %}">Course map</a></p>
+<form method="post" action="{% url 'new_class' %}" class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:24px">{% csrf_token %}
+  <label style="flex:1;min-width:200px">New class name<input type="text" name="name" placeholder="Period 3" required></label>
+  <label>Course<select name="course"><option>AB</option><option>BC</option></select></label>
+  <button class="btn primary">Create class</button>
+</form>
+{% for r in rosters %}
+<section class="card" style="margin-bottom:20px">
+  <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <h2 style="margin:0">{{ r.c.name }}</h2><span class="muted">AP Calculus {{ r.c.course }}</span>
+    <span class="grow" style="flex:1"></span>
+    <span>Join code <span class="code">{{ r.c.code }}</span></span>
+    <form method="post" action="{% url 'toggle_class' r.c.pk %}">{% csrf_token %}<button class="btn small">{% if r.c.open %}Close joining{% else %}Open joining{% endif %}</button></form>
+  </div>
+  {% if r.assessments %}
+  <h3 style="margin:16px 0 6px">Quizzes and tests</h3>
+  <p class="muted" style="margin:0 0 8px">Everyone in this class gets the same form. Students see their scores and the solutions only after you release them.</p>
+  <div class="roster"><table>
+    <thead><tr><th>Quiz or test</th><th>Form</th><th>Submitted</th><th>Results</th></tr></thead>
+    <tbody>{% for a in r.assessments %}<tr>
+      <td>{% if a.num|slice:":1" == "U" %}Unit {{ a.num|slice:"1:" }} test{% else %}Topic {{ a.num }} quiz{% endif %}</td>
+      <td>{{ a.form|default:"one form" }}</td>
+      <td>{{ a.submitted }} of {{ a.of }}</td>
+      <td><form method="post" action="{% url 'release' r.c.pk a.num %}">{% csrf_token %}
+        {% if a.released %}<span class="fb good" style="margin-right:8px">Released</span><button class="btn small">Hide again</button>
+        {% else %}<button class="btn small primary">Release results</button>{% endif %}</form></td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+  {% endif %}
+  {% if r.rows %}
+  <div class="roster" style="margin-top:14px"><table>
+    <thead><tr><th>Student</th>{% for t in topics %}<th colspan="4">Topic {{ t }}</th>{% endfor %}</tr>
+    <tr class="muted"><th></th>{% for t in topics %}<th>Lesson</th><th>Practice</th><th>Quiz</th><th>FRQ</th>{% endfor %}</tr></thead>
+    <tbody>{% for s in r.rows %}<tr><td>{{ s.name }}</td>
+      {% for c in s.cells %}
+        <td><span class="meter"><i style="width:{% widthratio c.steps c.steps_total 100 %}%"></i></span>{{ c.steps }}/{{ c.steps_total }}</td>
+        <td>{{ c.practice }}/{{ c.practice_total }}</td>
+        <td>{% if c.quiz is not None %}{{ c.quiz }}/{{ c.quiz_total }}{% else %}<span class="muted">not yet</span>{% endif %}</td>
+        <td>{% if c.frq %}{{ c.frq.0 }}/{{ c.frq.1 }}{% else %}<span class="muted">not yet</span>{% endif %}</td>
+      {% endfor %}</tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}<p class="muted">No students yet. They join at <strong>{{ request.scheme }}://{{ request.get_host }}{% url 'join' %}</strong> with code <strong>{{ r.c.code }}</strong>.</p>{% endif %}
+</section>
+{% empty %}<p class="muted">Create a class to get a join code.</p>{% endfor %}
+{% endblock %}

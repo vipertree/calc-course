@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Join a class · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  <h1>Join a class</h1>
+  <p class="muted">Your teacher has a six-letter class code.</p>
+  <form method="post">{% csrf_token %}
+    {% for f in form %}
+      <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+      {{ f }}
+      {% if f.help_text %}<div class="help">{{ f.help_text }}</div>{% endif %}
+      {{ f.errors }}
+    {% endfor %}
+    <p><button class="btn primary">{% if existing %}Join class{% else %}Create account and join{% endif %}</button></p>
+  </form>
+  {% if not existing %}<p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a>.</p>{% endif %}
+</div></div>
+{% endblock %}

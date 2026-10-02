@@ -6,7 +6,7 @@
 {% block main %}
 {% include "course/_head.html" %}
 <div id="app" data-area="quiz" data-num="{{ num }}"
-     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-step="{% url 'api_step' num %}"
+     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-draft="{% url 'api_draft' num %}" data-step="{% url 'api_step' num %}"
      data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>
 {{ lesson_json|json_script:"lesson" }}{{ state_json|json_script:"state" }}
 {% endblock %}

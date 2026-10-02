@@ -29,6 +29,20 @@ class Response(models.Model):
         indexes = [models.Index(fields=["user", "topic", "area"])]
 
 
+class Draft(models.Model):
+    """What a student has typed or picked in one answer box, saved as they go, so a reload or another device
+    shows it again. Not graded: Response is the record of checked answers."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="drafts")
+    topic = models.CharField(max_length=8)
+    item = models.CharField(max_length=40)
+    value = models.TextField(blank=True)
+    revealed = models.BooleanField(default=False)     # a notes blank whose answer the student chose to show
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["user", "topic", "item"], name="one_draft_per_box")]
+
+
 class QuizAttempt(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="quiz_attempts")
     topic = models.CharField(max_length=8)

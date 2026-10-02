@@ -62,6 +62,45 @@
   }
   // units live beside the box, so students type only the number
   const unitTag = (u) => u ? h("span", { class: "units", html: "$" + u + "$" }) : null;
+  // ------------------------------------------------------------ answers survive a reload
+  // Every answer box saves as you type: to the server for members (so it follows them to another device) and to this
+  // browser for everyone, which also covers a reload in the second before the server save goes out. The newer wins.
+  const DRAFTS = S.drafts || {};
+  const SERVER_DRAFTS = !!S.drafts && !!app.dataset.draft;
+  const draftKey = (id) => `calc.draft.${location.pathname}.${id}`;
+  function draftGet(id) {
+    let local = null;
+    try { local = JSON.parse(localStorage.getItem(draftKey(id)) || "null"); } catch (e) { /* storage blocked */ }
+    const server = DRAFTS[id] || null;
+    if (local && (!server || (local.t || 0) > (server.t || 0))) {
+      if (SERVER_DRAFTS && (!server || local.v !== server.v || !!local.r !== !!server.r))      // catch the server up
+        post(app.dataset.draft, { item: id, value: local.v, revealed: !!local.r }).catch(() => {});
+      return local;
+    }
+    return server;
+  }
+  const draftTimers = {};
+  function draftPut(id, value, revealed = false) {
+    const rec = { v: value, r: revealed || !!(DRAFTS[id] && DRAFTS[id].r), t: Date.now() };
+    DRAFTS[id] = rec;
+    try { localStorage.setItem(draftKey(id), JSON.stringify(rec)); } catch (e) { /* storage blocked */ }
+    if (!SERVER_DRAFTS) return;
+    clearTimeout(draftTimers[id]);
+    draftTimers[id] = setTimeout(() => post(app.dataset.draft, { item: id, value, revealed: rec.r }).catch(() => {}), revealed ? 0 : 600);
+  }
+  const fieldGet = (f) => f.tagName === "MATH-FIELD" ? f.getValue("latex") : f.value;
+  const fieldSet = (f, v) => { if (f.tagName === "MATH-FIELD") f.setValue(v); else f.value = v; };
+  function keepField(field, id) {
+    const rec = draftGet(id);
+    if (rec && rec.v) fieldSet(field, rec.v);
+    field.addEventListener("input", () => draftPut(id, fieldGet(field)));
+    return rec;
+  }
+  function keepChoice(card, id) {
+    const rec = draftGet(id);
+    if (rec && rec.v) { const r = card.querySelector(`input[type=radio][value="${rec.v}"]`); if (r) r.checked = true; }
+    card.addEventListener("change", (e) => { if (e.target.type === "radio") draftPut(id, e.target.value); });
+  }
   const valueOf = (field) => field.tagName === "MATH-FIELD" ? field.getValue("ascii-math") : field.value;
   const solutionBox = (html, label = "Solution") => { const d = h("div", { class: "solution" }, h("div", { class: "lbl" }, label), h("div", { html })); typeset(d); return d; };
 
@@ -101,7 +140,9 @@
         if (answerTex && !valueOf(input)) { const s = h("span", { class: "shown", html: answerTex }); typeset(s); input.replaceWith(s); }
         reveal.hidden = true;
       };
-      if (correctSet.has(id)) { span.classList.add("good"); }
+      // right before, or shown on request: fill it in from the answer key; otherwise bring back what was typed
+      if (S.shown && S.shown[id] !== undefined) done(S.shown[id]);
+      else { keepField(input, id); if (correctSet.has(id)) span.classList.add("good"); }
       const submit = async () => {
         const given = valueOf(input).trim();
         if (!given) return;
@@ -126,6 +167,7 @@
       reveal.addEventListener("click", async () => {
         const r = await post(app.dataset.check, { item: id, given: "", reveal: true, area: "notes" });
         if (input.tagName === "INPUT") input.value = ""; else input.setValue("");
+        draftPut(id, "", true);
         done(r.answer);
       });
     });
@@ -153,6 +195,7 @@
       row.append(btn, h("span", { class: "muted" }, "Work it out first, then compare."));
     } else {
       const mf = mathField();
+      keepField(mf, item.id);
       const check = h("button", { class: "btn primary", type: "button" }, "Check");
       const give = h("button", { class: "btn", type: "button", hidden: true }, "Show solution");
       let tries = 0;
@@ -358,8 +401,10 @@
           ul.append(h("li", {}, h("label", {}, h("input", { type: "radio", name: it.id, value: L_ }), h("span", { class: "L" }, L_), h("span", { html: c })))); });
         card.append(ul);
         fields[it.id] = () => (card.querySelector("input:checked") || {}).value || "";
+        keepChoice(card, it.id);
       } else {
         const mf = mathField(); card.append(h("div", { class: "row" }, ...[mf, unitTag(it.units)].filter(Boolean)));
+        keepField(mf, it.id);
         fields[it.id] = () => valueOf(mf);
       }
       card.append(h("div", { class: "result" }));
@@ -404,6 +449,7 @@
       let r;
       try { r = await post(app.dataset.quiz, { answers }); }
       catch (e) { submit.disabled = false; status.replaceChildren(h("p", { class: "fb bad" }, "That didn't go through. Check your connection and press Submit again.")); return; }
+      Object.keys(fields).forEach((k) => draftPut(k, ""));    // handed in: the next attempt starts blank
       if (r.submitted && !r.released) { wrap.replaceChildren(waiting()); wrap.scrollIntoView({ behavior: "smooth" }); return; }
       showResults(r, A.mode !== "class");
       status.scrollIntoView({ behavior: "smooth" });
@@ -464,6 +510,7 @@
         ul.append(h("li", {}, h("label", {}, h("input", { type: "radio", name: it.id, value: L_ }), h("span", { class: "L" }, L_), h("span", { html: c })))); });
       const out = h("div"); const status = h("span", { class: "fb", hidden: true });
       const btn = h("button", { class: "btn primary", type: "button" }, "Check");
+      keepChoice(ul, it.id);
       btn.addEventListener("click", async () => {
         const sel = card.querySelector("input:checked");
         if (!sel) { fb(status, null, "Pick an answer first."); return; }

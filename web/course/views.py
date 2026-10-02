@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from accounts.models import Classroom, class_for, has_full_access
 from . import content, grading
 from . import assess, packets
-from .models import FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
+from .models import Draft, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
 FREE_PRACTICE = 4          # practice problems anyone can try without an account
@@ -74,7 +74,7 @@ def unit_test(request, num):
     if not pub:
         raise Http404("That unit test isn't written yet.")
     pub, info = assess.draw(request, num, pub)
-    state = {"correct": [], "steps_done": [],
+    state = {"correct": [], "steps_done": [], "drafts": _drafts(request.user, num),
              "frq": {s.part: s.earned for s in FRQScore.objects.filter(user=request.user, topic=num)},
              "quiz": [{"score": a.score, "total": a.total, "at": a.at.isoformat()}
                       for a in QuizAttempt.objects.filter(user=request.user, topic=num)[:5]],
@@ -102,7 +102,8 @@ def lesson(request, num, area="notes"):
     info = None
     if area == "quiz":
         pub, info = assess.draw(request, num, _lesson(num)[0])
-    state = {"full": True,
+    drafts = _drafts(request.user, num)
+    state = {"full": True, "drafts": drafts,
         "steps_done": list(StepDone.objects.filter(user=request.user, topic=num).values_list("step", flat=True)),
         "correct": list(Response.objects.filter(user=request.user, topic=num, correct=True)
                         .values_list("item", flat=True).distinct()),
@@ -110,6 +111,9 @@ def lesson(request, num, area="notes"):
         "quiz": [{"score": a.score, "total": a.total, "at": a.at.isoformat()}
                  for a in QuizAttempt.objects.filter(user=request.user, topic=num)[:5]],
     }
+    # notes blanks already answered right (or shown on request) come back filled in from the answer key
+    blanks = (content.private(num) or {}).get("blanks", {})
+    state["shown"] = {b: blanks[b] for b in set(state["correct"]) | {k for k, d in drafts.items() if d["r"]} if b in blanks}
     if info is not None:
         state["assess"] = assess.state(request, num, info, content.private(num))
         if state["assess"]["mode"] == "class":
@@ -181,6 +185,31 @@ def api_check(request, num):
         if "rubric" in spec:
             out["rubric"] = spec["rubric"]
     return JsonResponse(out)
+
+
+def _drafts(user, num):
+    return {d.item: {"v": d.value, "r": d.revealed, "t": int(d.updated.timestamp() * 1000)}
+            for d in Draft.objects.filter(user=user, topic=num)}
+
+
+@login_required
+@require_POST
+def api_draft(request, num):
+    """Save what is in one answer box (typed text, a picked choice, a shown answer) as the student works."""
+    if not has_full_access(request.user):
+        return JsonResponse({"error": "members only"}, status=403)
+    d = _body(request)
+    item = str(d.get("item", ""))[:40]
+    if not item or not content.public(num):
+        return JsonResponse({"error": "bad item"}, status=400)
+    if not Draft.objects.filter(user=request.user, topic=num, item=item).exists() and \
+            Draft.objects.filter(user=request.user, topic=num).count() >= 400:
+        return JsonResponse({"error": "too many"}, status=400)
+    defaults = {"value": str(d.get("value", ""))[:2000]}
+    if d.get("revealed"):
+        defaults["revealed"] = True
+    Draft.objects.update_or_create(user=request.user, topic=num, item=item, defaults=defaults)
+    return JsonResponse({"ok": True})
 
 
 @login_required

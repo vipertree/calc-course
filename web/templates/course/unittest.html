@@ -6,7 +6,7 @@
 {% block main %}
 <div class="lesson-head" data-unit="{{ L.unit }}"><span class="chip">U{{ L.unit }}</span><span class="unit">Unit {{ L.unit }} test · {{ L.minutes }}</span><h1>{{ L.title }}</h1></div>
 <div id="app" data-area="unittest" data-num="{{ num }}"
-     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-step=""
+     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-draft="{% url 'api_draft' num %}" data-step=""
      data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>
 {{ lesson_json|json_script:"lesson" }}{{ state_json|json_script:"state" }}
 {% endblock %}

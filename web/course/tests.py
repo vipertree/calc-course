@@ -328,6 +328,41 @@ class Assessments(TestCase):
         self.assertEqual(set(state["result"]["detail"]), set(ids_a))
 
 
+class Drafts(Assessments):
+    """Answer boxes keep what was typed across a reload; blanks already right come back from the answer key."""
+
+    def state(self, url="/topic/1.1/"):
+        r = self.client.get(url)
+        m = re.search(r'<script id="state" type="application/json">(.*?)</script>', r.content.decode(), re.S)
+        return json.loads(m.group(1))
+
+    def test_drafts_round_trip_and_correct_blanks_autofill(self):
+        u = self.student("dee", in_class=False)
+        self.client.force_login(u)
+        post = lambda body: self.client.post("/api/1.1/draft/", json.dumps(body), content_type="application/json")
+        self.assertEqual(post({"item": "n1_1-b1", "value": "a guess"}).status_code, 200)
+        self.assertEqual(post({"item": "n1_1-b1", "value": "a better guess"}).status_code, 200)   # one row per box
+        post({"item": "n1_1-b6", "value": "", "revealed": True})
+        self.client.post("/api/1.1/check/", json.dumps({"item": "n1_1-b2", "given": "time", "area": "notes"}),
+                         content_type="application/json")
+        st = self.state()
+        self.assertEqual(st["drafts"]["n1_1-b1"]["v"], "a better guess")
+        self.assertEqual(st["shown"]["n1_1-b2"], "time")                    # right before: filled from the key
+        self.assertEqual(st["shown"]["n1_1-b6"], "undefined")               # shown on request: stays shown
+        self.assertNotIn("n1_1-b1", st["shown"])                             # never right: no answer leaks
+        other = self.student("eve", in_class=False)
+        self.client.force_login(other)
+        self.assertEqual(self.state()["drafts"], {})                         # drafts are per student
+
+    def test_visitors_cannot_save_drafts(self):
+        self.assertEqual(self.client.post("/api/1.1/draft/", "{}", content_type="application/json").status_code, 302)
+        nob = self.student("nob", in_class=False)
+        nob.profile.full_access = False; nob.profile.save()
+        self.client.force_login(nob)
+        r = self.client.post("/api/1.1/draft/", json.dumps({"item": "x", "value": "y"}), content_type="application/json")
+        self.assertEqual(r.status_code, 403)
+
+
 class Video(TestCase):
     """Videos need byte ranges or browsers can't seek (the scrubber snaps back)."""
 

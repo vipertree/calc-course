@@ -184,10 +184,21 @@
 @media (min-width: 561px) {
   [data-design="transit"] .topics[data-layout="rows"] { --cols: 2; --cg: 36px; --rg: 30px;
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--rg) var(--cg); margin-top: 18px; }
-  [data-design="transit"] .topics[data-layout="rows"] .topic { padding: 44px 22px 10px 8px; }
+  /* the line runs straight through each stop: it sits at the middle of the label row and passes behind the number
+     badge and the title, which carry the page background (Adder, 2026-10-02) */
+  [data-design="transit"] .topics[data-layout="rows"] .topic { padding: 10px 22px 10px 8px; align-items: flex-start; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic::after,
+  [data-design="transit"] .topics[data-layout="rows"] .topic.soon::after { display: none; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic > .n,
+  [data-design="transit"] .topics[data-layout="rows"] .topic > span:not(.n) { position: relative; z-index: 1; background: var(--bg); }
+  [data-design="transit"] .topics[data-layout="rows"] .topic > .n { border: 3px solid var(--line, var(--ink)); border-radius: 999px;
+    padding: 0 12px; min-width: 0; text-align: center; line-height: 1.45; white-space: nowrap; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic.soon > .n { border-style: dashed; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic > span:not(.n) { flex: 0 1 auto !important; padding: 0 10px 2px 6px; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic.ready:hover { background: transparent; }
+  [data-design="transit"] .topics[data-layout="rows"] .topic.ready:hover > .n { background: var(--line, var(--ink)); color: var(--line-ink, #fff); }
   [data-design="transit"] .topics[data-layout="rows"] .topic::before, [data-design="transit"] .topics[data-layout="rows"] .track::before { box-sizing: border-box; }
   [data-design="transit"] .topics[data-layout="rows"] .topic::before { top: 21px; bottom: auto; left: 16px; right: calc(-1 * var(--cg)); width: auto; height: 6px; }  /* on to the next station */
-  [data-design="transit"] .topics[data-layout="rows"] .topic.soon::after { width: 5px; height: 18px; left: 14px; top: 15px; }
 }
 @media (min-width: 561px) and (max-width: 999px) {
   [data-design="transit"] .topics[data-layout="rows"] .topic:nth-child(2n)::before {                       /* end of a row: turn down */

@@ -31,6 +31,13 @@ PALETTES = {
     # a cream notebook page with faint rules and a red margin, charcoal ink, corner brackets, logo bottom left
     "notebook": dict(BG="#FBF7EC", INK="#262626", DIM="#7F7A70", PANEL="#F0EADB", FUNC="#22609E", SECANT="#B07A00",
                      TANGENT="#C23B2C", AREA="#1A857A", ACCUM="#74559F", DERIV="#3A7F2E"),
+    # dark papers (2026-10-02): textured, never flat black; light inks warm or cool to suit the ground
+    "darkparchment": dict(BG="#221C16", INK="#F2E8D5", DIM="#A8987F", PANEL="#2E261E", FUNC="#7FC8E8", SECANT="#F2C14E",
+                          TANGENT="#F07F6A", AREA="#5CC9B6", ACCUM="#C3A9E6", DERIV="#A9D67C"),
+    "slate": dict(BG="#1E2528", INK="#EEF0EC", DIM="#97A3A8", PANEL="#28323A", FUNC="#79C6E3", SECANT="#F5CF63",
+                  TANGENT="#F48A72", AREA="#5ACBBE", ACCUM="#BDA7E8", DERIV="#A6DB82"),
+    "navy": dict(BG="#141C2B", INK="#EDEAE2", DIM="#8C97AB", PANEL="#1D2738", FUNC="#7CC4F0", SECANT="#F3CB5A",
+                 TANGENT="#F2846F", AREA="#57C7BA", ACCUM="#B9A4EC", DERIV="#A3D97E"),
 }
 
 
@@ -85,7 +92,7 @@ def _paper(w, h, base, grain, blotch, vignette, seed=7):
 
 def background(theme, w, h):
     """The painted background for a paper theme at w x h pixels (cached in assets/)."""
-    out = HERE / "assets" / f"bg_{theme}{'_' + border() if theme == 'parchment' else ''}_{w}x{h}.png"
+    out = HERE / "assets" / f"bg_{theme}{'_' + border() if theme in ('parchment', 'darkparchment', 'slate', 'navy') else ''}_{w}x{h}.png"
     if out.exists() and out.stat().st_mtime > max(Path(__file__).stat().st_mtime, LOGO.stat().st_mtime if LOGO.exists() else 0):
         return str(out)
     p = PALETTES[theme]
@@ -116,6 +123,27 @@ def background(theme, w, h):
             img = Image.fromarray(arr.astype(np.uint8), "RGBA")
         logo = _logo(int(70 * s), p["INK"])
         img.alpha_composite(logo, (w - m2 - int(24 * s) - logo.width, h - m2 - int(18 * s) - logo.height))
+    elif theme in ("darkparchment", "slate", "navy"):
+        if theme == "darkparchment":
+            img = _paper(w, h, p["BG"], 0.06, 0.12, 0.5)
+            rule = tuple(int(c) for c in _rgb("#8A7354"))
+        elif theme == "slate":
+            img = _paper(w, h, p["BG"], 0.05, 0.10, 0.4)
+            # faint chalk dust: soft light smudges here and there
+            dust = np.clip(_noise(w, h, max(8, w // 5), 21), 0, None) ** 2 * 18 + np.clip(_noise(w, h, 3, 22), 0.7, None) * 8
+            arr = np.asarray(img, dtype=float)
+            arr[..., :3] += dust[..., None]
+            img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGBA")
+            rule = tuple(int(c) for c in _rgb("#56636B"))
+        else:
+            img = _paper(w, h, p["BG"], 0.07, 0.10, 0.5)
+            rule = tuple(int(c) for c in _rgb("#4A5873"))
+        d = ImageDraw.Draw(img)
+        m = int(38 * s)
+        if border() != "none":
+            d.rectangle([m, m, w - m, h - m], outline=rule, width=max(1, int(2 * s)))
+        logo = _logo(int(70 * s), p["INK"])
+        img.alpha_composite(logo, (w - m - int(24 * s) - logo.width, h - m - int(18 * s) - logo.height))
     elif theme == "graphpaper":
         img = _paper(w, h, p["BG"], 0.008, 0.012, 0.25)
         d = ImageDraw.Draw(img)

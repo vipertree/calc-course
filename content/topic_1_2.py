@@ -256,7 +256,7 @@ MCQS = [
         r"Values from the left ($4.51$, $4.95$) and right ($5.51$, $5.05$) close in on $5$.",
         why_not={"A": "used only the left side", "B": "used only the right side"}),
     MCQ(r"Using values of $x$ close to $0$, what is $\displaystyle\lim_{x\to0}\frac{e^x-1}{x}$?",
-        [r"$1$", r"$0$", r"$e$", r"It does not exist."], "A",
+        [r"$1$", r"$0$", r"$e$", r"Does not exist."], "A",
         r"At $x = \pm0.001$ the quotient is $1.0005$ and $0.9995$, closing in on $1$.",
         why_not={"B": "treated $\\frac00$ as $0$", "D": "stopped at $\\frac00$"}, calc=True),
     MCQ(r"The amount of water in a reservoir is $W(t)$ million gallons at time $t$ days. What does "

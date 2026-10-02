@@ -206,14 +206,14 @@ FIG_M = graph("t1_5_m1", [("x+2", -2, 0), ("x-1", 0, 2), ("x^2", -1.9, 1.9, "das
               open=[(0, 2)], closed=[(0, -1)], caption=r"$f$ (solid) and $g$ (dashed).")
 MCQS = [
     MCQ(r"The graphs of $f$ (solid) and $g$ (dashed) are shown. What is $\displaystyle\lim_{x\to0}[f(x)\,g(x)]$?",
-        [r"$0$", r"$-2$", r"$2$", r"It does not exist."], "A",
+        [r"$0$", r"$-2$", r"$2$", r"Does not exist."], "A",
         r"$g(x) \to 0$ from both sides while $f$ stays bounded ($2$ from the left, $-1$ from the right). Each one-sided "
         r"product heads to $0$.",
         why_not={"D": "$\\lim f$ doesn't exist, but the product's limit can still exist"}, figure=FIG_M),
     MCQ(r"If $\displaystyle\lim_{x\to3}[2f(x) + x^2] = 5$, what is $\displaystyle\lim_{x\to3} f(x)$?",
         [r"$-7$", r"$-2$", r"$2$", r"$7$"], "B", r"$2L + 9 = 5$, so $L = -2$.",
         why_not={"A": "forgot to divide by $2$", "C": "sign error moving $9$"}),
-    MCQ(r"$\displaystyle\lim_{x\to\pi/2}\frac{\sin x}{1 + \cos x}$ is", [r"$0$", r"$\dfrac12$", r"$1$", r"nonexistent"], "C",
+    MCQ(r"$\displaystyle\lim_{x\to\pi/2}\frac{\sin x}{1 + \cos x}$ is", [r"$0$", r"$\dfrac12$", r"$1$", r"Does not exist"], "C",
         r"Direct substitution: $\dfrac{1}{1+0} = 1$."),
     MCQ(r"Let $f(x) = \begin{cases} x^2 + k, & x < 3 \\ 4x - 1, & x \ge 3. \end{cases}$ For what value of $k$ does "
         r"$\displaystyle\lim_{x\to3} f(x)$ exist?", [r"$-2$", r"$0$", r"$1$", r"$2$"], "D",

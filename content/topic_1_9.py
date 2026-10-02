@@ -151,14 +151,14 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"$\displaystyle\lim_{x\to2} g(x) = 5$, and $g(x) < 5$ for all $x$ near $2$. If $f(u) = 3$ for $u < 5$ and $f(u) = 8$ for "
-            r"$u \ge 5$, what is $\displaystyle\lim_{x\to2} f(g(x))$?", [r"$3$", r"$5$", r"$8$", r"It does not exist."], "A",
+            r"$u \ge 5$, what is $\displaystyle\lim_{x\to2} f(g(x))$?", [r"$3$", r"$5$", r"$8$", r"Does not exist."], "A",
             r"The inputs to $f$ stay below $5$, so $f(g(x)) = 3$ near $x=2$.", why_not={"C": "that is $f(5)$", "D": COMP["D"]}),
         MCQ(r"$\displaystyle\lim_{x\to0} g(x) = 1$, and $g(x) > 1$ for all $x \ne 0$ near $0$. If $f(u) = u^2$ for $u < 1$ and "
-            r"$f(u) = 4u$ for $u \ge 1$, what is $\displaystyle\lim_{x\to0} f(g(x))$?", [r"$1$", r"$4$", r"$2$", r"It does not exist."], "B",
+            r"$f(u) = 4u$ for $u \ge 1$, what is $\displaystyle\lim_{x\to0} f(g(x))$?", [r"$1$", r"$4$", r"$2$", r"Does not exist."], "B",
             r"The inputs to $f$ stay above $1$, so use $4u$: the limit is $4$.", why_not={"A": "that piece is never used", "D": COMP["D"]}),
         MCQ(r"$\displaystyle\lim_{x\to3} g(x) = 0$, with $g(x) < 0$ on the left of $3$ and $g(x) > 0$ on the right. If "
             r"$f(u) = -1$ for $u < 0$ and $f(u) = 1$ for $u \ge 0$, what is $\displaystyle\lim_{x\to3} f(g(x))$?",
-            [r"$-1$", r"$1$", r"$0$", r"It does not exist."], "D",
+            [r"$-1$", r"$1$", r"$0$", r"Does not exist."], "D",
             r"From the left of $3$, $f(g(x)) = -1$; from the right, $1$. The sides disagree.",
             why_not={"A": "that's only one side", "B": "that's only one side", "C": "that's the inside limit"}),
     ),
@@ -167,7 +167,7 @@ QUIZ = [
             [r"A single value $f(c)$", r"A graph near $x = c$", r"The domain of $f$", r"The range of $f$"], "B",
             r"A graph shows each side of $c$; a jump is visible."),
         MCQ(r"A table shows $f(2.9) = 5.1$, $f(2.99) = 5.01$, $f(3.01) = 4.99$, $f(3.1) = 4.9$. The graph of $f$ shows a filled dot at "
-            r"$(3, 1)$. What is $\displaystyle\lim_{x\to3} f(x)$?", [r"$1$", r"$5$", r"It does not exist.", r"$3$"], "B",
+            r"$(3, 1)$. What is $\displaystyle\lim_{x\to3} f(x)$?", [r"$1$", r"$5$", r"Does not exist.", r"$3$"], "B",
             r"The table shows both sides heading to $5$. The dot is the value $f(3)$, which the limit ignores.",
             why_not={"A": "that's $f(3)$", "C": "the two sides agree"}),
         MCQ(r"``As the temperature $T$ approaches $0^\circ$C from above, the time $t(T)$ for ice to form grows without bound.'' "
@@ -183,10 +183,10 @@ FIG_M = graph("t1_9_m", [("2-x", -1, 1), ("x+1", 1, 3)], xr=(-1, 3), yr=(-0.5, 4
               closed=[(1, 4)], caption=r"The graph of $f$.")
 MCQS = [
     MCQ(r"The graph of $f$ is shown. What is $\displaystyle\lim_{x\to0} f(1 + x^2)$?",
-        [r"$1$", r"$2$", r"$4$", r"It does not exist."], "B",
+        [r"$1$", r"$2$", r"$4$", r"Does not exist."], "B",
         r"$1 + x^2 \to 1$ from above, so the right-hand limit of $f$ at $1$ applies: $2$.",
         why_not={"A": "used the left-hand limit", "C": "used $f(1)$"}, figure=FIG_M),
-    MCQ(r"Using the same graph, $\displaystyle\lim_{x\to1}f(x)$ is", [r"$1$", r"$2$", r"$4$", r"nonexistent"], "D",
+    MCQ(r"Using the same graph, $\displaystyle\lim_{x\to1}f(x)$ is", [r"$1$", r"$2$", r"$4$", r"Does not exist"], "D",
         r"Left $1$, right $2$."),
     MCQ(r"$f(x) = \dfrac{x^2-9}{x-3}$ for $x \ne 3$ and $f(3) = 0$. Which is true?",
         [r"$\displaystyle\lim_{x\to3}f(x) = 0$", r"The graph of $f$ has a vertical asymptote at $x=3$", r"$\displaystyle\lim_{x\to3}f(x) = 6$",

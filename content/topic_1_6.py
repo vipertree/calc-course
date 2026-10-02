@@ -167,7 +167,7 @@ QUIZ = [
              r"Nothing yet; rewrite the expression and try again."], "D",
             r"$\frac00$ is indeterminate. Limits giving $\frac00$ can equal any number, or fail to exist.", why_not=ZERO),
         MCQ(r"$\displaystyle\lim_{x\to1}\frac{x-1}{x^2-2x+1}$: substitution gives $\frac00$. After rewriting, what is the limit?",
-            [r"$0$", r"$1$", r"$\frac12$", r"It does not exist."], "D",
+            [r"$0$", r"$1$", r"$\frac12$", r"Does not exist."], "D",
             r"It rewrites to $\frac{1}{x-1}$, which heads to $-\infty$ from the left and $\infty$ from the right. $\frac00$ never promised a number.",
             why_not={"A": ZERO["A"], "B": ZERO["C"]}),
         MCQ(r"Why is $\displaystyle\lim_{x\to3}\frac{x^2-9}{x-3} = \lim_{x\to3}(x+3)$ a correct step?",
@@ -178,11 +178,11 @@ QUIZ = [
             why_not={"A": "they differ at $x = 3$", "D": "$x + 3$ is defined at $3$"}),
     ),
     Variants(
-        MCQ(r"$\displaystyle\lim_{x\to1}\frac{x-1}{\sqrt x - 1}$ is", [r"$0$", r"$\dfrac12$", r"$2$", r"nonexistent"], "C",
+        MCQ(r"$\displaystyle\lim_{x\to1}\frac{x-1}{\sqrt x - 1}$ is", [r"$0$", r"$\dfrac12$", r"$2$", r"Does not exist"], "C",
             limchain(1, [r"\frac{(\sqrt x-1)(\sqrt x+1)}{\sqrt x - 1}", r"(\sqrt x+1)"], 2), why_not={"B": "inverted the result"}),
-        MCQ(r"$\displaystyle\lim_{x\to-3}\frac{x^2+3x}{x^2-9}$ is", [r"$\dfrac12$", r"$0$", r"$-\dfrac12$", r"nonexistent"], "A",
+        MCQ(r"$\displaystyle\lim_{x\to-3}\frac{x^2+3x}{x^2-9}$ is", [r"$\dfrac12$", r"$0$", r"$-\dfrac12$", r"Does not exist"], "A",
             limchain(-3, [r"\frac{x(x+3)}{(x-3)(x+3)}", r"\frac{x}{x-3}"], r"\frac12"), why_not={"C": "sign slip in $\\frac{-3}{-6}$"}),
-        MCQ(r"$\displaystyle\lim_{h\to0}\frac{(1+h)^2-1}{h}$ is", [r"$0$", r"$1$", r"nonexistent", r"$2$"], "D",
+        MCQ(r"$\displaystyle\lim_{h\to0}\frac{(1+h)^2-1}{h}$ is", [r"$0$", r"$1$", r"Does not exist", r"$2$"], "D",
             limchain(0, [r"\frac{2h+h^2}{h}", r"(2+h)"], 2, var="h"), why_not={"A": "treated $\\frac00$ as $0$"}),
     ),
 ]
@@ -197,12 +197,12 @@ same("q versions", [L((x**2 + x - 12) / (x + 4), -4), L((x**3 - 8) / (x**2 - 4),
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\displaystyle\lim_{x\to-3}\frac{x^2+x-6}{x^2-9}$ is", [r"$0$", r"$\dfrac56$", r"$-\dfrac56$", r"nonexistent"], "B",
+    MCQ(r"$\displaystyle\lim_{x\to-3}\frac{x^2+x-6}{x^2-9}$ is", [r"$0$", r"$\dfrac56$", r"$-\dfrac56$", r"Does not exist"], "B",
         limchain(-3, [r"\frac{(x+3)(x-2)}{(x+3)(x-3)}", r"\frac{x-2}{x-3}"], r"\frac{-5}{-6} = \frac56"),
         why_not={"C": "sign error in one factor"}),
-    MCQ(r"$\displaystyle\lim_{x\to0}\frac{\sqrt{9+x}-3}{x}$ is", [r"$\dfrac16$", r"$\dfrac13$", r"$0$", r"nonexistent"], "A",
+    MCQ(r"$\displaystyle\lim_{x\to0}\frac{\sqrt{9+x}-3}{x}$ is", [r"$\dfrac16$", r"$\dfrac13$", r"$0$", r"Does not exist"], "A",
         limchain(0, [r"\frac{(9+x)-9}{x\left(\sqrt{9+x}+3\right)}", r"\frac{1}{\sqrt{9+x}+3}"], r"\frac16"), why_not={"B": "dropped a factor of 2"}),
-    MCQ(r"$\displaystyle\lim_{x\to0}\frac{1-\cos^2 x}{x\sin x}$ is", [r"$0$", r"$\dfrac12$", r"$1$", r"nonexistent"], "C",
+    MCQ(r"$\displaystyle\lim_{x\to0}\frac{1-\cos^2 x}{x\sin x}$ is", [r"$0$", r"$\dfrac12$", r"$1$", r"Does not exist"], "C",
         limchain(0, [r"\frac{\sin^2 x}{x\sin x}", r"\frac{\sin x}{x}"], 1) + r" (Topic 1.4 estimated this last limit; Topic 1.8 proves it.)"),
     MCQ(r"If $f(x) = x^2 + 1$, then $\displaystyle\lim_{h\to0}\frac{f(3+h)-f(3)}{h}$ is", [r"$0$", r"$3$", r"$10$", r"$6$"], "D",
         limchain(0, [r"\frac{(3+h)^2+1-10}{h}", r"\frac{6h+h^2}{h}", r"(6+h)"], 6, var="h")

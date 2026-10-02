@@ -151,11 +151,11 @@ QUIZ = [
             why_not={"D": "substitution gives $\\frac00$", "B": "nothing factors out of an absolute value"}),
     ),
     Variants(
-        MCQ(r"$\displaystyle\lim_{x\to-5}\frac{|x+5|}{x+5}$ is", [r"$-1$", r"$0$", r"$1$", r"nonexistent"], "D",
+        MCQ(r"$\displaystyle\lim_{x\to-5}\frac{|x+5|}{x+5}$ is", [r"$-1$", r"$0$", r"$1$", r"Does not exist"], "D",
             r"The left-hand limit is $-1$ and the right-hand limit is $1$.", why_not={"A": "left side only", "C": "right side only"}),
-        MCQ(r"$\displaystyle\lim_{x\to3^-}\frac{|x-3|}{x-3}$ is", [r"$1$", r"$-1$", r"$0$", r"nonexistent"], "B",
+        MCQ(r"$\displaystyle\lim_{x\to3^-}\frac{|x-3|}{x-3}$ is", [r"$1$", r"$-1$", r"$0$", r"Does not exist"], "B",
             r"For $x < 3$, $|x - 3| = -(x - 3)$, so the quotient is $-1$.", why_not={"A": "that's the right side", "D": "a one-sided limit can exist even when the two-sided one doesn't"}),
-        MCQ(r"$\displaystyle\lim_{x\to0}\frac{x^2}{|x|}$ is", [r"$1$", r"nonexistent", r"$0$", r"$-1$"], "C",
+        MCQ(r"$\displaystyle\lim_{x\to0}\frac{x^2}{|x|}$ is", [r"$1$", r"Does not exist", r"$0$", r"$-1$"], "C",
             r"$\frac{x^2}{|x|} = |x|$ for $x \ne 0$, and $|x|$ heads to $0$ from both sides.",
             why_not={"B": "both sides agree here", "A": "that's $\\frac{|x|}{x}$ on the right"}),
     ),
@@ -170,7 +170,7 @@ same("q versions", [lim((x**2 + x - 6) / (x**2 - 4), 2), lim((x**2 - 5 * x) / (x
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\displaystyle\lim_{x\to2}\frac{x^2-x-2}{x^2-4}$ is", [r"$0$", r"$\dfrac34$", r"$1$", r"nonexistent"], "B",
+    MCQ(r"$\displaystyle\lim_{x\to2}\frac{x^2-x-2}{x^2-4}$ is", [r"$0$", r"$\dfrac34$", r"$1$", r"Does not exist"], "B",
         limchain(2, [r"\frac{(x-2)(x+1)}{(x-2)(x+2)}", r"\frac{x+1}{x+2}"], r"\frac34")),
     MCQ(r"$\displaystyle\lim_{x\to0}\frac{x}{\sqrt{x+1}-1}$ is", [r"$2$", r"$1$", r"$\dfrac12$", r"$0$"], "A",
         limchain(0, [r"\frac{x\left(\sqrt{x+1}+1\right)}{(x+1)-1}", r"\left(\sqrt{x+1}+1\right)"], 2), why_not={"C": "inverted the result"}),

@@ -20,10 +20,10 @@ same("fig 1", [sp.limit(x + 5, x, 1), (1 / (3 - x)).subs(x, 1)], [6, sp.Rational
 same("fig 3", [sp.limit(1 / (3 - x), x, 3, "-"), sp.limit(1 / (3 - x), x, 3, "+")], [oo, -oo])
 
 A = [
-    MCQ(r"$\displaystyle\lim_{x\to3}\frac{x^2-9}{x^2-2x-3}$ is", [r"$0$", r"$1$", r"$\dfrac32$", r"nonexistent"], "C",
+    MCQ(r"$\displaystyle\lim_{x\to3}\frac{x^2-9}{x^2-2x-3}$ is", [r"$0$", r"$1$", r"$\dfrac32$", r"Does not exist"], "C",
         limchain(3, [r"\frac{(x-3)(x+3)}{(x-3)(x+1)}", r"\frac{x+3}{x+1}"], r"\frac64 = \frac32"), why_not={"D": "stopped at $\\frac00$"}),
     MCQ(r"The graph of $f$ is shown. What is $\displaystyle\lim_{x\to-2}f(x)$?",
-        [r"$-1$", r"$3$", r"$1$", r"It does not exist."], "B", r"Both pieces approach height $3$; the dot at $-1$ is $f(-2)$.",
+        [r"$-1$", r"$3$", r"$1$", r"Does not exist."], "B", r"Both pieces approach height $3$; the dot at $-1$ is $f(-2)$.",
         why_not={"A": "that is $f(-2)$"}, figure=FIG),
     MCQ(r"The graph of $f$ is shown. Which statement about $f$ at $x = 1$ is true?",
         [r"$\displaystyle\lim_{x\to1}f(x) = 6$", r"$f$ is continuous at $x = 1$", r"$f$ has a removable discontinuity at $x = 1$",
@@ -138,9 +138,9 @@ FIGB = graph("u1_fb", [("x+3", -4, -1), ("2*x+4", -1, 1), ("1/(x-3)", 1, 2.8), (
 same("figB", [sp.limit(x + 3, x, -1), sp.limit(2 * x + 4, x, -1), sp.limit(2 * x + 4, x, 1), (1 / (x - 3)).subs(x, 1),
               sp.limit(1 / (x - 3), x, 3, "-")], [2, 2, 6, sp.Rational(-1, 2), -oo])
 A2 = [
-    MCQ(r"$\displaystyle\lim_{x\to-2}\frac{x^2-4}{x^2+5x+6}$ is", [r"$-4$", r"$0$", r"$4$", r"nonexistent"], "A",
+    MCQ(r"$\displaystyle\lim_{x\to-2}\frac{x^2-4}{x^2+5x+6}$ is", [r"$-4$", r"$0$", r"$4$", r"Does not exist"], "A",
         limchain(-2, [r"\frac{(x-2)(x+2)}{(x+2)(x+3)}", r"\frac{x-2}{x+3}"], -4), why_not={"D": "stopped at $\\frac00$"}),
-    MCQ(r"The graph of $f$ is shown. What is $\displaystyle\lim_{x\to-1}f(x)$?", [r"$4$", r"$2$", r"$0$", r"It does not exist."], "B",
+    MCQ(r"The graph of $f$ is shown. What is $\displaystyle\lim_{x\to-1}f(x)$?", [r"$4$", r"$2$", r"$0$", r"Does not exist."], "B",
         r"Both pieces approach height $2$; the dot at $4$ is $f(-1)$.", why_not={"A": "that is $f(-1)$"}, figure=FIGB),
     MCQ(r"The graph of $f$ is shown. Which statement about $f$ at $x = 1$ is true?",
         [r"$\displaystyle\lim_{x\to1}f(x) = 6$", r"$f$ is continuous at $x = 1$", r"$f(1) = -\frac12$ and $f$ has a jump discontinuity at $x = 1$",

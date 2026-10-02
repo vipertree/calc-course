@@ -20,9 +20,9 @@ MEANS = {"A": "that's a value, not a rate", "C": "that's a total change over an 
 # ================================================================ Part A (no calculator)
 A = [
     Variants(
-        MCQ(r"$\displaystyle\lim_{h\to0}\frac{(2+h)^4 - 16}{h}$ is", [r"$0$", r"$16$", r"$32$", r"nonexistent"], "C",
+        MCQ(r"$\displaystyle\lim_{h\to0}\frac{(2+h)^4 - 16}{h}$ is", [r"$0$", r"$16$", r"$32$", r"Does not exist"], "C",
             r"It is $f'(2)$ for $f(x) = x^4$: $4(2)^3 = 32$.", why_not={"B": "that's $f(2)$", "A": "treated $\\frac00$ as $0$"}),
-        MCQ(r"$\displaystyle\lim_{h\to0}\frac{\sqrt{9+h} - 3}{h}$ is", [r"$\dfrac16$", r"$\dfrac13$", r"$3$", r"nonexistent"], "A",
+        MCQ(r"$\displaystyle\lim_{h\to0}\frac{\sqrt{9+h} - 3}{h}$ is", [r"$\dfrac16$", r"$\dfrac13$", r"$3$", r"Does not exist"], "A",
             r"It is $f'(9)$ for $f(x) = \sqrt x$: $\dfrac{1}{2\sqrt9} = \dfrac16$.", why_not={"B": "forgot the $2$ in $\\frac{1}{2\\sqrt x}$"}),
     ),
     Variants(

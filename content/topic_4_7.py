@@ -101,12 +101,12 @@ same("q", [sp.limit(sp.sin(2 * x) / (3 * x), x, 0), sp.limit((1 - sp.exp(x)) / (
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"\[ \lim_{x \to 0} \frac{e^{x} - \cos x}{x} = \]", [r"$0$", r"$1$", r"$2$", r"nonexistent"], "B",
+    MCQ(r"\[ \lim_{x \to 0} \frac{e^{x} - \cos x}{x} = \]", [r"$0$", r"$1$", r"$2$", r"Does not exist"], "B",
         r"$\frac00$; \[ \lim_{x \to 0} \frac{e^x + \sin x}{1} = 1. \]"),
     MCQ(r"\[ \lim_{x \to 0} \frac{x - \sin x}{x^3} = \]", [r"$0$", r"$1$", r"$\frac13$", r"$\frac16$"], "D",
         r"Three uses of the rule: $\frac{1 - \cos x}{3x^2} \to \frac{\sin x}{6x} \to \frac{\cos x}{6} \to \frac16$."),
     MCQ(r"$f$ and $g$ are differentiable with $f(2) = g(2) = 0$, $f'(2) = 3$ and $g'(2) = 4$. What is \[ \lim_{x \to 2} \frac{f(x)}{g(x)}? \]",
-        [r"$\frac34$", r"$\frac43$", r"$0$", r"nonexistent"], "A", r"$\frac00$, so the limit is $\frac{f'(2)}{g'(2)} = \frac34$."),
+        [r"$\frac34$", r"$\frac43$", r"$0$", r"Does not exist"], "A", r"$\frac00$, so the limit is $\frac{f'(2)}{g'(2)} = \frac34$."),
     MCQ(r"\[ \lim_{x \to \infty} \frac{4x^3 + x}{e^{x/2}} = \]", [r"$8$", r"$\infty$", r"$0$", r"$4$"], "C",
         r"$\frac{\infty}{\infty}$ three times; the exponential always wins: $0$."),
 ]

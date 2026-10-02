@@ -304,7 +304,7 @@ MCQS = [
         r"$f(2) = 0$ and $f(-1) = 3$, so $\dfrac{0-3}{2-(-1)} = -1$.",
         why_not={"A": "numerator only", "C": "used $f(2)$ as the answer", "D": "reversed the numerator but not the denominator"}),
     MCQ(r"$\displaystyle\lim_{h\to0}\frac{\frac{1}{2+h}-\frac12}{h}$ is",
-        [r"$-\dfrac14$", r"$-\dfrac12$", r"$\dfrac14$", r"nonexistent"], "A",
+        [r"$-\dfrac14$", r"$-\dfrac12$", r"$\dfrac14$", r"Does not exist"], "A",
         "Combine the fractions: " + limchain(0, [r"\frac{\frac{2-(2+h)}{2(2+h)}}{h}", r"\frac{-h}{2h(2+h)}", r"\frac{-1}{2(2+h)}"], r"-\frac14", var="h") + ". "
         r"It is $f'(2)$ for $f(x) = \frac1x$.",
         why_not={"B": "dropped the $(2+h)$ factor from the denominator", "C": "lost the negative sign",

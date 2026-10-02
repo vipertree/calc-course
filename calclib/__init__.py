@@ -175,7 +175,7 @@ def num(v, tol=0.0, display=""):
 
 def dne():
     """The limit does not exist (and is not infinite)."""
-    return Answer("number", "DNE", display=r"\text{does not exist}")
+    return Answer("number", "DNE", display=r"\text{Does not exist}")
 
 
 def infinite(sign=1):

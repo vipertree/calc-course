@@ -224,7 +224,7 @@ QUIZ = [
             r"At $x = 10^{-9}$, $\cos x$ rounds to exactly $1$ on the calculator, so the $0$ is a rounding error. The true limit is $\frac12$.",
             why_not={"A": "that value comes from rounding, not the function", "C": "the reliable values settle on $0.5$"}),
         MCQ(r"A table for $g$ near $x = 2$ shows $g(1.9) = 4.1$, $g(1.99) = 4.01$, $g(2.01) = 3.99$ and $g(2.1) = 3.9$. What is the best "
-            r"estimate of $\displaystyle\lim_{x\to2} g(x)$?", [r"$3.9$", r"$4.1$", r"It does not exist.", r"$4$"], "D",
+            r"estimate of $\displaystyle\lim_{x\to2} g(x)$?", [r"$3.9$", r"$4.1$", r"Does not exist.", r"$4$"], "D",
             r"From the left the outputs come down to $4$; from the right they go up to $4$. Both sides approach $4$.",
             why_not={"C": "the two sides approach the same value", "A": "that's one table entry, not the trend"}),
     ),

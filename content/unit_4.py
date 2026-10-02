@@ -93,7 +93,7 @@ A = [
              [r"$-0.5$", r"$0.5$", r"$-0.9$"], "D", r"$-1 + 5(-0.1) = -1.5$.", {r"$-0.5$": "moved the wrong way"}),
     ),
     Variants(
-        pick(r"\[ \lim_{x \to 0} \frac{e^{2x} - 1}{\sin x} = \]", r"$2$", [r"$0$", r"$1$", r"nonexistent"], "A",
+        pick(r"\[ \lim_{x \to 0} \frac{e^{2x} - 1}{\sin x} = \]", r"$2$", [r"$0$", r"$1$", r"Does not exist"], "A",
              r"$\frac00$; \[ \lim_{x \to 0} \frac{2e^{2x}}{\cos x} = 2. \]", {r"$1$": "forgot the chain rule on $e^{2x}$"}),
         pick(r"\[ \lim_{x \to 0} \frac{\sin(5x)}{2x} = \]", r"$\frac52$", [r"$\frac25$", r"$5$", r"$0$"], "C",
              r"$\frac00$; \[ \lim_{x \to 0} \frac{5\cos(5x)}{2} = \frac52. \]", {r"$\frac25$": "inverted"}),

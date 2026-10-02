@@ -42,7 +42,7 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         # ---------------------------------------------------------------- Zeno's arrow, again
-        arrow = arrow_prop(4.0).shift(LEFT * 3 + UP * 0.6)
+        arrow = arrow_prop(4.0, angle=FLIGHT_TILT).shift(LEFT * 3 + UP * 0.6)
         outline = DashedVMobject(SurroundingRectangle(arrow, buff=0.08, color=DIM), num_dashes=40)
         rows = [["1", "24"], ["0.5", "30"], ["0.1", "34.8"], ["0.01", "35.88"], ["0.001", "35.988"]]
         tb = table([r"\Delta t", r"\text{average (m/s)}"], rows, size=32).to_edge(RIGHT, buff=0.9).shift(UP * 0.4)

@@ -34,20 +34,25 @@ class Lesson(TranscriptScene):
         self.clear()
 
         spots = [(-4.2, 0.2), (-1.9, 1.0), (0.4, 1.3), (2.6, 1.0)]          # where the arrow is at four instants
-        arrow = arrow_prop(3.0).move_to(RIGHT * spots[0][0] + UP * spots[0][1])
+        flight = np.poly1d(np.polyfit([x for x, _ in spots], [y for _, y in spots], 2))   # the arc through them
+        at = lambda x: RIGHT * x + UP * flight(x)
+        arrow = aim(arrow_prop(3.0), path_angle(flight, spots[0][0])).move_to(at(spots[0][0]))
         outline = always_redraw(lambda: DashedVMobject(SurroundingRectangle(arrow, buff=0.08, color=DIM), num_dashes=30))
         hand = Line(ORIGIN, UP * 0.65, color=INK, stroke_width=4)
         clock = VGroup(Circle(radius=0.8, color=DIM, stroke_width=4), hand, Dot(radius=0.05, color=INK)).move_to(RIGHT * 5.4 + DOWN * 1.6)
         with self.beat("Unpacking the paradox") as b:
-            arrow.shift(LEFT * 8)
+            # it flies in along the arc, turning with it (Adder: never a level arrow on a curved path)
+            xv = ValueTracker(spots[0][0] - 6)
+            arrow.add_updater(lambda m: aim(m, path_angle(flight, xv.get_value())).move_to(at(xv.get_value())))
             self.add(arrow)
-            self.play(arrow.animate.shift(RIGHT * 8), FadeIn(clock), run_time=1.6, rate_func=rate_functions.ease_out_cubic)
+            self.play(xv.animate.set_value(spots[0][0]), FadeIn(clock), run_time=1.6, rate_func=rate_functions.ease_out_cubic)
+            arrow.clear_updaters()
             self.play(Create(outline), run_time=1.2)
             b.line(2)
             # every instant is a frozen snapshot: the arrow vanishes from one spot and appears, still, in the next
             for x, y in spots[1:]:
                 self.play(FadeOut(arrow, run_time=0.25), Rotate(hand, -PI / 3, about_point=clock[0].get_center(), run_time=0.35))
-                arrow.move_to(RIGHT * x + UP * y)
+                aim(arrow, path_angle(flight, x)).move_to(at(x))
                 self.play(FadeIn(arrow), run_time=0.25)
                 self.wait(0.6)
         self.clear()
@@ -56,13 +61,14 @@ class Lesson(TranscriptScene):
         # ---------------------------------------------------------------- one frame, two frames
         with self.beat("What a single frame can't show") as b:
             frame = RoundedRectangle(width=7.0, height=2.6, corner_radius=0.1, color=DIM)
-            snap = arrow_prop(2.2).move_to(frame.get_center() + LEFT * 1.6)
+            snap = arrow_prop(2.2, angle=FLIGHT_TILT).move_to(frame.get_center() + LEFT * 1.6 + DOWN * 0.25)
             cap = M(r"t = 1\text{ s}", 32, DIM).next_to(frame, DOWN, buff=0.2)
             self.play(Create(frame), FadeIn(snap), FadeIn(cap), run_time=1)
             b.line(1)
             ghost = snap.copy().set_opacity(0.25)
             self.add(ghost)
-            self.play(snap.animate.shift(RIGHT * 3.2), Transform(cap, M(r"t = 2\text{ s}", 32, DIM).move_to(cap)), run_time=1.2)
+            # a second later it has flown on along its arc: further right, a little higher, and leveling off
+            self.play(snap.animate.shift(RIGHT * 3.2 + UP * 0.35).rotate(-FLIGHT_TILT * 0.6), Transform(cap, M(r"t = 2\text{ s}", 32, DIM).move_to(cap)), run_time=1.2)
         self.clear()
 
         # ---------------------------------------------------------------- the graph
@@ -79,7 +85,8 @@ class Lesson(TranscriptScene):
             ground = Line(LEFT * 2.4, RIGHT * 2.4, color=DIM, stroke_width=3)
             arc = ArcBetweenPoints(ground.get_start(), ground.get_end(), angle=-PI / 2.2, color=DIM, stroke_width=2)
             dashed = DashedVMobject(arc, num_dashes=24)
-            fly = arrow_prop(1.5).rotate(-0.5).move_to(arc.point_from_proportion(0.62))
+            p0, p1 = arc.point_from_proportion(0.615), arc.point_from_proportion(0.625)
+            fly = arrow_prop(1.5, angle=float(np.arctan2(p1[1] - p0[1], p1[0] - p0[0]))).move_to(arc.point_from_proportion(0.62))
             dist = BraceBetweenPoints(ground.get_start(), np.array([fly.get_center()[0], ground.get_start()[1], 0]), DOWN, color=SECANT)
             inset = Group(ground, dashed, fly, dist, M(r"s(t)", 30, SECANT).next_to(dist, DOWN, buff=0.08),
                           T("the real flight", 30, DIM).next_to(arc, UP, buff=0.35))
@@ -179,14 +186,14 @@ class Lesson(TranscriptScene):
             ring = Circle(radius=0.55, color=SECANT).move_to(col[-1])
             self.play(Create(ring), run_time=0.8)
             b.line(2)
-            mag = Group(Circle(radius=1.6, color=SECANT, stroke_width=4), arrow_prop(1.4)).move_to(RIGHT * 4.3 + DOWN * 0.6)
+            mag = Group(Circle(radius=1.6, color=SECANT, stroke_width=4), arrow_prop(1.4, angle=FLIGHT_TILT)).move_to(RIGHT * 4.3 + DOWN * 0.6)
             lab = M(r"[1,\ 1.001]", 28, DIM).next_to(mag, DOWN, buff=0.2)
             self.play(FadeIn(mag), FadeIn(lab), run_time=0.8)
-            self.play(mag[1].animate.shift(RIGHT * 0.35), run_time=2, rate_func=linear)
+            self.play(mag[1].animate.shift(0.35 * (RIGHT * np.cos(FLIGHT_TILT) + UP * np.sin(FLIGHT_TILT))), run_time=2, rate_func=linear)
         self.clear()
 
         with self.beat("The question stays open") as b:
-            a2 = arrow_prop(5.0).shift(LEFT * 1.8)
+            a2 = arrow_prop(5.0, angle=FLIGHT_TILT).shift(LEFT * 1.8)
             ol = DashedVMobject(SurroundingRectangle(a2, buff=0.08, color=DIM), num_dashes=40)
             self.play(FadeIn(a2), Create(ol), run_time=1)
             b.line(1)

@@ -420,9 +420,27 @@ from pathlib import Path  # noqa: E402
 TRANSCRIPTS = Path(__file__).resolve().parent.parent / "transcripts"
 
 
-def arrow_prop(length=2.2, color=None):
-    """Zeno's arrow: a painted sprite (assets/arrow.png, generated art), pointing right, `length` units long."""
-    return ImageMobject(os.path.join(ASSETS, "arrow.png")).set_width(length)
+def arrow_prop(length=2.2, color=None, angle=0.0):
+    """Zeno's arrow: a painted sprite (assets/arrow.png, generated art), `length` units long, pointing at `angle`
+    (radians from the +x direction). An arrow in flight is always drawn along its path: use aim() to turn it."""
+    a = ImageMobject(os.path.join(ASSETS, "arrow.png")).set_width(length)
+    a.heading = 0.0
+    return aim(a, angle)
+
+
+def aim(arrow, angle):
+    """Turn an arrow_prop to point at `angle` (absolute, radians), about its own center."""
+    arrow.rotate(angle - getattr(arrow, "heading", 0.0))
+    arrow.heading = angle
+    return arrow
+
+
+def path_angle(f, x, dx=1e-3):
+    """The direction of travel along y = f(x) at x, moving right."""
+    return float(np.arctan2(f(x + dx) - f(x - dx), 2 * dx))
+
+
+FLIGHT_TILT = 0.2   # radians: a snapshot of the arrow early in its flight, still climbing
 
 
 def zeno_bust(height=5.6):

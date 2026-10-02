@@ -92,44 +92,47 @@ FRQS = [
              [(1, "numerator must be $0$ at $x=2$"), (1, "$a = 1$")], work="2.6cm"),
         Part("b", r"With that value of $a$, find $\displaystyle\lim_{x\to2^-}f(x)$.", num(5),
              limchain(2, [r"\frac{(x+3)(x-2)}{x-2}", r"(x + 3)"], 5, side="^-"), [(1, "factors"), (1, "answer $5$")], work="2.4cm"),
-        Part("c", r"Find the value of $b$ that makes $f$ continuous at $x = 2$. Justify using the definition of continuity.",
+        Part("c", r"Find the value of $b$ for which $f$ is continuous at $x = 2$. Justify your answer.",
              num(2), r"$f(2) = 2b + 1$ and $\displaystyle\lim_{x\to2^+}f(x) = 2b + 1$. Continuity needs $2b + 1 = 5$, so $b = 2$; then "
                      r"$\displaystyle\lim_{x\to2}f(x) = 5 = f(2)$.",
-             [(1, "$b = 2$"), (1, "states limit equals value")], work="2.8cm"),
-    ], frq_type="Continuity"),
+             [(1, "$b = 2$"), (1, "justification: the limit at $x = 2$ equals $f(2)$")], work="2.8cm"),
+    ], frq_type="Limits and continuity"),
     FRQ("Reading a graph", r"The graph of $g$ is shown. Let $h(x) = x^2 + 1$.", [
-        Part("a", r"Find $g(-1)$, and find $\displaystyle\lim_{x\to-1}g(x)$ or explain why it does not exist.", dne(),
+        Part("a", r"For each of $g(-1)$ and $\displaystyle\lim_{x\to-1}g(x)$, find the value or state that it does not exist.",
+             selfcheck(r"g(-1) = 0;\ \text{the limit does not exist}"),
              r"$g(-1) = 0$. From the left, $g = 2$; from the right, $x^2 - 1 \to 0$. The one-sided limits differ, so the limit does not exist.",
              [(1, "$g(-1) = 0$ and both one-sided limits"), (1, "does not exist, with reason")], work="2.4cm"),
-        Part("b", r"Classify the discontinuity of $g$ at $x = 2$, and justify.", selfcheck(r"\text{removable}"),
-             r"Both sides approach $3$ ($2^2 - 1 = 3$ and $5 - 2 = 3$), but $g(2) = 1$. The limit exists and differs from the value: removable.",
-             [(1, "removable"), (1, "limit $3 \\ne g(2) = 1$")], work="2.4cm"),
-        Part("c", r"Find $\displaystyle\lim_{x\to0}g(h(x))$.", num(0),
-             r"$\displaystyle\lim_{x\to0}h(x) = 1$, and $g$ is continuous at $1$ with $g(1) = 1 - 1 = 0$, so the limit is $0$.",
-             [(1, "inner limit $1$"), (1, "answer $0$")],
-             work="2.2cm"),
-    ], frq_type="Graph of a function", figure=FIG2),
+        Part("b", r"Is $g$ continuous at $x = 2$? Use the definition of continuity to explain your answer.", selfcheck(r"\text{No}"),
+             r"No. $\displaystyle\lim_{x\to2^-}g(x) = 2^2 - 1 = 3$ and $\displaystyle\lim_{x\to2^+}g(x) = 5 - 2 = 3$, so "
+             r"$\displaystyle\lim_{x\to2}g(x) = 3$. But $g(2) = 1 \ne 3$, so $g$ is not continuous at $x = 2$.",
+             [(1, "$\\displaystyle\\lim_{x\\to2}g(x) = 3$"), (1, "no, because the limit is not equal to $g(2) = 1$")], work="2.6cm"),
+        Part("c", r"Find the value of $\displaystyle\lim_{x\to2}\frac{g(x)}{h(x)}$, or show that it does not exist.", num(sp.Rational(3, 5)),
+             r"$\displaystyle\lim_{x\to2}g(x) = 3$ and $\displaystyle\lim_{x\to2}h(x) = 5 \ne 0$, so "
+             r"$\displaystyle\lim_{x\to2}\frac{g(x)}{h(x)} = \frac35$.",
+             [(1, "uses both limits"), (1, "answer $\\frac35$")], work="2.2cm"),
+    ], frq_type="Limits and continuity", figure=FIG2),
     FRQ("River flow", (
-        r"The rate of water flow in a river, $R(t)$ cubic feet per second, is continuous for $0 \le t \le 12$ hours. Selected values are given."
+        r"The rate at which water flows past a point on a river is modeled by a continuous function $R$, where $R(t)$ is measured in "
+        r"cubic feet per second and $t$ is measured in hours, for $0 \le t \le 12$. Selected values of $R(t)$ are given in the table."
         r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (hr) & 0 & 3 & 5 & 9 & 12 \\ \hline "
         r"$R(t)$ & 210 & 245 & 230 & 190 & 225\end{tabular}}"), [
-        Part("a", r"Find the average rate of change of $R$ over $3 \le t \le 9$. Include units.", num(sp.Rational(-55, 6), tol=0.005,
+        Part("a", r"Find the average rate of change of $R$ over the interval $3 \le t \le 9$. Show the work that leads to your answer. Indicate units of measure.", num(sp.Rational(-55, 6), tol=0.005,
              display=r"-\tfrac{55}{6}\ \text{ft}^3/\text{s per hr}"),
              r"$\dfrac{190 - 245}{6} = -\dfrac{55}{6} \approx -9.167$ cubic feet per second per hour.",
              [(1, "difference quotient"), (1, "value with units")], work="2.2cm"),
-        Part("b", r"Must there be a time in $(0, 12)$ when $R(t) = 220$? Justify. Enter the fewest number of such times.", num(3),
+        Part("b", r"For $0 \le t \le 12$, what is the fewest number of times at which $R(t)$ must equal $220$? Give a reason for your answer.", num(3),
              r"$R$ is continuous. $220$ is between $210$ and $245$ (on $[0,3]$), between $230$ and $190$ (on $[5,9]$), and between $190$ "
              r"and $225$ (on $[9,12]$). By the IVT, $R(t) = 220$ at least three times.",
              [(1, "continuity and bracketing values"), (1, "IVT named with conclusion"), (1, "three times")], work="3cm"),
-        Part("c", r"Use the data to estimate $R'(4)$, the rate at which the flow is changing at $t = 4$.", num(sp.Rational(-15, 2)),
+        Part("c", r"Use the data in the table to estimate $R'(4)$. Show the work that leads to your answer.", num(sp.Rational(-15, 2)),
              r"$\dfrac{R(5) - R(3)}{5 - 3} = \dfrac{230 - 245}{2} = -7.5$ cubic feet per second per hour.",
              [(1, "estimate $-7.5$")], work="2cm"),
-    ], frq_type="Table of values / rates", calc=True),
+    ], frq_type="Table", calc=True),
 ]
 same("F1a", sp.solve(sp.Eq(4 + 2 * a - 6, 0), a)[0], 1)
 same("F1b", sp.limit((x**2 + x - 6) / (x - 2), x, 2), 5)
 same("F1c", sp.solve(sp.Eq(2 * b + 1, 5), b)[0], 2)
-same("F2", [sp.limit(x**2 - 1, x, 2), 5 - 2, (x**2 - 1).subs(x, 1)], [3, 3, 0])
+same("F2", [sp.limit(x**2 - 1, x, 2), 5 - 2, sp.limit(x**2 - 1, x, 2) / (2**2 + 1)], [3, 3, sp.Rational(3, 5)])
 
 # ================================================================ form B
 FIGB = graph("u1_fb", [("x+3", -4, -1), ("2*x+4", -1, 1), ("1/(x-3)", 1, 2.8), ("1/(x-3)", 3.2, 5)],
@@ -206,43 +209,46 @@ FRQS2 = [
              [(1, "numerator must be $0$ at $x=3$"), (1, "$a = 1$")], work="2.6cm"),
         Part("b", r"With that value of $a$, find $\displaystyle\lim_{x\to3^-}f(x)$.", num(7),
              limchain(3, [r"\frac{(x+4)(x-3)}{x-3}", r"(x + 4)"], 7, side="^-"), [(1, "factors"), (1, "answer $7$")], work="2.4cm"),
-        Part("c", r"Find the value of $b$ that makes $f$ continuous at $x = 3$. Justify using the definition of continuity.",
+        Part("c", r"Find the value of $b$ for which $f$ is continuous at $x = 3$. Justify your answer.",
              num(3), r"$f(3) = 3b - 2$ and $\displaystyle\lim_{x\to3^+}f(x) = 3b - 2$. Continuity needs $3b - 2 = 7$, so $b = 3$; then "
                      r"$\displaystyle\lim_{x\to3}f(x) = 7 = f(3)$.",
-             [(1, "$b = 3$"), (1, "states limit equals value")], work="2.8cm"),
-    ], frq_type="Continuity"),
+             [(1, "$b = 3$"), (1, "justification: the limit at $x = 3$ equals $f(3)$")], work="2.8cm"),
+    ], frq_type="Limits and continuity"),
     FRQ("Reading a graph", r"The graph of $g$ is shown. Let $h(x) = x^2 + 1$.", [
-        Part("a", r"Find $g(0)$, and find $\displaystyle\lim_{x\to0}g(x)$ or explain why it does not exist.", dne(),
+        Part("a", r"For each of $g(0)$ and $\displaystyle\lim_{x\to0}g(x)$, find the value or state that it does not exist.",
+             selfcheck(r"g(0) = 1;\ \text{the limit does not exist}"),
              r"$g(0) = 1$. From the left, $x + 3$ heads to $3$; from the right, $x^2 + 1$ heads to $1$. The one-sided limits differ, so the "
              r"limit does not exist.", [(1, "$g(0) = 1$ and both one-sided limits"), (1, "does not exist, with reason")], work="2.4cm"),
-        Part("b", r"Classify the discontinuity of $g$ at $x = 2$, and justify.", selfcheck(r"\text{removable}"),
-             r"Both sides approach $5$ ($2^2 + 1 = 5$ and $7 - 2 = 5$), but $g(2) = 2$. The limit exists and differs from the value: removable.",
-             [(1, "removable"), (1, "limit $5 \\ne g(2) = 2$")], work="2.4cm"),
-        Part("c", r"Find $\displaystyle\lim_{x\to0}g(h(x))$.", num(2),
-             r"$\displaystyle\lim_{x\to0}h(x) = 1$, and $g$ is continuous at $1$ with $g(1) = 1 + 1 = 2$, so the limit is $2$.",
-             [(1, "inner limit $1$"), (1, "answer $2$")], work="2.2cm"),
-    ], frq_type="Graph of a function", figure=FIG2B),
+        Part("b", r"Is $g$ continuous at $x = 2$? Use the definition of continuity to explain your answer.", selfcheck(r"\text{No}"),
+             r"No. $\displaystyle\lim_{x\to2^-}g(x) = 2^2 + 1 = 5$ and $\displaystyle\lim_{x\to2^+}g(x) = 7 - 2 = 5$, so "
+             r"$\displaystyle\lim_{x\to2}g(x) = 5$. But $g(2) = 2 \ne 5$, so $g$ is not continuous at $x = 2$.",
+             [(1, "$\\displaystyle\\lim_{x\\to2}g(x) = 5$"), (1, "no, because the limit is not equal to $g(2) = 2$")], work="2.6cm"),
+        Part("c", r"Find the value of $\displaystyle\lim_{x\to2}\frac{g(x)}{h(x)}$, or show that it does not exist.", num(1),
+             r"$\displaystyle\lim_{x\to2}g(x) = 5$ and $\displaystyle\lim_{x\to2}h(x) = 5 \ne 0$, so "
+             r"$\displaystyle\lim_{x\to2}\frac{g(x)}{h(x)} = \frac55 = 1$.",
+             [(1, "uses both limits"), (1, "answer $1$")], work="2.2cm"),
+    ], frq_type="Limits and continuity", figure=FIG2B),
     FRQ("Reservoir inflow", (
-        r"The rate at which water flows into a reservoir, $R(t)$ thousand gallons per hour, is continuous for $0 \le t \le 12$ hours. "
-        r"Selected values are given."
+        r"The rate at which water flows into a reservoir is modeled by a continuous function $R$, where $R(t)$ is measured in thousands of "
+        r"gallons per hour and $t$ is measured in hours, for $0 \le t \le 12$. Selected values of $R(t)$ are given in the table."
         r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (hr) & 0 & 2 & 6 & 8 & 12 \\ \hline "
         r"$R(t)$ & 150 & 180 & 170 & 140 & 160\end{tabular}}"), [
-        Part("a", r"Find the average rate of change of $R$ over $2 \le t \le 8$. Include units.", num(sp.Rational(-20, 3), tol=0.005,
+        Part("a", r"Find the average rate of change of $R$ over the interval $2 \le t \le 8$. Show the work that leads to your answer. Indicate units of measure.", num(sp.Rational(-20, 3), tol=0.005,
              display=r"-\tfrac{20}{3}\ \text{thousand gal/hr per hr}"),
              r"$\dfrac{140 - 180}{6} = -\dfrac{20}{3} \approx -6.667$ thousand gallons per hour, per hour.",
              [(1, "difference quotient"), (1, "value with units")], work="2.2cm"),
-        Part("b", r"Must there be a time in $(0, 12)$ when $R(t) = 165$? Justify. Enter the fewest number of such times.", num(2),
+        Part("b", r"For $0 \le t \le 12$, what is the fewest number of times at which $R(t)$ must equal $165$? Give a reason for your answer.", num(2),
              r"$R$ is continuous. $165$ is between $150$ and $180$ (on $[0,2]$) and between $170$ and $140$ (on $[6,8]$). By the IVT, "
              r"$R(t) = 165$ at least twice. (It is not between $180$ and $170$, or between $140$ and $160$.)",
              [(1, "continuity and bracketing values"), (1, "IVT named with conclusion"), (1, "two times")], work="3cm"),
-        Part("c", r"Use the data to estimate $R'(7)$, the rate at which the inflow is changing at $t = 7$.", num(-15),
+        Part("c", r"Use the data in the table to estimate $R'(7)$. Show the work that leads to your answer.", num(-15),
              r"$\dfrac{R(8) - R(6)}{8 - 6} = \dfrac{140 - 170}{2} = -15$ thousand gallons per hour, per hour.",
              [(1, "estimate $-15$")], work="2cm"),
-    ], frq_type="Table of values / rates", calc=True),
+    ], frq_type="Table", calc=True),
 ]
 same("F2B", [sp.solve(sp.Eq(9 + 3 * a - 12, 0), a)[0], sp.limit((x**2 + x - 12) / (x - 3), x, 3), sp.solve(sp.Eq(3 * b - 2, 7), b)[0],
-             sp.limit(x + 3, x, 0), sp.limit(x**2 + 1, x, 0), sp.limit(x**2 + 1, x, 2), 7 - 2, (x**2 + 1).subs(x, 1)],
-     [1, 7, 3, 3, 1, 5, 5, 2])
+             sp.limit(x + 3, x, 0), sp.limit(x**2 + 1, x, 0), sp.limit(x**2 + 1, x, 2), 7 - 2, sp.limit(x**2 + 1, x, 2) / (2**2 + 1)],
+     [1, 7, 3, 3, 1, 5, 5, 1])
 
 TEST = UnitTest(unit=1, title="Limits and Continuity",
                 mcq_a=[Variants(p, q) for p, q in zip(A, A2)],

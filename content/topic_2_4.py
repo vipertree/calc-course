@@ -201,19 +201,28 @@ same("m4", [s4[a], s4[b]], [4, -4])
 
 FRQS = [
     FRQ("Differentiability at a seam", (
-        r"Let $f(x) = \begin{cases} x^2 - 4x + 7, & x \le 3 \\ mx + c, & x > 3, \end{cases}$ where $m$ and $c$ are constants."), [
-        Part("a", r"If $f$ is continuous at $x = 3$, write an equation relating $m$ and $c$. Enter $f(3)$.", num(4),
-             r"$f(3) = 9 - 12 + 7 = 4$, so $3m + c = 4$.", [(1, "$f(3) = 4$"), (1, "$3m + c = 4$")], work="2.2cm"),
-        Part("b", r"Find $m$ and $c$ so that $f$ is differentiable at $x = 3$. Enter $m$.", num(2),
-             r"Left slope: $2x - 4 = 2$ at $x=3$, so $m = 2$. Then $c = 4 - 6 = -2$.", [(1, "$m = 2$"), (1, "$c = -2$")], work="2.4cm"),
-        Part("c", r"With $m = 5$ and $c = -11$, is $f$ continuous at $x = 3$? Is it differentiable there? Justify.",
-             selfcheck(r"\text{continuous, not differentiable}"),
-             r"$3(5) - 11 = 4 = f(3)$, so $f$ is continuous. The slopes are $2$ and $5$, so $f$ is not differentiable at $x = 3$ (a corner).",
-             [(1, "continuous with reason"), (1, "not differentiable with reason")], work="2.6cm"),
-    ], frq_type="Differentiability"),
+        r"Let $f$ be the function defined by $f(x) = \begin{cases} x^2 - 4x + 7, & x \le 3 \\ mx + c, & x > 3, \end{cases}$ "
+        r"where $m$ and $c$ are constants."), [
+        Part("a", r"Let $m = 5$ and $c = -11$. Is $f$ continuous at $x = 3$? Use the definition of continuity to explain your answer.",
+             selfcheck(r"\text{Yes}"),
+             r"$f(3) = 9 - 12 + 7 = 4$. $\displaystyle\lim_{x\to3^-}f(x) = 4$ and $\displaystyle\lim_{x\to3^+}(5x - 11) = 4$, so "
+             r"$\displaystyle\lim_{x\to3}f(x) = 4 = f(3)$. Therefore $f$ is continuous at $x = 3$.",
+             [(1, "$f(3) = 4$ and both one-sided limits equal $4$"), (1, "yes, because the limit equals $f(3)$")], work="2.8cm"),
+        Part("b", r"Let $m = 5$ and $c = -11$. Is $f$ differentiable at $x = 3$? Justify your answer.",
+             selfcheck(r"\text{No}"),
+             r"For $x < 3$, $f'(x) = 2x - 4$, which approaches $2$ as $x \to 3^-$. For $x > 3$, $f'(x) = 5$. The slopes from the left "
+             r"and right are $2$ and $5$, which are not equal, so $f$ is not differentiable at $x = 3$.",
+             [(1, "slopes $2$ and $5$ from the two sides"), (1, "no, with the reason")], work="2.6cm"),
+        Part("c", r"Find the values of $m$ and $c$ for which $f$ is differentiable at $x = 3$. Show the work that leads to your answer.",
+             selfcheck(r"m = 2,\ c = -2"),
+             r"Differentiable implies continuous, so $3m + c = f(3) = 4$. The slopes must match: $m = 2(3) - 4 = 2$. "
+             r"Then $c = 4 - 3(2) = -2$.",
+             [(1, "continuity condition $3m + c = 4$"), (1, "$m = 2$ from matching slopes"), (1, "$c = -2$")], work="3cm"),
+    ], frq_type="Limits and continuity"),
 ]
-same("frq a", (x**2 - 4 * x + 7).subs(x, 3), 4)
-same("frq b", sp.diff(x**2 - 4 * x + 7, x).subs(x, 3), 2)
+same("frq a", [(x**2 - 4 * x + 7).subs(x, 3), 5 * 3 - 11], [4, 4])
+same("frq b", [sp.diff(x**2 - 4 * x + 7, x).subs(x, 3), 5], [2, 5])
+same("frq c", [2, 4 - 3 * 2], [sp.diff(x**2 - 4 * x + 7, x).subs(x, 3), -2])
 
 TOPIC = Topic(
     number="2.4", title="Connecting Differentiability and Continuity",

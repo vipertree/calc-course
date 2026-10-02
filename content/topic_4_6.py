@@ -130,19 +130,27 @@ same("m", [2 * sp.Rational(32, 10) - 1, lin(sp.sqrt(x), 9, sp.Rational(96, 10)),
 
 FRQS = [
     FRQ("A melting snowbank", (
-        r"The depth of a snowbank, in inches, is a differentiable function $D(t)$ of time $t$ in days. $D(0) = 30$ and $D'(t) = -\dfrac{12}{t + 2}$."), [
-        Part("a", r"Find $D'(0)$, with units, and explain what it means.", num(-6),
-             r"$D'(0) = -6$ inches per day: at $t = 0$, the depth is decreasing at $6$ inches per day.", [(1, "value with units"), (1, "interpretation")], work="1.8cm"),
-        Part("b", r"Write the equation of the line tangent to the graph of $D$ at $t = 0$, and use it to estimate $D(0.5)$.", num(27),
-             r"$L(t) = 30 - 6t$, so $D(0.5) \approx 27$ inches.", [(1, "tangent line"), (1, "estimate")], work="2.2cm"),
-        Part("c", r"For $t \ge 0$, the snowbank melts more and more slowly, so the graph of $D$ bends up, above its tangent lines. Is the estimate in part (b) "
-             r"too big or too small? Explain.", selfcheck(r"\text{too small}"),
-             r"Too small (an underestimate): the graph of $D$ lies above its tangent line near $t = 0$, so the line's value is below $D(0.5)$.",
-             [(1, "underestimate with reason")], work="1.8cm"),
+        r"The depth of a snowbank is modeled by a twice-differentiable function $D$, where $D(t)$ is measured in inches and $t$ is "
+        r"measured in days. It is known that $D(0) = 30$ and $D'(t) = -\dfrac{12}{t + 2}$ for $t \ge 0$."), [
+        Part("a", r"Find $D'(0)$. Using correct units, interpret the meaning of $D'(0)$ in the context of the problem.",
+             num(-6, display=r"-6\ \text{inches per day}"),
+             r"$D'(0) = -\dfrac{12}{2} = -6$. At time $t = 0$, the depth of the snowbank is decreasing at a rate of $6$ inches per day.",
+             [(1, "$D'(0) = -6$"), (1, "interpretation with units")], work="2.4cm"),
+        Part("b", r"Write an equation for the line tangent to the graph of $D$ at $t = 0$. Use the tangent line to approximate $D(0.5)$.",
+             num(27),
+             r"The tangent line is $y = 30 - 6t$, so $D(0.5) \approx 30 - 6(0.5) = 27$ inches.",
+             [(1, "tangent line equation"), (1, "approximation $27$")], work="2.4cm"),
+        Part("c", r"Find $D''(t)$. Use $D''(t)$ to determine whether the approximation in part (b) is an underestimate or an "
+                  r"overestimate of $D(0.5)$. Give a reason for your answer.", selfcheck(r"\text{Underestimate}"),
+             r"$D''(t) = \dfrac{12}{(t + 2)^2} > 0$ for $t \ge 0$, so the graph of $D$ is concave up on $0 \le t \le 0.5$ and lies above "
+             r"its tangent line there. The approximation is an underestimate.",
+             [(1, "$D''(t)$"), (1, "underestimate, with the reason $D'' > 0$")], work="2.6cm"),
     ], frq_type="Linearization"),
 ]
 tt = sp.symbols("t")
-same("frq", [-12 / (0 + 2), 30 - 6 * sp.Rational(1, 2)], [-6, 27])
+Dp6 = -12 / (tt + 2)
+same("frq", [Dp6.subs(tt, 0), 30 + Dp6.subs(tt, 0) * sp.Rational(1, 2)], [-6, 27])
+same("frq c", sp.diff(Dp6, tt), 12 / (tt + 2)**2)
 
 TOPIC = Topic(
     number="4.6", title="Approximating Values of a Function Using Local Linearity and Linearization",

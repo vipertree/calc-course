@@ -120,15 +120,26 @@ MCQS = [
 same("m", [sp.diff(sp.exp(x) * (x**2 - 3 * x), x).subs(x, 3)], [3 * sp.exp(3)])
 
 FRQS = [
-    FRQ("A function with one turn", (r"Let $f(x) = \dfrac{\ln x}{x}$ for $x > 0$."), [
-        Part("a", r"Find $f'(x)$ and the critical point of $f$.", num(sp.E), r"$f'(x) = \dfrac{1 - \ln x}{x^2} = 0$ when $\ln x = 1$: $x = e$.", [(1, "$f'$"), (1, "$x = e$")], work="2cm"),
-        Part("b", r"Use the Second Derivative Test to classify the critical point. ($f''(x) = \dfrac{2\ln x - 3}{x^3}$.)", selfcheck(r"\text{relative maximum}"),
-             r"$f''(e) = \dfrac{2 - 3}{e^3} = -\dfrac{1}{e^3} < 0$, and $f'(e) = 0$: a relative maximum.", [(1, "sign of $f''(e)$"), (1, "conclusion")], work="1.8cm"),
-        Part("c", r"Find the absolute maximum value of $f$ on $(0, \infty)$, and explain why it is absolute.", num(1 / sp.E),
-             r"$x = e$ is the only critical point and it is a relative maximum, so it is the absolute maximum: $f(e) = \frac1e$.", [(1, "value"), (1, "only critical point")], work="1.8cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("A function with one turn", (
+        r"Let $f$ be the function defined by $f(x) = \dfrac{\ln x}{x}$ for $x > 0$. It can be shown that "
+        r"$f''(x) = \dfrac{2\ln x - 3}{x^3}$."), [
+        Part("a", r"Find $f'(x)$. Find the $x$-coordinate of the critical point of $f$.", num(sp.E, tol=0.001, display=r"e"),
+             r"$f'(x) = \dfrac{\frac1x\cdot x - \ln x}{x^2} = \dfrac{1 - \ln x}{x^2}$. $f'(x) = 0$ when $\ln x = 1$, so $x = e$.",
+             [(1, "$f'(x)$"), (1, "$x = e$")], work="2.4cm"),
+        Part("b", r"Use the Second Derivative Test to determine whether $f$ has a relative minimum or a relative maximum at the "
+                  r"critical point. Justify your answer.", selfcheck(r"\text{Relative maximum}"),
+             r"$f'(e) = 0$ and $f''(e) = \dfrac{2 - 3}{e^3} = -\dfrac{1}{e^3} < 0$, so $f$ has a relative maximum at $x = e$.",
+             [(1, "$f''(e) < 0$"), (1, "relative maximum, with $f'(e) = 0$")], work="2.2cm"),
+        Part("c", r"Find the absolute maximum value of $f$ for $x > 0$. Justify your answer.",
+             num(sp.exp(-1), tol=0.001, display=r"\tfrac1e"),
+             r"$x = e$ is the only critical point of $f$ on $x > 0$, and $f$ has a relative maximum there, so the relative maximum is "
+             r"the absolute maximum. (Also, $f' > 0$ for $0 < x < e$ and $f' < 0$ for $x > e$.) The absolute maximum value is "
+             r"$f(e) = \dfrac1e$.",
+             [(1, "answer $\\frac1e$"), (1, "justification: only critical point, or the sign of $f'$")], work="2.6cm"),
+    ], frq_type="Function analysis"),
 ]
 assert sp.simplify(sp.diff(sp.log(x) / x, x, 2) - (2 * sp.log(x) - 3) / x**3) == 0 and sdt(sp.log(x) / x, 0) == {sp.E: "max"}
+same("frq c", (sp.log(x) / x).subs(x, sp.E), sp.exp(-1))
 
 TOPIC = Topic(
     number="5.7", title="Using the Second Derivative Test to Determine Extrema",

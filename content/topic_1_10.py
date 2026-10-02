@@ -182,22 +182,9 @@ MCQS = [
 same("m1 hole", sp.limit((x**2 + x - 6) / (x**2 - 4), x, 2), sp.Rational(5, 4))
 
 F = (x**2 - 1) / (x**2 - 3 * x + 2)
-FRQS = [
-    FRQ("Classifying discontinuities", r"Let $f(x) = \dfrac{x^2-1}{x^2-3x+2}$.", [
-        Part("a", r"Find all $x$-values where $f$ is discontinuous, and classify each discontinuity. Enter the $x$-value of the "
-                  r"removable discontinuity.", num(1),
-             r"$f(x) = \dfrac{(x-1)(x+1)}{(x-1)(x-2)}$. At $x = 1$ the factor cancels: removable. At $x = 2$ the factor remains: "
-             r"infinite (vertical asymptote).",
-             [(1, "factors correctly"), (1, "removable at $x = 1$"), (1, "infinite at $x = 2$")], work="3cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to1} f(x)$.", num(-2), r"$\dfrac{x+1}{x-2} \to \dfrac{2}{-1} = -2$.",
-             [(1, "answer $-2$")], work="1.8cm"),
-        Part("c", r"Find $\displaystyle\lim_{x\to2^+} f(x)$.", infinite(1),
-             r"$\dfrac{x+1}{x-2}$: numerator $\to 3 > 0$, denominator $\to 0^+$. The limit is $\infty$.",
-             [(1, "answer $\\infty$ with sign reasoning")], work="2cm"),
-    ], frq_type="Continuity"),
-]
-same("frq b", sp.limit(F, x, 1), -2)
-same("frq c", sp.limit(F, x, 2, "+"), sp.oo)
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.10", title="Exploring Types of Discontinuities",

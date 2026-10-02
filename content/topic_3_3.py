@@ -159,20 +159,23 @@ same("m", [inv_slope(x**3 + 4 * x - 1, 1), inv_slope(sp.log(x) + x, 1), inv_slop
 
 FRQS = [
     FRQ("An inverse from a table", (
-        r"The function $f$ is differentiable and increasing. Selected values are given."
+        r"The function $f$ is differentiable and increasing for all real numbers. The table gives values of $f$ and its "
+        r"derivative $f'$ at selected values of $x$. Let $g$ be the inverse function of $f$."
         r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $0$ & $1$ & $3$ & $4$ \\ \hline $f(x)$ & $1$ & $3$ & $4$ & $8$ \\ "
-        r"$f'(x)$ & $2$ & $\frac12$ & $\frac14$ & $5$\end{tabular}}"
-        r"\par Let $g$ be the inverse of $f$."), [
-        Part("a", r"Find $g(3)$ and $g'(3)$. Enter $g'(3)$.", num(2),
-             r"$f(1) = 3$, so $g(3) = 1$ and $g'(3) = \dfrac{1}{f'(1)} = 2$.", [(1, "$g(3) = 1$"), (1, "$g'(3) = 2$")], work="2cm"),
-        Part("b", r"Write an equation for the line tangent to the graph of $g$ at $x = 4$.", expr("4*x - 13"),
-             r"$f(3) = 4$, so $g(4) = 3$ and $g'(4) = \dfrac{1}{f'(3)} = 4$. The line is $y - 3 = 4(x - 4)$.", [(1, "point"), (1, "slope and equation")],
-             work="2.2cm"),
-        Part("c", r"Let $k(x) = \big[f(x)\big]^2$. Find $k'(4)$.", num(80),
-             r"By the chain rule, $2f(4)f'(4) = 2(8)(5) = 80$.", [(1, "chain rule and value")], work="1.8cm"),
-    ], frq_type="Table of values / rates"),
+        r"$f'(x)$ & $2$ & $\frac12$ & $\frac14$ & $5$\end{tabular}}"), [
+        Part("a", r"Find $g'(3)$. Show the work that leads to your answer.", num(2),
+             r"$f(1) = 3$, so $g(3) = 1$ and $g'(3) = \dfrac{1}{f'\big(g(3)\big)} = \dfrac{1}{f'(1)} = \dfrac{1}{1/2} = 2$.",
+             [(1, "$g(3) = 1$"), (1, "answer $2$")], work="2.4cm"),
+        Part("b", r"Write an equation for the line tangent to the graph of $y = g(x)$ at $x = 4$.", expr("4*x - 13"),
+             r"$f(3) = 4$, so $g(4) = 3$ and $g'(4) = \dfrac{1}{f'(3)} = 4$. The tangent line is $y = 3 + 4(x - 4)$.",
+             [(1, "$g(4) = 3$"), (1, "$g'(4) = 4$ and the tangent line equation")], work="2.4cm"),
+        Part("c", r"Let $k$ be the function defined by $k(x) = x\,g(x)$. Find $k'(4)$. Show the work that leads to your answer.",
+             num(19),
+             r"$k'(x) = g(x) + x\,g'(x)$, so $k'(4) = g(4) + 4g'(4) = 3 + 4(4) = 19$.",
+             [(1, "product rule"), (1, "answer $19$")], work="2.2cm"),
+    ], frq_type="Derivatives from a table"),
 ]
-same("frq", [sp.Rational(1, 1) / sp.Rational(1, 2), 1 / sp.Rational(1, 4), 2 * 8 * 5, sp.expand(3 + 4 * (x - 4))], [2, 4, 80, 4 * x - 13])
+same("frq", [sp.Rational(1, 1) / sp.Rational(1, 2), 1 / sp.Rational(1, 4), 3 + 4 * 4, sp.expand(3 + 4 * (x - 4))], [2, 4, 19, 4 * x - 13])
 
 TOPIC = Topic(
     number="3.3", title="Differentiating Inverse Functions",

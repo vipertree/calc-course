@@ -133,16 +133,23 @@ seteq("m", [incdec(sp.diff(x**4 - 4 * x**3, x))[1], incdec((x - 4) / (x**2 + 1))
      [sp.Union(sp.Interval.open(-sp.oo, 0), sp.Interval.open(0, 3)), sp.Interval.open(4, sp.oo), sp.Interval.open(-sp.oo, 0)])
 
 FRQS = [
-    FRQ("Reading the sign of a derivative", (r"The derivative of a function $f$ is $f'(x) = (x^2 - 4)e^{-x}$."), [
-        Part("a", r"Find the critical points of $f$. Enter the larger one.", num(2), r"$e^{-x} > 0$, so $f' = 0$ where $x^2 = 4$: $x = -2$ and $x = 2$.", [(1, "both points")], work="1.8cm"),
-        Part("b", r"On what intervals is $f$ increasing? Justify your answer.", selfcheck(r"(-\infty, -2) \cup (2, \infty)"),
-             r"$f'(x) > 0$ when $x^2 - 4 > 0$, since $e^{-x} > 0$. So $f$ is increasing on $(-\infty, -2)$ and $(2, \infty)$ because $f' > 0$ there.",
-             [(1, "intervals"), (1, "justification using the sign of $f'$")], work="2.4cm"),
-        Part("c", r"Is $f(0) > f(1)$? Explain without finding $f$.", selfcheck(r"\text{yes}"),
-             r"Yes: $f' < 0$ on $(-2, 2)$, so $f$ is decreasing on $[0, 1]$ and $f(0) > f(1)$.", [(1, "decreasing on $[0, 1]$ with reason")], work="1.8cm"),
-    ], frq_type="Analyzing a function"),
+    FRQ("Reading the sign of a derivative", (
+        r"Let $f$ be a twice-differentiable function whose derivative is given by $f'(x) = (x^2 - 4)e^{-x}$ for all real numbers $x$."), [
+        Part("a", r"On what open intervals is $f$ increasing? Justify your answer.",
+             selfcheck(r"(-\infty, -2) \text{ and } (2, \infty)"),
+             r"$e^{-x} > 0$, so $f'(x)$ has the sign of $x^2 - 4$. $f'(x) > 0$ for $x < -2$ and for $x > 2$, so $f$ is increasing on "
+             r"$(-\infty, -2)$ and $(2, \infty)$.",
+             [(1, "intervals"), (1, "reason: $f'(x) > 0$ there")], work="2.6cm"),
+        Part("b", r"Which is greater, $f(0)$ or $f(1)$? Give a reason for your answer.", selfcheck(r"f(0)"),
+             r"$f'(x) < 0$ for $-2 < x < 2$, so $f$ is decreasing on $0 \le x \le 1$. Therefore $f(0) > f(1)$.",
+             [(1, "$f(0)$, because $f$ is decreasing on $0 \\le x \\le 1$")], work="2cm"),
+        Part("c", r"Find $f''(0)$. Is $f'$ increasing or decreasing at $x = 0$? Give a reason for your answer.", num(4),
+             r"$f''(x) = 2xe^{-x} - (x^2 - 4)e^{-x}$, so $f''(0) = 0 + 4 = 4$. Since $f''(0) > 0$, $f'$ is increasing at $x = 0$.",
+             [(1, "$f''(0) = 4$"), (1, "increasing, because $f''(0) > 0$")], work="2.4cm"),
+    ], frq_type="Function analysis"),
 ]
 seteq("frq", list(incdec((x**2 - 4) * sp.exp(-x))), [sp.Union(sp.Interval.open(-sp.oo, -2), sp.Interval.open(2, sp.oo)), sp.Interval.open(-2, 2)])
+same("frq c", sp.diff((x**2 - 4) * sp.exp(-x), x).subs(x, 0), 4)
 
 TOPIC = Topic(
     number="5.3", title="Determining Intervals on Which a Function Is Increasing or Decreasing",

@@ -158,23 +158,29 @@ same("m4", imp(sp.exp(x * y) - x).subs({x: 1, y: 0}), 1)
 
 F = x**2 + x * y + y**2 - 12
 FRQS = [
-    FRQ("An implicitly defined curve", r"Consider the curve given by $x^2 + xy + y^2 = 12$.", [
+    FRQ("An implicitly defined curve", r"Consider the curve given by the equation $x^2 + xy + y^2 = 12$.", [
         Part("a", r"Show that $\dfrac{dy}{dx} = -\dfrac{2x + y}{x + 2y}$.", selfcheck(r"-\tfrac{2x+y}{x+2y}"),
-             r"$2x + y + xy' + 2yy' = 0$, so $(x + 2y)y' = -(2x + y)$ and $y' = -\dfrac{2x+y}{x+2y}$.",
-             [(1, "implicit differentiation with product rule"), (1, "solves for $\\frac{dy}{dx}$")], work="2.6cm"),
-        Part("b", r"Write an equation for the line tangent to the curve at $(2, 2)$.", expr("4 - x"),
-             r"$(2, 2)$ is on the curve: $4 + 4 + 4 = 12$. Slope $-\dfrac{6}{6} = -1$: $y - 2 = -(x - 2)$, so $y = -x + 4$.",
-             [(1, "slope"), (1, "equation")], work="2cm"),
-        Part("c", r"Find the points on the curve where the tangent line is horizontal. Enter the positive $y$-coordinate.", num(4),
-             r"Horizontal when $2x + y = 0$, so $y = -2x$. Then $x^2 - 2x^2 + 4x^2 = 12$, $3x^2 = 12$, $x = \pm2$: the points $(2, -4)$ and $(-2, 4)$.",
-             [(1, "sets numerator to $0$"), (1, "substitutes into the curve"), (1, "both points")], work="2.8cm"),
-        Part("d", r"Find the points where the tangent line is vertical. Enter the positive $x$-coordinate.", num(4),
-             r"Vertical when $x + 2y = 0$, so $x = -2y$. Then $4y^2 - 2y^2 + y^2 = 12$, $y = \pm2$: the points $(-4, 2)$ and $(4, -2)$.",
-             [(1, "sets denominator to $0$"), (1, "both points")], work="2.6cm"),
+             r"Differentiate both sides with respect to $x$: $2x + y + x\dfrac{dy}{dx} + 2y\dfrac{dy}{dx} = 0$. "
+             r"Then $(x + 2y)\dfrac{dy}{dx} = -(2x + y)$, so $\dfrac{dy}{dx} = -\dfrac{2x+y}{x+2y}$.",
+             [(1, "implicit differentiation, with the product rule on $xy$"), (1, "verifies the expression for $\\frac{dy}{dx}$")],
+             work="2.8cm"),
+        Part("b", r"Write an equation for the line tangent to the curve at the point $(2, 2)$.", expr("4 - x"),
+             r"At $(2, 2)$: $\dfrac{dy}{dx} = -\dfrac{6}{6} = -1$. The tangent line is $y = 2 - (x - 2)$.",
+             [(1, "slope $-1$"), (1, "tangent line equation")], work="2.2cm"),
+        Part("c", r"Find the coordinates of all points on the curve at which the line tangent to the curve is horizontal.",
+             selfcheck(r"(2, -4) \text{ and } (-2, 4)"),
+             r"Horizontal when $2x + y = 0$ (with $x + 2y \ne 0$), so $y = -2x$. Substituting: $x^2 - 2x^2 + 4x^2 = 12$, so $3x^2 = 12$ "
+             r"and $x = \pm 2$. The points are $(2, -4)$ and $(-2, 4)$; at each, $x + 2y \ne 0$.",
+             [(1, "sets $2x + y = 0$"), (1, "substitutes into the equation of the curve"), (1, "both points")], work="3cm"),
+        Part("d", r"Find the coordinates of all points on the curve at which the line tangent to the curve is vertical.",
+             selfcheck(r"(4, -2) \text{ and } (-4, 2)"),
+             r"Vertical when $x + 2y = 0$ (with $2x + y \ne 0$), so $x = -2y$. Substituting: $4y^2 - 2y^2 + y^2 = 12$, so $y = \pm 2$. "
+             r"The points are $(-4, 2)$ and $(4, -2)$.",
+             [(1, "sets $x + 2y = 0$"), (1, "both points")], work="2.8cm"),
     ], frq_type="Implicit differentiation"),
 ]
-same("frq", [F.subs({x: 2, y: 2}), imp(F).subs({x: 2, y: 2}), F.subs({x: -2, y: 4}), F.subs({x: 4, y: -2}),
-             imp(F).subs({x: -2, y: 4})], [0, -1, 0, 0, 0])
+same("frq", [F.subs({x: 2, y: 2}), imp(F).subs({x: 2, y: 2}), F.subs({x: -2, y: 4}), F.subs({x: 2, y: -4}), F.subs({x: 4, y: -2}),
+             F.subs({x: -4, y: 2}), imp(F).subs({x: -2, y: 4})], [0, -1, 0, 0, 0, 0, 0])
 
 TOPIC = Topic(
     number="3.2", title="Implicit Differentiation",

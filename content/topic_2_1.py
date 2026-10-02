@@ -327,24 +327,26 @@ same("mcq2", sp.limit((1 / (2 + h) - sp.Rational(1, 2)) / h, h, 0), sp.Rational(
 
 FRQS = [
     FRQ("Cooling coffee", (
-        r"Marisol pours a cup of coffee. Its temperature $C(t)$, in degrees Fahrenheit, is measured at "
-        r"selected times $t$, in minutes. $C$ is differentiable."
-        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (min) & 0 & 3 & 5 & 9 & 14 \\ \hline "
+        r"Marisol pours a cup of coffee. The temperature of the coffee is modeled by a differentiable function $C$, where $C(t)$ "
+        r"is measured in degrees Fahrenheit and $t$ is measured in minutes. Selected values of $C(t)$ are given in the table."
+        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (minutes) & 0 & 3 & 5 & 9 & 14 \\ \hline "
         r"$C(t)$ ($^\circ$F) & 180 & 162 & 153 & 139 & 126\end{tabular}}"), [
-        Part("a", r"Find the average rate of change of $C$ over $0 \le t \le 14$. Include units.",
-             num(sp.Rational(-27, 7), tol=0.005, display=r"-\tfrac{27}{7}\ ^\circ\text{F/min}"),
-             r"$\dfrac{C(14)-C(0)}{14-0} = \dfrac{126-180}{14} = -\dfrac{27}{7} \approx -3.857$ degrees F per minute.",
-             [(1, "difference quotient with correct values"), (1, "answer with units")], work="3cm"),
-        Part("b", r"Use the data to estimate $C'(4)$. Show the computation that leads to your answer.",
+        Part("a", r"Find the average rate of change of $C$ over the interval $0 \le t \le 14$. Show the work that leads to your "
+                  r"answer. Indicate units of measure.",
+             num(sp.Rational(-27, 7), tol=0.005, display=r"-\tfrac{27}{7}\ \text{degrees Fahrenheit per minute}"),
+             r"$\dfrac{C(14)-C(0)}{14-0} = \dfrac{126-180}{14} = -\dfrac{27}{7} \approx -3.857$ degrees Fahrenheit per minute.",
+             [(1, "difference quotient with table values and the answer"), (1, "units")], work="3cm"),
+        Part("b", r"Use the average rate of change of $C$ over the interval $3 \le t \le 5$ to approximate $C'(4)$. Show the work "
+                  r"that leads to your answer.",
              num(sp.Rational(-9, 2), tol=0.005, display=r"-4.5"),
-             r"$C'(4) \approx \dfrac{C(5)-C(3)}{5-3} = \dfrac{153-162}{2} = -4.5$ degrees F per minute.",
-             [(1, "uses $C(5)$ and $C(3)$ in a difference quotient"), (1, "value $-4.5$")], work="3cm"),
-        Part("c", r"Interpret the meaning of $C'(4)$ in the context of the problem.",
-             selfcheck(r"\text{At } t=4\text{, temperature decreasing about 4.5 degrees F per minute}"),
-             (r"At time $t = 4$ minutes, the temperature of the coffee is changing (decreasing) at a rate of about "
+             r"$C'(4) \approx \dfrac{C(5)-C(3)}{5-3} = \dfrac{153-162}{2} = -4.5$ degrees Fahrenheit per minute.",
+             [(1, "difference quotient with $C(5)$ and $C(3)$, and the answer")], work="3cm"),
+        Part("c", r"Using correct units, interpret the meaning of $C'(4)$ in the context of the problem.",
+             selfcheck(r"\text{At } t=4\text{, the temperature is decreasing about 4.5 degrees F per minute}"),
+             (r"At time $t = 4$ minutes, the temperature of the coffee is decreasing at a rate of about "
               r"$4.5$ degrees Fahrenheit per minute."),
-             [(1, "rate of change of temperature, at $t=4$, with units (all three needed)")], work="2.5cm"),
-    ], frq_type="Table of values / rates"),
+             [(1, "rate of change of temperature, at $t=4$, with units")], work="2.5cm"),
+    ], frq_type="Table"),
 ]
 same("frq a", sp.Rational(126 - 180, 14), sp.Rational(-27, 7))
 same("frq b", sp.Rational(153 - 162, 2), sp.Rational(-9, 2))

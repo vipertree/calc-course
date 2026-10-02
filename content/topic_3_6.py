@@ -148,19 +148,32 @@ same("m", [D(x**2 * sp.log(x), n=2).subs(x, 1), (t**2 - 4 * t + 3).subs(t, 2), s
            imp2(x**3 + y**3 - 2).subs({x: 1, y: 1})], [3, -1, 0, -4])
 
 FRQS = [
-    FRQ("A particle's motion", r"A particle moves along the $x$-axis with position $x(t) = t^3 - 9t^2 + 15t + 2$ for $0 \le t \le 6$, in meters and seconds.", [
-        Part("a", r"Find the velocity $v(t)$ and the acceleration $a(t)$. Enter $a(t)$.", expr("6*t - 18", var="t"),
-             r"$v(t) = 3t^2 - 18t + 15$, and $a(t) = 6t - 18$.", [(1, "velocity"), (1, "acceleration")], work="2cm"),
-        Part("b", r"Find the acceleration at $t = 2$. Is the velocity increasing or decreasing then? Explain.", num(-6),
-             r"$a(2) = -6 < 0$, so the velocity is decreasing at $t = 2$.", [(1, "value"), (1, "decreasing, because $a < 0$")], work="1.8cm"),
-        Part("c", r"At what times is the particle at rest? Enter the later one.", num(5), r"$3t^2 - 18t + 15 = 3(t - 1)(t - 5) = 0$: $t = 1$ and $t = 5$.",
-             [(1, "sets $v = 0$"), (1, "both times")], work="2cm"),
-        Part("d", r"Find the velocity at the moment the acceleration is zero.", num(-12), r"$a = 0$ at $t = 3$, and $v(3) = 27 - 54 + 15 = -12$ m/s.",
-             [(1, "$t = 3$"), (1, "$v(3) = -12$")], work="1.8cm"),
-    ], frq_type="Particle motion"),
+    FRQ("Second derivatives from given values", (
+        r"The twice-differentiable function $f$ is defined for all real numbers and satisfies $f(0) = 3$, $f'(0) = -2$ and "
+        r"$f''(0) = 5$."), [
+        Part("a", r"The function $g$ is given by $g(x) = e^{ax} + f(x)$ for all real numbers, where $a$ is a constant. Find $g'(0)$ "
+                  r"and $g''(0)$ in terms of $a$. Show the work that leads to your answers.",
+             selfcheck(r"g'(0) = a - 2,\ g''(0) = a^2 + 5"),
+             r"$g'(x) = ae^{ax} + f'(x)$, so $g'(0) = a - 2$. $g''(x) = a^2e^{ax} + f''(x)$, so $g''(0) = a^2 + 5$.",
+             [(1, "$g'(x)$"), (1, "$g'(0) = a - 2$"), (1, "$g''(x)$"), (1, "$g''(0) = a^2 + 5$")], work="3cm"),
+        Part("b", r"For the function $g$ in part (a), find the value of $a$ for which $g$ has a critical point at $x = 0$.", num(2),
+             r"$g'(0) = a - 2 = 0$ gives $a = 2$.", [(1, "answer $a = 2$")], work="1.6cm"),
+        Part("c", r"The function $h$ is given by $h(x) = \cos(kx)\,f(x)$ for all real numbers, where $k$ is a constant. Find $h'(x)$ "
+                  r"and write an equation for the line tangent to the graph of $h$ at $x = 0$.",
+             expr("3 - 2*x"),
+             r"$h'(x) = -k\sin(kx)\,f(x) + \cos(kx)\,f'(x)$. Then $h(0) = \cos(0)f(0) = 3$ and $h'(0) = 0 + \cos(0)f'(0) = -2$, so the "
+             r"tangent line is $y = 3 - 2x$.",
+             [(1, "$h'(x)$ with the product and chain rules"), (1, "$h(0) = 3$ and $h'(0) = -2$"), (1, "tangent line equation")],
+             work="3cm"),
+    ], frq_type="Function analysis"),
 ]
-X = t**3 - 9 * t**2 + 15 * t + 2
-same("frq", [D(X, t, 2), D(X, t, 2).subs(t, 2), sorted(sp.solve(D(X, t), t)), D(X, t).subs(t, 3)], [6 * t - 18, -6, [1, 5], -12])
+a6, k6 = sp.symbols("a6 k6")
+F6 = 3 - 2 * x + sp.Rational(5, 2) * x**2        # any f with f(0) = 3, f'(0) = -2, f''(0) = 5
+g6 = sp.exp(a6 * x) + F6
+same("frq a", [sp.diff(g6, x).subs(x, 0), sp.diff(g6, x, 2).subs(x, 0)], [a6 - 2, a6**2 + 5])
+same("frq b", sp.solve(a6 - 2, a6), [2])
+h6 = sp.cos(k6 * x) * F6
+same("frq c", [h6.subs(x, 0), sp.diff(h6, x).subs(x, 0)], [3, -2])
 
 TOPIC = Topic(
     number="3.6", title="Calculating Higher-Order Derivatives",

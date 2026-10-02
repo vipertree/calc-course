@@ -174,18 +174,20 @@ def motion_frq(xf, T, t_c):
     v, a = sp.expand(sp.diff(xf, t)), sp.expand(sp.diff(xf, t, 2))
     rest = sorted(sp.solve(v, t))
     vc, ac = v.subs(t, t_c), a.subs(t, t_c)
-    word = "speeding up" if vc * ac > 0 else "slowing down"
+    word = "increasing" if vc * ac > 0 else "decreasing"
     d = dist(xf, 0, T)
     pts = [0] + rest + [T]
     frq = FRQ("A particle on a line", (
-        rf"A particle moves along the $x$-axis with position $x(t) = {sp.latex(xf)}$ feet at time $t$ seconds, $0 \le t \le {T}$."), [
-        Part("a", r"Find the velocity $v(t)$.", expr(str(v), var="t"), rf"$v(t) = {sp.latex(v)} = {sp.latex(sp.factor(v))}$.", [(1, "velocity")], work="1.6cm"),
-        Part("b", r"At what times is the particle at rest? Enter the later one.", num(rest[-1]),
+        rf"A particle moves along the $x$-axis so that its position at time $t$ is given by $x(t) = {sp.latex(xf)}$, where $x(t)$ is "
+        rf"measured in feet and $t$ is measured in seconds, for $0 \le t \le {T}$."), [
+        Part("a", r"Find the velocity $v(t)$ of the particle at time $t$.", expr(str(v), var="t"), rf"$v(t) = {sp.latex(v)} = {sp.latex(sp.factor(v))}$.", [(1, "velocity")], work="1.6cm"),
+        Part("b", r"Find all times $t$ at which the particle is at rest.", selfcheck(rf"t = {rest[0]} \text{{ and }} t = {rest[1]}"),
              rf"$v(t) = 0$ at $t = {rest[0]}$ and $t = {rest[1]}$.", [(1, "sets $v = 0$"), (1, "both times")], work="1.8cm"),
-        Part("c", rf"Is the particle speeding up or slowing down at $t = {t_c}$? Give a reason.", selfcheck(rf"\text{{{word}}}"),
-             rf"$v({t_c}) = {sp.latex(vc)}$ and $a({t_c}) = {sp.latex(ac)}$. They have {'the same sign' if vc * ac > 0 else 'opposite signs'}, so the particle is {word}.",
-             [(1, "finds $v$ and $a$"), (1, "conclusion with the sign reason")], work="2.2cm"),
-        Part("d", rf"Find the total distance the particle travels from $t = 0$ to $t = {T}$.", num(d),
+        Part("c", rf"Is the speed of the particle increasing or decreasing at time $t = {t_c}$? Give a reason for your answer.",
+             selfcheck(rf"\text{{{word.capitalize()}}}"),
+             rf"$v({t_c}) = {sp.latex(vc)}$ and $a({t_c}) = {sp.latex(ac)}$. They have {'the same sign' if vc * ac > 0 else 'opposite signs'}, so the speed of the particle is {word}.",
+             [(1, "$v$ and $a$ at that time"), (1, "conclusion with the sign reason")], work="2.2cm"),
+        Part("d", rf"Find the total distance traveled by the particle over the time interval $0 \le t \le {T}$.", num(d),
              r"The particle turns at the rest times. " + ", ".join(f"$x({p}) = {xf.subs(t, p)}$" for p in pts)
              + rf". Distance $= {' + '.join(str(abs(xf.subs(t, q) - xf.subs(t, p))) for p, q in zip(pts, pts[1:]))} = {d}$ feet.",
              [(1, "uses the turning points"), (1, "positions"), (1, "total")], work="3cm"),
@@ -197,7 +199,7 @@ F1A, mA = motion_frq(2 * t**3 - 9 * t**2 + 12 * t + 1, 3, sp.Rational(1, 2))
 F1B, mB = motion_frq(t**3 - 12 * t**2 + 36 * t - 5, 7, 3)
 same("F1 A", mA[1] + [mA[3]], [1, 2, 11])
 same("F1 B", mB[1] + [mB[3]], [2, 6, 71])
-assert (mA[2], mB[2]) == ("slowing down", "speeding up")
+assert (mA[2], mB[2]) == ("decreasing", "increasing")
 
 
 def cone_frq(R, H, rate, h0):
@@ -208,14 +210,19 @@ def cone_frq(R, H, rate, h0):
     Aw = sp.pi * (k * h)**2
     dAdt = sp.simplify(sp.diff(Aw, h).subs(h, h0) * dhdt)
     frq = FRQ("A draining cone", (
-        rf"A tank is a cone, point down, with radius ${R}$ feet at the top and height ${H}$ feet. Water drains out at ${rate}$ cubic feet per minute. "
-        r"The volume of a cone is $V = \frac13\pi r^2 h$, where $r$ is the radius of the water's surface and $h$ is the depth."), [
-        Part("a", r"Write the volume of the water as a function of its depth $h$ alone.", selfcheck(rf"V = {sp.latex(V)}"),
-             rf"Similar triangles: $\frac{{r}}{{h}} = \frac{{{R}}}{{{H}}}$, so $r = {sp.latex(k * h)}$ and $V = {sp.latex(V)}$.", [(1, "relates $r$ and $h$"), (1, "$V$ in terms of $h$")], work="2.2cm"),
-        Part("b", rf"How fast is the depth changing when the water is ${h0}$ feet deep? Include units.", num(dhdt),
+        rf"A tank has the shape of a cone with its vertex pointing down. The tank has radius ${R}$ feet at the top and height ${H}$ feet. "
+        rf"Water drains out of the tank at a constant rate of ${rate}$ cubic feet per minute. Let $h$ be the depth of the water and $r$ be "
+        r"the radius of the water's surface, both measured in feet. (The volume $V$ of a cone with radius $r$ and height $h$ is "
+        r"$V = \frac13\pi r^2 h$.)"), [
+        Part("a", rf"Show that the volume of the water in the tank is $V = {sp.latex(V)}$ when the depth of the water is $h$ feet.",
+             selfcheck(rf"V = {sp.latex(V)}"),
+             rf"Similar triangles: $\frac{{r}}{{h}} = \frac{{{R}}}{{{H}}}$, so $r = {sp.latex(k * h)}$ and $V = {sp.latex(V)}$.", [(1, "relates $r$ and $h$ by similar triangles"), (1, "substitutes to get $V$")], work="2.2cm"),
+        Part("b", rf"Find the rate at which the depth of the water is changing at the instant the water is ${h0}$ feet deep. "
+                  r"Indicate units of measure.", num(dhdt),
              rf"$\dfrac{{dV}}{{dt}} = {sp.latex(sp.diff(V, h))}\,\dfrac{{dh}}{{dt}}$. With $\dfrac{{dV}}{{dt}} = -{rate}$ and $h = {h0}$: "
              rf"$\dfrac{{dh}}{{dt}} = {sp.latex(dhdt)}$ feet per minute.", [(1, "differentiates with respect to $t$"), (1, "uses $-" + str(rate) + "$"), (1, "answer with units")], work="2.6cm"),
-        Part("c", rf"The water's surface is a circle of area $A = \pi r^2$. How fast is $A$ changing when the water is ${h0}$ feet deep?", num(dAdt),
+        Part("c", rf"The surface of the water is a circle with area $A = \pi r^2$. Find the rate at which $A$ is changing at the instant "
+                  rf"the water is ${h0}$ feet deep.", num(dAdt),
              rf"$A = {sp.latex(Aw)}$, so $\dfrac{{dA}}{{dt}} = {sp.latex(sp.diff(Aw, h))}\,\dfrac{{dh}}{{dt}} = {sp.latex(dAdt)}$ square feet per minute.",
              [(1, "chain rule"), (1, "value")], work="2.2cm"),
     ], frq_type="Related rates")
@@ -233,17 +240,21 @@ def approx_frq(a, fa1, sign, at, den, den_tex):
     est = fa1 * (at - a)
     word = "underestimate" if sign > 0 else "overestimate"
     side = "above" if sign > 0 else "below"
+    cmp = ">" if sign > 0 else "<"
     lim = sp.Rational(fa1) / sp.diff(den, x).subs(x, a)
     frq = FRQ("Estimates and limits from the derivative", (
-        rf"$f$ is differentiable, with $f({a}) = 0$ and $f'({a}) = {fa1}$. Near $x = {a}$, the graph of $f$ lies {side} its tangent lines."), [
-        Part("a", rf"Write an equation for the line tangent to the graph of $f$ at $x = {a}$, and use it to estimate $f({at})$.", num(est),
-             rf"$y = {fa1}(x - {a})$, so $f({at}) \approx {fa1}({sp.latex(sp.nsimplify(at - a))}) = {sp.latex(est)}$.", [(1, "tangent line"), (1, "estimate")], work="2cm"),
-        Part("b", r"Is the estimate in part (a) an overestimate or an underestimate? Explain.", selfcheck(rf"\text{{{word}}}"),
-             rf"An {word}: the graph lies {side} the tangent line, so the line's value is too {'small' if sign > 0 else 'big'}.", [(1, "answer with reason")], work="1.6cm"),
-        Part("c", rf"Find $\displaystyle\lim_{{x \to {a}}} \frac{{f(x)}}{{{den_tex}}}$. Show that L'Hospital's Rule applies.", num(lim),
-             rf"Both $f(x) \to f({a}) = 0$ and ${den_tex} \to 0$, so the form is $\frac00$. By L'Hospital's Rule the limit is "
+        rf"The function $f$ is twice differentiable for all real numbers, with $f({a}) = 0$ and $f'({a}) = {fa1}$. It is known that "
+        rf"$f''(x) {cmp} 0$ for all $x$."), [
+        Part("a", rf"Write an equation for the line tangent to the graph of $f$ at $x = {a}$. Use the tangent line to approximate $f({float(at)})$.", num(est),
+             rf"$y = {fa1}(x - {a})$, so $f({float(at)}) \approx {fa1}({float(at - a)}) = {float(est)}$.", [(1, "tangent line"), (1, "estimate")], work="2cm"),
+        Part("b", rf"Is the approximation in part (a) an overestimate or an underestimate of $f({float(at)})$? Give a reason for your answer.",
+             selfcheck(rf"\text{{{word.capitalize()}}}"),
+             rf"Since $f''(x) {cmp} 0$, the graph of $f$ is concave {'up' if sign > 0 else 'down'} and lies {side} its tangent line, so the "
+             rf"approximation is an {word}.", [(1, "answer with reason")], work="1.8cm"),
+        Part("c", rf"Find the value of $\displaystyle\lim_{{x \to {a}}} \frac{{f(x)}}{{{den_tex}}}$, or show that it does not exist. Justify your answer.", num(lim),
+             rf"$f$ is continuous, so $f(x) \to f({a}) = 0$, and ${den_tex} \to 0$. The form is $\frac00$. By L'Hospital's Rule the limit is "
              rf"$\dfrac{{f'({a})}}{{{sp.latex(sp.diff(den, x))}\big|_{{x = {a}}}}} = {sp.latex(lim)}$.", [(1, "shows $\\frac00$"), (1, "derivatives"), (1, "value")], work="2.4cm"),
-    ], frq_type="Linearization and limits")
+    ], frq_type="Linearization")
     return frq, [est, word, lim]
 
 

@@ -6,7 +6,8 @@ choices. Every keyed value is checked with sympy.
 """
 import sympy as sp
 
-from calclib import FRQ, MCQ, Part, UnitTest, Variants, close, expr, num, same, selfcheck
+from calclib import FRQ, MCQ, Part, UnitTest, Variants, check, close, expr, num, same, selfcheck
+from calclib.figs import graph
 
 x, y = sp.symbols("x y", real=True)
 pi = sp.pi
@@ -142,54 +143,122 @@ close("B16b", (500 / sp.pi)**sp.Rational(1, 3), 5.419, 5e-4)
 
 
 # ================================================================ free response
-def graph_frq(fp, lo, hi):
-    """f'(x) given as a cubic; extrema, concavity, inflection, candidates on [lo, hi] given f(lo)."""
-    cs = sorted(sp.solve(fp, x))
-    sgn = lambda c: (fp.subs(x, c - sp.Rational(1, 100)) > 0, fp.subs(x, c + sp.Rational(1, 100)) > 0)
-    mx = [c for c in cs if sgn(c) == (True, False)]
-    mn = [c for c in cs if sgn(c) == (False, True)]
-    f2 = sp.diff(fp, x)
-    inf = sorted(sp.solve(f2, x), key=float)
-    inc = sp.solve_univariate_inequality(fp > 0, x, relational=False)
-    cdn = sp.solve_univariate_inequality(f2 < 0, x, relational=False)
-    both = inc.intersect(cdn)
-    frq = FRQ("Analyzing a function from its derivative", (
-        rf"A twice-differentiable function $f$ has derivative $f'(x) = {sp.latex(sp.expand(fp))} = {sp.latex(sp.factor(fp))}$ for all $x$."), [
-        Part("a", r"Find the $x$-coordinates of all relative extrema of $f$ and classify each. Justify. Enter the location of the relative maximum.", num(mx[0]),
-             rf"$f'$ changes from $+$ to $-$ at $x = {sp.latex(mx[0])}$ (relative maximum)" + "".join(rf"; from $-$ to $+$ at $x = {sp.latex(c)}$ (relative minimum)" for c in mn) + ".",
-             [(1, "critical points"), (1, "classification"), (1, "justification with $f'$")], work="2.8cm"),
-        Part("b", r"Find the $x$-coordinates of the points of inflection of $f$. Justify. Enter the smaller one.", num(inf[0]),
-             rf"$f''(x) = {sp.latex(f2)}$ changes sign at $x = {', '.join(sp.latex(c) for c in inf)}$.", [(1, "$f''$"), (1, "both points with sign change")], work="2.2cm"),
-        Part("c", r"On what interval(s) is $f$ both increasing and concave down?", selfcheck(sp.latex(both)),
-             rf"Increasing where $f' > 0$: ${sp.latex(inc)}$. Concave down where $f'' < 0$: ${sp.latex(cdn)}$. Both: ${sp.latex(both)}$.", [(1, "interval")], work="2cm"),
-    ], frq_type="Analyzing a function")
-    return frq, [mx, mn, inf, both]
+def iv(lst):
+    return r" \text{ and } ".join(rf"\left({sp.latex(a)}, {sp.latex(b)}\right)" for a, b in lst) or r"\text{none}"
 
 
-F1A, gA = graph_frq((x + 1) * (x - 3) * (x - 5), 0, 0)
-F1B, gB = graph_frq((x + 2) * (x - 1) * (x - 4), 0, 0)
-same("F1 A", [gA[0], gA[1], gA[2]], [[3], [-1, 5], [sp.Rational(7, 3) - 2 * sp.sqrt(7) / 3, sp.Rational(7, 3) + 2 * sp.sqrt(7) / 3]])
-same("F1 B", [gB[0], gB[1], gB[2]], [[1], [-2, 4], [1 - sp.sqrt(3), 1 + sp.sqrt(3)]])
+def graph_frq(name, verts, c, fc):
+    """f' is piecewise linear through verts. Extrema, inflection points, increasing and concave down, tangent line at x = c."""
+    segs = []
+    for (x0, y0), (x1, y1) in zip(verts, verts[1:]):
+        m = sp.Rational(y1 - y0, x1 - x0)
+        segs.append((m, x0, y0, x1))
+    lo, hi = verts[0][0], verts[-1][0]
+    fp_at = lambda v: next(y0 + m * (v - x0) for m, x0, y0, x1 in segs if x0 <= v <= x1)
+    zeros = []
+    for m, x0, y0, x1 in segs:
+        z = x0 - sp.Rational(y0) / m
+        if x0 < z < x1 or (z == x1 and x1 != hi):
+            zeros.append(z)
+    eps = sp.Rational(1, 100)
+    mx = [z for z in zeros if fp_at(z - eps) > 0 > fp_at(z + eps)]
+    mn = [z for z in zeros if fp_at(z - eps) < 0 < fp_at(z + eps)]
+    infl = [x1 for (m, _, _, x1), (m2, _, _, _) in zip(segs, segs[1:]) if m * m2 < 0]
+    # increasing (f' > 0) and concave down (f' decreasing): pieces of negative-slope segments where f' > 0
+    both = []
+    for m, x0, y0, x1 in segs:
+        if m < 0:
+            z = x0 - sp.Rational(y0) / m
+            a, b = x0, min(max(z, x0), x1)
+            if b > a and fp_at((a + b) / 2) > 0:
+                both.append((a, b))
+    slope_c = fp_at(c)
+    line = sp.expand(fc + slope_c * (x - c))
+    fig = graph(name, [(f"{m}*(x-({x0}))+({y0})", x0, x1) for m, x0, y0, x1 in segs], xr=(lo, hi),
+                yr=(min(v for _, v in verts) - 0.5, max(v for _, v in verts) + 0.5), ylabel="f'(x)", w="7.5cm", h="5cm",
+                caption="The graph of $f'$.")
+    ext = r";\ ".join([rf"\text{{relative maximum at }} x = {sp.latex(z)}" for z in mx]
+                        + [rf"\text{{relative minimum at }} x = {sp.latex(z)}" for z in mn])
+    frq = FRQ("Reading the graph of a derivative", (
+        rf"The function $f$ is defined on the closed interval ${lo} \le x \le {hi}$ and satisfies $f({c}) = {fc}$. The graph of $f'$, "
+        r"the derivative of $f$, consists of three line segments, as shown in the figure."), [
+        Part("a", rf"Find the $x$-coordinate of each relative extremum of $f$ on the open interval ${lo} < x < {hi}$, and classify each "
+                  r"as a relative minimum or a relative maximum. Justify your answers.", selfcheck(ext),
+             "; ".join([rf"$f'$ changes from positive to negative at $x = {sp.latex(z)}$, so $f$ has a relative maximum there" for z in mx]
+                       + [rf"$f'$ changes from negative to positive at $x = {sp.latex(z)}$, so $f$ has a relative minimum there" for z in mn]) + ".",
+             [(1, "relative maximum location(s) with justification"), (1, "relative minimum location(s) with justification")], work="3cm"),
+        Part("b", r"Find the $x$-coordinate of each point of inflection of the graph of $f$. Give a reason for your answer.",
+             selfcheck(r"x = " + r" \text{ and } x = ".join(sp.latex(v) for v in infl)),
+             r"The graph of $f$ has a point of inflection where $f'$ changes from increasing to decreasing or from decreasing to "
+             rf"increasing: at $x = {' and $x = '.join(sp.latex(v) + '$' for v in infl)}.",
+             [(1, "both $x$-values"), (1, "reason: $f'$ changes from increasing to decreasing or vice versa")], work="2.4cm"),
+        Part("c", r"On what open intervals, if any, is the graph of $f$ both increasing and concave down? Give a reason for your answer.",
+             selfcheck(iv(both)),
+             rf"$f$ is increasing where $f' > 0$, and the graph is concave down where $f'$ is decreasing. Both hold on ${iv(both)}$.",
+             [(1, "intervals"), (1, "reason")], work="2.4cm"),
+        Part("d", rf"Write an equation for the line tangent to the graph of $f$ at $x = {c}$.", expr(str(line)),
+             rf"From the graph, $f'({c}) = {sp.latex(slope_c)}$, and $f({c}) = {fc}$. The tangent line is $y = {fc} + ({sp.latex(slope_c)})(x - {c})$.",
+             [(1, f"$f'({c}) = {sp.latex(slope_c)}$ from the graph"), (1, "tangent line equation")], work="2.2cm"),
+    ], frq_type="Graph of f'", figure=fig)
+    return frq, [mx, mn, infl, both, line]
 
 
-def box_frq(n):
-    V = x * (n - 2 * x)**2
-    c = sp.Rational(n, 6)
-    vmax = V.subs(x, c)
-    frq = FRQ("The largest box", (rf"An open box is made from a ${n} \times {n}$ inch square sheet by cutting a square of side $x$ inches from each corner and folding up the sides."), [
-        Part("a", r"Write the volume $V$ of the box as a function of $x$, and give the domain.", expr(str(V), var="x"),
-             rf"The base is ${n} - 2x$ on a side and the height is $x$: $V(x) = x({n} - 2x)^2$, $0 \le x \le {sp.latex(sp.Rational(n, 2))}$.", [(1, "volume"), (1, "domain")], work="2cm"),
-        Part("b", r"Find the value of $x$ that gives the largest volume. Justify your answer.", num(c),
-             rf"$V'(x) = ({n} - 2x)({n} - 6x) = 0$ at $x = {sp.latex(c)}$ and $x = {sp.latex(sp.Rational(n, 2))}$. Candidates: $V(0) = 0$, $V\left({sp.latex(c)}\right) = {sp.latex(vmax)}$, "
-             rf"$V\left({sp.latex(sp.Rational(n, 2))}\right) = 0$. The maximum is at $x = {sp.latex(c)}$.", [(1, "$V'$"), (1, "critical point"), (1, "candidates justification")], work="2.8cm"),
-        Part("c", r"What is the largest volume? Include units.", num(vmax), rf"${sp.latex(vmax)}$ cubic inches.", [(1, "value with units")], work="1.2cm"),
-    ], frq_type="Optimization")
-    return frq, [c, vmax]
+F1A, gA = graph_frq("u5_fpa", [(-3, 2), (-1, -2), (2, 1), (4, -1)], 0, 5)
+F1B, gB = graph_frq("u5_fpb", [(-4, -2), (-1, 1), (2, -2), (4, 2)], 1, 4)
+same("F1 A", [gA[0], gA[1], gA[2], gA[4]], [[-2, 3], [1], [-1, 2], 5 - x])
+same("F1 A both", [list(p) for p in gA[3]], [[-3, -2], [2, 3]])
+same("F1 B", [gB[0], gB[1], gB[2], gB[4]], [[0], [-2, 3], [-1, 2], 5 - x])
+same("F1 B both", [list(p) for p in gB[3]], [[-1, 0]])
 
 
-F2A, bA = box_frq(18)
-F2B, bB = box_frq(30)
-same("F2", [bA, bB], [[3, 432], [5, 2000]])
+def param_frq(f_tex, f, crit_at, kcrit, kind, kinfl, kinfl_tex, fp_tex, fpp_tex, infl_steps):
+    """f(x) with positive constant k: f', f''; k for a critical point at crit_at and its classification; k for an inflection point on the x-axis."""
+    fp, fpp = sp.diff(f, x), sp.diff(f, x, 2)
+    fpp_c = fpp.subs({k: kcrit, x: crit_at})
+    frq = FRQ("A family of functions", (
+        rf"Let $f$ be the function defined by $f(x) = {f_tex}$ for $x > 0$, where $k$ is a positive constant."), [
+        Part("a", r"Find $f'(x)$ and $f''(x)$.", selfcheck(rf"f'(x) = {fp_tex},\ f''(x) = {fpp_tex}"),
+             rf"$f'(x) = {fp_tex}$ and $f''(x) = {fpp_tex}$.", [(1, "$f'(x)$"), (1, "$f''(x)$")], work="2.4cm"),
+        Part("b", rf"For what value of the constant $k$ does $f$ have a critical point at $x = {crit_at}$? For this value of $k$, determine "
+                  rf"whether $f$ has a relative minimum, relative maximum, or neither at $x = {crit_at}$. Justify your answer.",
+             selfcheck(rf"k = {sp.latex(kcrit)};\ \text{{relative {kind}}}"),
+             rf"$f'({crit_at}) = {sp.latex(fp.subs(x, crit_at))} = 0$ gives $k = {sp.latex(kcrit)}$. Then $f''({crit_at}) = {sp.latex(fpp_c)} "
+             rf"{'>' if fpp_c > 0 else '<'} 0$, so by the Second Derivative Test $f$ has a relative {kind} at $x = {crit_at}$.",
+             [(1, f"$k = {sp.latex(kcrit)}$"), (1, f"$f''({crit_at})$"), (1, f"relative {kind} with justification")], work="3cm"),
+        Part("c", r"For a certain value of the constant $k$, the graph of $f$ has a point of inflection on the $x$-axis. Find this value of $k$.",
+             num(kinfl, tol=0.001, display=kinfl_tex),
+             infl_steps,
+             [(1, "$f''(x) = 0$ and $f(x) = 0$ at the same $x$"), (1, f"answer $k = {kinfl_tex}$")], work="3cm"),
+    ], frq_type="Function analysis")
+    return frq, [fp, fpp, kcrit, fpp_c, kinfl]
+
+
+k = sp.symbols("k", positive=True)
+fA = k * sp.sqrt(x) - sp.log(x)
+F2A, pA = param_frq(r"k\sqrt{x} - \ln x", fA, 4, 1, "minimum", 4 / sp.exp(2), r"\dfrac{4}{e^2}",
+                    r"\dfrac{k}{2\sqrt{x}} - \dfrac{1}{x}", r"-\dfrac{k}{4x^{3/2}} + \dfrac{1}{x^2}",
+                    r"$f''(x) = 0$ when $\dfrac{1}{x^2} = \dfrac{k}{4x^{3/2}}$, so $\sqrt{x} = \dfrac4k$ and $x = \dfrac{16}{k^2}$. The point is on "
+                    r"the $x$-axis when $f\!\left(\dfrac{16}{k^2}\right) = 4 - \ln\dfrac{16}{k^2} = 0$, so $\dfrac{16}{k^2} = e^4$ and "
+                    r"$k = \dfrac{4}{e^2}$. ($f''$ changes sign there, from positive to negative.)")
+fB = k * sp.log(x) + 1 / x
+F2B, pB = param_frq(r"k\ln x + \dfrac{1}{x}", fB, 2, sp.Rational(1, 2), "minimum", 2 * sp.sqrt(sp.E), r"2\sqrt{e}",
+                    r"\dfrac{k}{x} - \dfrac{1}{x^2}", r"-\dfrac{k}{x^2} + \dfrac{2}{x^3}",
+                    r"$f''(x) = 0$ when $\dfrac{2}{x^3} = \dfrac{k}{x^2}$, so $x = \dfrac2k$. The point is on the $x$-axis when "
+                    r"$f\!\left(\dfrac2k\right) = k\ln\dfrac2k + \dfrac{k}{2} = 0$, so $\ln\dfrac2k = -\dfrac12$ and $k = 2\sqrt{e}$. "
+                    r"($f''$ changes sign there, from positive to negative.)")
+for lab, f, p, crit_at in [("F2 A", fA, pA, 4), ("F2 B", fB, pB, 2)]:
+    same(lab + " crit", sp.solve(sp.diff(f, x).subs(x, crit_at), k), [p[2]])
+    check(lab + " min", p[3] > 0)
+    xi = sp.solve(sp.diff(f, x, 2), x)
+    check(lab + " one inflection", len(xi) == 1)
+    same(lab + " infl on axis", sp.simplify(f.subs(x, xi[0]).subs(k, p[4])), 0)
+    xv = xi[0].subs(k, p[4])
+    fpp = sp.diff(f, x, 2).subs(k, p[4])
+    check(lab + " sign change", fpp.subs(x, xv / 2) > 0 and fpp.subs(x, 2 * xv) < 0)
+same("F2 A fp", sp.simplify(pA[0] - (k / (2 * sp.sqrt(x)) - 1 / x)), 0)
+same("F2 A fpp", sp.simplify(pA[1] - (-k / (4 * x**sp.Rational(3, 2)) + 1 / x**2)), 0)
+same("F2 B fp", sp.simplify(pB[0] - (k / x - 1 / x**2)), 0)
+same("F2 B fpp", sp.simplify(pB[1] - (-k / x**2 + 2 / x**3)), 0)
 
 
 def curve_frq(F, tex, ytex):
@@ -201,15 +270,22 @@ def curve_frq(F, tex, ytex):
     ypp = sp.diff(yp.subs(y, Y), x).subs(sp.Derivative(Y, x), yp.subs(y, Y)).subs(Y, y)
     top = hz[-1]
     v = sp.simplify(ypp.subs({x: top[0], y: top[1]}))
-    frq = FRQ("Tangents to an implicit curve", rf"Consider the curve ${tex}$.", [
-        Part("a", rf"Show that $\dfrac{{dy}}{{dx}} = {ytex}$.", selfcheck(ytex), r"Differentiate implicitly and solve for $\frac{dy}{dx}$.", [(1, "implicit differentiation"), (1, "solves")], work="2.2cm"),
-        Part("b", r"Find the points where the tangent line is horizontal. Enter the larger $y$-coordinate.", num(top[1]),
-             r"Numerator zero, together with the curve: " + ", ".join(rf"$\left({sp.latex(p[0])}, {sp.latex(p[1])}\right)$" for p in hz) + ".", [(1, "numerator $= 0$"), (1, "points")], work="2.4cm"),
-        Part("c", r"Find the points where the tangent line is vertical. Enter the larger $x$-coordinate.", num(vt[-1][0]),
-             r"Denominator zero, together with the curve: " + ", ".join(rf"$\left({sp.latex(p[0])}, {sp.latex(p[1])}\right)$" for p in vt) + ".", [(1, "denominator $= 0$"), (1, "points")], work="2.4cm"),
-        Part("d", rf"Find $\dfrac{{d^2y}}{{dx^2}}$ at $\left({sp.latex(top[0])}, {sp.latex(top[1])}\right)$. Does the curve have a relative maximum or minimum there?", num(v),
-             rf"At that point $\frac{{dy}}{{dx}} = 0$, and $\frac{{d^2y}}{{dx^2}} = {sp.latex(v)}$, so the curve has a relative {'maximum' if v < 0 else 'minimum'} there.",
-             [(1, "value"), (1, "conclusion")], work="2.6cm"),
+    pts = lambda L: r" \text{ and } ".join(rf"\left({sp.latex(p[0])}, {sp.latex(p[1])}\right)" for p in L)
+    frq = FRQ("Tangents to an implicit curve", rf"Consider the curve given by the equation ${tex}$.", [
+        Part("a", rf"Show that $\dfrac{{dy}}{{dx}} = {ytex}$.", selfcheck(ytex),
+             r"Differentiate both sides with respect to $x$, using the chain rule on each $y$ term, and solve for $\frac{dy}{dx}$.",
+             [(1, "implicit differentiation"), (1, "verifies the expression for $\\frac{dy}{dx}$")], work="2.4cm"),
+        Part("b", r"Find the coordinates of all points on the curve at which the line tangent to the curve is horizontal.", selfcheck(pts(hz)),
+             r"The numerator of $\frac{dy}{dx}$ is $0$; substituting into the equation of the curve gives $" + pts(hz) + "$.",
+             [(1, "sets the numerator equal to $0$"), (1, "both points")], work="2.4cm"),
+        Part("c", r"Find the coordinates of all points on the curve at which the line tangent to the curve is vertical.", selfcheck(pts(vt)),
+             r"The denominator of $\frac{dy}{dx}$ is $0$; substituting into the equation of the curve gives $" + pts(vt) + "$.",
+             [(1, "sets the denominator equal to $0$"), (1, "both points")], work="2.4cm"),
+        Part("d", rf"Find the value of $\dfrac{{d^2y}}{{dx^2}}$ at the point $\left({sp.latex(top[0])}, {sp.latex(top[1])}\right)$. Does the curve "
+                  r"have a relative minimum, a relative maximum, or neither at this point? Justify your answer.", num(v),
+             rf"At that point $\frac{{dy}}{{dx}} = 0$, and $\frac{{d^2y}}{{dx^2}} = {sp.latex(v)} {'<' if v < 0 else '>'} 0$, so the curve has a "
+             rf"relative {'maximum' if v < 0 else 'minimum'} there.",
+             [(1, "value of $\\frac{d^2y}{dx^2}$"), (1, "classification with justification")], work="2.8cm"),
     ], frq_type="Implicit differentiation")
     return frq, [top, vt[-1], v]
 

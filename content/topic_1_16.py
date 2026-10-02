@@ -7,7 +7,7 @@ theorem, state continuity on the closed interval, and show the target value is b
 import sympy as sp
 
 from calclib import (VideoExample, Variants, FRQ, MCQ, BigIdea, Check, Example, FigureRow, Formula, Item, Part, Section, Table, Text, Topic,
-                     Video, num, same, selfcheck)
+                     Video, check, num, same, selfcheck)
 from calclib.figs import graph
 
 x = sp.symbols("x")
@@ -215,23 +215,34 @@ MCQS = [
 same("m2", [(x**5 + 2 * x - 7).subs(x, 1), (x**5 + 2 * x - 7).subs(x, 2)], [-4, 29])
 
 FRQS = [
-    FRQ("Using the IVT with a table", (
-        r"The continuous function $W$ gives the water level, in feet, of a reservoir $t$ months after January 1."
+    FRQ("Reservoir level", (
+        r"The water level of a reservoir is modeled by a continuous function $W$, where $W(t)$ is measured in feet and $t$ is "
+        r"measured in months after January 1. Selected values of $W(t)$ are given in the table."
         r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (months) & 0 & 2 & 5 & 8 & 11 \\ \hline "
-        r"$W(t)$ (ft) & 42 & 48 & 39 & 36 & 44\end{tabular}}"), [
-        Part("a", r"Must there be a time $t$ in $(0, 11)$ at which $W(t) = 45$? Justify your answer. Enter the fewest number of such times.",
-             num(2), r"$W$ is continuous. $45$ is between $W(0) = 42$ and $W(2) = 48$, and between $W(2) = 48$ and $W(5) = 39$. By the IVT, "
-                     r"$W(t) = 45$ for at least one $t$ in each of $(0,2)$ and $(2,5)$: at least two times.",
-             [(1, "continuity and values that bracket $45$"), (1, "names the IVT with a conclusion"), (1, "at least two times")],
-             work="3.4cm"),
-        Part("b", r"Is there necessarily a time in $(5, 8)$ at which $W(t) = 40$? Explain.", selfcheck(r"\text{No}"),
-             r"No. $40$ is not between $W(5) = 39$ and $W(8) = 36$, so the IVT does not apply there. (The level could still reach $40$, "
-             r"but it isn't guaranteed.)", [(1, "no, because $40$ is not between the endpoint values")], work="2.2cm"),
-        Part("c", r"Find the average rate of change of $W$ over $[5, 11]$, with units.", num(sp.Rational(5, 6), tol=0.005,
-             display=r"\tfrac56\text{ ft/month}"), r"$\dfrac{44 - 39}{11 - 5} = \dfrac56$ feet per month.",
-             [(1, "value with units")], work="1.8cm"),
-    ], frq_type="Table of values / IVT"),
+        r"$W(t)$ (feet) & 42 & 48 & 39 & 36 & 44\end{tabular}}"), [
+        Part("a", r"Find the average rate of change of $W$ over the interval $5 \le t \le 11$. Show the work that leads to your "
+                  r"answer. Indicate units of measure.",
+             num(sp.Rational(5, 6), tol=0.005, display=r"\tfrac56\ \text{feet per month}"),
+             r"$\dfrac{W(11) - W(5)}{11 - 5} = \dfrac{44 - 39}{6} = \dfrac56$ feet per month.",
+             [(1, "difference quotient and answer"), (1, "units")], work="2.6cm"),
+        Part("b", r"Must there be a value $c$, for $2 < c < 8$, such that $W(c) = 40$? Justify your answer.",
+             selfcheck(r"\text{Yes}"),
+             r"$W$ is continuous on $2 \le t \le 8$, and $W(8) = 36 < 40 < 48 = W(2)$. By the Intermediate Value Theorem, there must "
+             r"be a value $c$, with $2 < c < 8$, such that $W(c) = 40$.",
+             [(1, "$W(8) < 40 < W(2)$"), (1, "yes, using continuity and the Intermediate Value Theorem")], work="2.8cm"),
+        Part("c", r"For $0 \le t \le 11$, what is the fewest number of times at which $W(t)$ must equal $45$? Give a reason for your answer.",
+             num(2),
+             r"$W(0) = 42 < 45 < 48 = W(2)$ and $W(2) = 48 > 45 > 39 = W(5)$. Since $W$ is continuous, the Intermediate Value Theorem "
+             r"gives a time in $(0, 2)$ and a time in $(2, 5)$ at which $W(t) = 45$. So $W(t)$ must equal $45$ at least two times.",
+             [(1, "answer $2$"), (1, "reason: intervals $(0, 2)$ and $(2, 5)$ with the Intermediate Value Theorem")], work="3cm"),
+    ], frq_type="Table"),
 ]
+W = {0: 42, 2: 48, 5: 39, 8: 36, 11: 44}
+same("frq a", sp.Rational(W[11] - W[5], 11 - 5), sp.Rational(5, 6))
+check("frq b", W[8] < 40 < W[2])
+# 45 is crossed on (0,2) and (2,5) only: no other consecutive pair brackets 45
+ts = sorted(W)
+check("frq c", sum((W[p] - 45) * (W[q] - 45) < 0 for p, q in zip(ts, ts[1:])) == 2)
 
 TOPIC = Topic(
     number="1.16", title="Working with the Intermediate Value Theorem",

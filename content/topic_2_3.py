@@ -6,7 +6,7 @@ table in the notes matches the video: T'(6) is about (66 - 63)/(7 - 5) = 1.5 deg
 import sympy as sp
 
 from calclib import (Variants, FRQ, MCQ, BigIdea, Check, Desmos, Example, Formula, Item, Part, Section, Table, Text,
-                     Topic, Video, VideoExample, close, num, same, selfcheck)
+                     Topic, Video, VideoExample, check, close, num, same, selfcheck)
 from calclib.figs import graph
 
 x, h = sp.symbols("x h")
@@ -201,21 +201,29 @@ MCQS = [
 close("m2", ((2.01**3 - 2.01) - (1.99**3 - 1.99)) / 0.02, 11.0001, 1e-6)
 
 FRQS = [
-    FRQ("Estimating a rate from data", (
-        r"A hot-air balloon's height $H(t)$, in feet, is recorded at selected times $t$, in minutes. $H$ is differentiable."
-        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (min) & 0 & 2 & 5 & 7 & 10 \\ \hline "
-        r"$H(t)$ (ft) & 0 & 140 & 410 & 520 & 610\end{tabular}}"), [
-        Part("a", r"Use the data to estimate $H'(6)$. Show the computation that leads to your answer.", num(55),
-             r"$\dfrac{H(7) - H(5)}{7 - 5} = \dfrac{520 - 410}{2} = 55$ feet per minute.",
-             [(1, "average rate of change using $t = 5$ and $t = 7$"), (1, "$55$")], work="2.4cm"),
-        Part("b", r"Interpret $H'(6)$ in the context of the problem.", selfcheck(r"\text{rising about 55 ft/min at } t=6"),
-             r"At $t = 6$ minutes, the balloon's height is increasing at about 55 feet per minute.",
+    FRQ("A rising balloon", (
+        r"The height of a hot-air balloon is modeled by a differentiable function $H$, where $H(t)$ is measured in feet and $t$ "
+        r"is measured in minutes. Selected values of $H(t)$ are given in the table."
+        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (minutes) & 0 & 2 & 5 & 7 & 10 \\ \hline "
+        r"$H(t)$ (feet) & 0 & 140 & 410 & 520 & 610\end{tabular}}"), [
+        Part("a", r"Use the data in the table to estimate $H'(6)$. Show the work that leads to your answer. Indicate units of measure.",
+             num(55, display=r"55\ \text{feet per minute}"),
+             r"$H'(6) \approx \dfrac{H(7) - H(5)}{7 - 5} = \dfrac{520 - 410}{2} = 55$ feet per minute.",
+             [(1, "difference quotient with $H(7)$ and $H(5)$, and the answer"), (1, "units")], work="2.6cm"),
+        Part("b", r"Using correct units, interpret the meaning of $H'(6)$ in the context of the problem.",
+             selfcheck(r"\text{At } t = 6\text{, the height is increasing about 55 feet per minute}"),
+             r"At time $t = 6$ minutes, the height of the balloon is increasing at a rate of about $55$ feet per minute.",
              [(1, "rate of change of height, at $t=6$, with units")], work="2cm"),
-        Part("c", r"Is the balloon rising faster at $t = 1$ or at $t = 8.5$? Use estimates to decide. Enter the estimate at $t = 8.5$.",
-             num(30), r"$H'(1) \approx \dfrac{140 - 0}{2} = 70$; $H'(8.5) \approx \dfrac{610 - 520}{3} = 30$. It is rising faster at $t=1$.",
-             [(1, "both estimates"), (1, "comparison")], work="2.4cm"),
-    ], frq_type="Table of values / rates"),
+        Part("c", r"Must there be a value $c$, for $0 < c < 10$, such that $H(c) = 500$? Justify your answer.",
+             selfcheck(r"\text{Yes}"),
+             r"$H$ is differentiable, so $H$ is continuous on $0 \le t \le 10$. $H(5) = 410 < 500 < 520 = H(7)$. By the Intermediate "
+             r"Value Theorem, there must be a value $c$, with $5 < c < 7$, such that $H(c) = 500$.",
+             [(1, "$H$ is continuous because it is differentiable"), (1, "$H(5) < 500 < H(7)$ and yes, by the Intermediate Value Theorem")],
+             work="2.8cm"),
+    ], frq_type="Table"),
 ]
+same("frq a", sp.Rational(520 - 410, 7 - 5), 55)
+check("frq c", 410 < 500 < 520)
 
 TOPIC = Topic(
     number="2.3", title="Estimating Derivatives of a Function at a Point",

@@ -164,16 +164,20 @@ same("m4", sp.Rational(5, 10) * 7 + 2 * sp.Rational(-2, 10), sp.Rational(31, 10)
 
 FRQS = [
     FRQ("Product rule from a table", (
-        r"The functions $f$ and $g$ are differentiable, with values given in the table. Let $h(x) = f(x)g(x)$ and $k(x) = x^2 f(x)$."
+        r"The functions $f$ and $g$ are differentiable for all real numbers. The table gives values of the functions and their "
+        r"derivatives at selected values of $x$."
         r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $f(x)$ & $f'(x)$ & $g(x)$ & $g'(x)$ \\ \hline "
         r"1 & 3 & $-2$ & 4 & 1 \\ 3 & 6 & 5 & $-2$ & 3\end{tabular}}"), [
-        Part("a", r"Find $h'(3)$.", num(8), r"$f'(3)g(3) + f(3)g'(3) = 5(-2) + 6(3) = 8$.", [(1, "product rule"), (1, "value $8$")],
-             work="2cm"),
-        Part("b", r"Find $k'(1)$.", num(4), r"$k'(x) = 2xf(x) + x^2f'(x)$, so $k'(1) = 2(3) + 1(-2) = 4$.",
-             [(1, "product rule with $x^2$"), (1, "value $4$")], work="2.2cm"),
+        Part("a", r"Let $h$ be the function defined by $h(x) = f(x)g(x)$. Find $h'(3)$. Show the work that leads to your answer.",
+             num(8), r"$h'(3) = f'(3)g(3) + f(3)g'(3) = 5(-2) + 6(3) = 8$.", [(1, "product rule"), (1, "answer $8$")],
+             work="2.2cm"),
+        Part("b", r"Let $k$ be the function defined by $k(x) = x^2 f(x)$. Find $k'(1)$. Show the work that leads to your answer.",
+             num(4), r"$k'(x) = 2xf(x) + x^2f'(x)$, so $k'(1) = 2(1)(3) + (1)^2(-2) = 4$.",
+             [(1, "$k'(x)$ by the product rule"), (1, "answer $4$")], work="2.2cm"),
         Part("c", r"Write an equation for the line tangent to the graph of $h$ at $x = 1$.", expr("-5*x+17"),
-             r"$h(1) = 12$ and $h'(1) = (-2)(4) + 3(1) = -5$: $y - 12 = -5(x - 1)$, or $y = -5x + 17$.",
-             [(1, "$h(1)$ and $h'(1)$"), (1, "equation")], work="2.4cm"),
+             r"$h(1) = f(1)g(1) = 12$ and $h'(1) = f'(1)g(1) + f(1)g'(1) = (-2)(4) + 3(1) = -5$. The tangent line is "
+             r"$y = 12 - 5(x - 1)$.",
+             [(1, "$h(1) = 12$ and $h'(1) = -5$"), (1, "tangent line equation")], work="2.4cm"),
     ], frq_type="Derivatives from a table"),
 ]
 same("frq", [5 * (-2) + 6 * 3, 2 * 3 + 1 * (-2), (-2) * 4 + 3 * 1], [8, 4, -5])

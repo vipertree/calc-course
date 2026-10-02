@@ -165,19 +165,20 @@ def table_chain(v, c1, c2, c3):
     mp = 2 * v[c3][2] * v[c3][3]
     finv = sp.Rational(1, v[c3][1])
     frq = FRQ("Composite and inverse functions from a table", (
-        r"The functions $f$ and $g$ are differentiable, and $f$ is increasing. Selected values are given."
+        r"The functions $f$ and $g$ are differentiable for all real numbers, and $f$ is strictly increasing. The table gives values "
+        r"of the functions and their derivatives at selected values of $x$. Let $f^{-1}$ be the inverse function of $f$."
         r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $f(x)$ & $f'(x)$ & $g(x)$ & $g'(x)$ \\ \hline " + rows + r"\end{tabular}}"), [
-        Part("a", rf"Let $h(x) = f\big(g(x)\big)$. Find $h'({c1})$.", num(hp),
-             rf"$h'({c1}) = f'\big(g({c1})\big)g'({c1}) = f'({g1})\cdot({v[c1][3]}) = ({v[g1][1]})({v[c1][3]}) = {hp}$.", [(1, "chain rule"), (1, "value")], work="2cm"),
-        Part("b", rf"Let $k(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $k$ at $x = {c2}$.", expr(str(line)),
+        Part("a", rf"Let $h$ be the function defined by $h(x) = f\big(g(x)\big)$. Find $h'({c1})$. Show the work that leads to your answer.", num(hp),
+             rf"$h'({c1}) = f'\big(g({c1})\big)g'({c1}) = f'({g1})\cdot({v[c1][3]}) = ({v[g1][1]})({v[c1][3]}) = {hp}$.", [(1, "chain rule"), (1, f"answer ${hp}$")], work="2.2cm"),
+        Part("b", rf"Let $k$ be the function defined by $k(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $k$ at $x = {c2}$.", expr(str(line)),
              rf"$k({c2}) = g\big(f({c2})\big) = g({f2}) = {k2}$, and $k'({c2}) = g'({f2})f'({c2}) = ({v[f2][3]})({v[c2][1]}) = {kp}$. "
-             rf"So $y - {k2} = {kp}(x - {c2})$.", [(1, "point"), (1, "slope"), (1, "equation")], work="2.4cm"),
-        Part("c", rf"Let $m(x) = \big[g(x)\big]^2$. Find $m'({c3})$.", num(mp),
+             rf"The tangent line is $y = {k2} + {kp}(x - {c2})$.", [(1, f"$k({c2}) = {k2}$"), (1, f"$k'({c2}) = {kp}$"), (1, "tangent line equation")], work="2.6cm"),
+        Part("c", rf"Let $m$ be the function defined by $m(x) = \big[g(x)\big]^2$. Find $m'({c3})$.", num(mp),
              rf"$m'({c3}) = 2g({c3})g'({c3}) = 2({v[c3][2]})({v[c3][3]}) = {mp}$.", [(1, "chain rule and value")], work="1.6cm"),
-        Part("d", rf"Find $\left(f^{{-1}}\right)'({v[c3][0]})$.", num(finv),
+        Part("d", rf"Find $\left(f^{{-1}}\right)'({v[c3][0]})$. Show the work that leads to your answer.", num(finv),
              rf"$f({c3}) = {v[c3][0]}$, so $\left(f^{{-1}}\right)'({v[c3][0]}) = \dfrac{{1}}{{f'({c3})}} = {sp.latex(finv)}$.",
-             [(1, "matching point and reciprocal")], work="1.6cm"),
-    ], frq_type="Table of values / rates")
+             [(1, "$f^{-1}$ evaluated at the matching point, and the reciprocal")], work="1.8cm"),
+    ], frq_type="Derivatives from a table")
     return frq, [hp, line, mp, finv]
 
 
@@ -198,18 +199,23 @@ def curve_frq(F, tex, dydx_tex, pt, sign):
     Y = sp.Function("Y")(x)
     ypp = sp.diff(yp.subs(y, Y), x).subs(sp.Derivative(Y, x), yp.subs(y, Y)).subs(Y, y)
     ypp_val = sp.simplify(ypp.subs({x: hz_pos[x], y: hz_pos[y]}))
-    frq = FRQ("An implicitly defined curve", rf"Consider the curve given by ${tex}$.", [
+    frq = FRQ("An implicitly defined curve", rf"Consider the curve given by the equation ${tex}$.", [
         Part("a", rf"Show that $\dfrac{{dy}}{{dx}} = {dydx_tex}$.", selfcheck(dydx_tex),
              r"Differentiate implicitly, using the product rule on the $xy$ term and the chain rule on each $y$ term, then solve for $\frac{dy}{dx}$.",
              [(1, "implicit differentiation"), (1, "solves for $\\frac{dy}{dx}$")], work="2.6cm"),
-        Part("b", rf"Write an equation for the line tangent to the curve at $({pt[0]}, {pt[1]})$.", expr(str(line)),
-             rf"The slope there is ${sp.latex(slope)}$, so $y - {pt[1]} = {sp.latex(slope)}(x - ({pt[0]}))$.", [(1, "slope"), (1, "equation")], work="2cm"),
-        Part("c", r"Find the points where the tangent line is horizontal. Enter the positive $y$-coordinate.", num(hz_pos[y]),
+        Part("b", rf"Write an equation for the line tangent to the curve at the point $({pt[0]}, {pt[1]})$.", expr(str(line)),
+             rf"The slope there is ${sp.latex(slope)}$, so the tangent line is $y = {pt[1]} + {sp.latex(slope)}(x - ({pt[0]}))$.", [(1, "slope"), (1, "tangent line equation")], work="2.2cm"),
+        Part("c", r"Find the coordinates of all points on the curve at which the line tangent to the curve is horizontal.",
+             selfcheck(r"\text{ and }".join(f"({h[x]}, {h[y]})" for h in hz)),
              r"Set the numerator of $\frac{dy}{dx}$ to $0$, substitute into the curve, and solve: the points are "
-             + ", ".join(f"$({h[x]}, {h[y]})$" for h in hz) + ".", [(1, "numerator $= 0$"), (1, "substitutes into the curve"), (1, "points")], work="2.8cm"),
-        Part("d", rf"Find $\dfrac{{d^2y}}{{dx^2}}$ at the point $({hz_pos[x]}, {hz_pos[y]})$.", num(ypp_val),
+             + " and ".join(f"$({h[x]}, {h[y]})$" for h in hz) + ". At each, the denominator of $\\frac{dy}{dx}$ is not $0$.",
+             [(1, "sets the numerator of $\\frac{dy}{dx}$ equal to $0$"), (1, "substitutes into the equation of the curve"), (1, "both points")], work="3cm"),
+        Part("d", rf"Find the value of $\dfrac{{d^2y}}{{dx^2}}$ at the point $({hz_pos[x]}, {hz_pos[y]})$. Does the curve have a relative minimum, "
+                  r"a relative maximum, or neither at this point? Justify your answer.", num(ypp_val),
              rf"Differentiate $\frac{{dy}}{{dx}}$ with the quotient rule. At $({hz_pos[x]}, {hz_pos[y]})$, $\frac{{dy}}{{dx}} = 0$, which simplifies the work: "
-             rf"$\dfrac{{d^2y}}{{dx^2}} = {sp.latex(ypp_val)}$.", [(1, "quotient rule on $\\frac{dy}{dx}$"), (1, "value")], work="3cm"),
+             rf"$\dfrac{{d^2y}}{{dx^2}} = {sp.latex(ypp_val)}$. Since $\dfrac{{dy}}{{dx}} = 0$ and $\dfrac{{d^2y}}{{dx^2}} {'<' if ypp_val < 0 else '>'} 0$ "
+             rf"there, the curve has a relative {'maximum' if ypp_val < 0 else 'minimum'} at $({hz_pos[x]}, {hz_pos[y]})$.",
+             [(1, "value of $\\frac{d^2y}{dx^2}$"), (1, "classification with justification")], work="3.4cm"),
     ], frq_type="Implicit differentiation")
     return frq, [yp, line, hz_pos[y], ypp_val]
 
@@ -226,15 +232,16 @@ def motion_frq(s, T, t_a):
     rest = sorted(sp.solve(v, t))
     t0 = sp.solve(a, t)[0]
     frq = FRQ("Position, velocity and acceleration", (
-        rf"A particle moves along the $x$-axis with position $s(t) = {sp.latex(s)}$ meters at time $t$ seconds, $0 \le t \le {T}$."), [
-        Part("a", r"Find the velocity $v(t)$ and the acceleration $a(t)$. Enter $a(t)$.", expr(str(a), var="t"),
+        rf"A particle moves along the $x$-axis so that its position at time $t$ is given by $s(t) = {sp.latex(s)}$, where $s(t)$ is "
+        rf"measured in meters and $t$ is measured in seconds, for $0 \le t \le {T}$."), [
+        Part("a", r"Find the acceleration $a(t)$ of the particle at time $t$.", expr(str(a), var="t"),
              rf"$v(t) = {sp.latex(v)}$ and $a(t) = {sp.latex(a)}$.", [(1, "velocity"), (1, "acceleration")], work="2cm"),
-        Part("b", rf"Find $a({t_a})$. Is the velocity increasing or decreasing at $t = {t_a}$? Explain.", num(a.subs(t, t_a)),
+        Part("b", rf"Find $a({t_a})$. Is the velocity of the particle increasing or decreasing at time $t = {t_a}$? Give a reason for your answer.", num(a.subs(t, t_a)),
              rf"$a({t_a}) = {a.subs(t, t_a)}$, which is negative, so the velocity is decreasing.", [(1, "value"), (1, "decreasing, because $a < 0$")], work="1.8cm"),
-        Part("c", r"At what times is the particle at rest? Enter the later one.", num(rest[-1]),
+        Part("c", r"Find all times $t$ at which the particle is at rest.", selfcheck(rf"t = {rest[0]} \text{{ and }} t = {rest[1]}"),
              rf"$v(t) = 0$ at $t = {rest[0]}$ and $t = {rest[1]}$.", [(1, "sets $v = 0$"), (1, "both times")], work="2cm"),
-        Part("d", r"Find the velocity at the moment the acceleration is zero.", num(v.subs(t, t0)),
-             rf"$a(t) = 0$ at $t = {sp.latex(t0)}$, and $v({sp.latex(t0)}) = {sp.latex(v.subs(t, t0))}$ m/s.", [(1, "time"), (1, "velocity")], work="1.8cm"),
+        Part("d", r"Find the velocity of the particle at the time when its acceleration is $0$.", num(v.subs(t, t0)),
+             rf"$a(t) = 0$ at $t = {sp.latex(t0)}$, and $v({sp.latex(t0)}) = {sp.latex(v.subs(t, t0))}$ meters per second.", [(1, "time when $a(t) = 0$"), (1, "velocity")], work="2cm"),
     ], frq_type="Particle motion")
     return frq, [a, a.subs(t, t_a), rest, v.subs(t, t0)]
 

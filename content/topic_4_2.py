@@ -163,20 +163,35 @@ same("m", [sp.solve(-16 * t**2 + 64 * t + 80, t)[-1], V(-16 * t**2 + 64 * t + 80
 
 XF = 2 * t**3 - 15 * t**2 + 24 * t + 3
 FRQS = [
-    FRQ("A particle on a line", r"A particle moves along the $x$-axis so that its position at time $t$ is $x(t) = 2t^3 - 15t^2 + 24t + 3$ for $0 \le t \le 5$.", [
-        Part("a", r"Find the velocity $v(t)$. For what values of $t$ is the particle moving left? Enter the right endpoint of that interval.", num(4),
-             r"$v(t) = 6t^2 - 30t + 24 = 6(t - 1)(t - 4)$, which is negative for $1 < t < 4$.", [(1, "$v(t)$"), (1, "interval with reason")], work="2.4cm"),
-        Part("b", r"Is the particle speeding up or slowing down at $t = 2$? Give a reason.", selfcheck(r"\text{speeding up}"),
-             r"$v(2) = -12 < 0$ and $a(2) = 12(2) - 30 = -6 < 0$. They have the same sign, so the particle is speeding up.",
-             [(1, "$v(2)$ and $a(2)$"), (1, "conclusion with reason")], work="2cm"),
-        Part("c", r"Find the total distance the particle travels from $t = 0$ to $t = 5$.", num(49),
-             r"$x(0) = 3$, $x(1) = 14$, $x(4) = -13$, $x(5) = -2$. Distance $= 11 + 27 + 11 = 49$.", [(1, "uses turning points"), (1, "$49$")], work="2.6cm"),
-        Part("d", r"Find the position of the particle at the moment its acceleration is zero.", num(sp.Rational(1, 2)),
-             r"$a(t) = 12t - 30 = 0$ at $t = 2.5$, and $x(2.5) = 0.5$.", [(1, "$t = 2.5$"), (1, "$x(2.5) = 0.5$")], work="1.8cm"),
+    FRQ("A particle on a line", (
+        r"A particle moves along the $x$-axis so that its position at time $t$ is given by $x(t) = 2t^3 - 15t^2 + 24t + 3$ "
+        r"for $0 \le t \le 5$."), [
+        Part("a", r"Find the velocity of the particle at time $t$. During what open intervals of time $t$, for $0 < t < 5$, is the "
+                  r"particle moving to the left? Give a reason for your answer.", selfcheck(r"1 < t < 4"),
+             r"$v(t) = 6t^2 - 30t + 24 = 6(t - 1)(t - 4)$. The particle moves left when $v(t) < 0$, which is on the interval $1 < t < 4$.",
+             [(1, "$v(t)$"), (1, "interval $1 < t < 4$ with reason $v(t) < 0$")], work="2.6cm"),
+        Part("b", r"Is the speed of the particle increasing or decreasing at time $t = 2$? Give a reason for your answer.",
+             selfcheck(r"\text{Increasing}"),
+             r"$v(2) = 24 - 60 + 24 = -12$ and $a(t) = 12t - 30$, so $a(2) = -6$. Velocity and acceleration are both negative, so the "
+             r"speed is increasing.",
+             [(1, "$v(2)$ and $a(2)$"), (1, "increasing, because $v(2)$ and $a(2)$ have the same sign")], work="2.4cm"),
+        Part("c", r"Find the total distance traveled by the particle over the time interval $0 \le t \le 5$.", num(49),
+             r"The particle changes direction at $t = 1$ and $t = 4$. $x(0) = 3$, $x(1) = 14$, $x(4) = -13$, $x(5) = -2$. "
+             r"Total distance $= |14 - 3| + |-13 - 14| + |-2 - (-13)| = 11 + 27 + 11 = 49$.",
+             [(1, "positions at $t = 0, 1, 4, 5$"), (1, "answer $49$")], work="3cm"),
+        Part("d", r"Find the position of the particle at the time when its acceleration is $0$.", num(sp.Rational(1, 2)),
+             r"$a(t) = 12t - 30 = 0$ at $t = \frac52$, and $x\!\left(\frac52\right) = \frac{125}{4} - \frac{375}{4} + 60 + 3 = \frac12$.",
+             [(1, "$t = \\frac52$"), (1, "position $\\frac12$")], work="2.2cm"),
     ], frq_type="Particle motion"),
 ]
-same("frq", [sorted(sp.solve(V(XF), t)), V(XF).subs(t, 2), A(XF).subs(t, 2), dist(XF, 0, 5), XF.subs(t, sp.Rational(5, 2))],
-     [[1, 4], -12, -6, 49, sp.Rational(1, 2)])
+X2 = 2 * t**3 - 15 * t**2 + 24 * t + 3
+v2, a2 = sp.diff(X2, t), sp.diff(X2, t, 2)
+turns2 = sorted(sp.solve(v2, t))
+same("frq a", turns2, [1, 4])
+same("frq b", [v2.subs(t, 2), a2.subs(t, 2)], [-12, -6])
+pts2 = [0] + turns2 + [5]
+same("frq c", sum(abs(X2.subs(t, q) - X2.subs(t, p)) for p, q in zip(pts2, pts2[1:])), 49)
+same("frq d", X2.subs(t, sp.solve(a2, t)[0]), sp.Rational(1, 2))
 
 TOPIC = Topic(
     number="4.2", title="Straight-Line Motion: Connecting Position, Velocity, and Acceleration",

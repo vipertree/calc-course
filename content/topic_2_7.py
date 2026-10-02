@@ -6,7 +6,7 @@ notes uses the two special limits proved in Topic 1.8.
 import sympy as sp
 
 from calclib import (Variants, FRQ, MCQ, BigIdea, Check, Example, FigureRow, Formula, Item, Part, Section, Text, Topic,
-                     Video, VideoExample, expr, num, same, selfcheck)
+                     Video, VideoExample, close, expr, num, same, selfcheck)
 from calclib.figs import graph
 
 x, h, t = sp.symbols("x h t")
@@ -151,18 +151,32 @@ same("m3", [r for r in sp.solve(sp.diff(x**2 - sp.log(x), x), x) if r > 0], [sp.
 
 FRQS = [
     FRQ("Tide model", (
-        r"The depth of water at a dock is $D(t) = 8 + 3\sin t$ feet, where $t$ is measured in hours, $0 \le t \le 7$."), [
-        Part("a", r"Find $D'(t)$.", expr("3*cos(t)", var="t"), r"$D'(t) = 3\cos t$.", [(1, "derivative")], work="1.4cm"),
-        Part("b", r"Find $D'(2)$. Is the water level rising or falling at $t = 2$? Explain.", num(3 * sp.cos(2), tol=0.001,
-             display=r"3\cos 2 \approx -1.248"),
-             r"$D'(2) = 3\cos 2 \approx -1.248 < 0$: the depth is falling at about 1.248 feet per hour.",
-             [(1, "value"), (1, "falling because $D'(2) < 0$")], work="2.2cm"),
-        Part("c", r"At what time in $(0, 7)$ is the depth greatest? (Hint: where is $D'(t) = 0$ and changing from positive to "
-                  r"negative?)", num(sp.pi / 2), r"$3\cos t = 0$ at $t = \frac\pi2$ and $\frac{3\pi}2$; $D'$ changes from positive to "
-                                                  r"negative at $\frac\pi2$, where $D = 11$ feet.",
-             [(1, "$t = \\frac\\pi2$ with reason")], work="2.2cm"),
-    ], frq_type="Rates in context", calc=True),
+        r"The depth of the water at a dock is modeled by $D(t) = 8 + 3\sin t$, where $D(t)$ is measured in feet and $t$ is "
+        r"measured in hours, for $0 \le t \le 7$. (Note: Your calculator should be in radian mode.)"), [
+        Part("a", r"Find $D'(2)$. Using correct units, interpret the meaning of $D'(2)$ in the context of the problem.",
+             num(3 * sp.cos(2), tol=0.001, display=r"3\cos 2 \approx -1.248\ \text{feet per hour}"),
+             r"$D'(t) = 3\cos t$, so $D'(2) = 3\cos 2 \approx -1.248$. At time $t = 2$ hours, the depth of the water is decreasing at a "
+             r"rate of about $1.248$ feet per hour.",
+             [(1, "$D'(2) \\approx -1.248$"), (1, "interpretation with units")], work="2.8cm"),
+        Part("b", r"Is the depth of the water increasing or decreasing at time $t = 5$? Give a reason for your answer.",
+             selfcheck(r"\text{Increasing}"),
+             r"$D'(5) = 3\cos 5 \approx 0.851 > 0$, so the depth is increasing at $t = 5$.",
+             [(1, "increasing, because $D'(5) > 0$")], work="2cm"),
+        Part("c", r"Find the time $t$, for $0 < t < \frac{\pi}{2}$, at which the instantaneous rate of change of $D$ equals the "
+                  r"average rate of change of $D$ over the interval $0 \le t \le \frac{\pi}{2}$.",
+             num(sp.acos(2 / sp.pi), tol=0.001, display=r"\cos^{-1}\!\left(\tfrac{2}{\pi}\right) \approx 0.881"),
+             r"The average rate of change is $\dfrac{D(\pi/2) - D(0)}{\pi/2} = \dfrac{11 - 8}{\pi/2} = \dfrac{6}{\pi}$ feet per hour. "
+             r"Solve $3\cos t = \dfrac{6}{\pi}$: $\cos t = \dfrac{2}{\pi}$, so $t \approx 0.881$ hours.",
+             [(1, "average rate of change $\\frac{6}{\\pi}$"), (1, "sets $D'(t)$ equal to it"), (1, "answer $0.881$")], work="3cm"),
+    ], frq_type="Rate in context", calc=True),
 ]
+t = sp.symbols("t")
+D7 = 8 + 3 * sp.sin(t)
+close("frq a", sp.diff(D7, t).subs(t, 2), -1.248, 5e-4)
+close("frq b", sp.diff(D7, t).subs(t, 5), 0.851, 5e-4)
+avg7 = (D7.subs(t, sp.pi / 2) - D7.subs(t, 0)) / (sp.pi / 2)
+same("frq c avg", avg7, 6 / sp.pi)
+close("frq c", sp.nsolve(sp.diff(D7, t) - avg7, t, 0.9), 0.881, 5e-4)
 
 TOPIC = Topic(
     number="2.7", title=r"Derivatives of $\cos x$, $\sin x$, $e^x$, and $\ln x$",

@@ -265,24 +265,28 @@ same("m1", avg(sp.Lambda(t, t**2 + 2 * t), 1, 4), 7)
 
 FRQS = [
     FRQ("Filling a tank", (
-        r"Water flows into a tank. The amount of water in the tank, $W(t)$ gallons, is recorded at selected times $t$, in minutes."
-        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (min) & 0 & 4 & 6 & 10 & 12 \\ \hline "
-        r"$W(t)$ (gal) & 5 & 17 & 24 & 40 & 49\end{tabular}}"), [
-        Part("a", r"Find the average rate of change of $W$ over $0 \le t \le 12$. Include units.",
-             num(sp.Rational(11, 3), tol=0.005, display=r"\tfrac{11}{3}\approx 3.667\text{ gal/min}"),
+        r"Water flows into a tank. The amount of water in the tank at time $t$ minutes is $W(t)$ gallons. "
+        r"Selected values of $W(t)$ are given in the table."
+        r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (minutes) & 0 & 4 & 6 & 10 & 12 \\ \hline "
+        r"$W(t)$ (gallons) & 5 & 17 & 24 & 40 & 49\end{tabular}}"), [
+        Part("a", r"Find the average rate of change of $W$ over the interval $0 \le t \le 12$. Show the work that leads to your "
+                  r"answer. Indicate units of measure.",
+             num(sp.Rational(11, 3), tol=0.005, display=r"\tfrac{11}{3}\approx 3.667\ \text{gallons per minute}"),
              r"$\dfrac{W(12)-W(0)}{12-0} = \dfrac{49-5}{12} = \dfrac{11}{3} \approx 3.667$ gallons per minute.",
-             [(1, "difference quotient with correct values"), (1, "value with units")], work="3cm"),
-        Part("b", r"Use the data to estimate the rate at which the amount of water is changing at $t = 8$ minutes. Show the computation "
-                  r"that leads to your answer.", num(4, display=r"4\text{ gal/min}"),
+             [(1, "difference quotient with table values and the answer"), (1, "units")], work="3cm"),
+        Part("b", r"Use the average rate of change of $W$ over the interval $6 \le t \le 10$ to approximate the rate at which the "
+                  r"amount of water in the tank is changing at time $t = 8$ minutes. Show the work that leads to your answer.",
+             num(4, display=r"4\ \text{gallons per minute}"),
              r"$\dfrac{W(10)-W(6)}{10-6} = \dfrac{40-24}{4} = 4$ gallons per minute.",
-             [(1, "difference quotient using $t=6$ and $t=10$"), (1, "value $4$")], work="3cm"),
-        Part("c", r"Explain why the interval $[8, 8]$ cannot be used to find the rate at $t = 8$ exactly. Describe what additional data "
-                  r"would give a better estimate.", selfcheck(r"\tfrac00\text{; measurements closer to } t=8"),
-             r"The average rate on $[8,8]$ is $\frac00$, which is undefined. Measurements closer to $t = 8$ on both sides (such as "
-             r"$t = 7.5$ and $t = 8.5$) would give a shorter interval and a better estimate.",
-             [(1, "explains $\\frac00$ and names a shorter interval containing $8$")], work="2.5cm"),
-    ], frq_type="Table of values / rates"),
+             [(1, "difference quotient with $W(10)$ and $W(6)$, and the answer")], work="3cm"),
+        Part("c", r"Using correct units, interpret the meaning of your answer to part (b) in the context of the problem.",
+             selfcheck(r"\text{At } t = 8\text{, the amount of water is increasing at about 4 gallons per minute}"),
+             r"At time $t = 8$ minutes, the amount of water in the tank is increasing at a rate of about $4$ gallons per minute.",
+             [(1, "rate of change of the amount of water, at $t = 8$, with units")], work="2.5cm"),
+    ], frq_type="Table"),
 ]
+same("frq a", sp.Rational(49 - 5, 12), sp.Rational(11, 3))
+same("frq b", sp.Rational(40 - 24, 10 - 6), 4)
 
 TOPIC = Topic(
     number="1.1", title="Can Change Occur at an Instant?",

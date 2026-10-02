@@ -8,7 +8,7 @@ least surface area.
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, close, expr, num,
-                     same, selfcheck)
+                     same, selfcheck, check)
 
 x, r = sp.symbols("x r", positive=True)
 
@@ -123,15 +123,24 @@ close("m3", 144 / (sp.pi + 4), 20.2, 0.05)
 close("m4", sp.nsolve(sp.Symbol("u") + sp.exp(2 * sp.Symbol("u")), sp.Symbol("u"), -0.4), -0.426, 5e-4)
 
 FRQS = [
-    FRQ("The cheapest box", (r"A closed box with a square base of side $x$ feet must hold $54$ cubic feet. Material for the top and bottom costs $2$ dollars per square foot, "
-                             r"and material for the sides costs $1$ dollar per square foot."), [
-        Part("a", r"Show that the cost is $C(x) = 4x^2 + \dfrac{216}{x}$.", selfcheck(r"C(x) = 4x^2 + \frac{216}{x}"),
-             r"Height $h = \frac{54}{x^2}$. Top and bottom: $2 \cdot 2x^2 = 4x^2$ dollars. Four sides: $4xh = \frac{216}{x}$ square feet at $1$ dollar each.", [(1, "height"), (1, "cost function")], work="2.4cm"),
-        Part("b", r"Find the base edge that minimizes the cost. Justify that it gives the minimum.", num(3),
-             r"$C'(x) = 8x - \frac{216}{x^2} = 0$ at $x^3 = 27$, $x = 3$. $C''(x) = 8 + \frac{432}{x^3} > 0$, and it is the only critical point for $x > 0$, so it is the absolute minimum.", [(1, "derivative"), (1, "critical point"), (1, "justification")], work="2.8cm"),
-        Part("c", r"Find the minimum cost.", num(108), r"$C(3) = 36 + 72 = 108$ dollars.", [(1, "value with units")], work="1.2cm"),
-    ], frq_type="Optimization"),
+    FRQ("The cheapest box", (r"A closed box with a square base of side $x$ feet and height $h$ feet must hold $54$ cubic feet. Material for the "
+                             r"top and bottom costs $2$ dollars per square foot, and material for the sides costs $1$ dollar per square foot."), [
+        Part("a", r"Show that the cost, in dollars, of the material for the box is $C(x) = 4x^2 + \dfrac{216}{x}$ for $x > 0$.",
+             selfcheck(r"C(x) = 4x^2 + \frac{216}{x}"),
+             r"The volume is $x^2h = 54$, so $h = \dfrac{54}{x^2}$. The top and bottom cost $2\cdot 2x^2 = 4x^2$ dollars. The four sides "
+             r"have area $4xh = \dfrac{216}{x}$ square feet and cost $\dfrac{216}{x}$ dollars. So $C(x) = 4x^2 + \dfrac{216}{x}$.",
+             [(1, "$h = \\frac{54}{x^2}$"), (1, "assembles $C(x)$")], work="2.6cm"),
+        Part("b", r"Find the value of $x$ that minimizes the cost of the box. Justify your answer.", num(3),
+             r"$C'(x) = 8x - \dfrac{216}{x^2} = 0$ when $x^3 = 27$, so $x = 3$. $C'(x) < 0$ for $0 < x < 3$ and $C'(x) > 0$ for $x > 3$, "
+             r"so $C$ has its absolute minimum on $x > 0$ at $x = 3$.",
+             [(1, "$C'(x)$"), (1, "critical point $x = 3$"), (1, "justification for an absolute minimum")], work="3cm"),
+        Part("c", r"Find the minimum cost of the box.", num(108, display=r"108\ \text{dollars}"),
+             r"$C(3) = 36 + 72 = 108$ dollars.", [(1, "answer $108$")], work="1.4cm"),
+    ], frq_type="Function analysis"),
 ]
+C11 = 4 * x**2 + 216 / x
+same("frq", [sp.solve(sp.diff(C11, x), x), C11.subs(x, 3)], [[3], 108])
+check("frq b", sp.diff(C11, x).subs(x, 2) < 0 and sp.diff(C11, x).subs(x, 4) > 0)
 
 TOPIC = Topic(
     number="5.11", title="Solving Optimization Problems",

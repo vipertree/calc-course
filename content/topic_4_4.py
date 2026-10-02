@@ -141,20 +141,32 @@ same("m", [ddt(sp.pi * r**2, A, r, {sp.diff(A, t): 10 * sp.pi, r: 5}), sp.diff(2
      [1, 4, -1, -9])
 
 FRQS = [
-    FRQ("A growing cylinder", (
-        r"A cylinder's radius $r$ and height $h$ both change with time. Its volume is $V = \pi r^2 h$. At a certain instant, $r = 3$ cm, $h = 10$ cm, "
-        r"$\dfrac{dr}{dt} = 0.5$ cm/s and $\dfrac{dh}{dt} = -1$ cm/s."), [
-        Part("a", r"Find $\dfrac{dV}{dt}$ in terms of $r$, $h$, $\dfrac{dr}{dt}$ and $\dfrac{dh}{dt}$.", selfcheck(r"2\pi r h\,r' + \pi r^2 h'"),
-             r"Product rule and chain rule: \[ \frac{dV}{dt} = 2\pi r h\,\frac{dr}{dt} + \pi r^2\,\frac{dh}{dt}. \]", [(1, "product rule"), (1, "chain rule factors")], work="2cm"),
-        Part("b", r"Find $\dfrac{dV}{dt}$ at that instant. Is the volume increasing or decreasing?", num(21 * sp.pi),
-             r"\[ \frac{dV}{dt} = 2\pi(3)(10)(0.5) + \pi(9)(-1) = 30\pi - 9\pi = 21\pi \text{ cm}^3\text{/s}, \] which is positive, so the volume is increasing.",
-             [(1, "value with units"), (1, "increasing, with reason")], work="2cm"),
-        Part("c", r"At that instant, what rate of change of $h$ would keep the volume constant?", num(sp.Rational(-10, 3)),
-             r"Set $\dfrac{dV}{dt} = 0$: $30\pi + 9\pi\dfrac{dh}{dt} = 0$, so $\dfrac{dh}{dt} = -\dfrac{10}{3}$ cm/s.", [(1, "sets $\\frac{dV}{dt} = 0$"), (1, "answer")], work="2cm"),
+    FRQ("Rolling out dough", (
+        r"A baker rolls a lump of dough into the shape of a cylinder. As the dough is rolled, its radius $r$ and height $h$, both "
+        r"measured in centimeters, change with time $t$, measured in seconds, but its volume stays the same. "
+        r"(The volume of a cylinder with radius $r$ and height $h$ is $V = \pi r^2 h$.) At a certain instant, $r = 3$ centimeters, "
+        r"$h = 10$ centimeters and the radius is increasing at a rate of $0.5$ centimeter per second."), [
+        Part("a", r"Find the rate at which the height of the dough is changing at this instant. Indicate units of measure.",
+             num(sp.Rational(-10, 3), tol=0.005, display=r"-\tfrac{10}{3}\ \text{centimeters per second}"),
+             r"$\dfrac{dV}{dt} = 2\pi rh\dfrac{dr}{dt} + \pi r^2\dfrac{dh}{dt}$. The volume is constant, so "
+             r"$0 = 2\pi(3)(10)(0.5) + \pi(9)\dfrac{dh}{dt}$, which gives $\dfrac{dh}{dt} = -\dfrac{30\pi}{9\pi} = -\dfrac{10}{3}$ "
+             r"centimeters per second.",
+             [(1, "$\\frac{dV}{dt}$ with the product and chain rules"), (1, "uses $\\frac{dV}{dt} = 0$ and the given values"),
+              (1, "answer with units")], work="3.2cm"),
+        Part("b", r"The top of the dough is a circle with area $A = \pi r^2$. Find the rate at which the area of the top is changing "
+                  r"at this instant. Indicate units of measure.",
+             num(3 * sp.pi, tol=0.005, display=r"3\pi\ \text{square centimeters per second}"),
+             r"$\dfrac{dA}{dt} = 2\pi r\dfrac{dr}{dt} = 2\pi(3)(0.5) = 3\pi$ square centimeters per second.",
+             [(1, "$\\frac{dA}{dt} = 2\\pi r\\frac{dr}{dt}$"), (1, "answer with units")], work="2.4cm"),
     ], frq_type="Related rates"),
 ]
-same("frq", [sp.diff(sp.pi * r**2 * h, t).subs({sp.diff(r, t): sp.Rational(1, 2), sp.diff(h, t): -1, r: 3, h: 10}),
-             ddt(sp.pi * r**2 * h, 0, h, {sp.diff(r, t): sp.Rational(1, 2), r: 3, h: 10})], [21 * sp.pi, sp.Rational(-10, 3)])
+r4, h4 = sp.Function("r")(t), sp.Function("h")(t)
+dV4 = sp.diff(sp.pi * r4**2 * h4, t)
+hp4 = sp.symbols("hp4")
+known4 = {sp.diff(r4, t): sp.Rational(1, 2), sp.diff(h4, t): hp4}
+dh4 = sp.solve(dV4.subs(known4).subs({r4: 3, h4: 10}), hp4)
+same("frq a", dh4, [sp.Rational(-10, 3)])
+same("frq b", sp.diff(sp.pi * r4**2, t).subs(known4).subs(r4, 3), 3 * sp.pi)
 
 TOPIC = Topic(
     number="4.4", title="Introduction to Related Rates",

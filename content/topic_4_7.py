@@ -113,17 +113,35 @@ MCQS = [
 same("m", [sp.limit((sp.exp(x) - sp.cos(x)) / x, x, 0), sp.limit((x - sp.sin(x)) / x**3, x, 0), sp.limit((4 * x**3 + x) / sp.exp(x / 2), x, oo)], [1, sp.Rational(1, 6), 0])
 
 FRQS = [
-    FRQ("Two functions through zero", (
-        r"Let $f(x) = \ln(x^2 - 3)$ and $g(x) = x - 2$."), [
-        Part("a", r"Show that $\displaystyle\lim_{x \to 2} \frac{f(x)}{g(x)}$ has an indeterminate form.", selfcheck(r"\frac00"),
-             r"\[ \lim_{x \to 2} \ln(x^2 - 3) = \ln 1 = 0 \] and \[ \lim_{x \to 2} (x - 2) = 0, \] so the form is $\frac00$.", [(1, "both limits shown to be 0")], work="2cm"),
-        Part("b", r"Find $\displaystyle\lim_{x \to 2} \frac{f(x)}{g(x)}$.", num(4),
-             r"By L'Hospital's Rule, \[ \lim_{x \to 2} \frac{\frac{2x}{x^2 - 3}}{1} = \frac{4}{1} = 4. \]", [(1, "derivatives of top and bottom"), (1, "answer")], work="2.2cm"),
-        Part("c", r"Let $h(x) = \dfrac{f(x)}{g(x)}$ for $x \ne 2$. What value should $h(2)$ have so that $h$ is continuous at $x = 2$?", num(4),
-             r"$h(2) = 4$, the value of the limit.", [(1, "answer with reason")], work="1.4cm"),
-    ], frq_type="Limits"),
+    FRQ("Limits from derivative values", (
+        r"The function $f$ has a continuous second derivative for all real numbers and satisfies $f(2) = 3$, $f'(2) = 5$ and $f''(2) = -2$."), [
+        Part("a", r"Find the value of $\displaystyle\lim_{x\to2}\frac{f(x) - 3}{x^2 - 4}$, or show that it does not exist. Justify your answer.",
+             num(sp.Rational(5, 4)),
+             r"$f$ is continuous, so $\displaystyle\lim_{x\to2}\big(f(x) - 3\big) = f(2) - 3 = 0$, and $\displaystyle\lim_{x\to2}(x^2 - 4) = 0$. "
+             r"By L'Hospital's Rule, $\displaystyle\lim_{x\to2}\frac{f(x) - 3}{x^2 - 4} = \lim_{x\to2}\frac{f'(x)}{2x} = \frac{5}{4}$.",
+             [(1, "shows both limits are $0$"), (1, "answer $\\frac54$ using L'Hospital's Rule")], work="2.8cm"),
+        Part("b", r"Find the value of $\displaystyle\lim_{x\to2}\frac{f(x) - 3 - 5(x - 2)}{(x - 2)^2}$, or show that it does not exist. "
+                  r"Justify your answer.", num(-1),
+             r"Numerator and denominator both approach $0$. By L'Hospital's Rule the limit equals "
+             r"$\displaystyle\lim_{x\to2}\frac{f'(x) - 5}{2(x - 2)}$. Since $f'$ is continuous, $f'(x) - 5 \to 0$; "
+             r"this is again $\frac00$. Applying L'Hospital's Rule again: $\displaystyle\lim_{x\to2}\frac{f''(x)}{2} = \frac{-2}{2} = -1$.",
+             [(1, "first application, with $\\frac00$ shown"), (1, "second application, with $\\frac00$ shown"), (1, "answer $-1$")],
+             work="3.4cm"),
+        Part("c", r"Let $k$ be a differentiable function. It is known that $\displaystyle\lim_{x\to1}\frac{k(x) - 6}{e^{x - 1} - 1} = 5$ "
+                  r"and that this limit can be evaluated using L'Hospital's Rule. Find $k(1)$ and $k'(1)$. Show the work that leads to "
+                  r"your answers.", selfcheck(r"k(1) = 6,\ k'(1) = 5"),
+             r"L'Hospital's Rule applies only to an indeterminate form. The denominator approaches $e^0 - 1 = 0$, so the numerator must "
+             r"also approach $0$: $k(1) - 6 = 0$ and $k(1) = 6$. Then the limit is $\dfrac{k'(1)}{e^{0}} = k'(1)$, so $k'(1) = 5$.",
+             [(1, "$k(1) = 6$, because the numerator must approach $0$"), (1, "$k'(1) = 5$")], work="3cm"),
+    ], frq_type="L'Hospital's Rule"),
 ]
-same("frq", [sp.limit(sp.log(x**2 - 3) / (x - 2), x, 2)], [4])
+# a concrete f with f(2) = 3, f'(2) = 5, f''(2) = -2 checks parts (a) and (b)
+f7 = 3 + 5 * (x - 2) - (x - 2)**2 + (x - 2)**3
+same("frq vals", [f7.subs(x, 2), sp.diff(f7, x).subs(x, 2), sp.diff(f7, x, 2).subs(x, 2)], [3, 5, -2])
+same("frq a", sp.limit((f7 - 3) / (x**2 - 4), x, 2), sp.Rational(5, 4))
+same("frq b", sp.limit((f7 - 3 - 5 * (x - 2)) / (x - 2)**2, x, 2), -1)
+k7 = 6 + 5 * (x - 1) + 7 * (x - 1)**2
+same("frq c", sp.limit((k7 - 6) / (sp.exp(x - 1) - 1), x, 1), 5)
 
 TOPIC = Topic(
     number="4.7", title="Using L'Hospital's Rule for Determining Limits of Indeterminate Forms",

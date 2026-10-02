@@ -197,20 +197,9 @@ MCQS = [
         r"$h(x) \to 7$, so $\sqrt{h(x)+2} \to \sqrt9 = 3$.", why_not={"C": "forgot the square root"}),
 ]
 
-FRQS = [
-    FRQ("A graph and a formula", (
-        r"The graph of $g(x) = 3 + (x-2)^2$ is shown. Let $f(x) = \begin{cases} x^2, & x < 3 \\ 2x + 1, & x \ge 3. \end{cases}$"), [
-        Part("a", r"Find $\displaystyle\lim_{x\to3} f(x)$, or explain why it does not exist.", dne(),
-             r"Left: $9$. Right: $7$. The one-sided limits are not equal, so the limit does not exist.",
-             [(1, "both one-sided limits"), (1, "conclusion with reason")], work="2.2cm"),
-        Part("b", r"Find $\displaystyle\lim_{x\to2} f(g(x))$. Explain your reasoning.", num(7),
-             r"As $x \to 2$, $g(x) \to 3$ from above, so $f(g(x))$ uses $2u + 1$ with $u \to 3^+$: the limit is $7$.",
-             [(1, "identifies $g(x)\\to3$ from above"), (1, "answer $7$")], work="2.6cm"),
-        Part("c", r"Find $\displaystyle\lim_{x\to1} g(f(x))$.", num(4),
-             r"Near $x = 1$, $f(x) = x^2 \to 1$. The function $g$ is continuous at $1$, so the limit is $g(1) = 3 + (1-2)^2 = 4$.",
-             [(1, "inner limit $1$"), (1, "answer $4$")], work="2.2cm"),
-    ], frq_type="Composite limits", figure=FIG_G),
-]
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.9", title="Connecting Multiple Representations of Limits",

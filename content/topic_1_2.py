@@ -275,23 +275,9 @@ FX = [sp.Rational(19, 10), sp.Rational(199, 100), sp.Rational(201, 100), sp.Rati
 same("frq lim", sp.limit(F_FRQ, x, 2), 12)
 tabf = (r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & " + " & ".join(dec(v) for v in FX)
         + r" \\ \hline $f(x)$ & " + " & ".join(f"{float(F_FRQ.subs(x, v)):g}" for v in FX) + r"\end{tabular}}")
-FRQS = [
-    FRQ("Estimating a limit", (
-        r"The function $f$ is defined by $f(x) = \dfrac{x^3 - 8}{x - 2}$ for $x \neq 2$. Selected values are shown." + tabf), [
-        Part("a", r"Explain why $f(2)$ is not defined by the formula.", selfcheck(r"\tfrac00"),
-             r"Substituting $x = 2$ gives $\dfrac{8-8}{2-2} = \dfrac00$, which is undefined.",
-             [(1, "shows the substitution gives $\\frac00$ (division by zero)")], work="1.8cm"),
-        Part("b", r"Use the table to estimate $\displaystyle\lim_{x\to 2} f(x)$. Explain how the table supports your answer.",
-             num(12), r"As $x$ approaches $2$ from the left the values ($11.41$, $11.9401$) and from the right "
-                      r"($12.0601$, $12.61$) close in on $12$.",
-             [(1, "estimate $12$"), (1, "refers to values from both sides approaching $12$")], work="2.5cm"),
-        Part("c", r"A new function $g$ equals $f$ for $x \ne 2$ and $g(2) = 0$. Find $\displaystyle\lim_{x\to2} g(x)$ "
-                  r"and explain why $g(2)$ does not affect it.", num(12),
-             r"$\displaystyle\lim_{x\to2}g(x) = 12$. A limit uses only values of $x$ near $2$, never $x=2$ itself, and "
-             r"$g$ agrees with $f$ there.",
-             [(1, "limit $12$ with a reason about values near, not at, $x=2$")], work="2cm"),
-    ], frq_type="Limits from a table"),
-]
+# AP does not ask this topic as free response; the multiple-choice questions above cover it.
+# See .claude/skills/ap-frq/SKILL.md.
+FRQS = []
 
 TOPIC = Topic(
     number="1.2", title="Defining Limits and Using Limit Notation",

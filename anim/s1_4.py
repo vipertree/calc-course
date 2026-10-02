@@ -54,7 +54,7 @@ class Lesson(TranscriptScene):
 
         with self.beat("What makes a good table") as b:
             items = VGroup(*[T(rf"$\checkmark$\ \ {s_}", 44) for s_ in ["inputs from both sides", "inputs that keep getting closer (factors of ten)",
-                                                                          "watch for digits that stop changing"]]).arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+                                                                          "outputs that converge on one value"]]).arrange(DOWN, buff=0.5, aligned_edge=LEFT)
             for m in items:
                 self.play(FadeIn(m, shift=RIGHT * 0.3), run_time=0.9)
         self.clear()

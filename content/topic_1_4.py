@@ -47,7 +47,7 @@ NOTES = [
     Definition("A good table", (
         r"$\bullet$ uses inputs on \blank{both sides} of $c$;\par "
         r"$\bullet$ moves steadily closer to $c$ (for example, by factors of $10$);\par "
-        r"$\bullet$ is read for a pattern: outputs whose digits \blank{stop changing}.")),
+        r"$\bullet$ is read for a pattern: outputs that \blank{converge} on one value.")),
 
     Section("When tables mislead"),
     Text(r"\textbf{Unlucky inputs.} For $\displaystyle f(x) = \sin\dfrac{\pi}{x}$, the inputs $x = 0.1, 0.01, 0.001$ give "

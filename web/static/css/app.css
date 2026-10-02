@@ -295,6 +295,8 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 
 /* a display line that holds fill-in blanks: centered, display-style pieces with the inputs between them */
 .dline { display: block; text-align: center; margin: .7em 0; line-height: 2.4; }
+/* one piece of a display that may wrap: pieces share a line when they fit, otherwise stack, never scroll */
+.dline .dpiece { display: inline-block; margin: 0 .9em; line-height: normal; vertical-align: middle; }
 /* on wide screens the test slides left so the docked calculator doesn't cover it */
 @media (min-width: 1100px) { body.has-dock main.wrap { margin-right: 470px; margin-left: 24px; } }
 

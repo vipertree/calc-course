@@ -58,9 +58,9 @@ NOTES = [
           "cccc"),
 
     Section("Three ways a limit can fail to exist"),
-    Table(r"\textbf{Jump} & $\displaystyle \lim_{x\to0^-}\frac{|x|}{x} = \mblank{-1}$, "
-          r"$\displaystyle \lim_{x\to0^+}\frac{|x|}{x} = \mblank{1}$ & the sides \blank{disagree} \\ "
-          r"\textbf{Unbounded} & $\displaystyle \lim_{x\to0}\frac{1}{x^2} = \mblank{\infty}$ & outputs grow without bound \\ "
+    Table(r"\textbf{Jump} & $\displaystyle \lim_{x\to0^-}\frac{|x|}{x} = -1$, "
+          r"$\displaystyle \lim_{x\to0^+}\frac{|x|}{x} = 1$ & the left and right limits disagree \\ "
+          r"\textbf{Unbounded} & $\displaystyle \lim_{x\to0}\frac{1}{x^2} = \infty$ & outputs grow without bound \\ "
           r"\textbf{Oscillation} & $\displaystyle \lim_{x\to0}\sin\frac1x$ does not exist & outputs never settle on one value",
           "lll", header=r"type & example & why the limit fails"),
     FigureRow([FIG_ABS, FIG_INV2, FIG_SIN]),

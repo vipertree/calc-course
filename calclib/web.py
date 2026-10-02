@@ -52,6 +52,52 @@ def _blank_html(bid, answer):
     return f'<span class="blank" data-blank="{bid}" data-kind="{kind}" style="--w:{width}ch"></span>'
 
 
+def _top_level_gaps(body):
+    """Positions (start, end) of the \\quad/\\qquad gaps at the top level of a display (not inside braces,
+    \\begin...\\end or \\left...\\right), where it can wrap. A \\quad right before \\text is a label's gap
+    ("f(x) = L \\quad\\text{(left-hand limit)}") and stays put."""
+    out, depth, env, lr, i = [], 0, 0, 0, 0
+    while i < len(body):
+        if body.startswith(r"\begin", i): env += 1
+        elif body.startswith(r"\end", i): env -= 1
+        elif body.startswith(r"\left", i): lr += 1
+        elif body.startswith(r"\right", i): lr -= 1
+        elif body[i] == "{" and (i == 0 or body[i - 1] != "\\"): depth += 1
+        elif body[i] == "}" and body[i - 1] != "\\": depth -= 1
+        m = re.match(r"(\s*\\q?quad\b\s*)+", body[i:]) if body[i] == "\\" or body[i].isspace() else None
+        if m and depth == 0 and env == 0 and lr == 0:
+            j = i + m.end()
+            gap = m.group(0)
+            if r"\qquad" in gap or not body.startswith(r"\text", j):
+                out.append((i, j))
+            i = j
+            continue
+        i += 1
+    return out
+
+
+def _display_wrap(s):
+    """A display holding several formulas side by side (gapped by \\qquad or \\quad) is split into pieces that
+    sit on one line when there is room and wrap onto the next when there isn't, instead of scrolling sideways
+    (Adder, 2026-10-02: 1.3's one-sided limits box in a narrow window)."""
+    def line(m):
+        body = m.group(1)
+        if r"\mblank" in body or r"\blank" in body:
+            return m.group(0)                       # blanks: _display_blank_lines lays those out
+        gaps = _top_level_gaps(body)
+        if not gaps:
+            return m.group(0)
+        pieces, k = [], 0
+        for a, b in gaps:
+            pieces.append(body[k:a]); k = b
+        pieces.append(body[k:])
+        pieces = [p.strip() for p in pieces if p.strip()]
+        if len(pieces) < 2:
+            return m.group(0)
+        return "\x02" + "".join(f"<span class='dpiece'>$\\displaystyle {p}$</span>" for p in pieces) + "\x03"
+    return re.sub(r"\\\[(.+?)\\\]", line, s, flags=re.S)
+
+
 def _display_blank_lines(s):
     """A display \\[ ... \\] holding blanks can't stay one KaTeX display (an input box can't live inside it). Turn it into a
     centered line of display-style pieces with the blanks between them: \\x02 $\\displaystyle A$ \\blank{$X$} $\\displaystyle B$ \\x03."""
@@ -183,7 +229,7 @@ def html(s, blanks=None):
     """Convert the course's LaTeX subset to HTML. Math stays in $...$ for KaTeX."""
     if s is None:
         return ""
-    s = _lift_mblanks(glue_punct(s))
+    s = _lift_mblanks(_display_wrap(glue_punct(s)))
     out, pos = [], 0
     # pull \blank{} out first, since its argument may itself contain math
     while True:

@@ -173,8 +173,15 @@
 \newsavebox{\fitbox}
 \newcommand{\fitwidth}[1]{\sbox{\fitbox}{#1}\ifdim\wd\fitbox>\linewidth\resizebox{\linewidth}{!}{\usebox{\fitbox}}\else\usebox{\fitbox}\fi}
 
-% twocol: short questions (practice, multiple choice) two to a row in the compact packet
-\newenvironment{twocol}{\begin{multicols}{2}\setlength{\columnsep}{0.32in}\raggedcolumns}{\end{multicols}}
+% pairs/\pairrow: short questions (practice, multiple choice) two to a row in the compact packet, numbered
+% left to right like a book, with a rule down the middle (Adder, 2026-10-02). Each row is one unbreakable
+% tabular, so a page breaks only between rows; the cells end with their own gap, so the rule runs on unbroken.
+\newlength{\paircol}
+\newenvironment{pairs}{\par\begingroup\setlength{\parskip}{0pt}\setlength{\paircol}{\dimexpr0.5\linewidth-0.25in\relax}}{\endgroup\par\medskip}
+\newcommand{\pairrow}[2]{\par\nointerlineskip\noindent
+  \begin{tabular}{@{}p{\paircol}@{\hspace{0.24in}}!{\color{faint}\vrule width 0.6pt}@{\hspace{0.24in}}p{\paircol}@{}}%
+  #1\par\vspace{1.4em} & #2\par\vspace{1.4em}\end{tabular}\par
+  \blockbreak}   % as good a place to break as the gaps between sections, so pages fill before they turn
 
 % ---------------------------------------------------------- four-meaning panel
 % \meanings{da,dg}: highlight any of da, dg, ia, ig. Add "inv" for the inverse arrow.

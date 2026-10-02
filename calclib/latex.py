@@ -179,16 +179,19 @@ def _frq(f: FRQ, key, n=None):
             + r"\end{frqwhole}\medskip" + "\n")
 
 
-def _cols(compact, body):
-    """Short questions two to a row in the compact packet."""
-    return [r"\begin{twocol}"] + body + [r"\end{twocol}"] if compact else body
+def _list(items, compact):
+    """Numbered questions. The compact packet sets them two to a row, numbered left to right, each cell its own
+    one-item list starting at the right number."""
+    if not compact:
+        return [r"\begin{enumerate}"] + items + [r"\end{enumerate}"]
+    cell = lambda k: rf"\begin{{enumerate}}[start={k + 1}, topsep=0pt]" + items[k] + r"\end{enumerate}" if k < len(items) else ""
+    return [r"\begin{pairs}"] + [rf"\pairrow{{{cell(k)}}}{{{cell(k + 1)}}}" for k in range(0, len(items), 2)] + [r"\end{pairs}"]
 
 
 def _practice_body(t, key, compact=False):
     return "\n".join([rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
                       r"Give exact answers unless a problem says to round."]
-                     + _cols(compact, [r"\begin{enumerate}"] + [_item(i, it, key) for i, it in enumerate(t.practice)]
-                             + [r"\end{enumerate}"]))
+                     + _list([_item(i, it, key) for i, it in enumerate(t.practice)], compact))
 
 
 def practice_tex(t, key, theme):
@@ -210,7 +213,7 @@ def quiz_tex(t, key, theme, k=0):
 def _testprep_body(t, key, compact=False):
     out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
            r"\sect{Multiple choice}"]
-    out += _cols(compact, [r"\begin{enumerate}"] + [_mcq(q, key) for q in t.mcq] + [r"\end{enumerate}"])
+    out += _list([_mcq(q, key) for q in t.mcq], compact)
     out += ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
     out += [_frq(f, key) for f in t.frq]
     return "\n".join(out)
@@ -233,7 +236,7 @@ def packet_tex(t, key, theme, compact=False):
         if k == 1 and not compact:
             out.append(r"\clearpage")
         elif k:
-            out.append(r"\par\bigskip")
+            out.append(r"\blockbreak\bigskip")   # a good place to break, like the gap between lesson blocks
         out += [rf"\renewcommand{{\docline}}{{Topic {t.number} Packet\enspace\textperiodcentered\enspace {name}}}",
                 r"\setcounter{calcsec}{0}\setcounter{calcex}{0}", body]
     out.append(r"\end{document}")

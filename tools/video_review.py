@@ -60,7 +60,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     nums = a.topics
     if nums == ["all"]:
-        nums = sorted((p.stem.replace("_", ".") for p in VIDEO.glob("*.mp4")), key=lambda s: [int(x) for x in s.split(".")])
+        nums = sorted((p.stem.replace("_", ".") for p in VIDEO.glob("*.mp4") if not p.stem.endswith("-dark")), key=lambda s: [int(x) for x in s.split(".")])
     for num in nums:
         review(num, out)
 

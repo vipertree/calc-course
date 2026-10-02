@@ -199,6 +199,27 @@
   // ------------------------------------------------------------ video helpers
   // videos come through the Range-capable /video/ view so the scrubber can seek
   const videoUrl = (src) => app.dataset.video ? app.dataset.video.replace(/X$/, src.replace(/^video\//, "")) : app.dataset.static + src;
+  // each video is rendered twice: parchment for light mode (2_1.mp4) and navy for dark mode (2_1-dark.mp4)
+  const darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  const wantsDark = () => {
+    const t = document.documentElement.dataset.theme;
+    return t === "slate" || (t !== "paper" && !!(darkQuery && darkQuery.matches));
+  };
+  const lookSrc = (src, dark) => dark ? src.replace(/\.mp4$/, "-dark.mp4") : src;
+  function matchLook(v, src) {
+    let dark = wantsDark();
+    v.src = videoUrl(lookSrc(src, dark));
+    v.addEventListener("error", (e) => {          // no dark render yet: fall back to the light one
+      if (dark && v.src.includes("-dark.mp4")) { e.stopImmediatePropagation(); dark = false; v.src = videoUrl(src); }
+    });
+    if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", () => {
+      if (wantsDark() === dark) return;
+      dark = wantsDark();
+      const t = v.currentTime, playing = !v.paused;
+      v.src = videoUrl(lookSrc(src, dark));
+      v.addEventListener("loadedmetadata", () => { v.currentTime = t; if (playing) v.play(); }, { once: true });
+    });
+  }
   // playback speed is the viewer's choice and carries over from video to video
   function rememberSpeed(v) {
     let saved = null;
@@ -224,7 +245,8 @@
       case "figrow": return h("div", { class: "block figrow" }, ...b.figures.map(figureEl));
       case "table": return h("div", { class: "block table-wrap", html: b.html });
       case "video": {
-        const v = h("video", { controls: true, preload: "metadata", playsinline: true, src: videoUrl(b.src) });
+        const v = h("video", { controls: true, preload: "metadata", playsinline: true });
+        matchLook(v, b.src);
         v.append(h("track", { kind: "captions", srclang: "en", label: "English", src: videoUrl(b.captions), default: true }));
         const box = h("div", { class: "video" }, v);
         v.addEventListener("error", () => box.append(h("div", { class: "missing" }, "This video hasn't been published yet.")));

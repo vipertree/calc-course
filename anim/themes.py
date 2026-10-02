@@ -46,8 +46,9 @@ def current():
 
 
 def border():
-    """Parchment border style, env CALC_BORDER: double (the first draft), none, rule (one thin line), deckle (darkened edges)."""
-    return os.environ.get("CALC_BORDER", "double")
+    """Border style, env CALC_BORDER: none (Adder's pick, 2026-10-02), double (the first draft), rule (one thin line),
+    deckle (darkened edges)."""
+    return os.environ.get("CALC_BORDER", "none")
 
 
 def palette(theme=None):
@@ -67,10 +68,18 @@ def _noise(w, h, scale, seed):
     return np.asarray(img, dtype=float) / 127.5 - 1
 
 
-def _logo(height, ink):
-    """The Mr Oaks logo from logo.png when it has content; until then a placeholder wordmark."""
+def _logo(height, ink, bg=None):
+    """The Mr Oaks logo from logo.png, cropped to its ink. With `bg` (dark themes) it is inverted: the dark outline
+    becomes `ink` and the cream fill becomes `bg`, so it reads as the same mark on dark paper. Until logo.png has
+    content, a placeholder wordmark."""
     if LOGO.exists() and LOGO.stat().st_size > 0:
         im = Image.open(LOGO).convert("RGBA")
+        im = im.crop(im.getchannel("A").getbbox())
+        if bg is not None:
+            a = np.asarray(im, dtype=float)
+            lum = (a[..., :3] @ [0.299, 0.587, 0.114]) / 255                  # 0 = outline, 1 = fill
+            rgb = _rgb(ink)[None, None, :] * (1 - lum[..., None]) + _rgb(bg)[None, None, :] * lum[..., None]
+            im = Image.fromarray(np.dstack([rgb, a[..., 3]]).astype(np.uint8), "RGBA")
         return im.resize((int(im.width * height / im.height), height), Image.LANCZOS)
     font = ImageFont.truetype(FONT, int(height * 0.62))
     text = "Mr Oaks"
@@ -142,7 +151,7 @@ def background(theme, w, h):
         m = int(38 * s)
         if border() != "none":
             d.rectangle([m, m, w - m, h - m], outline=rule, width=max(1, int(2 * s)))
-        logo = _logo(int(70 * s), p["INK"])
+        logo = _logo(int(70 * s), p["INK"], bg=p["BG"])
         img.alpha_composite(logo, (w - m - int(24 * s) - logo.width, h - m - int(18 * s) - logo.height))
     elif theme == "graphpaper":
         img = _paper(w, h, p["BG"], 0.008, 0.012, 0.25)

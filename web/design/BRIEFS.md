@@ -43,11 +43,8 @@ band, colored route bullets, nothing decorative.
 
 **Idea.** A course is a route. Every unit gets a line color, every topic is a
 station, the topic number is a round route bullet. The course map is drawn as a
-strip map, not a card grid. A "Map layout" toggle on the course map (cookie `maplayout`) picks
-how the strip map reads. Rows (the default) runs the line across each row, turns
-down at the row's end and comes back under it to the next row, like a line of
-text. Columns stacks the stations down each column, so the vertical lines match
-the reading order. At phone width both are one vertical line.
+strip map, not a card grid. Stations run down each column and then on to the next, so the vertical
+lines are the reading order. At phone width it is one vertical line.
 
 **Type.** Public Sans (Google Fonts; the US Web Design System face, a civic
 grotesk), one family on purpose, as in Swiss work. Archivo was tried first and

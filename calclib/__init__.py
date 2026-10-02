@@ -11,6 +11,7 @@ build scripts refuse to run while FAILS is non-empty.
 Text uses a small LaTeX subset so it can also be turned into HTML:
   $math$, \\textbf{}, \\emph{}, \\blank{answer}, \\mblank{answer} (inside math).
 """
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -407,3 +408,13 @@ def fail_if_needed():
         for f in FAILS:
             print("  -", f)
         raise SystemExit(1)
+
+
+_PUNCT_AFTER_DISPLAY = re.compile(r"\\\]\s*([.,;:?!])")
+
+
+def glue_punct(s):
+    """Move punctuation that follows a displayed formula inside it: "... \\[ f'(3) = 6 \\]." becomes
+    "... \\[ f'(3) = 6. \\]", so a line never starts with the sentence's period (Adder, 2026-10-02).
+    Both the PDF and the web output run every string through this."""
+    return _PUNCT_AFTER_DISPLAY.sub(lambda m: m.group(1) + " \\]", s) if s else s

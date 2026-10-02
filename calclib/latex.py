@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import sys
 
-from . import (FRQ, MCQ, BigIdea, Check, Definition, Example, Figure, Formula,
+from . import (glue_punct, FRQ, MCQ, BigIdea, Check, Definition, Example, Figure, Formula,
                Item, Meanings, form, n_forms, Section, Table, Text, Topic, Video, Desmos, FigureRow)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -281,6 +281,7 @@ DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testpre
 
 # ------------------------------------------------------------------ compile
 def compile_tex(tex, name, outdir):
+    tex = glue_punct(tex)          # a sentence's period stays on the formula's line
     os.makedirs(outdir, exist_ok=True)
     build = os.path.join(outdir, "_build")
     os.makedirs(build, exist_ok=True)

@@ -4,6 +4,7 @@ The page never receives answers. lesson.json is split in two:
   public:  everything the browser renders (text, prompts, choices, blank ids)
   private: answers, solutions and rubrics, looked up by id when the server grades
 """
+from calclib import glue_punct
 import json
 import os
 import re
@@ -15,7 +16,8 @@ from . import (FRQ, MCQ, UnitTest, slots, BigIdea, Check, Definition, Example, F
 from .latex import ROOT, TEXBIN
 
 # ------------------------------------------------------------------ LaTeX-light -> HTML
-_MATH = re.compile(r"(\$\$.+?\$\$|\\\[.+?\\\]|\$.+?\$)", re.S)
+# an escaped \$ is a literal dollar sign, never a math delimiter
+_MATH = re.compile(r"((?<!\\)\$\$.+?(?<!\\)\$\$|\\\[.+?\\\]|(?<!\\)\$.+?(?<!\\)\$)", re.S)
 
 
 def _braced(s, i):
@@ -74,10 +76,66 @@ def _display_blank_lines(s):
     return re.sub(r"\\\[(.+?)\\\]", line, s, flags=re.S)
 
 
+def _blanks_in_math_to_mblank(s):
+    """A text \\blank{$X$} written inside math (an easy slip: "$\\mblank{a} \\le f \\le \\blank{$b$}$") would split the
+    formula and leak raw LaTeX onto the page. Inside math, treat it as \\mblank{X}."""
+    out, i, mode = [], 0, None
+    while i < len(s):
+        if s.startswith(r"\blank", i):
+            j = i + len(r"\blank")
+            opt = ""
+            if j < len(s) and s[j] == "[":
+                e = s.index("]", j) + 1
+                opt, j = s[j:e], e
+            if j < len(s) and s[j] == "{":
+                arg, k = _braced(s, j)
+                if mode is None:
+                    out.append(s[i:k])              # a text blank: copy it whole, its $...$ doesn't change mode
+                else:
+                    a = arg.strip()
+                    if len(a) > 1 and a[0] == "$" and a[-1] == "$":
+                        a = a[1:-1]
+                    out.append(rf"\mblank{opt}{{{a}}}")
+                i = k
+                continue
+        if s.startswith(r"\[", i) and mode is None:
+            mode = "["; out.append(r"\["); i += 2; continue
+        if s.startswith(r"\]", i) and mode == "[":
+            mode = None; out.append(r"\]"); i += 2; continue
+        if s[i] == "$" and (i == 0 or s[i - 1] != "\\") and mode in (None, "$"):
+            mode = None if mode == "$" else "$"
+        out.append(s[i]); i += 1
+    return "".join(out)
+
+
+def _blank_fracs_inline(s):
+    """An input box can't sit inside a typeset fraction, so on the web \\frac{1}{\\mblank{X}} is written 1 / [box]
+    (the PDF keeps the stacked fraction). A part that is more than one blank or token gets parentheses."""
+    def part(a):
+        a = a.strip()
+        simple = re.fullmatch(r"\\mblank(\[[^\]]*\])?\{.*\}|[A-Za-z0-9.]+", a, re.S)
+        if simple and (not a.startswith(r"\mblank") or _braced(a, a.index("{"))[1] == len(a)):
+            return a
+        return "(" + a + ")"
+    out, pos = [], 0
+    for m in re.finditer(r"\\[dt]?frac(?=\s*\{)", s):
+        if m.start() < pos:
+            continue
+        num, k = _braced(s, s.index("{", m.end()))
+        if k >= len(s) or s[k] != "{":
+            continue
+        den, k2 = _braced(s, k)
+        if r"\mblank" not in num + den:
+            continue
+        out.append(s[pos:m.start()] + part(_blank_fracs_inline(num)) + r" \,/\, " + part(_blank_fracs_inline(den)))
+        pos = k2
+    return "".join(out) + s[pos:]
+
+
 def _lift_mblanks(s):
     """\\mblank{X} lives inside math. Close the math before it and reopen after, turning it into \\blank{$X$},
     so the page shows an input box instead of handing KaTeX an unknown command."""
-    s = _display_blank_lines(s)
+    s = _display_blank_lines(_blank_fracs_inline(_blanks_in_math_to_mblank(s)))
     out, i, mode = [], 0, None          # mode: None, "$", or "["
     while i < len(s):
         if s.startswith(r"\mblank", i):
@@ -85,7 +143,7 @@ def _lift_mblanks(s):
             if s[j] == "[":
                 j = s.index("]", j) + 1
             inner, k = _braced(s, j)
-            close, reopen = {"$": ("$", "$"), "[": (r"\]", r"\["), None: ("", "")}[mode]
+            close, reopen = {"$": ("\x04", "\x04"), "[": (r"\]", r"\["), None: ("", "")}[mode]   # \x04: a $ we added
             out.append(f"{close}\\blank{{${inner}$}}{reopen}")
             i = k
             continue
@@ -97,7 +155,9 @@ def _lift_mblanks(s):
             mode = None if mode == "$" else "$"
         out.append(s[i]); i += 1
     r = "".join(out)
-    r = re.sub(r"\$\s*\$", "", r)
+    # drop only the empty math our own close/reopen made ("$" + added close, added reopen + "$"); two separate
+    # formulas the author wrote side by side ("$H(t)$ $^\circ$C") must stay separate
+    r = re.sub(r"(?<!\\)\$\s*\x04|\x04\s*\$", "", r).replace("\x04", "$")
     return re.sub(r"\\\[\s*\\\]", "", r)
 
 
@@ -123,7 +183,7 @@ def html(s, blanks=None):
     """Convert the course's LaTeX subset to HTML. Math stays in $...$ for KaTeX."""
     if s is None:
         return ""
-    s = _lift_mblanks(s)
+    s = _lift_mblanks(glue_punct(s))
     out, pos = [], 0
     # pull \blank{} out first, since its argument may itself contain math
     while True:
@@ -162,6 +222,9 @@ def html(s, blanks=None):
         p = p.replace(r"\quad", "&emsp;").replace(r"\qquad", "&emsp;&emsp;").replace("~", "&nbsp;")
         p = p.replace(r"\enspace", "&ensp;").replace(r"\,", "&thinsp;")
         p = p.replace("``", "&ldquo;").replace("''", "&rdquo;")
+        # a literal dollar sign: KaTeX's auto-render reads one text node at a time, so a $ alone in its own
+        # element can't pair with another and start math
+        p = p.replace(r"\$", "<span class='usd'>$</span>")
         parts[n] = p
     s = "".join(parts)
     # close any <div class='center'> opened by \centerline{...}: its closing brace is the next lone }

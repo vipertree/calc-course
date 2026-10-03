@@ -4,22 +4,21 @@ from manim import *
 
 from kit import *
 from style import *
+from props import Tank, cash_register, petri_dish, thermometer
 
 
 def panel(title, icon):
     box = RoundedRectangle(width=3.6, height=2.6, corner_radius=0.15, color=DIM, fill_color=PANEL, fill_opacity=1)
-    return VGroup(box, icon.move_to(box.get_center() + UP * 0.3), T(title, 28, SECANT).move_to(box.get_bottom() + UP * 0.45))
+    icon.set_max_height(1.45).set_max_width(2.6)
+    return Group(box, icon.move_to(box.get_center() + UP * 0.32), T(title, 28, SECANT).move_to(box.get_bottom() + UP * 0.38))
 
 
 class Lesson(TranscriptScene):
     NUM = "4.3"
 
     def panels(self):
-        dish = VGroup(Circle(radius=0.6, color=INK), *[Dot(np.array([np.cos(a) * r, np.sin(a) * r, 0]), radius=0.05, color=DERIV)
-                                                        for a, r in zip(np.linspace(0, 6, 9), [0.2, 0.35, 0.4, 0.15, 0.3, 0.45, 0.25, 0.1, 0.38])])
-        reg = VGroup(Rectangle(width=1.3, height=0.8, color=INK), M(r"\$", 44, DERIV))
-        thermo = VGroup(RoundedRectangle(width=0.3, height=1.2, corner_radius=0.15, color=INK), Circle(radius=0.22, color=TANGENT, fill_opacity=1).shift(DOWN * 0.65))
-        return VGroup(panel("bacteria per hour", dish), panel("dollars per item", reg), panel("degrees per minute", thermo)).arrange(RIGHT, buff=0.5)
+        return Group(panel("bacteria per hour", petri_dish()), panel("dollars per item", cash_register()),
+                     panel("degrees per minute", thermometer())).arrange(RIGHT, buff=0.5)
 
     def construct(self):
         ps = self.panels()
@@ -47,24 +46,23 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("Rate in, rate out") as b:
-            body = Rectangle(width=3, height=3.4, color=DIM, stroke_width=4).shift(LEFT * 3 + DOWN * 0.4)
-            lvl = ValueTracker(1.6)
-            water = always_redraw(lambda: Rectangle(width=2.96, height=lvl.get_value(), color=FUNC, fill_color=FUNC, fill_opacity=0.5, stroke_width=0).align_to(body, DOWN))
-            inflow = VGroup(Arrow(body.get_corner(UL) + UP * 0.9 + LEFT * 0.4, body.get_corner(UL) + DOWN * 0.1 + RIGHT * 0.4, color=DERIV, buff=0),
-                            M("R(t)", 36, DERIV)).arrange(RIGHT)
-            inflow[1].next_to(inflow[0], LEFT)
-            out = VGroup(Arrow(body.get_corner(DR) + UP * 0.3, body.get_corner(DR) + RIGHT * 1.2 + UP * 0.3, color=TANGENT, buff=0))
-            out.add(M("D(t)", 36, TANGENT).next_to(out[0], UP, buff=0.1))
-            self.play(Create(body), FadeIn(water), run_time=0.8)
-            self.play(GrowArrow(inflow[0]), FadeIn(inflow[1]), GrowArrow(out[0]), FadeIn(out[1]), run_time=1)
+            tk = Tank(0.45, width=2.6, height=3.0, inlet=True).shift(LEFT * 3.3 + DOWN * 0.7)
+            lvl = tk.level
+            inflow = M("R(t)", 36, DERIV).next_to(tk.faucet, UP, buff=0.35).shift(LEFT * 0.9)
+            out = M("D(t)", 36, TANGENT).next_to(tk.mouth, RIGHT, buff=0.25).shift(UP * 0.1)
+            self.play(FadeIn(tk), run_time=0.8)
+            tk.pour_on().drain_on()
+            self.play(FadeIn(inflow), FadeIn(out), run_time=1)
             b.line(1)
             eq = M(r"A'(t) = R(t) - D(t)", 56).to_edge(RIGHT, buff=0.8).shift(UP * 1.4)
             self.play(Write(eq), run_time=1.2)
             b.line(2)
             up = M(r"R > D:\ \text{increasing}", 40, DERIV).next_to(eq, DOWN, buff=0.6)
             dn = M(r"R < D:\ \text{decreasing}", 40, TANGENT).next_to(up, DOWN, buff=0.4)
-            self.play(FadeIn(up), lvl.animate.set_value(2.6), run_time=1.2)
-            self.play(FadeIn(dn), lvl.animate.set_value(1.2), run_time=1.2)
+            tk.pour_on(1.4).drain_on(0.5)
+            self.play(FadeIn(up), lvl.animate.set_value(0.8), run_time=2.4)
+            tk.pour_on(0.35).drain_on(2.0)
+            self.play(FadeIn(dn), lvl.animate.set_value(0.3), run_time=2.4)
         self.clear()
 
         ax, al = plot_axes([0, 200, 50], [0, 6000, 2000], w=7.2, h=4.8, coords=False, xlabel="x", ylabel="C")

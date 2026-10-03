@@ -414,18 +414,31 @@ def tangent_line(ax, f, a, slope, xr, color=TANGENT):
     return ax.plot(lambda x: f(a) + slope * (x - a), x_range=xr, color=color, stroke_width=4)
 
 
-def table(headers, rows, size=36, highlight_cols=(), color=INK):
-    """headers: list of strings (LaTeX), rows: list of lists. Returns a VGroup grid with .cells[r][c]."""
+def table(headers, rows, size=36, highlight_cols=(), color=INK, gap=None):
+    """headers: list of strings (LaTeX), rows: list of lists. Returns a VGroup grid with .cells[r][c].
+    gap: rows sit on a fixed 0.72 pitch by default; with gap set, each row is as tall as its tallest cell and rows are
+    `gap` apart, so a row holding a fraction can't crowd its neighbors."""
     data = [headers] + rows
     cells = [[M(str(v), size, DIM if r == 0 else color) for v in row] for r, row in enumerate(data)]
     grid = VGroup(*[VGroup(*row) for row in cells])
     colw = [max(cells[r][c].width for r in range(len(cells))) + 0.5 for c in range(len(headers))]
+    heights = [max(m.height for m in row) for row in cells]
+    ys, y = [], 0.0
+    for r in range(len(cells)):
+        if gap is None:
+            ys.append(-r * 0.72)
+        else:
+            if r:
+                y -= heights[r - 1] / 2 + gap + heights[r] / 2
+            ys.append(y)
     for r, row in enumerate(cells):
         x = 0
         for c, m in enumerate(row):
-            m.move_to(RIGHT * (x + colw[c] / 2) + DOWN * r * 0.72)
+            m.move_to(RIGHT * (x + colw[c] / 2) + UP * ys[r])
             x += colw[c]
-    rule = Line(grid[0].get_left() + DOWN * 0.36 + LEFT * 0.2, grid[0].get_right() + DOWN * 0.36 + RIGHT * 0.2, color=DIM, stroke_width=2)
+    ry = -0.36 if gap is None or len(ys) < 2 else (ys[0] - heights[0] / 2 + ys[1] + heights[1] / 2) / 2
+    rule = Line(grid[0].get_left() + UP * ry + LEFT * 0.2, grid[0].get_right() + UP * ry + RIGHT * 0.2, color=DIM, stroke_width=2)
+    rule.set_y(ry + grid[0].get_center()[1] - ys[0])
     out = VGroup(grid, rule).move_to(ORIGIN)            # centered, like every other mobject
     out.cells = cells
     return out

@@ -13,6 +13,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | 8.3 | done | done | done (rate-in-context FRQ) | see git log |
 | 8.4 | done | done | done (FRQS = []; area FRQs come in 8.6 and the unit test) | see git log |
 | 8.5 | done | done | done (FRQS = []) | see git log |
+| 8.6 | done | done | done (area FRQ: regions R and S, net vs total, dividing line) | see git log |
 
 ## Notes for the merging agent
 

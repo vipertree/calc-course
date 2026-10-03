@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| U6 test | n/a | n/a | done: 12 MCQ A + 4 MCQ B (calculator) + 3 FRQ, two forms each, AB topics only | see git log |
 | 6.14 | done | done (tool_tray, like 1.7's toolkit) | done (FRQS = []) | see git log |
 | 6.13 (BC) | done | done | done (bc_only=True, FRQS = []) | see git log |
 | 6.12 (BC) | done | done | done (bc_only=True, FRQS = []) | see git log |
@@ -37,3 +38,5 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
   (an antiderivative F + C) accepts any constant offset but requires the student to write + C; compares derivatives.
   Also fixed parsing of "5ln|x|" (it used to become a product of letters). Grading/AnswerKeys tests pass; the other
   course tests error the same way with and without the change (no exported site content in the cloud container).
+- Unit 6 is complete on this branch (6.1-6.14 + U6 test). For the site: run `build.py --web` for 6.1-6.14 and U6.
+  New figures (graph(...)) are tikz; the web export renders them.

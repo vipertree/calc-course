@@ -5,7 +5,7 @@ with a reference triangle, the picture used in the video; the other four are lis
 """
 import sympy as sp
 
-from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Figure, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr,
+from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Figure, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, expr,
                      close, num, same, selfcheck)
 
 x, t = sp.symbols("x t")
@@ -27,8 +27,50 @@ FIG_T = Figure(name="t3_4_triangle", caption=r"If $\sin y = x$, label the triang
                      r"\draw (0.6,0) arc (0:31:0.6); \node at (0.85,0.2) {$y$};"
                      r"\end{tikzpicture}"))
 
+def _circle(dx, arc, labels, holes=(), caption=""):
+    out = (rf"\begin{{scope}}[shift={{({dx},0)}}]\draw[gray] (-1.35,0) -- (1.35,0); \draw[gray] (0,-1.35) -- (0,1.35); \draw (0,0) circle (1);"
+           rf"\draw[line width=2.4pt] {arc};")
+    out += "".join(rf"\draw[line width=1pt, fill=white] {h} circle (0.07);" for h in holes)
+    out += "".join(rf"\node[{pos}] at {at} {{{t}}};" for pos, at, t in labels)
+    return out + rf"\node at (0,-2.05) {{\small {caption}}};\end{{scope}}"
+
+
+FIG_C = Figure(name="t3_4_circles", caption=r"The piece of the unit circle each inverse function answers from.",
+               tikz=(r"\begin{tikzpicture}[scale=1.1]"
+                     + _circle(0, r"(0,-1) arc (-90:90:1)", [("above right", "(0,1)", r"$\frac\pi2$"), ("below right", "(0,-1)", r"$-\frac\pi2$")],
+                               caption=r"$\arcsin x$: right half")
+                     + _circle(4.4, r"(1,0) arc (0:180:1)", [("above right", "(1,0)", r"$0$"), ("above left", "(-1,0)", r"$\pi$")],
+                               caption=r"$\arccos x$: top half")
+                     + _circle(8.8, r"(0,-1) arc (-90:90:1)", [("above right", "(0,1)", r"$\frac\pi2$"), ("below right", "(0,-1)", r"$-\frac\pi2$")],
+                               holes=("(0,1)", "(0,-1)"), caption=r"$\arctan x$: right half, no ends")
+                     + r"\end{tikzpicture}"))
+
 NOTES = [
-    Video("s3_4.py::Lesson", "Derivatives of inverse trig functions", 5),
+    Video("s3_4.py::Lesson", "Derivatives of inverse trig functions", 10),
+
+    Section("The inverse trig functions"),
+    Text(r"An inverse trig function takes a number and gives back an angle: $\arcsin x$ is the angle whose sine is $x$. "
+         r"On the unit circle, sine is the height of the point at that angle, cosine is its left-right position, and tangent is the "
+         r"slope of the line from the center to the point."),
+    Text(r"A trig function is not one-to-one: $\sin\frac\pi6$ and $\sin\frac{5\pi}6$ are both $\frac12$. To undo it, we keep one piece "
+         r"of the circle that gives each output exactly once. Arcsine uses the \blank{right} half, from $-\frac\pi2$ to $\frac\pi2$. "
+         r"Arccosine uses the \blank{top} half, from $0$ to $\pi$. Arctangent uses the right half without its two ends, since a "
+         r"vertical line has no slope."),
+    FIG_C,
+    Table(r"$\arcsin x$ & $-1 \le x \le 1$ & $\left[-\frac\pi2, \frac\pi2\right]$ & right half \\ "
+          r"$\arccos x$ & $-1 \le x \le 1$ & $\mblank{[0, \pi]}$ & top half \\ "
+          r"$\arctan x$ & \blank{every real $x$} & $\left(-\frac\pi2, \frac\pi2\right)$ & right half, no ends \\ "
+          r"$\operatorname{arcsec} x$ & $|x| \ge 1$ & $[0, \pi]$, not $\frac\pi2$ & top half, no top",
+          "llll", header=r"function & inputs (domain) & outputs (range) & piece of the circle"),
+    Text(r"Secant is $\frac{1}{\cos x}$, so $\operatorname{arcsec} x = \arccos\frac1x$. Arccosecant and arccotangent are built the same "
+         r"way and rarely come up."),
+    Text(r"To evaluate one, find the point on the allowed piece of the circle. "
+         r"$\arcsin\frac12 = \mblank{\frac{\pi}{6}}$, \quad $\arccos\left(-\frac{\sqrt2}{2}\right) = \mblank{\frac{3\pi}{4}}$, \quad "
+         r"$\arctan(-1) = \mblank{-\frac{\pi}{4}}$, \quad $\arcsin(-1) = \mblank{-\frac{\pi}{2}}$. "
+         r"The answer must be in the range: $\frac{3\pi}{4}$ also has tangent $-1$, but it is not on the right half."),
+    Check(r"Find $\arccos(-1)$.", num(pi), r"The point $(-1, 0)$ is at angle $\pi$, on the top half."),
+    Check(r"Find $\arcsin\left(-\frac{\sqrt3}{2}\right)$.", num(-pi / 3), r"On the right half, height $-\frac{\sqrt3}2$ is at $-\frac\pi3$."),
+    Check(r"Find $\arctan\sqrt3$.", num(pi / 3), r"Slope $\sqrt3$ on the right half is at $\frac\pi3$."),
 
     Section("Arcsine, by implicit differentiation"),
     Text(r"Let $y = \arcsin x$, so $\sin y = x$ with \[ -\frac\pi2 \le y \le \frac\pi2. \] Differentiate implicitly: "
@@ -41,19 +83,53 @@ NOTES = [
     Section("Arctangent"),
     Text(r"Let $y = \arctan x$, so $\tan y = x$. Then \[ \sec^2 y\,\frac{dy}{dx} = 1. \] Since $\sec^2 y = 1 + \tan^2 y = 1 + x^2$, "
          r"$\displaystyle \frac{d}{dx}\arctan x = \mblank{\frac{1}{1 + x^2}}$."),
+
+    Section("Arcsecant"),
+    Text(r"Let $y = \operatorname{arcsec} x$, so $\sec y = x$ with $0 \le y \le \pi$, $y \ne \frac\pi2$. Differentiate: "
+         r"$\sec y\tan y\,\dfrac{dy}{dx} = 1$, so $\dfrac{dy}{dx} = \dfrac{1}{x\tan y}$. Since $\tan^2 y = \sec^2 y - 1 = x^2 - 1$, "
+         r"$\tan y = \pm\sqrt{x^2 - 1}$. On this range $\tan y$ has the same sign as $x$ (both positive below $\frac\pi2$, both negative "
+         r"above it), so $x\tan y = |x|\sqrt{x^2 - 1}$ and \[ \frac{d}{dx}\operatorname{arcsec} x = \frac{1}{|x|\sqrt{x^2 - 1}}. \]"),
+
+    Section("All six"),
     Formula("Inverse trig derivatives", (
-        r"\[ \frac{d}{dx}\arcsin x = \frac{1}{\sqrt{1 - x^2}} \qquad \frac{d}{dx}\arccos x = \mblank{-\frac{1}{\sqrt{1 - x^2}}} \qquad "
-        r"\frac{d}{dx}\arctan x = \frac{1}{1 + x^2} \]"
-        r"\[ \frac{d}{dx}\operatorname{arccot} x = -\frac{1}{1 + x^2} \qquad \frac{d}{dx}\operatorname{arcsec} x = \frac{1}{|x|\sqrt{x^2 - 1}} "
-        r"\qquad \frac{d}{dx}\operatorname{arccsc} x = -\frac{1}{|x|\sqrt{x^2 - 1}} \]"
+        r"\[ \frac{d}{dx}\arcsin x = \frac{1}{\sqrt{1 - x^2}} \qquad \frac{d}{dx}\operatorname{arcsec} x = \frac{1}{|x|\sqrt{x^2 - 1}} "
+        r"\qquad \frac{d}{dx}\arctan x = \frac{1}{1 + x^2} \]"
+        r"\[ \frac{d}{dx}\arccos x = \mblank{-\frac{1}{\sqrt{1 - x^2}}} \qquad \frac{d}{dx}\operatorname{arccsc} x = -\frac{1}{|x|\sqrt{x^2 - 1}} "
+        r"\qquad \frac{d}{dx}\operatorname{arccot} x = -\frac{1}{1 + x^2} \]"
         r"Each ``co'' version is the \blank{negative} of its partner. With the chain rule: "
         r"\[ \frac{d}{dx}\arctan\big(u(x)\big) = \frac{u'}{1 + u^2}. \]")),
+    Text(r"Don't worry too much about the proofs. You do need to memorize these six. Two tips: the minus signs belong to the co-functions, "
+         r"every time. And \textbf{S} for subtraction: the \textbf{s}ine and \textbf{s}ecant derivatives have a subtraction under the "
+         r"square root ($1 - x^2$ and $x^2 - 1$), while arctangent has an \blank{addition}, $1 + x^2$, and no square root."),
 
     Section("Using them"),
     VideoExample('Arcsine with the chain rule', work="2.2cm"),
+
+    Section("The absolute value in arcsecant"),
+    VideoExample('Arcsecant of x squared', work="2.2cm"),
+    VideoExample('Arcsecant of x cubed', work="2.2cm"),
+    Text(r"An even power of $x$ is never negative, so its absolute value is itself and the absolute value can be dropped. "
+         r"An odd power keeps the sign of $x$, so an absolute value \blank{stays} on the $x$."),
     BigIdea(r"Differentiate $\sin y = x$ (or $\tan y = x$) implicitly, then use a triangle or an identity to write the answer in $x$."),
     Check(r"Find $\dfrac{d}{dx}\arctan x$ at $x = 2$.", num(sp.Rational(1, 5)), r"\[ \frac{1}{1 + 4} = \frac15. \]"),
 ]
+same("values", [sp.asin(sp.Rational(1, 2)), sp.acos(-sp.sqrt(2) / 2), sp.atan(-1), sp.asin(-1), sp.acos(-1), sp.asin(-sp.sqrt(3) / 2),
+                sp.atan(sp.sqrt(3)), sp.asec(2)], [pi / 6, 3 * pi / 4, -pi / 4, -pi / 2, pi, -pi / 3, pi / 3, pi / 3])
+same("asec", sp.simplify(D(sp.asec(x)).subs(x, 2) - 1 / (2 * sp.sqrt(3))), 0)
+same("asec neg", sp.simplify(D(sp.asec(x)).subs(x, -2) - 1 / (2 * sp.sqrt(3))), 0)
+_p = sp.Symbol("p", positive=True)
+
+
+def both_sides(f, g):
+    """f == g for x > 1 and for x < -1 (the absolute value makes the two sides differ)."""
+    return [sp.simplify((f - g).subs(x, 1 + _p)), sp.simplify((f - g).subs(x, -1 - _p))]
+
+
+same("asec x^2", both_sides(D(sp.asec(x**2)), 2 / (x * sp.sqrt(x**4 - 1))), [0, 0])
+same("asec x^2 rule", both_sides(2 * x / (sp.Abs(x**2) * sp.sqrt(x**4 - 1)), 2 / (x * sp.sqrt(x**4 - 1))), [0, 0])
+same("asec x^3", both_sides(D(sp.asec(x**3)), 3 / (sp.Abs(x) * sp.sqrt(x**6 - 1))), [0, 0])
+same("asec x^3 rule", both_sides(3 * x**2 / (sp.Abs(x**3) * sp.sqrt(x**6 - 1)), 3 / (sp.Abs(x) * sp.sqrt(x**6 - 1))), [0, 0])
+same("asec x^3 at -2", [D(sp.asec(x**3)).subs(x, -2), (3 / (x * sp.sqrt(x**6 - 1))).subs(x, -2)], [3 / (2 * sp.sqrt(63)), -3 / (2 * sp.sqrt(63))])  # dropping |x| flips the sign
 same("ex slope", D(sp.asin(x)).subs(x, sp.Rational(1, 2)), 2 / sp.sqrt(3))
 same("ex chain", [D(sp.atan(3 * x)), sp.simplify(D(sp.asin(x**2)) - 2 * x / sp.sqrt(1 - x**4))], [3 / (1 + 9 * x**2), 0])
 
@@ -66,7 +142,23 @@ P = [(r"y = \arctan(5x)", sp.atan(5 * x), r"$\dfrac{5}{1 + 25x^2}$."),
      (r"y = \arcsin\left(\dfrac x3\right)", sp.asin(x / 3), r"$\dfrac{1/3}{\sqrt{1 - x^2/9}} = \dfrac{1}{\sqrt{9 - x^2}}$."),
      (r"y = \arctan\left(e^x\right)", sp.atan(sp.exp(x)), r"$\dfrac{e^x}{1 + e^{2x}}$."),
      (r"y = \left(\arcsin x\right)^2", sp.asin(x)**2, r"$\dfrac{2\arcsin x}{\sqrt{1 - x^2}}$.")]
-PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), sol, work="1.8cm") for tex, e, sol in P]
+EV = [(r"\arcsin\frac{\sqrt3}{2}", sp.asin(sp.sqrt(3) / 2), pi / 3, r"On the right half, height $\frac{\sqrt3}2$ is at $\frac\pi3$."),
+      (r"\arccos\left(-\frac12\right)", sp.acos(-sp.Rational(1, 2)), 2 * pi / 3, r"On the top half, left-right position $-\frac12$ is at $\frac{2\pi}3$."),
+      (r"\arctan\left(-\sqrt3\right)", sp.atan(-sp.sqrt(3)), -pi / 3, r"On the right half, slope $-\sqrt3$ is at $-\frac\pi3$."),
+      (r"\arccos 0", sp.acos(0), pi / 2, r"The top of the circle, $\frac\pi2$."),
+      (r"\arcsin\left(-\frac{\sqrt2}{2}\right)", sp.asin(-sp.sqrt(2) / 2), -pi / 4, r"On the right half, height $-\frac{\sqrt2}2$ is at $-\frac\pi4$."),
+      (r"\operatorname{arcsec} 2", sp.asec(2), pi / 3, r"$\arccos\frac12 = \frac\pi3$."),
+      (r"\arccos\left(\cos\frac{5\pi}{3}\right)", sp.acos(sp.cos(5 * pi / 3)), pi / 3,
+       r"$\cos\frac{5\pi}3 = \frac12$, and the angle on the top half with cosine $\frac12$ is $\frac\pi3$, not $\frac{5\pi}3$."),
+      (r"\arcsin\left(\sin\frac{3\pi}{4}\right)", sp.asin(sp.sin(3 * pi / 4)), pi / 4,
+       r"$\sin\frac{3\pi}4 = \frac{\sqrt2}2$, and on the right half that height is at $\frac\pi4$.")]
+same("evaluate", [e for _, e, _, _ in EV], [v for _, _, v, _ in EV])
+PRACTICE = [Item(rf"Find ${tex}$.", num(v), sol, work="1cm") for tex, _, v, sol in EV]
+PRACTICE += [Item(r"Explain why $\arcsin\frac12$ is $\frac\pi6$ and not $\frac{5\pi}6$, even though both have sine $\frac12$.",
+                  selfcheck(r"\text{the range is } \left[-\tfrac\pi2, \tfrac\pi2\right]"),
+                  r"Arcsine only answers with angles from $-\frac\pi2$ to $\frac\pi2$ (the right half of the circle), and "
+                  r"$\frac{5\pi}6$ is outside that.", work="1.4cm")]
+PRACTICE += [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), sol, work="1.8cm") for tex, e, sol in P]
 PRACTICE += [
     Item(r"Find the slope of $y = \arctan x$ at $x = \sqrt3$.", num(sp.Rational(1, 4)), r"$\dfrac{1}{1 + 3} = \dfrac14$.", work="1.2cm"),
     Item(r"Find the slope of $y = \arcsin x$ at $x = 0$.", num(1), r"$\dfrac{1}{\sqrt{1 - 0}} = 1$.", work="1.2cm"),

@@ -40,6 +40,9 @@ NOTES = [
 
     Section("Then solve"),
     Text(r"With $A(w)$ in hand, it's Unit 5 as usual: $A'(w) = 20 - 2w = 0$ at $w = 10$, and $A'' = -2 < 0$, so the area is largest for the $10 \times 10$ square: $100$."),
+    Text(r"\textbf{Find the domain from the picture.} Imagine the actual shape at extreme values. For a rectangle with perimeter $40$ and width $w$, "
+         r"the length is $20 - w$. A width of $25$ would make the length $-5$: no such rectangle. As $w$ approaches $20$ (or $0$) the rectangle "
+         r"flattens into a line. So the rectangles that exist have \blank{$0 < w < 20$}."),
     Text(r"\textbf{Check the answer makes sense.} An optimal width of $-3$ or $50$ in this problem would mean an error in the setup or the domain."),
     BigIdea(r"Optimization: one quantity, written as a function of one variable (use the constraint), on a sensible domain, then find its absolute max or min."),
     Check(r"Two positive numbers have product $36$. Write their sum as a function of one of them, $x$.", expr(x + 36 / x, var="x"), r"The other is $\frac{36}{x}$, so $S(x) = x + \frac{36}{x}$."),

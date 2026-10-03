@@ -567,3 +567,43 @@ def mark_point(ch, k, text, color=SECANT, size=30):
         ch.add(lab)
         scene.play(FadeIn(lab), run_time=0.5)
     return cue
+
+
+# ---------------------------------------------------------------- scenery for word problems (Adder: real-life pictures should be pretty too)
+WATER, WATER_HI, SAND = "#5B9BD5", "#BFDCF2", "#D9C291"
+MEADOW, GRASS, GRASS_DK = "#A7C957", "#7FB069", "#55803F"
+WOOD, WOOD_DK = "#9A6B43", "#6E4A2C"
+CARD, CARD_DK, CARD_LT = "#C99A66", "#A57846", "#E2BE8F"
+WOOL, MUZZLE = "#F6F2E9", "#3B3632"
+
+
+def river_band(width, height=0.7, waves=3):
+    """A river seen from above: water, pale ripple lines, and a sandy bank along the bottom edge."""
+    water = Rectangle(width=width, height=height, stroke_width=0, fill_color=WATER, fill_opacity=1)
+    rip = VGroup(*[FunctionGraph(lambda s, k=k: 0.04 * np.sin(5 * s + 1.7 * k), x_range=[-width / 2 + 0.2 + 0.3 * (k % 2), width / 2 - 0.2],
+                                 color=WATER_HI, stroke_width=2).shift(UP * (height / 2 - (k + 1) * height / (waves + 1)))
+                   for k in range(waves)])
+    bank = Line(water.get_corner(DL), water.get_corner(DR), color=SAND, stroke_width=6)
+    return VGroup(water, rip, bank)
+
+
+def fence_path(points, post_gap=0.32):
+    """A wooden fence seen from above along the polyline `points`: a rail with square posts at even spacing."""
+    rail = VMobject(stroke_color=WOOD, stroke_width=6).set_points_as_corners(points)
+    posts = VGroup()
+    for p, q in zip(points, points[1:]):
+        n = max(1, int(np.linalg.norm(q - p) / post_gap))
+        for t in np.linspace(0, 1, n + 1):
+            posts.add(Square(0.11, stroke_width=0, fill_color=WOOD_DK, fill_opacity=1).move_to(p + t * (q - p)))
+    return VGroup(rail, posts)
+
+
+def sheep(size=0.5):
+    """A sheep seen from above: a lumpy wool body and a dark head."""
+    r = size * 0.28
+    body = VGroup(*[Circle(radius=r, stroke_width=0, fill_color=WOOL, fill_opacity=1).move_to([dx * size, dy * size, 0])
+                    for dx, dy in ((-0.22, 0.1), (0, 0.16), (0.2, 0.1), (-0.2, -0.12), (0.02, -0.16), (0.22, -0.1), (0, 0))])
+    head = Ellipse(width=size * 0.34, height=size * 0.26, stroke_width=0, fill_color=MUZZLE, fill_opacity=1).move_to([size * 0.5, 0, 0])
+    ears = VGroup(*[Ellipse(width=size * 0.14, height=size * 0.07, stroke_width=0, fill_color=MUZZLE, fill_opacity=1).move_to([size * 0.44, s * size * 0.17, 0])
+                    for s in (1, -1)])
+    return VGroup(body, ears, head)

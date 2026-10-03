@@ -95,11 +95,17 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
    be positive"; think about the actual rectangle: imagine w = 25 (or whatever is too big) and show it wouldn't
    make sense as a rectangle.
 
+**5.11**
+1. The box looks good, but animate the sides folding up if possible. And make it read as an OPEN-top box (color or
+   shading of the inside/rim), not a closed rectangular prism.
+2. Closed cylinder example: use a visual too (the kind of sketch students would draw themselves).
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.10 | 5.10/5.11 item 1 (for 5.10), 5.10 items 2-3 | done (transcript, scene, notes); not rendered | see git log |
 | 5.9 | 5.8 items 1-5 (chart centerpiece, sign changes, constructed f') | done (transcript, scene, notes); not rendered | see git log |
 | 5.8 | 1-6 above (light chart: the existing notes Table + Close table; full chart deferred to 5.9) | done; not rendered | see git log |
 | 5.7 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
@@ -158,3 +164,11 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   group, then the diagonal pattern lit in pairs). New beat "Zero is not enough" (2x2 mini sign charts). Example 1
   has staged f' and f'' charts and the f'' factoring spelled out. New Example 4 (graph of f' = 3 segments; every
   column, incl. f''(2) as a slope). Notes table restructured to the chart's three groups.
+- NEW kit scenery (appended to anim/kit.py): palette constants (WATER, MEADOW, GRASS, WOOD, CARD...), river_band,
+  fence_path, sheep. Vector art only: no Scenario access from the cloud session. If the other agent has a painted
+  style for word-problem art, swap these for sprites.
+- 5.10: opening pen = meadow + river_band + wooden fence + grassy pen + sheep. New beat "What optimization means"
+  (Adder's intro). "One quantity" narration no longer opens with "Every optimization problem starts the same way";
+  the domain is argued from the picture. "Setting up" has a live rectangle (always_redraw on a ValueTracker, drawn
+  inside an invisible holder passed as the figure): shows w = 25 is impossible, then flattens toward w = 20 and 0.
+  All algebra one step per line. Notes: "Find the domain from the picture".

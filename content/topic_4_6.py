@@ -30,7 +30,9 @@ NOTES = [
          r"Close to the point of tangency, the line and the curve are nearly the same, so the line's value is a good estimate of the function's."),
     Formula("The linearization of $f$ at $x = a$", (
         r"\[ L(x) = f(a) + f'(a)(x - a) \] "
-        r"For $x$ near $a$, \[ f(x) \approx L(x). \] This is the point-slope form of the tangent line, with the point $\left(a, f(a)\right)$ and slope $f'(a)$.")),
+        r"For $x$ near $a$, \[ f(x) \approx L(x). \] This is the point-slope form of the tangent line, with the point $\left(a, f(a)\right)$ and slope $f'(a)$. "
+        r"You don't need to think of it as a new formula: write the equation of the tangent line, a skill you already have, and "
+        r"evaluate it at the $x$ you care about. Start at a point and move along the slope a little.")),
     Text(r"\textbf{Choosing $a$.} Pick an $a$ close to the $x$ you want, where $f(a)$ and $f'(a)$ are easy to find exactly. To estimate $\sqrt{26}$, "
          r"use $a = \mblank{25}$."),
     VideoExample('Using given values', work="2cm"),

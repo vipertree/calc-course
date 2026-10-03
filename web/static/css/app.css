@@ -314,7 +314,10 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 .formula-sheet .sheet-topic.ahead:hover { opacity: .8; }
 .formula-sheet .sheet-tag { font: 600 .95rem var(--font-ui); color: var(--ink-2); text-decoration: none; }
 .formula-sheet .sheet-tag:hover { text-decoration: underline; }
-.crumb-link { font-family: var(--font-ui); font-size: .9rem; color: inherit; }
+/* the key ideas & formulas page is a main destination: a button-like header link */
+.nav-key { font: 600 .9rem var(--font-ui); color: inherit; text-decoration: none; border: 1.5px solid currentColor; border-radius: 999px; padding: 3px 12px; white-space: nowrap; }
+.nav-key:hover { background: var(--panel-2); }
+@media (max-width: 560px) { .nav-key { font-size: .78rem; padding: 2px 9px; } }
 /* a check-box blank: its options sit side by side, each option's box and words kept together */
 .blank.pick { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; border: 0; background: none; min-width: 0; padding: 0; }
 .blank.pick .pick-opt { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; cursor: pointer; font-family: var(--font-ui); font-size: .95em; }

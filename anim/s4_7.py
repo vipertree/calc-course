@@ -77,12 +77,22 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(bad), run_time=0.8)
             self.play(Create(Cross(bad, stroke_color=TANGENT, scale_factor=0.9)), run_time=0.6)
             b.line(2)
-            ap = T(r"On the AP exam: show $\frac{0}{0}$ or $\frac{\infty}{\infty}$ first.", 40, SECANT).shift(DOWN * 1.9)
+            ap = T(r"On the AP exam: check the form first.", 40, SECANT).shift(DOWN * 1.9)
             self.play(FadeIn(ap), run_time=0.8)
+            b.line(3)
+            # Adder: 0/0 is scratch shorthand, never a value in a written answer
+            self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.5)
+            card = VGroup(VGroup(T("Scratch work:", 36, DIM), M(r"\frac{0}{0}", 44, DIM)).arrange(RIGHT, buff=0.3),
+                          VGroup(Cross(stroke_color=TANGENT).scale(0.3), T(r"never write ``$= \frac00$''", 34, TANGENT)).arrange(RIGHT, buff=0.3),
+                          T("Written answer:", 36),
+                          M(r"\lim_{x\to a} f(x) = 0 \text{ and } \lim_{x\to a} g(x) = 0, \text{ so } \lim_{x\to a}\frac{f(x)}{g(x)} = \lim_{x\to a}\frac{f'(x)}{g'(x)}", 38, DERIV)
+                          ).arrange(DOWN, buff=0.4).set_max_width(12.5)
+            self.play(FadeIn(card[0]), FadeIn(card[1]), run_time=0.8)
+            self.play(FadeIn(card[2]), Write(card[3]), run_time=1.4)
         self.clear()
 
         with self.beat("Close") as b:
-            steps = VGroup(T(r"1. Check the form: $\frac00$ or $\frac{\infty}{\infty}$?", 42), T("2. Differentiate the top and the bottom separately.", 42),
+            steps = VGroup(T(r"1. Check the form: do the top and bottom both go to $0$, or both to $\infty$?", 42), T("2. Differentiate the top and the bottom separately.", 42),
                            T("3. Take the new limit; repeat if it's still indeterminate.", 42)).arrange(DOWN, buff=0.5, aligned_edge=LEFT)
             for m in steps:
                 self.play(FadeIn(m, shift=RIGHT * 0.2), run_time=0.6)
@@ -90,10 +100,10 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A sine over x", r"Find $\displaystyle\lim_{x \to 0} \frac{\sin(3x)}{x}$.",
-                     [r"\lim_{x \to 0} \sin(3x) = 0,\ \ \lim_{x \to 0} x = 0:\ \ \frac00", r"\lim_{x \to 0} \frac{3\cos(3x)}{1}", r"= 3"], at=[1, 2, 3])
+                     [r"\lim_{x \to 0} \sin(3x) = 0 \text{ and } \lim_{x \to 0} x = 0,\ \text{so}", r"\lim_{x \to 0}\frac{\sin(3x)}{x} = \lim_{x \to 0} \frac{3\cos(3x)}{1}", r"= 3"], at=[1, 2, 3])
         self.example("Example 2: A log against a line", r"Find $\displaystyle\lim_{x \to \infty} \frac{\ln x}{x}$.",
-                     [r"\lim_{x \to \infty} \ln x = \infty,\ \ \lim_{x \to \infty} x = \infty:\ \ \frac{\infty}{\infty}", r"\lim_{x \to \infty} \frac{1/x}{1}", r"= 0"], at=[1, 2, 3])
+                     [r"\lim_{x \to \infty} \ln x = \infty \text{ and } \lim_{x \to \infty} x = \infty,\ \text{so}", r"\lim_{x \to \infty}\frac{\ln x}{x} = \lim_{x \to \infty} \frac{1/x}{1}", r"= 0"], at=[1, 2, 3])
         self.example("Example 3: Twice", r"Find $\displaystyle\lim_{x \to 0} \frac{e^x - 1 - x}{x^2}$.",
-                     [r"\text{top} \to 1 - 1 - 0 = 0,\ \ \text{bottom} \to 0:\ \ \frac00", r"\lim_{x \to 0} \frac{e^x - 1}{2x}",
-                      r"\text{still } \frac00", r"\lim_{x \to 0} \frac{e^x}{2} = \frac12"], at=[1, 2, 3, 4])
+                     [r"\lim_{x\to0}(e^x - 1 - x) = 0 \text{ and } \lim_{x\to0} x^2 = 0,\ \text{so}", r"\lim_{x \to 0} \frac{e^x - 1 - x}{x^2} = \lim_{x \to 0} \frac{e^x - 1}{2x}",
+                      r"\lim_{x\to0}(e^x - 1) = 0 \text{ and } \lim_{x\to0} 2x = 0,\ \text{so}", r"= \lim_{x \to 0} \frac{e^x}{2} = \frac12"], at=[1, 2, 3, 4])
         self.finish()

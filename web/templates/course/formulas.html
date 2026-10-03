@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Formula sheet · AP Calculus{% endblock %}
+{% block title %}Key ideas and formulas · AP Calculus{% endblock %}
 {% block main %}
-<div class="mathy formula-sheet"><h1>Formula sheet</h1>
-<p class="muted">Every formula and definition from the lessons, in one place, each with the topic it comes from.{% if graying %}
+<div class="mathy formula-sheet"><h1>Key ideas and formulas</h1>
+<p class="muted">Every key idea, definition and formula from the lessons, in one place, each with the topic it comes from.{% if graying %}
   Topics you haven't reached yet are grayed out, but they're all here.{% endif %}</p>
 {% for u in units %}
 <section class="unit-sheet" id="unit-{{ u.n }}">

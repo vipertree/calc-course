@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.7 | done | done | done | see git log |
 | 6.6 | done | done | done (FRQS = []) | see git log |
 | 6.5 | done | done | done | see git log |
 | 6.4 | done | done | done | see git log |

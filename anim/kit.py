@@ -214,7 +214,13 @@ class TranscriptScene(LessonScene):
         (calclib/videx.py copies every worked example into the guided notes)."""
         ref = ref if ref is not None else self.example_ref
         with self.beat(beat_name, think=not follow) as b:
-            head = problem if isinstance(problem, Mobject) else T(problem, 42)
+            if isinstance(problem, Mobject):
+                head = problem
+            elif len(re.sub(r"\$[^$]*\$", "xxxx", problem)) > 80:
+                # long word problems wrap onto lines instead of shrinking to fit one
+                head = T(wrap_tex(problem, 62), 40, tex_environment="flushleft")
+            else:
+                head = T(problem, 42)
             card = None
             if ref:
                 # the rule being practiced stays up in the top-right corner (Adder: 2.1's definition, 3.1's chain rule)
@@ -958,3 +964,22 @@ def ferris_wheel(radius=1.6, cars=8):
                   Line(ORIGIN, DOWN * (radius + 0.5) + RIGHT * radius * 0.6, color=INK, stroke_width=5))
     ground = Line(DOWN * (radius + 0.5) + LEFT * radius * 1.1, DOWN * (radius + 0.5) + RIGHT * radius * 1.1, color=SAND, stroke_width=6)
     return VGroup(hub, legs, ground, spokes, rim, gondolas)
+
+
+def clipped_plot(ax, f, x0, x1, ymax, color=FUNC, width=4, n=600):
+    """Plot y = f(x) on [x0, x1], dropping the parts with |y| > ymax and breaking the curve there (tan, sec, csc near
+    their asymptotes). Returns a VGroup of the separate branches."""
+    xs = np.linspace(x0, x1, n)
+    out, cur = VGroup(), []
+    for xv in xs:
+        with np.errstate(all="ignore"):
+            yv = f(xv)
+        if np.isfinite(yv) and abs(yv) <= ymax:
+            cur.append(ax.c2p(xv, yv))
+        else:
+            if len(cur) > 1:
+                out.add(VMobject(color=color, stroke_width=width).set_points_as_corners(cur))
+            cur = []
+    if len(cur) > 1:
+        out.add(VMobject(color=color, stroke_width=width).set_points_as_corners(cur))
+    return out

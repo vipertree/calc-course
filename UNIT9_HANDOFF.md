@@ -6,6 +6,8 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 
 ## Status
 
+Unit test: content/unit_9.py done (all of 9.1-9.9; 12 + 4 MCQ, 3 FRQs: calculator plane motion, polar, no-calculator parametric curve).
+
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 9.1 | done | done (ladybug, param_curve in kit) | done (FRQS = []) | see git log |

@@ -14,8 +14,9 @@ C = sp.Symbol("C")
 
 
 def tex(F):
-    return (sp.latex(F).replace(r"\log{", r"\ln{").replace(r"\operatorname{atan}", r"\arctan").replace(r"\operatorname{asin}", r"\arcsin")
-            .replace(r"\left|", "|").replace(r"\right|", "|"))
+    import re
+    t = (sp.latex(F).replace(r"\log{", r"\ln{").replace(r"\operatorname{atan}", r"\arctan").replace(r"\operatorname{asin}", r"\arcsin"))
+    return re.sub(r"\\ln\{\\left\(\\left\|\{(.+?)\}\\right\| \\right\)\}", r"\\ln|\1|", t)      # ln{(|x - 1|)} -> ln|x - 1|
 
 
 def plus_c(f, F):

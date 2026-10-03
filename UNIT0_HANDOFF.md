@@ -50,3 +50,11 @@ texlive-fonts-extra dvisvgm` (run `apt-get update` first; about 10 minutes).
 - Render every scene, then video-review and notes-review. Compile the PDFs (TikZ figures above).
 - Decide whether Unit 0 should be optional/collapsed on the course map (it currently shows first, like any unit; the map still
   opens Unit 1 for newcomers).
+
+## Whole-course verification (2026-10-03, with TeX installed)
+- `build.py --docs packet,quiz` compiles for every topic 0.1-10.15, and every unit test U0-U10 compiles.
+- `build.py --web` exports all 129 pages (topics + unit tests). Two fixes were needed: `\hline` in web tables (5.9) and
+  the TikZ `center` label key (8.6, 8.8, 8.12, U8).
+- `manage.py test course`: 49 of 51 pass. The two failures are `Video.*`, which need a rendered `1_1.mp4`/`.vtt`.
+  `AnswerKeys` now runs over every page (it was vacuous before, with nothing exported) and caught a complex-valued key in
+  7.9, fixed.

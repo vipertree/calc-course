@@ -104,6 +104,7 @@ def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=()
     if open:
         body.append(r"\addplot[open] coordinates {" + " ".join(f"({x},{y})" for x, y in open) + "};")
     for x, y, pos, text in labels:
+        pos = "anchor=center" if pos == "center" else pos      # TikZ has no bare "center" key
         body.append(rf"\node[{pos}, font=\footnotesize] at (axis cs:{x},{y}) {{{text}}};")
     body.append(extra)
     g = "" if grid else ", grid=none"

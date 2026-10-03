@@ -64,7 +64,8 @@ r4 = 2 * P - sp.Rational(4, 1000) * P**2
 r6 = sp.Rational(1, 2) * P * (1 - P / 600)
 r7 = sp.Rational(2, 10) * P - sp.Rational(1, 10000) * P**2
 s8, _ = logistic_solution(900, sp.Rational(3, 10), 100)
-t8 = sp.solve(sp.Eq(s8, 450), t)[0]
+t8 = sp.log(8) / sp.Rational(3, 10)                     # 1 + 8e^(-0.3t) = 2
+same("p8", [sp.simplify(s8.subs(t, t8))], [450])
 PRACTICE = [
     Item(r"$\frac{dP}{dt} = 0.3P\left(1 - \frac{P}{800}\right)$ and $P(0) = 50$. Find $\lim_{t\to\infty} P(t)$.", num(capacity(r1)), r"The carrying capacity, $800$.", work="1cm"),
     Item(r"For the same model, at what population is $P$ growing fastest?", num(fastest(r1)), r"$\frac L2 = 400$.", work="1cm"),

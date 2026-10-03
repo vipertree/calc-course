@@ -18,6 +18,13 @@ class Grading(TestCase):
         self.assertFalse(grading.check("2x+1", spec))
         self.assertTrue(grading.check("1/(2 sqrt(x))", {"kind": "expr", "value": "x**(-1/2)/2"}))
 
+    def test_antiderivatives_need_plus_c(self):
+        spec = {"kind": "expr", "value": "x**3/3 - 2*x + 5*log(abs(x)) + C", "var": "x"}
+        for g in ("x^3/3-2x+5ln|x|+C", r"x^3/3-2x+5\ln|x|+C", "x^3/3-2x+5ln|x|+7+C", "x^3/3 - 2x + 5ln(x) + C"):
+            self.assertTrue(grading.check(g, spec), g)
+        self.assertFalse(grading.check("x^3/3-2x+5ln|x|", spec))     # no + C
+        self.assertFalse(grading.check("x^3/3+C", spec))
+
     def test_equation_forms(self):
         spec = {"kind": "expr", "value": "6*x-9", "var": "x"}
         self.assertTrue(grading.check("y=6x-9", spec))

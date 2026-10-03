@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.8 | done | done | done (FRQS = []) | see git log |
 | 6.7 | done | done | done | see git log |
 | 6.6 | done | done | done (FRQS = []) | see git log |
 | 6.5 | done | done | done | see git log |
@@ -26,3 +27,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 - Always run `python3 build.py X.Y --no-pdf` (not just import): sympy key checks are collected and reported at the end of the build.
 - sympy leaves exp_polar in semicircle integrals; topic_6_5.py snaps values with nsimplify(N(e), [pi]) (`exact`). Reuse that pattern.
+- GRADER CHANGE (web/course/grading.py, with a test in course/tests.py Grading): an expr key containing the symbol C
+  (an antiderivative F + C) accepts any constant offset but requires the student to write + C; compares derivatives.
+  Also fixed parsing of "5ln|x|" (it used to become a product of letters). Grading/AnswerKeys tests pass; the other
+  course tests error the same way with and without the change (no exported site content in the cloud container).

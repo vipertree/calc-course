@@ -74,6 +74,7 @@ def to_sympy(text, var="x"):
         raise Unreadable(text)
     t = (t.replace("π", "pi").replace("√", "sqrt").replace("·", "*").replace("×", "*")
          .replace("−", "-"))
+    t = re.sub(r"(?<![a-z])(ln|log)\s*\|([^|]+)\|", r"\1(|\2|)", t)         # ln|x| -> ln(|x|), so the bars become abs() inside the call
     t = re.sub(r"\|([^|]+)\|", r"abs(\1)", t)
     # decimals written with a leading dot: .5 -> 0.5
     t = re.sub(r"(?<![\d.])\.(\d)", r"0.\1", t)
@@ -165,6 +166,30 @@ def check_expr(given, spec):
     want = to_sympy(spec["value"], var)
     solved = _solve_for_y(given, var)
     got = solved if solved is not None else to_sympy(given, var)
+    C = sp.Symbol("C")
+    if C in want.free_symbols:
+        # an antiderivative "F + C": any constant offset is right, as long as the student wrote the + C (Unit 6)
+        if C not in got.free_symbols:
+            return False
+        xp = sp.Symbol(var, positive=True)          # positive, so d/dx ln|x| is 1/x; the check points below are positive anyway
+        pos = {s: xp for s in (want.free_symbols | got.free_symbols) if s.name == var}
+        dg = sp.diff(got.subs(C, 0).subs(pos), xp)
+        dw = sp.diff(want.subs(C, 0).subs(pos), xp)
+        xs = [xp]
+        try:
+            if sp.simplify(dg - dw) == 0:
+                return True
+        except Exception:  # noqa: BLE001
+            pass
+        rng = random.Random(7)
+        for _ in range(8):
+            pt = {s: sp.Rational(rng.randint(3, 97), 17) for s in xs}
+            try:
+                if abs(_num(dg.subs(pt)) - _num(dw.subs(pt))) > 1e-7 * max(1, abs(_num(dw.subs(pt)))):
+                    return False
+            except Exception:  # noqa: BLE001
+                return False
+        return True
     if got.free_symbols - want.free_symbols:
         return False
     try:

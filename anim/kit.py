@@ -733,3 +733,27 @@ def cross_section(kind, p0, p1, color=ACCUM, squash=1.0):
         c, u = (p0 + p1) / 2, (p1 - p0) / 2
         shape = Polygon(*[c + np.cos(t) * u + np.sin(t) * h / 2 for t in np.linspace(0, PI, 32)])
     return shape.set_stroke(color, 3).set_fill(color, 0.35)
+
+
+def oblique(origin=ORIGIN, sx=1.0, sy=1.0, depth=(0.6, 0.42)):
+    """A map (x, y) -> screen point for a base region lying flat, seen from above and in front: x runs to the right,
+    y runs back into the page along the slanted `depth` direction. Cross sections then stand straight up (screen UP),
+    e.g. cross_section("square", P(x, g(x)), P(x, f(x)))."""
+    d = np.array([depth[0], depth[1], 0.0])
+    o = np.array(origin, dtype=float)
+    return lambda x, y: o + RIGHT * x * sx + d * y * sy
+
+
+def base_curve(P, f, a, b, color=FUNC, var="x", width=4):
+    """The curve y = f(x) (var="x") or x = f(y) (var="y") drawn flat in an oblique() view."""
+    if var == "x":
+        return ParametricFunction(lambda s: P(s, f(s)), t_range=[a, b, 0.01], color=color, stroke_width=width)
+    return ParametricFunction(lambda s: P(f(s), s), t_range=[a, b, 0.01], color=color, stroke_width=width)
+
+
+def oblique_axes(P, xr, yr, color=None):
+    """Thin x and y axes in an oblique() view, with labels."""
+    color = color or DIM
+    xa = Arrow(P(xr[0], 0), P(xr[1], 0), buff=0, color=color, stroke_width=2, tip_length=0.18)
+    ya = Arrow(P(0, yr[0]), P(0, yr[1]), buff=0, color=color, stroke_width=2, tip_length=0.18)
+    return VGroup(xa, ya, M("x", 28, color).next_to(xa.get_end(), RIGHT, buff=0.08), M("y", 28, color).next_to(ya.get_end(), UR, buff=0.05))

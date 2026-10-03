@@ -19,6 +19,7 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 | 10.9 | done | done | done (FRQS = []) | see git log |
 | 10.10 | done | done | done (FRQS = []) | see git log |
 | 10.11 | done | done | done (FRQS = []) | see git log |
+| 10.12 | done | done | done (Taylor polynomial FRQ with Lagrange bound) | see git log |
 
 ## Notes for the merging agent
 

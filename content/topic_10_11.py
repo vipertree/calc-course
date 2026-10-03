@@ -76,7 +76,7 @@ MCQS = [
     MCQ(r"The third-degree Maclaurin polynomial for $\frac{1}{1 + x}$ is", [r"$1 + x + x^2 + x^3$", r"$1 - x + x^2 - x^3$", r"$1 - x + \frac{x^2}{2} - \frac{x^3}{6}$", r"$x - \frac{x^2}{2} + \frac{x^3}{3}$"], "B", r"$f^{(k)}(0) = (-1)^k k!$."),
     MCQ(r"If $P_2(x) = 1 + 3x - x^2$ is the second-degree Maclaurin polynomial for $f$, then $f'(0) + f''(0) = $", [r"$2$", r"$-2$", r"$5$", r"$1$"], "D", r"$f'(0) = 3$, $f''(0) = 2!(-1) = -2$."),
     MCQ(r"The second-degree Taylor polynomial for $\ln x$ about $x = 2$ is", [r"$\ln 2 + \frac12(x - 2) - \frac18(x - 2)^2$", r"$\ln 2 + \frac12(x - 2) - \frac14(x - 2)^2$", r"$\frac12(x - 2) - \frac18(x - 2)^2$", r"$\ln 2 + 2(x - 2) - 4(x - 2)^2$"], "A", r"$f'' (2) = -\frac14$, divided by $2!$."),
-    MCQ(r"The second-degree Maclaurin polynomial for $e^{\sin x}$ is $1 + x + \frac{x^2}{2}$. Using it, $e^{\sin 0.2} \approx$", [r"$1.200$", r"$1.221$", rf"${_m4:.3f}$", r"$1.180$"], "C", rf"$1 + 0.2 + 0.02 = {_m4:.2f}$.", calc=True),
+    MCQ(r"The second-degree Maclaurin polynomial for $e^{\sin x}$ is $1 + x + \frac{x^2}{2}$. Using it, $e^{\sin 0.2} \approx$", [r"$1.200$", r"$1.240$", rf"${_m4:.3f}$", r"$1.180$"], "C", rf"$1 + 0.2 + 0.02 = {_m4:.2f}$.", calc=True),
 ]
 same("m", [taylor(1 / (1 + x), 0, 3), taylor(sp.exp(sp.sin(x)), 0, 2)], [1 - x + x**2 - x**3, 1 + x + x**2 / 2])
 

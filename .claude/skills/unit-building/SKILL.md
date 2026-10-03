@@ -34,7 +34,14 @@ exports, so a new topic needs no registration beyond its files.
    Half-edited stems ("... more precisely"), placeholder expressions and `.replace()` on step strings (videx needs plain
    literals) have all slipped into drafts before. Board prose lines start with `TEXT:` (never `\text{TEXT:...}`), and
    `Table(latex, spec, header=...)` takes a LaTeX tabular body, not Python lists.
-6. **Commit and push per topic**, with a message saying what's in it and that it isn't rendered.
+6. **Compile the PDFs when you can.** TeX installs in a cloud container (`apt-get update`, then `apt-get install -y
+   --no-install-recommends texlive-latex-base texlive-pictures texlive-xetex texlive-latex-extra texlive-fonts-extra
+   dvisvgm`, about 10 minutes); then `python3 build.py X.Y --preview` and look at the figure pages. `--no-pdf` checks
+   keys but never runs LaTeX, which is how 52 topics shipped notes that could not compile (fixed in `latex.py`).
+7. **Commit and push per topic**, with a message saying what's in it and that it isn't rendered.
+
+Solution sets of trig equations: check every keyed angle exactly and the count with a numeric root scan
+(`roots()` in `content/topic_0_6.py`); `sympy.solveset` silently drops roots of some trig quadratics.
 
 ## The unit test
 

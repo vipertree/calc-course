@@ -842,3 +842,20 @@ def lighthouse(height=1.6):
                                stroke_width=0, fill_color=TANGENT, fill_opacity=1) for k in range(4)])
     lamp = Circle(radius=w * 0.3, stroke_width=0, fill_color="#F6C945", fill_opacity=1).move_to([0, height + w * 0.2, 0])
     return VGroup(tower, stripes, lamp)
+
+
+def polar_region(ax, f, t0, t1, inner=None, color=AREA, opacity=0.45, n=120):
+    """The region swept by r = f(theta) for t0 <= theta <= t1 (from the origin, or from r = inner(theta))."""
+    s = np.linspace(t0, t1, n)
+    outer = [ax.c2p(f(v) * np.cos(v), f(v) * np.sin(v)) for v in s]
+    if inner is None:
+        pts = [ax.c2p(0, 0)] + outer
+    else:
+        pts = outer + [ax.c2p(inner(v) * np.cos(v), inner(v) * np.sin(v)) for v in s[::-1]]
+    return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def polar_wedge(ax, f, t, dt, color=SECANT, opacity=0.7):
+    """A thin sector from the origin at angle t, width dt, radius f(t)."""
+    r = f(t)
+    return Polygon(ax.c2p(0, 0), ax.c2p(r * np.cos(t), r * np.sin(t)), ax.c2p(r * np.cos(t + dt), r * np.sin(t + dt)), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity)

@@ -6,32 +6,6 @@ from kit import *
 from style import *
 
 
-def sections(P, top, bot, xs, kind, squash=1.0, color=ACCUM, var="x"):
-    """Cross sections standing on the base segments at each x in xs (or each y, for var="y")."""
-    out = VGroup()
-    for v in xs:
-        if var == "x":
-            p0, p1 = P(v, bot(v)), P(v, top(v))
-        else:
-            p0, p1 = P(bot(v), v), P(top(v), v)
-        out.add(cross_section(kind, p0, p1, color=color, squash=squash))
-    return out
-
-
-def base_region(P, top, bot, a, b, var="x", color=AREA, opacity=0.35, n=60):
-    s = np.linspace(a, b, n)
-    if var == "x":
-        pts = [P(v, top(v)) for v in s] + [P(v, bot(v)) for v in s[::-1]]
-    else:
-        pts = [P(top(v), v) for v in s] + [P(bot(v), v) for v in s[::-1]]
-    return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
-
-
-def rect_section(p0, p1, height, color=ACCUM):
-    """A rectangle standing up on p0-p1 with the given screen height."""
-    return Polygon(p0, p1, p1 + UP * height, p0 + UP * height).set_stroke(color, 3).set_fill(color, 0.35)
-
-
 class Lesson(TranscriptScene):
     NUM = "8.7"
 

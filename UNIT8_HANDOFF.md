@@ -15,6 +15,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | 8.5 | done | done | done (FRQS = []) | see git log |
 | 8.6 | done | done | done (area FRQ: regions R and S, net vs total, dividing line) | see git log |
 | 8.7 | done | done (oblique(), base_curve(), oblique_axes() added to kit) | done (FRQS = []) | see git log |
+| 8.8 | done | done (sections/base_region/rect_section moved to kit; isosceles_hyp kind) | done (area + cross-section FRQ) | see git log |
 
 ## Notes for the merging agent
 

@@ -717,7 +717,7 @@ def solid_of_revolution(ax, r_out, a, b, r_in=None, axis_y=0.0, n=9, color=ACCUM
 def cross_section(kind, p0, p1, color=ACCUM, squash=1.0):
     """One cross section standing straight up (screen UP) on the base segment p0-p1 (screen points, e.g. the two ends
     of a slice of a base region drawn in an oblique view). kind: "square", "rectangle2" (height twice the base),
-    "equilateral", "isosceles_right" (a leg on the base), or "semicircle" (diameter on the base).
+    "equilateral", "isosceles_right" (a leg on the base), "isosceles_hyp" (the hypotenuse on the base), or "semicircle" (diameter on the base).
     squash scales heights to suit the view."""
     p0, p1 = np.array(p0, dtype=float), np.array(p1, dtype=float)
     s = np.linalg.norm(p1 - p0)
@@ -729,6 +729,8 @@ def cross_section(kind, p0, p1, color=ACCUM, squash=1.0):
         shape = Polygon(p0, p1, (p0 + p1) / 2 + 0.866 * h)
     elif kind == "isosceles_right":
         shape = Polygon(p0, p1, p0 + h)
+    elif kind == "isosceles_hyp":            # hypotenuse on the base, right angle on top
+        shape = Polygon(p0, p1, (p0 + p1) / 2 + h / 2)
     else:
         c, u = (p0 + p1) / 2, (p1 - p0) / 2
         shape = Polygon(*[c + np.cos(t) * u + np.sin(t) * h / 2 for t in np.linspace(0, PI, 32)])
@@ -757,3 +759,29 @@ def oblique_axes(P, xr, yr, color=None):
     xa = Arrow(P(xr[0], 0), P(xr[1], 0), buff=0, color=color, stroke_width=2, tip_length=0.18)
     ya = Arrow(P(0, yr[0]), P(0, yr[1]), buff=0, color=color, stroke_width=2, tip_length=0.18)
     return VGroup(xa, ya, M("x", 28, color).next_to(xa.get_end(), RIGHT, buff=0.08), M("y", 28, color).next_to(ya.get_end(), UR, buff=0.05))
+
+
+def sections(P, top, bot, xs, kind, squash=1.0, color=ACCUM, var="x"):
+    """Cross sections (cross_section kinds) standing on the base segments at each x in xs (or each y, for var="y")."""
+    out = VGroup()
+    for v in xs:
+        if var == "x":
+            p0, p1 = P(v, bot(v)), P(v, top(v))
+        else:
+            p0, p1 = P(bot(v), v), P(top(v), v)
+        out.add(cross_section(kind, p0, p1, color=color, squash=squash))
+    return out
+
+
+def base_region(P, top, bot, a, b, var="x", color=AREA, opacity=0.35, n=60):
+    s = np.linspace(a, b, n)
+    if var == "x":
+        pts = [P(v, top(v)) for v in s] + [P(v, bot(v)) for v in s[::-1]]
+    else:
+        pts = [P(top(v), v) for v in s] + [P(bot(v), v) for v in s[::-1]]
+    return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def rect_section(p0, p1, height, color=ACCUM):
+    """A rectangle standing up on p0-p1 with the given screen height."""
+    return Polygon(p0, p1, p1 + UP * height, p0 + UP * height).set_stroke(color, 3).set_fill(color, 0.35)

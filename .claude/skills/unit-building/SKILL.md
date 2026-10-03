@@ -30,7 +30,11 @@ exports, so a new topic needs no registration beyond its files.
    FRQ; follow the ap-frq skill), and `TOPIC = Topic(...)`. Verify every keyed answer with sympy via `same(...)`,
    `close(...)` or asserts in the module, so a wrong key fails at import. `python3 -c "import content.topic_X_Y"`
    and `python3 build.py X.Y --no-pdf` must pass.
-5. **Commit and push per topic**, with a message saying what's in it and that it isn't rendered.
+5. **Before committing, grep the new files for draft debris**: `grep -nE "if False|or True|\.\.\.|\* 0 \+|\.replace\(" anim/sX_Y.py content/topic_X_Y.py`.
+   Half-edited stems ("... more precisely"), placeholder expressions and `.replace()` on step strings (videx needs plain
+   literals) have all slipped into drafts before. Board prose lines start with `TEXT:` (never `\text{TEXT:...}`), and
+   `Table(latex, spec, header=...)` takes a LaTeX tabular body, not Python lists.
+6. **Commit and push per topic**, with a message saying what's in it and that it isn't rendered.
 
 ## The unit test
 
@@ -43,7 +47,9 @@ structure. Build with `python3 build.py UX --no-pdf`.
 - Colors in scenes: FUNC (f), SECANT (average rate), TANGENT (instantaneous), AREA, ACCUM (accumulation
   functions), DERIV (f'). Unit 6 onward: shade area with AREA, accumulation functions in ACCUM.
 - kit helpers: `plot_axes`, `table`, `sign_chart` / `staged_chart` + `reveal_sign` / `reveal_words` /
-  `mark_point`, `formula_box`, `nudge_arrow`, `callout`, scenery props. Reuse before writing new drawing code;
+  `mark_point`, `formula_box`, `nudge_arrow`, `callout`, scenery props; Unit 8 added `region`, `slice_rect`,
+  `solid_of_revolution` / `solid_about_vertical`, `oblique` + `base_curve` + `oblique_axes` + `base_region` +
+  `sections` / `cross_section` / `rect_section` for 3D-looking solids. Figures: `calclib.figs.region` shades regions. Reuse before writing new drawing code;
   add new shared helpers to kit with a docstring.
 - Numbers on boards in LaTeX with `\ ` spacing; `TEXT:` prefix for prose steps; `PART:` for multi-part reveals.
 - Keep each topic's video around 5-9 minutes; worked examples are where the length goes.

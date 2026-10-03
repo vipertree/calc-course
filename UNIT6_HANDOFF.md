@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.3 | done | done | done (FRQS = [], MCQ-only topic on AP) | see git log |
 | 6.2 | done | done (riemann_boxes helper in kit) | done | see git log |
 | 6.1 | done | done (water_tank helper in kit) | done | see git log |
 

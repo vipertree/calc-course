@@ -14,6 +14,7 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 | 10.4 | done | done | done (FRQS = []) | see git log |
 | 10.5 | done | done | done (FRQS = []) | see git log |
 | 10.6 | done | done | done (FRQS = []) | see git log |
+| 10.7 | done | done | done (FRQS = []) | see git log |
 
 ## Notes for the merging agent
 

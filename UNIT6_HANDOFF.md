@@ -14,7 +14,9 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.2 | done | done (riemann_boxes helper in kit) | done | see git log |
 | 6.1 | done | done (water_tank helper in kit) | done | see git log |
 
 ## Notes for the merging agent
 
+- Always run `python3 build.py X.Y --no-pdf` (not just import): sympy key checks are collected and reported at the end of the build.

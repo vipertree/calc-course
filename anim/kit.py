@@ -621,3 +621,18 @@ def water_tank(width=2.2, height=3.0):
         h = max(level, 0.002) * (height - 0.08)
         return Rectangle(width=width - 0.08, height=h, stroke_width=0, fill_color=WATER, fill_opacity=0.85).align_to(glass, DOWN).shift(UP * 0.04)
     return group, water
+
+
+def riemann_boxes(ax, f, edges, kind="left", color=AREA, opacity=0.45):
+    """Riemann rectangles (kind "left", "right" or "mid") or trapezoids (kind "trap") on the partition `edges`, which may
+    be uneven. Heights may be negative; each shape is drawn between the curve sample and the axis."""
+    out = VGroup()
+    for a, b in zip(edges, edges[1:]):
+        if kind == "trap":
+            pts = [ax.c2p(a, 0), ax.c2p(b, 0), ax.c2p(b, f(b)), ax.c2p(a, f(a))]
+        else:
+            s = {"left": a, "right": b, "mid": (a + b) / 2}[kind]
+            h = f(s)
+            pts = [ax.c2p(a, 0), ax.c2p(b, 0), ax.c2p(b, h), ax.c2p(a, h)]
+        out.add(Polygon(*pts, stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity))
+    return out

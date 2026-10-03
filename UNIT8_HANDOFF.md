@@ -19,6 +19,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | 8.9 | done | done (solid_about_vertical in kit) | done (FRQS = []) | see git log |
 | 8.10 | done | done | done (FRQS = []) | see git log |
 | 8.11 | done | done | done (FRQS = []) | see git log |
+| 8.12 | done | done | done (full area and volume FRQ) | see git log |
 
 ## Notes for the merging agent
 

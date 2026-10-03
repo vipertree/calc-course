@@ -198,8 +198,10 @@ class TranscriptScene(LessonScene):
         self.wait(1.2)
         self.play(FadeOut(card), run_time=0.6)
 
+    example_ref = None    # a formula (MathTex string) kept in the corner during worked examples, e.g. the chain rule
+
     def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
-                follow=False):
+                follow=False, ref=None):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
@@ -208,15 +210,25 @@ class TranscriptScene(LessonScene):
         rather than try, so no "Pause and try it" cue and no think pause (Adder, 2026-10-02).
         text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
+        ref = ref if ref is not None else self.example_ref
         with self.beat(beat_name, think=not follow) as b:
             head = problem if isinstance(problem, Mobject) else T(problem, 42)
-            head.set_max_width(12.5).to_edge(UP, buff=0.5)
-            self.play(FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
+            card = None
+            if ref:
+                # the rule being practiced stays up in the top-right corner (Adder: 2.1's definition, 3.1's chain rule)
+                card = formula_box(M(ref, 30), DERIV).set_max_width(3.9).to_corner(UR, buff=0.3)
+                head.set_max_width(12.5 - card.width - 0.4).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.5)
+                self.play(FadeIn(card), FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
+            else:
+                head.set_max_width(12.5).to_edge(UP, buff=0.5)
+                self.play(FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
             if figure is not None:
                 # below the problem, never on it: shrink to the room that's left
-                room = head.get_bottom()[1] - 0.35 - (-3.7)
+                room = min(head.get_bottom()[1], card.get_bottom()[1] if card else 9) - 0.35 - (-3.7)
                 figure.set_max_height(min(5.2, room)).set_max_width(6.2)
                 figure.next_to(head, DOWN, buff=0.35).to_edge(RIGHT, buff=0.4)
+                if card is not None:
+                    figure.next_to(card, DOWN, buff=0.3).to_edge(RIGHT, buff=0.4)
                 if figure_at is None:
                     self.play(FadeIn(figure), run_time=0.8)
             # the think pause: a cue while the problem sits alone on screen, gone when the solving starts

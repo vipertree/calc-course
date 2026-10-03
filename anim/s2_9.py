@@ -74,15 +74,27 @@ class Lesson(TranscriptScene):
             board[0].next_to(e2, DOWN, buff=0.5).align_to(e1, LEFT)
             self.play(Write(board[0]), run_time=1)
             b.line(2)
-            steps = [r"Q' = \frac{f' - Q\,g'}{g}", r"= \frac{f' - \frac{f}{g}\,g'}{g}", r"= \frac{f'\,g - f\,g'}{g^2}"]
-            for i, s in enumerate(steps):
-                if i == 1:
-                    b.line(3)
-                if i == 2:
-                    b.line(4)
-                m = M(s, 46, DERIV if i == 2 else INK).next_to(board[-1], DOWN, buff=0.3).align_to(e1, LEFT)
+            m = M(r"Q' = \frac{f' - Q\,g'}{g}", 46).next_to(board[-1], DOWN, buff=0.3).align_to(e1, LEFT)
+            board.add(m)
+            self.play(Write(m), run_time=1)
+            # slow down here: how could we express Q? (Adder)
+            b.line(3)
+            # make room: the setup lines leave and the work slides up
+            self.play(FadeOut(e1), FadeOut(e2), board.animate.shift(UP * (e1.get_top()[1] - board.get_top()[1])), run_time=0.8)
+            ask = M(r"Q = \,?", 44, SECANT).next_to(board, LEFT, buff=0.8)
+            self.play(FadeIn(ask), run_time=0.6)
+            b.line(4)
+            ans = M(r"Q\,g = f, \text{ so } Q = \frac{f}{g}", 40, SECANT).move_to(ask, aligned_edge=RIGHT)
+            self.play(ReplacementTransform(ask, ans), run_time=1)
+            b.line(5)
+            for s in (r"= \frac{f' - \frac{f}{g}\,g'}{g}", r"= \frac{f' - \frac{f}{g}\,g'}{g}\cdot\frac{g}{g}"):
+                m = M(s, 46).next_to(board[-1], DOWN, buff=0.3).align_to(e1, LEFT)
                 board.add(m)
                 self.play(Write(m), run_time=1)
+            b.line(6)
+            m = M(r"= \frac{f'\,g - f\,g'}{g^2}", 46, DERIV).next_to(board[-1], DOWN, buff=0.3).align_to(e1, LEFT)
+            board.add(m)
+            self.play(Write(m), run_time=1)
         self.clear()
         self.remove(r)
 

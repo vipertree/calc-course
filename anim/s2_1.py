@@ -282,13 +282,13 @@ class Lesson(TranscriptScene):
                       r"= \lim_{h\to0}\frac{60 + 60h - 12 - 24h - 12h^2 - 48}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{60} + 60h - \cancel{12} - 24h - 12h^2 - \cancel{48}}{h} = \lim_{h\to0}\frac{36h - 12h^2}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{h}(36 - 12h)}{\cancel{h}}", r"= \lim_{h\to0}(36 - 12h) = 36 \text{ m/s}",
-                      r"TEXT:The velocity at an instant is the limit of the average velocities around it."], at=[1, 2, 3, 4, 5, 6])
+                      r"TEXT:The velocity at an instant is the limit of the average velocities around it."], at=[1, 2, 3, 4, 5, 6], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
         self.example("The h form", r"Let $f(x) = x^2$. Use the definition to find $f'(3)$.",
                      [r"f'(3) = \lim_{h\to0}\frac{(3 + h)^2 - 9}{h}", r"= \lim_{h\to0}\frac{\cancel{9} + 6h + h^2 - \cancel{9}}{h}",
-                      r"= \lim_{h\to0}\frac{\cancel{h}(6 + h)}{\cancel{h}}", r"= \lim_{h\to0}(6 + h) = 6"], at=[1, 2, 3, 4])
+                      r"= \lim_{h\to0}\frac{\cancel{h}(6 + h)}{\cancel{h}}", r"= \lim_{h\to0}(6 + h) = 6"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
         self.example("The x to a form", r"Let $g(x) = \dfrac{1}{x}$. Use the $x \to a$ form of the definition to find $g'(2)$.",
                      [r"g'(2) = \lim_{x\to2}\frac{\frac1x - \frac12}{x - 2} = \lim_{x\to2}\frac{\frac{2 - x}{2x}}{x - 2}", r"= \lim_{x\to2}\frac{2 - x}{2x(x - 2)}",
-                      r"= \lim_{x\to2}\frac{-\cancel{(x - 2)}}{2x\cancel{(x - 2)}}", r"= \lim_{x\to2}\left(-\frac{1}{2x}\right) = -\frac14"], at=[1, 2, 3, 4])
+                      r"= \lim_{x\to2}\frac{-\cancel{(x - 2)}}{2x\cancel{(x - 2)}}", r"= \lim_{x\to2}\left(-\frac{1}{2x}\right) = -\frac14"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{x\to a}\frac{f(x) - f(a)}{x - a}")
 
         # ---------------------------------------------------------------- worked examples
         self.examples_card()
@@ -302,9 +302,9 @@ class Lesson(TranscriptScene):
         self.example("Example 2: A derivative from the definition", r"Use the definition to find $f'(2)$ for $f(x) = x^2 + 3x$.",
                      [r"f'(2) = \lim_{h\to0}\frac{(2 + h)^2 + 3(2 + h) - 10}{h}", r"= \lim_{h\to0}\frac{4 + 4h + h^2 + 6 + 3h - 10}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{4} + 4h + h^2 + \cancel{6} + 3h - \cancel{10}}{h} = \lim_{h\to0}\frac{7h + h^2}{h}",
-                      r"= \lim_{h\to0}\frac{\cancel{h}(7 + h)}{\cancel{h}}", r"= \lim_{h\to0}(7 + h) = 7"], at=[1, 2, 3, 4, 5])
+                      r"= \lim_{h\to0}\frac{\cancel{h}(7 + h)}{\cancel{h}}", r"= \lim_{h\to0}(7 + h) = 7"], at=[1, 2, 3, 4, 5], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
         self.example("Example 3: Reading a limit as a derivative",
                      r"$\displaystyle\lim_{h\to0}\frac{(3 + h)^3 - 27}{h}$ is $f'(a)$ for some $f$ and $a$. Find $f$, $a$, and the value.",
                      [r"f(x) = x^3, \quad a = 3, \quad f(3) = 27", r"\lim_{h\to0}\frac{\cancel{27} + 27h + 9h^2 + h^3 - \cancel{27}}{h}",
-                      r"= \lim_{h\to0}\frac{\cancel{h}(27 + 9h + h^2)}{\cancel{h}}", r"= \lim_{h\to0}(27 + 9h + h^2) = 27"], at=[1, 2, 3, 4])
+                      r"= \lim_{h\to0}\frac{\cancel{h}(27 + 9h + h^2)}{\cancel{h}}", r"= \lim_{h\to0}(27 + 9h + h^2) = 27"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
         self.finish()

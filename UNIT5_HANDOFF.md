@@ -30,13 +30,17 @@ video-review passes.
 1. Add the usual "little Latin lesson": extremum/extrema, minimum/minima, maximum/maxima. In English we often say
    minimums, maximums, or extreme values, but you'll see the Latinate forms; extrema = any plural of mins and maxes.
 2. (standing note) factoring steps in "Find the critical points" and Example 1 broken out.
+3. EVT failures: slow down and show graphically. For the open interval (approaching a value with no function value
+   at the endpoint), zoom in and show it gets closer and closer but never reaches it, so no max. Same care for the
+   one that shoots off to infinity.
+4. Define critical points very clearly: f' = 0 or f' undefined.
 
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
-| 5.2 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.2 | 1-4 above | done (transcript, scene, notes); not rendered | see git log |
 
 ## Notes for the merging agent
 
@@ -51,3 +55,9 @@ video-review passes.
 
 - 5.2 scene: new beat "A little Latin" (table of singular/plural, between "Absolute and relative" and the EVT).
   "Find the critical points" and Example 1 now write one factoring step per line.
+- 5.2 EVT split into three beats: "The Extreme Value Theorem" (box, underlines on [a, b] and "continuous"),
+  "No endpoint, no maximum" (three nested zoom panels of y = x near the open circle at 1: windows [0,1.25],
+  [0.9,1.025], [0.99,1.0025], dot at 0.9/0.99/0.999, box-and-connector insets), "Off to infinity" (1/x, a dot
+  climbing the right branch, table x = 0.1/0.01/0.001). Check the inset boxes land on the open circle and the
+  connector lines don't cross labels. "Critical points" now ends with a boxed definition at the bottom; the row of
+  three mini-graphs moved to the top edge to make room.

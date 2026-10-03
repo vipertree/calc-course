@@ -35,11 +35,16 @@ class Lesson(TranscriptScene):
             R, O = 2.0, LEFT * 4 + DOWN * 0.3
             th = 0.9
             circ = Circle(radius=R, color=DIM).move_to(O)
+            # x and y axes through the center, a little past the circle, so it clearly sits on the coordinate plane
+            axes = VGroup(Arrow(O + LEFT * (R + 0.5), O + RIGHT * (R + 0.6), color=DIM, buff=0, stroke_width=2, max_tip_length_to_length_ratio=0.04),
+                          Arrow(O + DOWN * (R + 0.5), O + UP * (R + 0.6), color=DIM, buff=0, stroke_width=2, max_tip_length_to_length_ratio=0.04))
+            axl = VGroup(M("x", 28, DIM).next_to(axes[0].get_end(), DOWN, buff=0.1), M("y", 28, DIM).next_to(axes[1].get_end(), LEFT, buff=0.1))
             P = O + R * np.array([np.cos(th), np.sin(th), 0])
             pts = VGroup(Line(O, P, color=INK), DashedLine(P, np.array([P[0], O[1], 0]), color=SECANT), DashedLine(np.array([P[0], O[1], 0]), O, color=DERIV), Dot(P, color=INK))
             labs = VGroup(M(r"\sin\theta", 32, SECANT).next_to(np.array([P[0], (P[1] + O[1]) / 2, 0]), RIGHT, buff=0.1),
                           M(r"\cos\theta", 32, DERIV).next_to(np.array([(P[0] + O[0]) / 2, O[1], 0]), DOWN, buff=0.15),
                           M(r"\theta", 30).move_to(O + 0.5 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+            self.play(Create(axes), FadeIn(axl), run_time=0.6)
             self.play(Create(circ), Create(pts), FadeIn(labs), run_time=1.4)
             rows = VGroup(M(r"\tan\theta = \frac{\sin\theta}{\cos\theta}", 40), M(r"\cot\theta = \frac{\cos\theta}{\sin\theta}", 40),
                           M(r"\sec\theta = \frac{1}{\cos\theta}", 40), M(r"\csc\theta = \frac{1}{\sin\theta}", 40)).arrange(DOWN, buff=0.35, aligned_edge=LEFT).to_edge(RIGHT, buff=1.4)
@@ -62,7 +67,8 @@ class Lesson(TranscriptScene):
             b.line(2)
             board.write(self, r"= \frac{\cos^2 x + \sin^2 x}{\cos^2 x}")
             b.line(3)
-            board.write(self, r"= \frac{1}{\cos^2 x} = \sec^2 x", color=DERIV)
+            pyth = board.write(self, r"= \frac{1}{\cos^2 x} = \sec^2 x", color=DERIV)
+            self.play(FadeIn(T(r"Pythagorean identity: $\sin^2 x + \cos^2 x = 1$", 30, SECANT).next_to(pyth, RIGHT, buff=0.6)), run_time=0.6)
         self.clear()
 
         R, O = 2.0, LEFT * 4.6 + DOWN * 1.8

@@ -33,8 +33,8 @@ NOTES = [
     Text(r"A bakery sells cookies at a steady \blank{$24$ cookies per hour}, and each cookie earns 3 dollars. Its income grows at "
          r"\[ \frac{3\text{ dollars}}{\text{cookie}}\cdot\frac{24\text{ cookies}}{\text{hour}} = \mblank{72}\text{ dollars per hour.} \] "
          r"The cookies cancel, the way units do. One rate feeds the next."),
-    Text(r"In derivative notation, with $D$ dollars, $c$ cookies and $t$ hours: "
-         r"\[ \frac{dD}{dt} = \frac{dD}{dc}\cdot\frac{dc}{dt} = 3\cdot 24 = 72. \]"),
+    Text(r"In derivative notation, with $\$$ for dollars, $c$ for cookies and $t$ for hours: "
+         r"\[ \frac{d\$}{dt} = \frac{d\$}{dc}\cdot\frac{dc}{dt} = 3\cdot 24 = 72. \]"),
 
     Section("When the rates change: the nudge picture"),
     Text(r"Now let $y$ depend on $u$, and $u$ depend on $x$. Nudge $x$ by $dx$. Then $u$ moves by about "
@@ -59,7 +59,8 @@ NOTES = [
         r"The derivative of the outside, evaluated at the \blank{inside}, times the derivative of the inside. This version says exactly "
         r"where $f'$ is measured. \par Naming the inside $u = g(x)$ (a function of $x$) gives the short form to remember: \[ \big[f(u)\big]' = \mblank{f'(u)\cdot u'}. \]")),
     Example("A power of a polynomial", r"Find \[ \frac{d}{dx}\left[(x^2 + 1)^3\right], \] and check it at $x = 1$.",
-            r"Outside $f(u) = u^3$, inside $g(x) = x^2 + 1$: $3(x^2 + 1)^2\cdot 2x = 6x(x^2+1)^2$. At $x = 1$: $6\cdot 4 = 24$, as above.",
+            r"The inside is $u = x^2 + 1$, so $u' = 2x$. The outside is $u^3$: \[ \frac{d}{dx}u^3 = 3u^2\cdot u' = 3(x^2 + 1)^2\cdot 2x = 6x(x^2+1)^2. \] "
+            r"At $x = 1$: $6\cdot 4 = 24$, as above.",
             work="2.4cm", beat="The trap"),
     VideoExample('Trig and exponential', work="2.2cm"),
     VideoExample('A root', work="2.4cm"),

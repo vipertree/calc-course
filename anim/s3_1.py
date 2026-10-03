@@ -16,7 +16,7 @@ class Lesson(TranscriptScene):
     NUM = "3.1"
 
     def bakery(self):
-        dials = VGroup(dial("t", "hours", DIM), dial("c", "cookies", SECANT), dial("D", "dollars", DERIV)).arrange(RIGHT, buff=2.6)
+        dials = VGroup(dial("t", "hours", DIM), dial("c", "cookies", SECANT), dial(r"\$", "dollars", DERIV)).arrange(RIGHT, buff=2.6)
         arrows = VGroup(Arrow(dials[0][0].get_right(), dials[1][0].get_left(), color=INK, buff=0.15), Arrow(dials[1][0].get_right(), dials[2][0].get_left(), color=INK, buff=0.15))
         return dials, arrows
 
@@ -63,11 +63,11 @@ class Lesson(TranscriptScene):
             self.play(GrowArrow(arrows[0]), GrowArrow(arrows[1]), run_time=0.8)
             b.line(1)
             r1 = M(r"\frac{dc}{dt} = 24", 40, SECANT).next_to(arrows[0], DOWN, buff=0.3)
-            r2 = M(r"\frac{dD}{dc} = 3", 40, DERIV).next_to(arrows[1], DOWN, buff=0.3)
+            r2 = M(r"\frac{d\$}{dc} = 3", 40, DERIV).next_to(arrows[1], DOWN, buff=0.3)
             self.play(Write(r1), run_time=0.8)
             self.play(Write(r2), run_time=0.8)
             b.line(2)
-            tot = M(r"\frac{dD}{dt} = \frac{dD}{", r"dc", r"}\cdot\frac{", r"dc", r"}{dt} = 3 \cdot 24 = 72", 52).shift(DOWN * 2.2)
+            tot = M(r"\frac{d\$}{dt} = \frac{d\$}{", r"dc", r"}\cdot\frac{", r"dc", r"}{dt} = 3 \cdot 24 = 72", 52).shift(DOWN * 2.2)
             self.play(Write(tot), run_time=1.4)
             b.line(3)
             self.play(Indicate(tot[1], color=TANGENT), Indicate(tot[3], color=TANGENT), run_time=1.2)
@@ -161,10 +161,15 @@ class Lesson(TranscriptScene):
             uform = formula_box(M(r"u = g(x):\qquad \big[f(u)\big]' = f'(u)\cdot u'", 48), DERIV).next_to(words, DOWN, buff=0.4)
             self.play(FadeIn(uform), run_time=1)
         self.clear()
+        # the chain rule stays in the corner through the worked examples (Adder, 3.1 note AO)
+        self.example_ref = r"\frac{d}{dx}f(u) = f'(u)\cdot u'"
         self.example("Trig and exponential", r"Find (a) $\dfrac{d}{dx}\sin(3x)$ and (b) $\dfrac{d}{dx}e^{x^2}$.",
-                     [r"\text{(a) } u = 3x,\ u' = 3: \quad \cos(3x)\cdot 3 = 3\cos(3x)", r"\text{(b) } u = x^2,\ u' = 2x: \quad e^{x^2}\cdot 2x = 2xe^{x^2}"], at=[1, 2])
+                     [r"\text{(a) } \sin(\underbrace{3x}_{u})", r"u = 3x", r"u' = 3", r"\cos u\cdot u' = \cos(3x)\cdot 3 = 3\cos(3x)",
+                      r"\text{(b) } e^{\overbrace{x^2}^{u}}", r"u = x^2", r"u' = 2x", r"e^u\cdot u' = e^{x^2}\cdot 2x = 2xe^{x^2}"],
+                     at=[1, 2, 2, 3, 4, 5, 5, 6])
         self.example("A root", r"Find $\dfrac{d}{dx}\sqrt{1 + \cos x}$.",
-                     [r"u = 1 + \cos x, \quad u' = -\sin x", r"\left[\sqrt{u}\right]' = \frac{1}{2\sqrt{u}}\cdot u'", r"= \frac{1}{2\sqrt{1 + \cos x}}\cdot(-\sin x) = -\frac{\sin x}{2\sqrt{1 + \cos x}}"], at=[1, 2, 3])
+                     [r"\sqrt{\underbrace{1 + \cos x}_{u}}", r"u = 1 + \cos x", r"u' = -\sin x", r"\frac{d}{dx}\sqrt{u} = \frac{1}{2\sqrt{u}}\cdot u'",
+                      r"= \frac{1}{2\sqrt{1 + \cos x}}\cdot(-\sin x) = -\frac{\sin x}{2\sqrt{1 + \cos x}}"], at=[1, 2, 2, 3, 4])
 
         with self.beat("Close") as b:
             dials, arrows = self.bakery()
@@ -175,15 +180,19 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A fixed-rate chain", r"A car uses $\frac{1}{30}$ gallon per mile and drives 60 miles per hour. How fast is it using gas?",
-                     [r"\frac{1}{30}\,\frac{\text{gal}}{\text{mile}} \times 60\,\frac{\text{miles}}{\text{hr}}", r"= 2\ \frac{\text{gal}}{\text{hr}}"], at=[1, 2])
+                     [r"\frac{1}{30}\,\frac{\text{gal}}{\text{mile}} \times 60\,\frac{\text{miles}}{\text{hr}}", r"= 2\ \frac{\text{gal}}{\text{hr}}"], at=[1, 2],
+                     ref=r"\frac{dy}{dx} = \frac{dy}{du}\cdot\frac{du}{dx}")
         self.example("Example 2: Outside and inside", r"Find the derivative of $(2x^2 + 3)^4$.",
-                     [r"\text{outside: } 4(2x^2 + 3)^3", r"\text{inside: } (2x^2 + 3)' = 4x", r"\frac{d}{dx}(2x^2 + 3)^4 = 4(2x^2 + 3)^3 \cdot 4x = 16x(2x^2 + 3)^3"], at=[1, 2, 3])
+                     [r"(\underbrace{2x^2 + 3}_{u})^4", r"u = 2x^2 + 3", r"u' = 4x", r"\frac{d}{dx}u^4 = 4u^3\cdot u'",
+                      r"= 4(2x^2 + 3)^3 \cdot 4x = 16x(2x^2 + 3)^3"], at=[1, 2, 2, 3, 4])
         self.example("Example 3: Trig and exponential layers", r"Find each derivative.",
-                     [r"PART:(a) $\dfrac{d}{dx}\sin(x^3)$", r"\frac{d}{dx}\sin(x^3) = \cos(x^3)\cdot 3x^2",
-                      r"PART:(b) $\dfrac{d}{dx}e^{5x}$", r"\frac{d}{dx}e^{5x} = e^{5x}\cdot 5"], at=[1, 2, 3, 4],
+                     [r"PART:(a) $\dfrac{d}{dx}\sin(x^3)$", r"\sin(\underbrace{x^3}_{u})", r"u = x^3", r"u' = 3x^2", r"\cos u\cdot u' = \cos(x^3)\cdot 3x^2",
+                      r"PART:(b) $\dfrac{d}{dx}e^{5x}$", r"e^{\overbrace{5x}^{u}}", r"u = 5x", r"u' = 5", r"e^u\cdot u' = e^{5x}\cdot 5 = 5e^{5x}"],
+                     at=[1, 2, 2, 2, 3, 4, 5, 5, 5, 6],
                      text=r"Find (a) $\dfrac{d}{dx}\sin(x^3)$ and (b) $\dfrac{d}{dx}e^{5x}$.")
         tb = table(["x", "f", "f'", "g", "g'"], [["1", "3", "-2", "4", "5"], ["4", "0", "7", "1", "-1"]], size=36)
         self.example("Example 4: From a table", VGroup(T(r"$h(x) = f(g(x))$. Find $h'(1)$.", 42), tb).arrange(DOWN, buff=0.3),
                      [r"h'(1) = f'\big(g(1)\big)\cdot g'(1)", r"g(1) = 4 \ \Rightarrow\ f'(4) = 7", r"h'(1) = 7 \cdot 5 = 35", r"TEXT:We never used $f'(1) = -2$."], at=[1, 2, 3, 4],
+                     ref=r"\frac{d}{dx}f\big(g(x)\big) = f'\big(g(x)\big)\cdot g'(x)",
                      text=r"$h(x) = f(g(x))$. Find $h'(1)$. \[ \begin{array}{c|cccc} x & f & f' & g & g' \\ \hline 1 & 3 & -2 & 4 & 5 \\ 4 & 0 & 7 & 1 & -1 \end{array} \]")
         self.finish()

@@ -6,6 +6,8 @@ py_compile, and `build.py X.Y --no-pdf`.
 
 ## Status
 
+Unit test: content/unit_7.py done (AB topics only; 12 + 4 MCQ, 3 FRQs: slope field + particular solution, DE in context, exponential model).
+
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 7.9 (BC) | done | done | done (bc_only, FRQS = []; logistic) | see git log |

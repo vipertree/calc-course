@@ -48,11 +48,11 @@ NOTES = [
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
-    Item(r"An open box is made from a $10 \times 10$ inch sheet by cutting equal squares of side $x$ from the corners and folding up the sides. What $x$ gives the largest volume?",
+    Item(r"An open box is made from a $10 \times 10$ inch sheet by cutting equal squares of side $x$ from the corners and folding up the sides. What $x$ gives the largest volume? (The volume of a box is length $\times$ width $\times$ height.)",
          num(sp.Rational(5, 3)), r"$V = x(10 - 2x)^2$, $0 < x < 5$. $V' = (10 - 2x)(10 - 6x) = 0$ at $x = \frac53$ (in the domain). Candidates: $V(0) = 0$, $V\left(\frac53\right) \approx 74.1$, $V(5) = 0$.", work="3cm"),
     Item(r"Find the point on $y = x^2$ closest to $(0, 2)$. Enter its positive $x$-coordinate.", num(sp.sqrt(sp.Rational(3, 2))),
          r"$D^2 = x^2 + (x^2 - 2)^2$. Derivative $2x + 4x(x^2 - 2) = 2x(2x^2 - 3) = 0$ at $x = 0, \pm\sqrt{3/2}$. $D^2(0) = 4$, $D^2\left(\sqrt{3/2}\right) = \frac74$: the minimum.", work="3cm"),
-    Item(r"A can (closed cylinder) holds $54\pi$ cm$^3$. What radius gives the least surface area?", num(3),
+    Item(r"A can (closed cylinder) holds $54\pi$ cm$^3$. What radius gives the least surface area? (A cylinder of radius $r$ and height $h$ has volume $V = \pi r^2 h$ and surface area $S = 2\pi r^2 + 2\pi r h$.)", num(3),
          r"$h = \frac{54}{r^2}$. $S = 2\pi r^2 + 2\pi r h = 2\pi r^2 + \frac{108\pi}{r}$. $S' = 4\pi r - \frac{108\pi}{r^2} = 0$ at $r^3 = 27$, $r = 3$; $S'' > 0$.", work="3cm"),
     Item(r"A rectangle is inscribed in a semicircle of radius $2$, with its base on the diameter. What is its largest possible area?", num(4),
          r"With corner $(x, \sqrt{4 - x^2})$: $A = 2x\sqrt{4 - x^2}$. $A' = 0$ at $x = \sqrt2$: $A = 2\sqrt2\cdot\sqrt2 = 4$.", work="3cm"),
@@ -61,7 +61,7 @@ PRACTICE = [
     Item(r"Kofi walks from a point $3$ km from a straight road to a town on the road $5$ km past the nearest point. He walks $3$ km/h off-road and $5$ km/h on the road. "
          r"How far from the nearest point should he reach the road to minimize his time?", num(sp.Rational(9, 4)),
          r"$T = \frac{\sqrt{9 + x^2}}{3} + \frac{5 - x}{5}$. $T' = \frac{x}{3\sqrt{9 + x^2}} - \frac15 = 0$: $5x = 3\sqrt{9 + x^2}$, $16x^2 = 81$, $x = \frac94$ km.", work="3.2cm"),
-    Item(r"A box with a square base and open top must hold $108$ in$^3$. Find the dimensions that use the least material. Enter the base edge.", num(6),
+    Item(r"A box with a square base and open top must hold $108$ in$^3$. Find the dimensions that use the least material. Enter the base edge." + r" (The volume of a box is length $\times$ width $\times$ height.)", num(6),
          r"$S = x^2 + \frac{432}{x}$. $S' = 2x - \frac{432}{x^2} = 0$ at $x = 6$; height $3$. A $6 \times 6 \times 3$ box.", work="2.8cm"),
     Item(r"The sum of a positive number and twice another positive number is $40$. What is the largest possible product?", num(200),
          r"$x + 2y = 40$: $P = y(40 - 2y)$, $P' = 40 - 4y = 0$ at $y = 10$, $x = 20$: $P = 200$.", work="2.2cm"),
@@ -76,7 +76,7 @@ same("p", [best(x * (10 - 2 * x)**2, x, 0, 5)[0], best(x**2 + (x**2 - 2)**2, x, 
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
-    Variants(*[Item(rf"An open box is made from a ${n} \times {n}$ inch sheet by cutting squares of side $x$ from the corners. What is the largest possible volume?",
+    Variants(*[Item(rf"An open box is made from a ${n} \times {n}$ inch sheet by cutting squares of side $x$ from the corners. What is the largest possible volume? (The volume of a box is length $\times$ width $\times$ height.)",
                     num(best(x * (n - 2 * x)**2, x, 0, sp.Rational(n, 2))[1]),
                     rf"$V = x({n} - 2x)^2$; $V' = 0$ at $x = {sp.latex(sp.Rational(n, 6))}$: $V = {sp.latex(best(x * (n - 2 * x)**2, x, 0, sp.Rational(n, 2))[1])}$ in$^3$.", work="2.6cm")
                for n in (6, 18, 24)]),
@@ -123,7 +123,7 @@ close("m3", 144 / (sp.pi + 4), 20.2, 0.05)
 close("m4", sp.nsolve(sp.Symbol("u") + sp.exp(2 * sp.Symbol("u")), sp.Symbol("u"), -0.4), -0.426, 5e-4)
 
 FRQS = [
-    FRQ("The cheapest box", (r"A closed box with a square base of side $x$ feet and height $h$ feet must hold $54$ cubic feet. Material for the "
+    FRQ("The cheapest box", (r"A closed box with a square base of side $x$ feet and height $h$ feet must hold $54$ cubic feet (its volume is $x^2 h$). Material for the "
                              r"top and bottom costs $2$ dollars per square foot, and material for the sides costs $1$ dollar per square foot."), [
         Part("a", r"Show that the cost, in dollars, of the material for the box is $C(x) = 4x^2 + \dfrac{216}{x}$ for $x > 0$.",
              selfcheck(r"C(x) = 4x^2 + \frac{216}{x}"),

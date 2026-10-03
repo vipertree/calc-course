@@ -58,7 +58,7 @@ PRACTICE = [
          expr(x * (120 - 2 * x), var="x"), r"The side parallel to the wall is $120 - 2x$: $A(x) = x(120 - 2x)$, for $0 < x < 60$.", work="2cm"),
     Item(r"For Taini's garden, what is the largest possible area?", num(1800), r"$A'(x) = 120 - 4x = 0$ at $x = 30$; $A(30) = 30 \cdot 60 = 1800$ ft$^2$.", work="1.8cm"),
     Item(r"What positive number $x$ makes $x + \dfrac{4}{x}$ as small as possible?", num(2), r"$1 - \frac{4}{x^2} = 0$ at $x = 2$; $f'' = \frac{8}{x^3} > 0$.", work="1.8cm"),
-    Item(r"A box with a square base and no top has volume $32$ ft$^3$. Write its surface area as a function of the base edge $x$.", expr(x**2 + 128 / x, var="x"),
+    Item(r"A box with a square base and no top has volume $32$ ft$^3$. Write its surface area as a function of the base edge $x$." r" (The volume of a box is length $\times$ width $\times$ height.)", expr(x**2 + 128 / x, var="x"),
          r"Height $h = \frac{32}{x^2}$. Area $= x^2 + 4xh = x^2 + \frac{128}{x}$.", work="2.2cm"),
     Item(r"For that box, what base edge gives the least surface area?", num(4), r"$2x - \frac{128}{x^2} = 0$: $x^3 = 64$, $x = 4$.", work="1.8cm"),
     Item(r"A farmer has $200$ m of fence for a rectangular pen divided into two equal halves by one more fence parallel to a side. What is the largest total area?", num(sp.Rational(5000, 3)),

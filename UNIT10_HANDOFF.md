@@ -6,6 +6,8 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 
 ## Status
 
+Unit test: content/unit_10.py done (all of 10.1-10.15; 12 + 4 MCQ, 3 FRQs: Taylor polynomial with Lagrange bound, Maclaurin series, convergence and interval).
+
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 10.1 | done | done | done (FRQS = []) | see git log |

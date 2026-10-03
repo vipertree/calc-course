@@ -17,7 +17,7 @@ Branch: `claude/admiring-feynman-m8ygr9`. Nothing rendered (no manim/kokoro/TeX 
 | 0.2 | The Unit Circle | done | done | done | |
 | 0.3 | The Six Trigonometric Functions | done | done | done | |
 | 0.4 | Graphs of Sine, Cosine, and Tangent | done | done | done | |
-| 0.5 | Trigonometric Identities | | | | |
+| 0.5 | Trigonometric Identities | done | done | done | |
 | 0.6 | Solving Trigonometric Equations | | | | |
 | 0.7 | Inverse Trigonometric Functions | | | | |
 | U0 | Unit 0 test | | | | |

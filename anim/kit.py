@@ -198,13 +198,17 @@ class TranscriptScene(LessonScene):
         self.wait(1.2)
         self.play(FadeOut(card), run_time=0.6)
 
-    def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None):
+    def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
+                follow=False):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
-        figure: optional mobject shown on the right. text: the problem as LaTeX for the notes, when `problem` is a mobject
+        figure: optional mobject shown on the right, with the problem, or from narration line `figure_at` on (so a
+        warning's picture arrives with the words that explain it). follow: a first-of-its-kind problem students watch
+        rather than try, so no "Pause and try it" cue and no think pause (Adder, 2026-10-02).
+        text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
-        with self.beat(beat_name, think=True) as b:
+        with self.beat(beat_name, think=not follow) as b:
             head = problem if isinstance(problem, Mobject) else T(problem, 42)
             head.set_max_width(12.5).to_edge(UP, buff=0.5)
             self.play(FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
@@ -213,15 +217,21 @@ class TranscriptScene(LessonScene):
                 room = head.get_bottom()[1] - 0.35 - (-3.7)
                 figure.set_max_height(min(5.2, room)).set_max_width(6.2)
                 figure.next_to(head, DOWN, buff=0.35).to_edge(RIGHT, buff=0.4)
-                self.play(FadeIn(figure), run_time=0.8)
+                if figure_at is None:
+                    self.play(FadeIn(figure), run_time=0.8)
             # the think pause: a cue while the problem sits alone on screen, gone when the solving starts
-            cue = T(r"Pause and try it.", 32, DIM).next_to(head, DOWN, buff=0.6)
-            if figure is not None:
-                cue.to_edge(LEFT, buff=0.8)
-            self.play(FadeIn(cue), run_time=0.5)
+            cue = None
+            if not follow:
+                cue = T(r"Pause and try it.", 32, DIM).next_to(head, DOWN, buff=0.6)
+                if figure is not None:
+                    cue.to_edge(LEFT, buff=0.8)
+                self.play(FadeIn(cue), run_time=0.5)
             board = Board(left=figure is None).next_to(head, DOWN, buff=0.5)
             at = at or list(range(1, len(steps) + 1))
             for k, (s, i) in enumerate(zip(steps, at)):
+                if figure_at is not None and i >= figure_at and figure not in self.mobjects:
+                    b.line(figure_at)
+                    self.play(FadeIn(figure), run_time=0.8)
                 b.line(i)
                 if cue is not None:
                     self.play(FadeOut(cue), run_time=0.3)

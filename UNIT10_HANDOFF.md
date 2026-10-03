@@ -22,6 +22,7 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 | 10.12 | done | done | done (Taylor polynomial FRQ with Lagrange bound) | see git log |
 | 10.13 | done | done | done (FRQS = []) | see git log |
 | 10.14 | done | done | done (Maclaurin series FRQ: sin x / x, interval, integral, AST bound) | see git log |
+| 10.15 | done | done | done (FRQS = []) | see git log |
 
 ## Notes for the merging agent
 

@@ -4,8 +4,8 @@
 <div class="mathy"><h1>Course map</h1>
 <p class="muted">One lesson per topic in the College Board course description. Lessons that are ready are highlighted.</p>
 {% for u in units %}
-<section class="unit" id="unit-{{ u.n }}" data-unit="{{ u.n }}">
-  <h2>Unit {{ u.n }}. {{ u.title }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2>
+<details class="unit" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
+  <summary><h2><span class="chev" aria-hidden="true"></span>Unit {{ u.n }}. {{ u.title }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
   <div class="topics">
   {% for t in u.topics %}
     {% if t.ready %}<a class="topic ready" href="{% url 'lesson' t.n %}">{% else %}<div class="topic soon">{% endif %}
@@ -19,7 +19,14 @@
   {% if u.test %}<a class="topic ready" href="{% url 'unit_test' u.test_num %}"><span class="n">Test</span>
     <span style="flex:1"><strong>Unit {{ u.n }} test</strong>{% if u.test_best %}<br><small class="muted">Multiple-choice best {{ u.test_best.best }}/{{ u.test_best.total }}</small>{% endif %}</span></a>{% endif %}
   </div>
-</section>
+</details>
 {% endfor %}
+<script>
+  // a link to #unit-N (the "Unit N" button on a lesson) opens that unit
+  (function () {
+    const open = () => { const el = location.hash && document.getElementById(location.hash.slice(1)); if (el && el.tagName === "DETAILS") el.open = true; };
+    open(); window.addEventListener("hashchange", open);
+  })();
+</script>
 </div>
 {% endblock %}

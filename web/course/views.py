@@ -64,7 +64,27 @@ def course_map(request):
         tests = content.unit_tests()
         best_u = best.get(f"U{u['n']}")
         units.append({**u, "topics": topics, "test": u["n"] in tests, "test_num": f"U{u['n']}", "test_best": best_u})
-    return render(request, "course/map.html", {"units": units})
+    return render(request, "course/map.html", {"units": units, "current_unit": _current_unit(request.user)})
+
+
+def _current_unit(user):
+    """The unit a student is working in: the one holding their most recent activity (a step finished, an answer
+    checked or typed). Unit 1 for visitors and newcomers. The course map opens that unit and folds the rest."""
+    if not user.is_authenticated:
+        return 1
+    latest = []
+    for qs, field in ((StepDone.objects.filter(user=user), "at"), (Response.objects.filter(user=user), "at"),
+                      (Draft.objects.filter(user=user), "updated")):
+        row = qs.order_by("-" + field).values("topic", field).first()
+        if row:
+            latest.append((row[field], row["topic"]))
+    if not latest:
+        return 1
+    topic = max(latest)[1]
+    try:
+        return int(topic.lstrip("U").split(".")[0])
+    except ValueError:
+        return 1
 
 
 def unit_test(request, num):

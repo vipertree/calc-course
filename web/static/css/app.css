@@ -234,6 +234,14 @@ table.data tr.rule td { border-top: 1.5px solid var(--ink-2); }
 
 /* course map */
 .unit { margin-bottom: 26px; }
+/* course map units fold; the summary is the unit heading, with a turning chevron */
+details.unit > summary { list-style: none; cursor: pointer; }
+details.unit > summary::-webkit-details-marker { display: none; }
+details.unit > summary h2 { margin-bottom: 10px; }
+details.unit .chev { display: inline-block; width: .55em; height: .55em; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor;
+  transform: rotate(-45deg); margin-right: .2em; transition: transform .15s; flex: none; align-self: center; }
+details.unit[open] .chev { transform: rotate(45deg); }
+details.unit:not([open]) { margin-bottom: 10px; }
 .unit h2 { font-size: 1.25rem; display: flex; gap: 10px; align-items: baseline; }
 .unit h2 .bc, .bc-tag { font: 700 .7rem var(--font-ui); letter-spacing: .08em; color: var(--accent); border: 1px solid var(--accent); border-radius: 99px; padding: 1px 7px; }
 .topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }

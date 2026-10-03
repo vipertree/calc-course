@@ -85,12 +85,22 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
 1. Make the real-life illustrations pretty (pen by a river, folding box, etc.), as nice as the graphs. Adder has
    asked the other agent the same for other units, so match whatever style that agent established (painted sprites
    like anim/assets/car.png via kit.car_prop, Scenario-generated) if it exists.
+2. 5.10 opening (after the title card): don't start with "Every optimization problem starts the same way". Give an
+   intro: today we're looking at optimization. What does it mean to optimize? In everyday terms, "best" in some
+   way; in math, a maximum or minimum. Pause. How do we find a max or min? The derivative. The hard part is usually
+   representing the situation as a function. That's the tool calculus gives us: whenever we can represent
+   something as a differentiable function, we can optimize it (find local maxima and minima). The notes already
+   frame this well.
+3. Rectangle example: slow down, show a picture of the rectangle. For the domain, don't just say "both sides must
+   be positive"; think about the actual rectangle: imagine w = 25 (or whatever is too big) and show it wouldn't
+   make sense as a rectangle.
 
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.9 | 5.8 items 1-5 (chart centerpiece, sign changes, constructed f') | done (transcript, scene, notes); not rendered | see git log |
 | 5.8 | 1-6 above (light chart: the existing notes Table + Close table; full chart deferred to 5.9) | done; not rendered | see git log |
 | 5.7 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
 | 5.6 | 1-2 above | done (transcript, scene, notes); 5.7/5.8 cup/cap wording -> bowl/hill too; not rendered | see git log |
@@ -144,3 +154,7 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   falling red, inflection dots) and Example 5 (sketch x^3 - 6x^2 + 9x from scratch: figure = axes + f' and f''
   staged charts; points then the curve appear). Practice: FIG_C (segments + upper semicircle) with 4 items, a
   touch-not-cross item, a hand-sketch item. Runtime ~3.9 -> ~8 min (5 worked examples now).
+- 5.9: "Which level decides" replaced by "The chart" (story_chart() in s5_9.py: Adder's chart, built group by
+  group, then the diagonal pattern lit in pairs). New beat "Zero is not enough" (2x2 mini sign charts). Example 1
+  has staged f' and f'' charts and the f'' factoring spelled out. New Example 4 (graph of f' = 3 segments; every
+  column, incl. f''(2) as a slope). Notes table restructured to the chart's three groups.

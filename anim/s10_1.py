@@ -21,7 +21,7 @@ class Lesson(TranscriptScene):
             totals = VGroup()
             for k in range(1, 6):
                 w = 0.5**k
-                piece = Rectangle(width=8 * w, height=1.2, stroke_color=choc_dk, stroke_width=2, fill_color=choc, fill_opacity=1).move_to(bar.get_left() + RIGHT * 8 * (left + w / 2) + UP * 0 + DOWN * 0)
+                piece = Rectangle(width=8 * w, height=1.2, stroke_color=choc_dk, stroke_width=2, fill_color=choc, fill_opacity=1).move_to(bar.get_left() + RIGHT * 8 * (left + w / 2))
                 piece.align_to(bar, UP)
                 seg = Line(line.n2p(left), line.n2p(left + w), color=SECANT, stroke_width=8)
                 left += w

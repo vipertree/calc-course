@@ -1,5 +1,47 @@
 [
  {
+  "n": 0,
+  "title": "Trig Review",
+  "bc": false,
+  "topics": [
+   {
+    "n": "0.1",
+    "title": "Angles and Radian Measure",
+    "bc": false
+   },
+   {
+    "n": "0.2",
+    "title": "The Unit Circle",
+    "bc": false
+   },
+   {
+    "n": "0.3",
+    "title": "The Six Trigonometric Functions",
+    "bc": false
+   },
+   {
+    "n": "0.4",
+    "title": "Graphs of Sine, Cosine, and Tangent",
+    "bc": false
+   },
+   {
+    "n": "0.5",
+    "title": "Trigonometric Identities",
+    "bc": false
+   },
+   {
+    "n": "0.6",
+    "title": "Solving Trigonometric Equations",
+    "bc": false
+   },
+   {
+    "n": "0.7",
+    "title": "Inverse Trigonometric Functions",
+    "bc": false
+   }
+  ]
+ },
+ {
   "n": 1,
   "title": "Limits and Continuity",
   "bc": false,

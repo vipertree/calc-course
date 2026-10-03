@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from transcripts import parse  # noqa: E402
 
-UNIT_NAMES = {1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
+UNIT_NAMES = {0: "Trig Review", 1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
               3: "Differentiation: Composite, Implicit, and Inverse Functions", 4: "Contextual Applications of Differentiation",
               5: "Analytical Applications of Differentiation", 6: "Integration and Accumulation of Change", 7: "Differential Equations",
               8: "Applications of Integration", 9: "Parametric Equations, Polar Coordinates, and Vector-Valued Functions",
@@ -859,3 +859,102 @@ def polar_wedge(ax, f, t, dt, color=SECANT, opacity=0.7):
     """A thin sector from the origin at angle t, width dt, radius f(t)."""
     r = f(t)
     return Polygon(ax.c2p(0, 0), ax.c2p(r * np.cos(t), r * np.sin(t)), ax.c2p(r * np.cos(t + dt), r * np.sin(t + dt)), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity)
+
+
+# ---------------------------------------------------------------- Unit 0: trig review
+PI_NAMES = {k: t for k, t in ((-2, r"-2\pi"), (-1.5, r"-\tfrac{3\pi}{2}"), (-1, r"-\pi"), (-0.5, r"-\tfrac{\pi}{2}"), (0.5, r"\tfrac{\pi}{2}"), (1, r"\pi"),
+                              (1.5, r"\tfrac{3\pi}{2}"), (2, r"2\pi"), (2.5, r"\tfrac{5\pi}{2}"), (3, r"3\pi"), (3.5, r"\tfrac{7\pi}{2}"), (4, r"4\pi"))}
+
+
+def pi_axes(x0, x1, yr, w=9.0, h=3.6, step=0.5, ylabel="y", yticks=(1, -1), font=26):
+    """Axes over [x0 pi, x1 pi] with tick labels at multiples of step*pi (pi/2 by default) and the y ticks given.
+    Returns (axes, labels); plot with real radians, e.g. ax.plot(np.sin, x_range=[x0 * PI, x1 * PI])."""
+    ax, labs = plot_axes([x0 * PI, x1 * PI, step * PI], yr, w=w, h=h, coords=False, ylabel=ylabel)
+    k = np.ceil(x0 / step - 1e-9) * step
+    while k <= x1 + 1e-9:
+        if abs(k) > 1e-9 and k in PI_NAMES:
+            labs.add(M(PI_NAMES[k], font, DIM).next_to(ax.c2p(k * PI, 0), DOWN, buff=0.12))
+        k += step
+    labs.add(*[M(f"{v:g}", font - 2, DIM).next_to(ax.c2p(0, v), LEFT, buff=0.12) for v in yticks])
+    return ax, labs
+
+
+class TrigCircle(VGroup):
+    """A unit circle with axes, for the trig review. pt(t) is the point at angle t; ray, angle_arc, drop (the
+    reference triangle under a point) and coord (its (cos t, sin t) label) build the usual unit-circle pictures."""
+
+    def __init__(self, r=2.4, center=ORIGIN, ticks=True, **kw):
+        super().__init__(**kw)
+        self.r, self.c = r, np.array(center, dtype=float)
+        self.add(Line(self.c + LEFT * (r + 0.45), self.c + RIGHT * (r + 0.45), color=DIM, stroke_width=2),
+                 Line(self.c + DOWN * (r + 0.45), self.c + UP * (r + 0.45), color=DIM, stroke_width=2),
+                 Circle(radius=r, color=INK, stroke_width=3).move_to(self.c))
+        if ticks:
+            self.add(*[M(s, 24, DIM).move_to(self.c + d * (r + 0.28) + o) for s, d, o in
+                       (("1", RIGHT, DOWN * 0.22), ("-1", LEFT, DOWN * 0.22), ("1", UP, RIGHT * 0.2), ("-1", DOWN, RIGHT * 0.25))])
+
+    def pt(self, t):
+        return self.c + self.r * np.array([np.cos(t), np.sin(t), 0.0])
+
+    def dot(self, t, color=FUNC):
+        return Dot(self.pt(t), radius=0.1, color=color)
+
+    def ray(self, t, color=INK):
+        return Line(self.c, self.pt(t), color=color, stroke_width=4)
+
+    def angle_arc(self, t, color=SECANT, radius=0.5, label=None, size=30):
+        """The angle from the positive x-axis to t (negative t turns clockwise), with an optional label."""
+        g = VGroup(Arc(radius=radius, start_angle=0, angle=t, arc_center=self.c, color=color, stroke_width=4))
+        if abs(t) > 2 * PI - 0.3:
+            g[0].add_tip(tip_length=0.15)
+        if label:
+            g.add(M(label, size, color).move_to(self.c + (radius + 0.32) * np.array([np.cos(t / 2), np.sin(t / 2), 0])))
+        return g
+
+    def drop(self, t, color=SECANT):
+        """The reference triangle: ray to the point, a vertical leg down (or up) to the x-axis, the horizontal leg."""
+        p = self.pt(t)
+        foot = np.array([p[0], self.c[1], 0])
+        return VGroup(Polygon(self.c, foot, p, stroke_color=color, stroke_width=3, fill_color=color, fill_opacity=0.18),
+                      DashedLine(foot, p, color=color))
+
+    def coord(self, t, tex, color=FUNC, size=30, out=0.55):
+        d = np.array([np.cos(t), np.sin(t), 0.0])
+        return M(tex, size, color).move_to(self.pt(t) + out * d + RIGHT * 0.35 * np.sign(np.cos(t)) * (abs(np.cos(t)) > 0.2))
+
+    def arc(self, a, b, color=DERIV, width=9):
+        return Arc(radius=self.r, start_angle=a, angle=b - a, arc_center=self.c, color=color, stroke_width=width)
+
+
+def right_triangle(a, b, opp=None, adj=None, hyp=None, angle=None, color=INK, size=34):
+    """A right triangle with legs a (horizontal) and b (vertical), the angle at the left corner, the right angle at the
+    bottom right. opp, adj, hyp, angle: optional LaTeX labels. Returns a VGroup (triangle first)."""
+    A, B, C = ORIGIN, RIGHT * a, RIGHT * a + UP * b
+    g = VGroup(Polygon(A, B, C, color=color, stroke_width=4),
+               Square(0.22, color=DIM, stroke_width=2).move_to(B + LEFT * 0.11 + UP * 0.11))
+    th = np.arctan2(b, a)
+    if angle:
+        g.add(Arc(radius=0.55, start_angle=0, angle=th, arc_center=A, color=SECANT, stroke_width=4),
+              M(angle, size - 2, SECANT).move_to(A + 0.9 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+    if opp:
+        g.add(M(opp, size, FUNC).next_to(Line(B, C), RIGHT, buff=0.15))
+    if adj:
+        g.add(M(adj, size, DERIV).next_to(Line(A, B), DOWN, buff=0.15))
+    if hyp:
+        n = np.array([-np.sin(th), np.cos(th), 0])
+        g.add(M(hyp, size, INK).move_to((A + C) / 2 + n * 0.42))
+    return g
+
+
+def ferris_wheel(radius=1.6, cars=8):
+    """A Ferris wheel on an A-frame (vector art); the hub is at the group's [0] center."""
+    hub = Dot(ORIGIN, radius=0.08, color=INK)
+    rim = Circle(radius=radius, stroke_color=INK, stroke_width=4)
+    spokes = VGroup(*[Line(ORIGIN, radius * np.array([np.cos(a), np.sin(a), 0]), color=DIM, stroke_width=2) for a in np.linspace(0, TAU, cars, endpoint=False)])
+    pal = ["#D7263D", "#F6C945", "#5B9BD5", "#59A96A"]
+    gondolas = VGroup(*[RoundedRectangle(width=0.3, height=0.24, corner_radius=0.06, stroke_color=INK, stroke_width=2, fill_color=pal[k % 4], fill_opacity=1)
+                        .move_to(radius * np.array([np.cos(a), np.sin(a), 0]) + DOWN * 0.14) for k, a in enumerate(np.linspace(0, TAU, cars, endpoint=False))])
+    legs = VGroup(Line(ORIGIN, DOWN * (radius + 0.5) + LEFT * radius * 0.6, color=INK, stroke_width=5),
+                  Line(ORIGIN, DOWN * (radius + 0.5) + RIGHT * radius * 0.6, color=INK, stroke_width=5))
+    ground = Line(DOWN * (radius + 0.5) + LEFT * radius * 1.1, DOWN * (radius + 0.5) + RIGHT * radius * 1.1, color=SAND, stroke_width=6)
+    return VGroup(hub, legs, ground, spokes, rim, gondolas)

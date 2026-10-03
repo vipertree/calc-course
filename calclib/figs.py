@@ -19,8 +19,71 @@ def _ticks(lo, hi, step):
     return ",".join(out)
 
 
+def _pi_name(k):
+    """k * pi as LaTeX, k a multiple of 1/4 (e.g. 1.5 -> 3pi/2)."""
+    from fractions import Fraction
+    q = Fraction(k).limit_denominator(12)
+    if q == 0:
+        return "0"
+    sign = "-" if q < 0 else ""
+    n, d = abs(q.numerator), q.denominator
+    top = r"\pi" if n == 1 else rf"{n}\pi"
+    return f"${sign}{top}$" if d == 1 else rf"${sign}\frac{{{top}}}{{{d}}}$"
+
+
+def _pi_ticks(lo, hi, step):
+    import math
+    ks, k = [], math.ceil(lo / (step * math.pi) - 1e-9) * step
+    while k * math.pi <= hi + 1e-9:
+        if abs(k) > 1e-9:
+            ks.append(k)
+        k += step
+    return ("xtick={" + ",".join(f"{k * math.pi:.5f}" for k in ks) + "}, xticklabels={" + ",".join("{" + _pi_name(k) + "}" for k in ks) + "}")
+
+
+def unit_circle(name, angles=(), triangle=None, caption="", size="5cm", labels=True):
+    """A unit circle figure. angles: (theta in radians, label) points marked on the circle, label placed outside;
+    triangle: an angle whose reference triangle (and ray) is drawn."""
+    import math
+    r = 2.0
+    body = [r"\draw[->, gray] (-2.6,0) -- (2.7,0) node[right] {$x$};", r"\draw[->, gray] (0,-2.6) -- (0,2.7) node[above] {$y$};",
+            rf"\draw[thick] (0,0) circle ({r});"]
+    if labels:
+        body += [r"\node[below right, font=\footnotesize] at (2,0) {$1$};", r"\node[below left, font=\footnotesize] at (-2,0) {$-1$};",
+                 r"\node[above left, font=\footnotesize] at (0,2) {$1$};", r"\node[below left, font=\footnotesize] at (0,-2) {$-1$};"]
+    if triangle is not None:
+        c, s_ = r * math.cos(triangle), r * math.sin(triangle)
+        body += [rf"\fill[blue!12] (0,0) -- ({c:.3f},0) -- ({c:.3f},{s_:.3f}) -- cycle;",
+                 rf"\draw[very thick] (0,0) -- ({c:.3f},{s_:.3f});", rf"\draw[dashed] ({c:.3f},0) -- ({c:.3f},{s_:.3f});",
+                 rf"\draw[->] (0.5,0) arc (0:{math.degrees(triangle):.1f}:0.5);"]
+    for t, lab in angles:
+        c, s_ = r * math.cos(t), r * math.sin(t)
+        body.append(rf"\fill ({c:.3f},{s_:.3f}) circle (2pt);")
+        if lab:
+            body.append(rf"\node[font=\scriptsize] at ({1.38 * c:.3f},{1.25 * s_:.3f}) {{{lab}}};")
+    return Figure(name=name, caption=caption, tikz=rf"\begin{{tikzpicture}}[scale={float(size.rstrip('cm')) / 5.4:.3f}]" + "".join(body) + r"\end{tikzpicture}")
+
+
+def triangle(name, a, b, opp="", adj="", hyp="", angle=r"$\theta$", caption="", size="4cm"):
+    """A right triangle, legs a (across) and b (up), angle at the left corner; labels are LaTeX ($...$)."""
+    k = float(size.rstrip("cm")) / max(a, b) * 0.8
+    A, B, C = (0, 0), (a * k, 0), (a * k, b * k)
+    body = [rf"\draw[thick] (0,0) -- ({B[0]:.3f},0) -- ({C[0]:.3f},{C[1]:.3f}) -- cycle;",
+            rf"\draw ({B[0] - 0.25:.3f},0) -- ({B[0] - 0.25:.3f},0.25) -- ({B[0]:.3f},0.25);",
+            r"\draw (0.6,0) arc (0:%.1f:0.6);" % __import__("math").degrees(__import__("math").atan2(b, a)),
+            rf"\node at (0.95,{0.32 * b / max(a, b) + 0.05:.3f}) {{{angle}}};" if angle else ""]
+    if adj:
+        body.append(rf"\node[below] at ({B[0] / 2:.3f},0) {{{adj}}};")
+    if opp:
+        body.append(rf"\node[right] at ({B[0]:.3f},{C[1] / 2:.3f}) {{{opp}}};")
+    if hyp:
+        body.append(rf"\node[above left] at ({B[0] / 2:.3f},{C[1] / 2:.3f}) {{{hyp}}};")
+    return Figure(name=name, caption=caption, tikz=r"\begin{tikzpicture}" + "".join(body) + r"\end{tikzpicture}")
+
+
 def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=(), caption="",
-          w="6.4cm", h="4.6cm", xstep=1, ystep=1, xlabel="x", ylabel="y", extra="", grid=True, samples=120, under=""):
+          w="6.4cm", h="4.6cm", xstep=1, ystep=1, xlabel="x", ylabel="y", extra="", grid=True, samples=120, under="", xpi=0):
+    """xpi: label the x ticks as multiples of pi, every xpi*pi (xr is still in plain numbers, e.g. (-0.3, 6.6))."""
     body = [under]  # drawn first, beneath the curves (shading)
     for f in fns:
         expr, a, b = f[0], f[1], f[2]
@@ -38,8 +101,11 @@ def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=()
         body.append(rf"\node[{pos}, font=\footnotesize] at (axis cs:{x},{y}) {{{text}}};")
     body.append(extra)
     g = "" if grid else ", grid=none"
+    xt = f"xtick={{{_ticks(xr[0], xr[1], xstep)}}}"
+    if xpi:
+        xt = _pi_ticks(xr[0], xr[1], xpi)
     axis = (rf"\begin{{axis}}[calcaxes{g}, width={w}, height={h}, xmin={xr[0]}, xmax={xr[1]}, ymin={yr[0]}, ymax={yr[1]},"
-            rf" xtick={{{_ticks(xr[0], xr[1], xstep)}}}, ytick={{{_ticks(yr[0], yr[1], ystep)}}},"
+            rf" {xt}, ytick={{{_ticks(yr[0], yr[1], ystep)}}},"
             rf" xlabel={{${xlabel}$}}, ylabel={{${ylabel}$}}]")
     return Figure(name=name, caption=caption, tikz=r"\begin{tikzpicture}" + axis + "".join(body) + r"\end{axis}\end{tikzpicture}")
 

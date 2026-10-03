@@ -8,6 +8,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 7.2 | done | done | done (FRQS = []) | see git log |
 | 7.1 | done | done (coffee_mug prop in kit) | done (FRQS = []) | see git log |
 
 ## Notes for the merging agent

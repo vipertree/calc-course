@@ -636,3 +636,14 @@ def riemann_boxes(ax, f, edges, kind="left", color=AREA, opacity=0.45):
             pts = [ax.c2p(a, 0), ax.c2p(b, 0), ax.c2p(b, h), ax.c2p(a, h)]
         out.add(Polygon(*pts, stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity))
     return out
+
+
+def coffee_mug(height=1.6):
+    """A mug of coffee with a handle and three wisps of steam (vector art)."""
+    w = height * 0.8
+    body = RoundedRectangle(width=w, height=height, corner_radius=0.12, stroke_color=INK, stroke_width=3, fill_color="#E8E1D5", fill_opacity=1)
+    coffee = Ellipse(width=w * 0.86, height=height * 0.12, stroke_width=0, fill_color="#6B4226", fill_opacity=1).move_to(body.get_top() + DOWN * height * 0.08)
+    handle = Arc(radius=height * 0.28, start_angle=-PI / 2, angle=PI, stroke_color=INK, stroke_width=6).next_to(body, RIGHT, buff=-0.05)
+    steam = VGroup(*[FunctionGraph(lambda s, k=k: 0.08 * np.sin(6 * s + k), x_range=[0, 0.7], color=DIM, stroke_width=3).rotate(PI / 2)
+                     .next_to(body, UP, buff=0.1).shift(RIGHT * (k - 1) * w * 0.28) for k in range(3)])
+    return VGroup(steam, handle, body, coffee)

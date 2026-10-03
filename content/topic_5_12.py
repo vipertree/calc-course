@@ -43,12 +43,16 @@ NOTES = [
     Video("s5_12.py::Lesson", "Implicit curves", 4),
 
     Section("Horizontal and vertical tangents"),
-    Text(r"For a curve given by an equation in $x$ and $y$, implicit differentiation (Topic 3.2) gives $\frac{dy}{dx}$ as a fraction in $x$ and $y$."),
+    Text(r"For a curve given by an equation in $x$ and $y$, implicit differentiation (Topic 3.2) often gives $\frac{dy}{dx}$ as a fraction in $x$ and $y$. "
+         r"Call its numerator $N$ and its denominator $D$, and study each on its own. What makes a slope go off to infinity? A denominator heading to zero: "
+         r"that's where vertical tangents come from."),
     Formula("Tangents on an implicit curve", (
         r"Write \[ \frac{dy}{dx} = \frac{N(x, y)}{D(x, y)}. \] "
         r"\textbf{Horizontal} tangent: \blank{$N = 0$} and $D \ne 0$. \par "
         r"\textbf{Vertical} tangent: \blank{$D = 0$} and $N \ne 0$. \par "
         r"Then solve together with the \blank{equation of the curve} to find the points.")),
+    Text(r"\textbf{Is the point on the curve?} On $xy = 1$, $\frac{dy}{dx} = -\frac{y}{x}$ has $D = 0$ when $x = 0$. But no point of the curve has $x = 0$ "
+         r"($xy$ would be $0$, not $1$). There is \blank{no tangent line} there at all, vertical or otherwise."),
     Text(r"\textbf{Don't forget the curve.} $N = 0$ alone is a line or a curve of candidates; only the points that also lie on the original curve count."),
     Example("A circle", r"Find the points on $x^2 + y^2 = 25$ where the tangent is horizontal.",
             r"\[ \frac{dy}{dx} = -\frac{x}{y} = 0 \] when $x = 0$. On the curve, $y^2 = 25$: the points $(0, 5)$ and $(0, -5)$.", work="2.4cm", beat="Back to the curve"),
@@ -56,7 +60,7 @@ NOTES = [
     Section("Concavity on an implicit curve"),
     Text(r"Differentiate $\frac{dy}{dx}$ again (implicitly, then substitute $\frac{dy}{dx}$) to get $\frac{d^2y}{dx^2}$. Its sign at a point gives the concavity there. "
          r"At a point with a horizontal tangent, $\frac{d^2y}{dx^2} > 0$ means the curve has a relative \blank{minimum} there, and $< 0$ a relative maximum."),
-    BigIdea(r"Horizontal tangent: top of $\frac{dy}{dx}$ is zero. Vertical tangent: bottom is zero. Always solve with the curve's equation. The second derivative tells concavity."),
+    BigIdea(r"Horizontal tangent: $N = 0$ (and $D \ne 0$). Vertical tangent: $D = 0$ (and $N \ne 0$), at a point that is really on the curve. Always solve with the curve's equation. The second derivative tells concavity."),
     Check(r"$\dfrac{dy}{dx} = \dfrac{3 - x}{y + 2}$ on some curve. Where could a vertical tangent be?", selfcheck(r"y = -2"), r"Where the denominator is $0$: on the line $y = -2$ (and on the curve)."),
 ]
 

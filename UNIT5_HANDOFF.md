@@ -114,6 +114,7 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.12 | 1-4 above | done (transcript, scene, notes); not rendered | see git log |
 | 5.11 | 5.10/5.11 item 1, 5.11 items 1-2 | done (transcript, scene); not rendered | see git log |
 | 5.10 | 5.10/5.11 item 1 (for 5.10), 5.10 items 2-3 | done (transcript, scene, notes); not rendered | see git log |
 | 5.9 | 5.8 items 1-5 (chart centerpiece, sign changes, constructed f') | done (transcript, scene, notes); not rendered | see git log |
@@ -187,3 +188,9 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   every example (labeled box, line + sliding distance segment, sqrt graph + D, cylinder with top/bottom then side
   highlighted). Algebra one step per line. Check the box-label placement in Example 1 and the fold animation's
   draw order at mid-fold.
+- 5.12: "Top and bottom of the slope" -> "N and D" (names introduced; "what makes the slope go off to infinity?"
+  pause; a tangent tilting up to vertical). New beat "Not on the curve" (xy = 1, D = 0 at x = 0, no point there).
+  Close and notes say N/D and "check the point is on the curve". New Example 4: tangent lines to
+  x^2 + xy + y^2 = 7 at x = 1 (two points, two lines, drawn). Algebra one step per line.
+- Unit 3.2 still says "blows up" on main (transcripts/3_2.md:59,64, content/topic_3_2.py:62). If the other agent
+  fixed it on its own branch, fine; otherwise it needs the same change.

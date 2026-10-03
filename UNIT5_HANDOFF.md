@@ -81,11 +81,17 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
 6. At least one problem where students sketch a graph from scratch: a polynomial, using f' and f'' (not on the AP
    exam anymore, but they should practice it once).
 
+**5.10 / 5.11**
+1. Make the real-life illustrations pretty (pen by a river, folding box, etc.), as nice as the graphs. Adder has
+   asked the other agent the same for other units, so match whatever style that agent established (painted sprites
+   like anim/assets/car.png via kit.car_prop, Scenario-generated) if it exists.
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.8 | 1-6 above (light chart: the existing notes Table + Close table; full chart deferred to 5.9) | done; not rendered | see git log |
 | 5.7 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
 | 5.6 | 1-2 above | done (transcript, scene, notes); 5.7/5.8 cup/cap wording -> bowl/hill too; not rendered | see git log |
 | 5.5 | 1 above | done (transcript, scene, notes, practice, quiz); not rendered | see git log |
@@ -133,3 +139,8 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   5.8 transcript + scene text.
 - 5.7: new beat "Which test?" (two columns: second vs first derivative test, then the habit). Example 2 (x^4)
   falls back to the FDT with a staged chart. All examples one step per line.
+- 5.8: new beat "Crossing, not touching" (x^3/3 over x^2: f' = 0 without a sign change). "Reading this graph"
+  labels each crossing. New Example 4 (constructed f': 3 segments + lower semicircle, rising pieces turn green,
+  falling red, inflection dots) and Example 5 (sketch x^3 - 6x^2 + 9x from scratch: figure = axes + f' and f''
+  staged charts; points then the curve appear). Practice: FIG_C (segments + upper semicircle) with 4 items, a
+  touch-not-cross item, a hand-sketch item. Runtime ~3.9 -> ~8 min (5 worked examples now).

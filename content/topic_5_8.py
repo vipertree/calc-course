@@ -20,6 +20,9 @@ FIG_FP = graph("t5_8_fp", [("(x+2)*(x-1)*(x-3)/2", -3, 4)], xr=(-3, 4), yr=(-6, 
 FIG_FP2 = graph("t5_8_fp2", [("x^2-2*x-3", -2, 4)], xr=(-2, 4), yr=(-5, 5), ylabel="f'(x)", caption="The graph of $f'$.")
 FIG_F = graph("t5_8_f", [("0.5*x^3-1.5*x", -2.5, 2.5)], xr=(-2.5, 2.5), yr=(-3, 3), ylabel="f(x)", caption="The graph of $f$.")
 
+FIG_C = graph("t5_8_c", [("2-2*x", 0, 2), ("x-4", 2, 4), ("sqrt(abs(4-(x-6)^2))", 4, 8)], xr=(0, 8), yr=(-3, 3), ylabel="f'(x)",
+              caption="The graph of $f'$ on $[0, 8]$: two segments and a semicircle.")
+
 NOTES = [
     Video("s5_8.py::Lesson", "Graphs of f and its derivatives", 4),
 
@@ -32,6 +35,9 @@ NOTES = [
           r"$f'$ increasing (rising) & $f$ concave \blank{up} \\ "
           r"$f'$ decreasing (falling) & $f$ concave down \\ "
           r"a peak or valley of $f'$ & \blank{point of inflection} of $f$", "ll", header=r"On the graph of $f'$ & What it means for $f$"),
+    Text(r"\textbf{Cross, don't just touch.} $f' = 0$ gives a horizontal tangent, not always a turn. If the graph of $f'$ touches the axis and bounces "
+         r"back, $f'$ doesn't change sign and $f$ has \blank{no} extremum there. A max or min needs $f'$ to change sign; an inflection point needs $f''$ "
+         r"to change sign ($f'$ turns around). Topic 5.9 puts $f$, $f'$ and $f''$ together in one chart."),
     Text(r"\textbf{The common trap:} answering about the graph you see as if it were $f$. Read the axis label. A peak of $f'$ is not a maximum of $f$; it's an inflection point."),
     FIG_FP,
     VideoExample('Reading this graph', work="2.2cm"),
@@ -64,6 +70,24 @@ PRACTICE = [
          r"A maximum of $f'$ is where $f'$ stops increasing and starts decreasing: $f$ has a point of inflection there, not a maximum.", work="1.6cm"),
 ]
 same("p", [sp.solve(x**2 - 2 * x - 3, x), sp.solve(sp.diff(x**2 - 2 * x - 3, x), x), sp.solve(sp.diff(x**3 / 2 - 3 * x / 2, x), x)], [[-1, 3], [1], [-1, 1]])
+
+PRACTICE += [
+    Item(r"The graph of $f'$ on $[0, 8]$ is shown. On what open intervals is $f$ increasing?", selfcheck(r"(0, 1) \text{ and } (4, 8)"),
+         r"$f' > 0$ above the axis: on $(0, 1)$ and on $(4, 8)$ (the semicircle).", work="1.4cm", figure=FIG_C),
+    Item(r"Using the same graph of $f'$, at what $x$ does $f$ have a relative maximum?", num(1),
+         r"$f'$ crosses from $+$ to $-$ at $x = 1$. (At $x = 4$ it crosses from $-$ to $+$: a relative minimum.)", work="1.2cm"),
+    Item(r"Using the same graph of $f'$, on what open intervals is the graph of $f$ concave down?", selfcheck(r"(0, 2) \text{ and } (6, 8)"),
+         r"$f'$ is decreasing on $(0, 2)$ (the first segment) and on $(6, 8)$ (the right half of the semicircle).", work="1.4cm"),
+    Item(r"Using the same graph of $f'$, find the $x$-coordinates of the inflection points of $f$. Enter the larger.", num(6),
+         r"$f'$ switches from decreasing to increasing at $x = 2$ and from increasing to decreasing at $x = 6$.", work="1.4cm"),
+    Item(r"$f'(x) = (x - 2)^2(x + 1)$. Does $f$ have a relative extremum at $x = 2$? Explain.", selfcheck(r"\text{no}"),
+         r"No. $(x - 2)^2 \ge 0$, so $f'$ has the sign of $x + 1$, positive on both sides of $2$: no sign change.", work="1.6cm"),
+    Item(r"Sketch the graph of $f(x) = x^3 - 3x^2$ by hand. Give its relative extrema and inflection point.",
+         selfcheck(r"\text{max } (0, 0),\ \text{min } (2, -4),\ \text{inflection } (1, -2)"),
+         r"$f'(x) = 3x(x - 2)$: signs $+, -, +$, so a relative max at $(0, 0)$ and a relative min at $(2, -4)$. $f''(x) = 6x - 6$ changes sign at $1$: "
+         r"inflection point $(1, -2)$, concave down before, up after. Zeros at $x = 0$ and $x = 3$.", work="4cm"),
+]
+same("c", [sp.diff(x**3 - 3 * x**2, x).subs(x, 2), (x**3 - 3 * x**2).subs(x, 2), (x**3 - 3 * x**2).subs(x, 1)], [0, -4, -2])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [

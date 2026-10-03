@@ -803,3 +803,17 @@ def solid_about_vertical(ax, r_out, c, d, r_in=None, axis_x=0.0, n=9, color=ACCU
             r = abs(r_in(v)) * sx
             out.add(Ellipse(width=max(2 * r, 0.02), height=max(2 * r * tilt, 0.02), stroke_color=color, stroke_width=2, fill_color=BG, fill_opacity=1).move_to(ax.c2p(axis_x, v)))
     return out
+
+
+def ladybug(size=0.5):
+    """A small ladybug (vector art), facing up; rotate to aim it along a path."""
+    shell = Ellipse(width=size, height=size * 1.15, stroke_color=INK, stroke_width=2, fill_color="#D7263D", fill_opacity=1)
+    head = Circle(radius=size * 0.22, stroke_width=0, fill_color=INK, fill_opacity=1).next_to(shell, UP, buff=-size * 0.12)
+    seam = Line(shell.get_top(), shell.get_bottom(), color=INK, stroke_width=2)
+    spots = VGroup(*[Dot(shell.get_center() + np.array([sx * size * 0.22, sy * size * 0.25, 0]), radius=size * 0.07, color=INK) for sx in (-1, 1) for sy in (-0.6, 0.5)])
+    return VGroup(head, shell, seam, spots)
+
+
+def param_curve(ax, xf, yf, t0, t1, color=FUNC, width=4):
+    """The parametric curve (x(t), y(t)) for t0 <= t <= t1, in axis coordinates."""
+    return ax.plot_parametric_curve(lambda s: np.array([xf(s), yf(s), 0.0]), t_range=[t0, t1, 0.01], color=color, stroke_width=width)

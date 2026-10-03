@@ -9,6 +9,7 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 9.1 | done | done (ladybug, param_curve in kit) | done (FRQS = []) | see git log |
+| 9.2 | done | done | done (FRQS = []) | see git log |
 
 ## Notes for the merging agent
 

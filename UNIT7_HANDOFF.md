@@ -8,8 +8,10 @@ py_compile, and `build.py X.Y --no-pdf`.
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 7.3 | done | done (slope_field in kit) | done (calclib.figs.slope_field for notes figures; FRQS = []) | see git log |
 | 7.2 | done | done | done (FRQS = []) | see git log |
 | 7.1 | done | done (coffee_mug prop in kit) | done (FRQS = []) | see git log |
 
 ## Notes for the merging agent
 
+- New helpers: anim/kit.py slope_field(ax, f, xs, ys) and calclib/figs.py slope_field(name, f, xs, ys, xr, yr, curves=...) (tikz segments, aspect-corrected).

@@ -42,3 +42,20 @@ def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=()
             rf" xtick={{{_ticks(xr[0], xr[1], xstep)}}}, ytick={{{_ticks(yr[0], yr[1], ystep)}}},"
             rf" xlabel={{${xlabel}$}}, ylabel={{${ylabel}$}}]")
     return Figure(name=name, caption=caption, tikz=r"\begin{tikzpicture}" + axis + "".join(body) + r"\end{axis}\end{tikzpicture}")
+
+
+def slope_field(name, f, xs, ys, xr, yr, caption="", curves=(), w="6cm", h="6cm", length=0.32, closed=(), xlabel="x", ylabel="y"):
+    """A slope field figure: a short segment of slope f(x, y) at each (x, y) in xs x ys, optionally with solution curves
+    (pgfplots expressions as in graph()). Segment length is in axis units, corrected for the axis aspect ratio."""
+    import math
+    W, H = float(w.rstrip("cm")), float(h.rstrip("cm"))
+    ux, uy = W / (xr[1] - xr[0]), H / (yr[1] - yr[0])          # cm per unit
+    segs = []
+    for x in xs:
+        for y in ys:
+            m = f(x, y)
+            dx, dy = ux, m * uy                                   # direction in cm
+            n = math.hypot(dx, dy)
+            hx, hy = dx / n * (length / 2) / ux, dy / n * (length / 2) / uy
+            segs.append(rf"\draw[thick] (axis cs:{x - hx:.4f},{y - hy:.4f}) -- (axis cs:{x + hx:.4f},{y + hy:.4f});")
+    return graph(name, list(curves), xr, yr, closed=closed, caption=caption, w=w, h=h, extra="".join(segs), xlabel=xlabel, ylabel=ylabel)

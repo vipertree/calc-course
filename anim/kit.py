@@ -647,3 +647,20 @@ def coffee_mug(height=1.6):
     steam = VGroup(*[FunctionGraph(lambda s, k=k: 0.08 * np.sin(6 * s + k), x_range=[0, 0.7], color=DIM, stroke_width=3).rotate(PI / 2)
                      .next_to(body, UP, buff=0.1).shift(RIGHT * (k - 1) * w * 0.28) for k in range(3)])
     return VGroup(steam, handle, body, coffee)
+
+
+def slope_field(ax, f, xs, ys, length=0.36, color=None, width=3):
+    """Short segments of slope f(x, y) centred at each grid point (screen-length `length`), drawn in axis coordinates
+    so the slopes are true to the axes' scales."""
+    color = color or DIM
+    sx = (ax.c2p(1, 0)[0] - ax.c2p(0, 0)[0])
+    sy = (ax.c2p(0, 1)[1] - ax.c2p(0, 0)[1])
+    segs = VGroup()
+    for x in xs:
+        for y in ys:
+            m = f(x, y)
+            d = np.array([sx, m * sy, 0.0])
+            d = d / np.linalg.norm(d) * length / 2
+            p = ax.c2p(x, y)
+            segs.add(Line(p - d, p + d, color=color, stroke_width=width))
+    return segs

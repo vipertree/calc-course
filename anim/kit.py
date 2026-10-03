@@ -471,6 +471,14 @@ def trace_with_pencil(scene, pencil, path, run_time=1.6, ink=None):
     return stroke
 
 
+def nudge_arrow(p0, p1, label="dx", side=DOWN, color=INK, size=30, offset=0.18):
+    """A nudge drawn as a small double-headed arrow from p0 to p1, set `offset` off the shape on `side` and
+    labeled like a dimension (Adder: every dx, dl, dw in a picture gets its own little arrow)."""
+    a = DoubleArrow(p0, p1, buff=0, color=color, stroke_width=3, tip_length=0.1,
+                    max_tip_length_to_length_ratio=0.45).shift(side * offset)
+    return VGroup(a, M(label, size, color).next_to(a, side, buff=0.08))
+
+
 def zeno_bust(height=5.6):
     """Jan de Bisschop's etching of a bust of Zeno of Elea (c. 1670, Rijksmuseum, CC0); see assets/CREDITS.md."""
     return ImageMobject(os.path.join(ASSETS, "zeno.png")).set_height(height)

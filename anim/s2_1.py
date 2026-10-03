@@ -119,6 +119,13 @@ class Lesson(TranscriptScene):
             b.line(2)
             fr2 = M(r"= \frac{s(4) - s(1)}{3}", 46).next_to(fr, DOWN, buff=0.4)
             self.play(Write(fr2), run_time=1)
+            b.line(3)
+            units = VGroup(T("output units per input unit", 32, SECANT),
+                           T(r"miles per hour \quad liters per minute \quad dollars per shirt", 28, DIM)).arrange(DOWN, buff=0.2)
+            units.to_edge(DOWN, buff=0.35).to_edge(RIGHT, buff=0.5)
+            self.play(FadeIn(units, shift=UP * 0.2), run_time=0.8)
+            self.wait(2.5)
+            self.play(FadeOut(units), run_time=0.4)
         with self.beat("An average hides things") as b:
             fr3 = M(r"= \frac{16 - 16}{3} = 0", 46, SECANT).next_to(fr2, DOWN, buff=0.4)
             self.play(Write(fr3), run_time=1)
@@ -129,14 +136,15 @@ class Lesson(TranscriptScene):
             self.play(Flash(ax.c2p(2, 20), color=TANGENT), FadeIn(M("20", 30, TANGENT).next_to(ax.c2p(2, 20), UP, buff=0.15)), run_time=0.8)
             self.play(FadeOut(rider), run_time=0.3)
             b.line(3)
-            vs = VGroup(M(r"\text{average velocity} = 0", 38, SECANT),
-                        M(r"\text{average speed} = \frac{4 + 4}{3} \approx 2.67 \text{ mi/hr}", 34, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.35)
+            vs = VGroup(T("velocity: includes direction", 36, SECANT),
+                        T("speed: ignores direction", 36, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.35)
             vs.next_to(fr3, DOWN, buff=0.5).to_edge(RIGHT, buff=0.4)
             self.play(FadeIn(vs[0]), run_time=0.6)
             self.play(FadeIn(vs[1]), run_time=0.8)
             b.line(4)
-            self.play(Indicate(vs[0], color=SECANT), run_time=0.8)
-            self.play(FadeOut(vs), run_time=0.4)
+            avg = M(r"\text{average velocity} = 0", 38, SECANT).next_to(vs, DOWN, buff=0.4).align_to(vs, LEFT)
+            self.play(FadeIn(avg), Indicate(vs[0], color=SECANT), run_time=0.9)
+            self.play(FadeOut(vs), FadeOut(avg), run_time=0.4)
         self.play(FadeOut(fr2), FadeOut(fr3), *[FadeOut(m) for m in self.mobjects if isinstance(m, MathTex) and m.tex_string == "20"], run_time=0.5)
 
         sec = always_redraw(lambda: self.secant(ax, h.get_value()))

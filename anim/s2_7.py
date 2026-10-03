@@ -104,6 +104,13 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(M(r"-\sin x", 40, DERIV).next_to(bot, RIGHT, buff=0.2).shift(UP * 0.6)), run_time=0.6)
             b.line(1)
             self.play(FadeIn(callout("radians", SECANT, 34).to_edge(UP, buff=0.3)), run_time=0.6)
+            b.line(2)
+            # the proofs are for understanding; the rules are what to keep (Adder)
+            self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.5)
+            card = VGroup(T("The proofs won't be on the exam.", 40, DIM), T("Memorize the rules:", 44),
+                          M(r"\frac{d}{dx}\sin x = \cos x \qquad \frac{d}{dx}\cos x = -\sin x", 52, DERIV)).arrange(DOWN, buff=0.45)
+            self.play(FadeIn(card[0]), run_time=0.6)
+            self.play(FadeIn(card[1]), Write(card[2]), run_time=1.2)
         self.clear()
 
         with self.beat("Its own derivative") as b:
@@ -141,6 +148,9 @@ class Lesson(TranscriptScene):
             e = M(r"e^x:\ \text{slope at 0} = 1, \quad e \approx 2.718", 36, FUNC).next_to(info, DOWN, buff=0.3, aligned_edge=LEFT)
             self.play(FadeIn(e), run_time=0.6)
             b.line(2)
+            about = T(r"$e$: one particular number, irrational like $\pi$", 30, DIM).next_to(e, DOWN, buff=0.25, aligned_edge=LEFT)
+            self.play(FadeIn(about), run_time=0.6)
+            b.line(3)
             for xv in (-1, 0.5, 1.2):
                 self.play(Create(tangent_line(ax, np.exp, xv, np.exp(xv), [xv - 0.4, xv + 0.4], color=TANGENT)), Flash(ax.c2p(xv, np.exp(xv)), color=TANGENT), run_time=0.6)
             sb = callout(r"slope $=$ height", TANGENT, 36).next_to(e, DOWN, buff=0.5)

@@ -47,6 +47,7 @@ NOTES = [
     Text(r"$g$ is continuous on $[1, 7]$. The values change sign on $[1, 3]$ and on $[3, 4]$, so $g$ has at least "
          r"\blank{$2$} zeros on $[1, 7]$. The IVT also guarantees $g(c) = 4$ for at least \mblank{2} values of $c$: one in "
          r"$(1, 3)$, since $4$ is between $5$ and $-2$, and one in $(4, 7)$, since $4$ is between $1$ and $6$."),
+    VideoExample('Justify with the IVT', work="3.4cm"),
     BigIdea(r"A justification using the IVT says three things: $f$ is continuous on $[a, b]$; the target value is between $f(a)$ and "
             r"$f(b)$; therefore some $c$ in the interval gives that value."),
     Text(r"\textbf{On the AP exam.} Justifications like this are among the most important skills the exam tests. Expect at least one "

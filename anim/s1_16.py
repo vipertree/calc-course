@@ -101,6 +101,13 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(banner, shift=UP * 0.2), run_time=0.9)
         self.clear()
 
+        tbj = table(["x", "1", "3", "4", "7"], [["g(x)", "5", "-2", "1", "6"]], size=40)
+        self.example("Justify with the IVT", VGroup(T(r"$g$ is continuous. Must there be a value $c$ in $(1, 3)$ with $g(c) = 0$? Justify your answer.", 38), tbj).arrange(DOWN, buff=0.35),
+                     [r"TEXT:$g$ is continuous on $[1, 3]$.",
+                      r"TEXT:$g(1) = 5 > 0$ and $g(3) = -2 < 0$, so $0$ is between $g(3)$ and $g(1)$.",
+                      r"TEXT:Therefore, by the Intermediate Value Theorem, there is a value $c$ in $(1, 3)$ with $g(c) = 0$."], at=[1, 2, 3],
+                     text=r"$g$ is continuous, with values in the table above. Must there be a value $c$ in $(1, 3)$ with $g(c) = 0$? Justify your answer.")
+
         with self.beat("Close") as b:
             ax, al = plot_axes([0, 10, 2], [1500, 5500, 1000], w=9.6, h=5, coords=False)
             ax.shift(DOWN * 0.3)
@@ -110,7 +117,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A root in an interval", r"Show that $x^4 - 2x - 5 = 0$ has a solution between $x = 1$ and $x = 2$.",
-                     [r"f(x) = x^4 - 2x - 5 \text{ is continuous on } [1, 2]", r"f(1) = -6,\quad f(2) = 7", r"-6 < 0 < 7 \ \Rightarrow\ f(c) = 0 \text{ for some } c \text{ in } (1, 2)"],
+                     [r"f(x) = x^4 - 2x - 5 \text{ is continuous on } [1, 2]", r"f(1) = -6,\quad f(2) = 7", r"TEXT:Since $f$ is continuous on $[1, 2]$ and $-6 < 0 < 7$, by the Intermediate Value Theorem $f(c) = 0$ for some $c$ in $(1, 2)$."],
                      at=[1, 2, 3])
         tbh = table(["x", "0", "2", "5", "8"], [["h(x)", "3", "-1", "4", "2"]], size=40)
         self.example("Example 2: Counting from a table", VGroup(T(r"$h$ is continuous. Least number of solutions of $h(x) = 1$ on $[0, 8]$?", 40), tbh).arrange(DOWN, buff=0.35),

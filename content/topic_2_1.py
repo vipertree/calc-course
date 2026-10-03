@@ -86,12 +86,16 @@ NOTES = [
     Formula("Average rate of change", (
         r"The average rate of change of $f$ on $[a,b]$ is"
         r"\[ \frac{f(b)-f(a)}{b-a} \qquad\text{or, with } b = a+h,\qquad \frac{f(a+h)-f(a)}{h}. \]"
-        r"Units: \blank{output units} per \blank{input unit}. \quad "
+        r"Units: \blank{output units} per \blank{input unit}. For example, if $s(t)$ is miles driven after $t$ hours, the units are "
+        r"miles per hour; if $V(t)$ is liters of water in a tank after $t$ minutes, liters per minute; if $C(n)$ is the cost in "
+        r"dollars of $n$ shirts, dollars per shirt. \par "
         r"Graphically, it is the slope of the \blank{secant} line through $(a, f(a))$ and $(b, f(b))$.")),
     FIG_SECANT,
-    Text(r"\textbf{An average hides things.} From $t=1$ to $t=4$: \[ \frac{s(4)-s(1)}{4-1} = \frac{16-16}{3} = \blank{0} \] miles per hour. "
-         r"She drove out to $20$ miles and back to $16$, so she moved the whole time. Her average \emph{speed} (distance traveled over time) was "
-         r"\[ \frac{4 + 4}{3} \approx \blank{2.67} \] miles per hour. Velocity keeps track of direction, so the trip out and the trip back cancel."),
+    Text(r"\textbf{Velocity versus speed.} In everyday speech, velocity and speed mean about the same thing. In calculus, "
+         r"\textbf{velocity} includes direction, and \textbf{speed} does not. From $t=1$ to $t=4$: "
+         r"\[ \frac{s(4)-s(1)}{4-1} = \frac{16-16}{3} = \blank{0} \] miles per hour. She drove out to $20$ miles and came back to $16$, "
+         r"where she was at $t = 1$. So her average velocity is $0$, the same as if she had never moved, even though she was moving "
+         r"the whole time and her speed was never zero. We will sharpen the difference between velocity and speed later in this unit."),
 
     Section("Shrinking the interval"),
     Text(r"To find her speed at the single instant $t=1$, shrink the interval. "

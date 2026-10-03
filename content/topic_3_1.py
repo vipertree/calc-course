@@ -57,7 +57,7 @@ NOTES = [
     Formula("Chain rule", (
         r"\[ \frac{d}{dx}\Big[f\big(g(x)\big)\Big] = \mblank{f'\big(g(x)\big)}\cdot \mblank{g'(x)} \]"
         r"The derivative of the outside, evaluated at the \blank{inside}, times the derivative of the inside. This version says exactly "
-        r"where $f'$ is measured. \par Naming the inside $u = g(x)$ gives the short form to remember: \[ \big[f(u)\big]' = \mblank{f'(u)\cdot u'}. \]")),
+        r"where $f'$ is measured. \par Naming the inside $u = g(x)$ (a function of $x$) gives the short form to remember: \[ \big[f(u)\big]' = \mblank{f'(u)\cdot u'}. \]")),
     Example("A power of a polynomial", r"Find \[ \frac{d}{dx}\left[(x^2 + 1)^3\right], \] and check it at $x = 1$.",
             r"Outside $f(u) = u^3$, inside $g(x) = x^2 + 1$: $3(x^2 + 1)^2\cdot 2x = 6x(x^2+1)^2$. At $x = 1$: $6\cdot 4 = 24$, as above.",
             work="2.4cm", beat="The trap"),

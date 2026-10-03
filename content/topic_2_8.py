@@ -43,7 +43,7 @@ NOTES = [
          r"\[ \frac{dA}{dx} = \mblank{l\,\frac{dw}{dx} + w\,\frac{dl}{dx}} \]."),
     Formula("Product rule", (
         r"\[ \frac{d}{dx}\left[f(x)\,g(x)\right] = \mblank{f'(x)\,g(x) + f(x)\,g'(x)} \]"
-        r"With $u$ and $v$ for the two factors: \[ (uv)' = \mblank{u'v + uv'}. \] "
+        r"With $u$ and $v$ for the two factors (each one a function of $x$, multiplied together): \[ (uv)' = \mblank{u'v + uv'}. \] "
         r"In words: derivative of the first times the second, plus the first times the derivative of the second.")),
     Text(r"\textbf{How to work one.} Underline the two factors and label them $u$ and $v$. Write $u' = \ldots$ and $v' = \ldots$. Then put the four pieces into $u'v + uv'$."),
     VideoExample("Two factors", work="2.2cm"),

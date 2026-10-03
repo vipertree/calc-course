@@ -36,6 +36,9 @@ NOTES = [
     Text(r"\textbf{A puzzle.} Can a function be its own derivative? Its slope would have to equal its \blank{height} everywhere: as the function's value "
          r"gets higher, its rate of change must increase too. Nearly flat where it's small, steep where it's big."),
     FIG_EXP,
+    Text(r"\textbf{The number $e$.} You've probably met $e$ before. It is one particular number, irrational like $\pi$: "
+         r"$e \approx 2.718$. Euler named it, perhaps for \emph{exponential}. It is no coincidence that the most important "
+         r"exponential base is the one with the property below."),
     Text(r"The slope of $2^x$ at $x = 0$ is about $0.693$ (Topic 1.1); the slope of $3^x$ there is about $1.099$. The number "
          r"$e \approx 2.718$ is the base whose slope at $0$ is exactly \mblank{1}. As a result, the slope of $e^x$ at every point "
          r"equals its \blank{height}."),

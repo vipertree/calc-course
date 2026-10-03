@@ -28,7 +28,7 @@ NOTES = [
          r"\[ Q' = \frac{f' - Qg'}{g} = \frac{f' - \frac{f}{g}g'}{g} = \mblank{\frac{f'g - fg'}{g^2}} \]."),
     Formula("Quotient rule", (
         r"\[ \frac{d}{dx}\left[\frac{f(x)}{g(x)}\right] = \frac{g(x)\,f'(x) - f(x)\,g'(x)}{\left[g(x)\right]^2}, \qquad g(x) \ne 0 \]"
-        r"With $u$ on top and $v$ on the bottom: \[ \left(\frac{u}{v}\right)' = \mblank{\frac{u'v - uv'}{v^2}}. \] "
+        r"With $u$ on top and $v$ on the bottom (each one a function of $x$): \[ \left(\frac{u}{v}\right)' = \mblank{\frac{u'v - uv'}{v^2}}. \] "
         r"``Low d-high minus high d-low, over the square of what's below.'' The order of the numerator \blank{matters}.")),
     Text(r"\textbf{How to work one.} Label the top $u$ and the bottom $v$, write $u'$ and $v'$, then assemble $\dfrac{u'v - uv'}{v^2}$. "
          r"To find the derivative at one point, you only need the four numbers $u(a)$, $v(a)$, $u'(a)$, $v'(a)$."),

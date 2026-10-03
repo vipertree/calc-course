@@ -87,7 +87,12 @@ class Lesson(TranscriptScene):
         d.set_value(DX)
         self.add(sq)
         lab = M("x^2", 56).move_to(corner + (RIGHT + UP) * X / 2)
-        self.play(FadeIn(lab), run_time=0.4)
+        xs_ = VGroup(M("x", 40, DIM).next_to(corner + RIGHT * X / 2, DOWN, buff=0.15), M("x", 40, DIM).next_to(corner + UP * X / 2, LEFT, buff=0.15))
+        # the nudges keep their arrows while dx shrinks, until they are too small to draw
+        dxa = always_redraw(lambda: VGroup() if d.get_value() < 0.06 else VGroup(
+            nudge_arrow(corner + RIGHT * X, corner + RIGHT * (X + d.get_value()), "dx", DOWN),
+            nudge_arrow(corner + UP * X, corner + UP * (X + d.get_value()), "dx", LEFT)))
+        self.play(FadeIn(lab), FadeIn(xs_), FadeIn(dxa), run_time=0.4)
         with self.beat("From a nudge to a limit") as b:
             e1 = M(r"dA = 2x\,dx + (dx)^2", 48).to_edge(RIGHT, buff=0.6).shift(UP * 2.2)
             self.play(Write(e1), run_time=1.4)
@@ -133,6 +138,12 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(grown[0]), run_time=0.01)
             self.remove(base)
             self.play(LaggedStart(*[FadeIn(p, shift=0.3 * UP) for p in grown[1]], lag_ratio=0.4), run_time=1.6)
+            o3 = origin
+            dims = VGroup(M("x", 36, DIM).next_to(o3 + P(X3 / 2, X3 + dd, 0), DOWN, buff=0.15),
+                          nudge_arrow(o3 + P(X3, X3 + dd, 0), o3 + P(X3 + dd, X3 + dd, 0), "dx", DOWN),
+                          nudge_arrow(o3 + P(0, X3 + dd, X3), o3 + P(0, X3 + dd, X3 + dd), "dx", LEFT),
+                          nudge_arrow(o3 + P(0, X3, 0), o3 + P(0, X3 + dd, 0), "dx", LEFT + DOWN * 0.3))
+            self.play(FadeIn(dims), run_time=0.8)
             t1 = M(r"dV = 3x^2\,dx", 46, SECANT).to_edge(RIGHT, buff=0.8).shift(UP * 2)
             self.play(Write(t1), run_time=0.8)
             b.line(2)

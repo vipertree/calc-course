@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.13 (BC) | done | done | done (bc_only=True, FRQS = []) | see git log |
 | 6.12 (BC) | done | done | done (bc_only=True, FRQS = []) | see git log |
 | 6.11 (BC) | done | done (parts_table four-box helper) | done (bc_only=True, FRQS = []) | see git log |
 | 6.10 | done | done (long-division layout drawn by hand) | done (FRQS = []) | see git log |

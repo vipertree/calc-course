@@ -11,6 +11,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | 8.1 | done | done | done (table FRQ: trapezoid average, MVT, average value vs average rate) | see git log |
 | 8.2 | done | done | done (particle-motion FRQ) | see git log |
 | 8.3 | done | done | done (rate-in-context FRQ) | see git log |
+| 8.4 | done | done | done (FRQS = []; area FRQs come in 8.6 and the unit test) | see git log |
 
 ## Notes for the merging agent
 

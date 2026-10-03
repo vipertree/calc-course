@@ -80,7 +80,7 @@ class Lesson(TranscriptScene):
         ch = staged_chart([4], ["+", "-"], words=["rising", "falling"], name="A'", width=5.5)
         self.example("Water in a tank", r"Water flows into a tank at $E(t) = 8 + 2t$ liters per hour and drains at $D(t) = t^2$ liters per hour, $0 \le t \le 6$. The tank holds $50$ liters at $t = 0$. "
                      r"(a) Is the amount increasing or decreasing at $t = 5$? (b) How much water is in the tank at $t = 6$? (c) When is the amount greatest, and what is it?",
-                     [r"\text{(a) } A'(5) = E(5) - D(5) = 18 - 25 = -7 < 0", r"\text{TEXT:decreasing at } t = 5", r"\text{(b) } A(6) = 50 + \int_0^6 \left(8 + 2t - t^2\right) dt",
+                     [r"\text{(a) } A'(5) = E(5) - D(5) = 18 - 25 = -7 < 0", r"TEXT:Decreasing at $t = 5$.", r"\text{(b) } A(6) = 50 + \int_0^6 \left(8 + 2t - t^2\right) dt",
                       r"= 50 + \left[8t + t^2 - \tfrac{t^3}{3}\right]_0^6", r"= 50 + (48 + 36 - 72)", r"= 62 \text{ liters}",
                       r"\text{(c) } 8 + 2t - t^2 = 0", r"t^2 - 2t - 8 = 0", r"(t - 4)(t + 2) = 0", r"t = 4 \ \ (t = -2 \text{ is outside})",
                       r"A'(1) = 8 + 2 - 1 = 9 > 0", r"A'(5) = -7 < 0", r"A(0) = 50, \ \ A(4) = \tfrac{230}{3} \approx 76.7, \ \ A(6) = 62", r"\text{greatest: } \tfrac{230}{3} \text{ liters at } t = 4"],
@@ -95,8 +95,8 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: Interpret in context", r"Oil leaks from a tanker at $R(t)$ gallons per hour, $t$ in hours. Interpret (a) $\int_2^5 R(t)\,dt = 140$ and (b) $R'(3) = -4$, with units.",
-                     [r"\text{TEXT:(a) A total of } 140 \text{ gallons leak from } t = 2 \text{ to } t = 5 \text{ hours.}",
-                      r"\text{TEXT:(b) At } t = 3 \text{ hours, the leak rate is decreasing at } 4 \text{ gallons per hour per hour.}"], at=[1, 2])
+                     [r"TEXT:(a) A total of $140$ gallons leak from $t = 2$ to $t = 5$ hours.",
+                      r"TEXT:(b) At $t = 3$ hours, the leak rate is decreasing at $4$ gallons per hour per hour."], at=[1, 2])
         tab = table(["t", "0", "2", "5", "8"], [["P'(t)", "30", "40", "25", "10"]], size=34)
         self.example("Example 2: From a table of rates", VGroup(T(r"A town has $1200$ people at $t = 0$ (years). Use a trapezoidal sum to approximate $P(8)$.", 38), tab).arrange(DOWN, buff=0.3),
                      [r"\int_0^8 P'(t)\,dt \approx 2\cdot\tfrac{30 + 40}{2} + 3\cdot\tfrac{40 + 25}{2} + 3\cdot\tfrac{25 + 10}{2}", r"= 70 + 97.5 + 52.5", r"= 220",

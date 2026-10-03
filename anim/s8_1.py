@@ -91,7 +91,7 @@ class Lesson(TranscriptScene):
                      M(r"(\sqrt7,\ 7)", 26, TANGENT).next_to(ax.c2p(np.sqrt(7), 7), UL, buff=0.08))
         self.example("Average value of x squared", r"Find the average value of $f(x) = x^2$ on $[1, 4]$. Then find where $f$ equals its average value.",
                      [r"f_{\text{avg}} = \frac{1}{4 - 1}\int_1^4 x^2\,dx", r"= \frac13\left[\frac{x^3}{3}\right]_1^4", r"= \frac13\left(\frac{64}{3} - \frac13\right)", r"= \frac13 \cdot 21",
-                      r"= 7", r"x^2 = 7", r"x = \pm\sqrt7", r"\text{TEXT:}\sqrt7 \approx 2.65 \text{ is in } [1, 4];\ -\sqrt7 \text{ is not}"],
+                      r"= 7", r"x^2 = 7", r"x = \pm\sqrt7", r"TEXT:$\sqrt7 \approx 2.65$ is in $[1, 4]$; $-\sqrt7$ is not."],
                      at=[1, 2, 2, 2, 3, 4, 4, 5], figure=fig, figure_at=4,
                      notes_graph=dict(fns=[("x^2", 0, 4.1)], xr=(0, 4.5), yr=(0, 17), ystep=4))
 

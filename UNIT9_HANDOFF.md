@@ -13,6 +13,7 @@ py_compile, and `build.py X.Y --no-pdf`. Every topic is `bc_only=True`.
 | 9.3 | done | done | done (FRQS = []) | see git log |
 | 9.4 | done | done | done (FRQS = []) | see git log |
 | 9.5 | done | done | done (FRQS = []) | see git log |
+| 9.6 | done | done (drone prop in kit) | done (calculator parametric-motion FRQ) | see git log |
 
 ## Notes for the merging agent
 

@@ -817,3 +817,13 @@ def ladybug(size=0.5):
 def param_curve(ax, xf, yf, t0, t1, color=FUNC, width=4):
     """The parametric curve (x(t), y(t)) for t0 <= t <= t1, in axis coordinates."""
     return ax.plot_parametric_curve(lambda s: np.array([xf(s), yf(s), 0.0]), t_range=[t0, t1, 0.01], color=color, stroke_width=width)
+
+
+def drone(size=0.9):
+    """A small quadcopter seen from above (vector art)."""
+    body = RoundedRectangle(width=size * 0.45, height=size * 0.45, corner_radius=size * 0.1, stroke_color=INK, stroke_width=2, fill_color="#4A5568", fill_opacity=1)
+    arms = VGroup(Line(LEFT * size / 2 + UP * size / 2, RIGHT * size / 2 + DOWN * size / 2, color=INK, stroke_width=4),
+                  Line(LEFT * size / 2 + DOWN * size / 2, RIGHT * size / 2 + UP * size / 2, color=INK, stroke_width=4))
+    rotors = VGroup(*[Circle(radius=size * 0.18, stroke_color=DIM, stroke_width=2, fill_color=WATER_HI, fill_opacity=0.6).move_to(np.array([sx * size / 2, sy * size / 2, 0]))
+                      for sx in (-1, 1) for sy in (-1, 1)])
+    return VGroup(arms, rotors, body)

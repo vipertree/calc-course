@@ -23,4 +23,5 @@ Unit test: content/unit_9.py done (all of 9.1-9.9; 12 + 4 MCQ, 3 FRQs: calculato
 ## Notes for the merging agent
 
 - CED codes for Unit 9 (CHA-3.G etc.) were written from memory; check them against the CED before release.
+- `UnitTest` has no BC flag; the web presumably takes BC-ness from syllabus.json (unit `bc: true`). Check that the U9/U10 tests are hidden from AB students.
 - Render every scene and run video-review / notes-review.

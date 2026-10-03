@@ -29,4 +29,13 @@ Unit test: content/unit_10.py done (all of 10.1-10.15; 12 + 4 MCQ, 3 FRQs: Taylo
 ## Notes for the merging agent
 
 - CED codes for Unit 10 (LIM-7.x, LIM-8.x) were written from memory; check them against the CED before release.
+- `UnitTest` has no BC flag; the web presumably takes BC-ness from syllabus.json (unit `bc: true`). Check that the U9/U10 tests are hidden from AB students.
 - Render every scene and run video-review / notes-review.
+
+## Whole-branch verification (end of Unit 10)
+
+- `build.py X.Y --no-pdf` passes for every topic 5.1-10.15 and for U5-U10.
+- `tools/transcripts.py`: 111 transcripts, 0 flags. Every scene in anim/ compiles.
+- No MCQ in any topic or unit test has duplicate choices.
+- `manage.py test course.tests.Grading course.tests.AnswerKeys` passes; the other web suites error identically with and
+  without this branch's changes (they need exported content, which this container doesn't have).

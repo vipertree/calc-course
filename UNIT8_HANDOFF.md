@@ -9,6 +9,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 8.1 | done | done | done (table FRQ: trapezoid average, MVT, average value vs average rate) | see git log |
+| 8.2 | done | done | done (particle-motion FRQ) | see git log |
 
 ## Notes for the merging agent
 

@@ -76,12 +76,17 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
 3. Practice both directions: f -> f' and f' -> f.
 4. Include constructed graphs of f' (random combos of line segments and semicircles), not only cubics whose
    derivative students can reason out as a quadratic; draw conclusions about f from them.
+5. UPDATE from Adder: 5.9 already covers much of the chart. So 5.8 only hints at the 5.9 ideas (a light version of
+   the chart), and 5.9 is where the full chart goes and everything gets put together and hammered home.
+6. At least one problem where students sketch a graph from scratch: a polynomial, using f' and f'' (not on the AP
+   exam anymore, but they should practice it once).
 
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.7 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
 | 5.6 | 1-2 above | done (transcript, scene, notes); 5.7/5.8 cup/cap wording -> bowl/hill too; not rendered | see git log |
 | 5.5 | 1 above | done (transcript, scene, notes, practice, quiz); not rendered | see git log |
 | 5.4 | 1 above | done (transcript, scene); not rendered | see git log |
@@ -126,3 +131,5 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   eye above = convex; arrows into the open side). All four examples have staged f'' sign charts ("down"/"up" words,
   "inflection" marks) and step-by-step derivatives. cup/cap -> bowl/hill in 5.6 notes, 5.7 transcript + notes,
   5.8 transcript + scene text.
+- 5.7: new beat "Which test?" (two columns: second vs first derivative test, then the habit). Example 2 (x^4)
+  falls back to the FDT with a staged chart. All examples one step per line.

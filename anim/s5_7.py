@@ -41,7 +41,8 @@ class Lesson(TranscriptScene):
                 self.play(FadeIn(r, shift=RIGHT * 0.2), run_time=0.7)
         self.clear()
         self.example("Using the test", r"Classify the critical points of $f(x) = 2x^3 - 6x$.",
-                     [r"f'(x) = 6x^2 - 6 = 0 \text{ at } x = \pm 1", r"f''(x) = 12x", r"f''(-1) = -12 < 0: \ \text{relative max}; \quad f''(1) = 12 > 0: \ \text{relative min}"], at=[1, 2, 3])
+                     [r"f'(x) = 6x^2 - 6", r"6x^2 - 6 = 0, \ \ x^2 = 1, \ \ x = \pm 1", r"f''(x) = 12x",
+                      r"f''(-1) = -12 < 0: \ \text{concave down, relative max}", r"f''(1) = 12 > 0: \ \text{concave up, relative min}"], at=[1, 2, 3, 4, 5])
 
         with self.beat("When the test is silent") as b:
             g = VGroup(flat(lambda s: 0.8 * s**4, r"$x^4$: min", DERIV), flat(lambda s: -0.8 * s**4, r"$-x^4$: max", TANGENT), flat(lambda s: 0.8 * s**3, r"$x^3$: neither", DIM))
@@ -52,6 +53,26 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(same), *[FadeIn(p[:4]) for p in g], run_time=1)
             b.line(1)
             self.play(*[FadeIn(p[4]) for p in g], run_time=0.8)
+        self.clear()
+
+        with self.beat("Which test?") as b:
+            def col(title, lines, color):
+                body = VGroup(*[T(t, 32) for t in lines]).arrange(DOWN, aligned_edge=LEFT, buff=0.22)
+                return VGroup(T(title, 40, color), body).arrange(DOWN, aligned_edge=LEFT, buff=0.35)
+            second = col("Second Derivative Test", [r"quick: plug $c$ into $f''$", "no number line", r"only where $f'(c) = 0$", r"silent when $f''(c) = 0$"], DERIV)
+            first = col("First Derivative Test", ["always gives an answer", r"works where $f'$ is undefined", "needs a number line", "gives inc/dec intervals too"], SECANT)
+            cols = VGroup(second, first).arrange(RIGHT, buff=1.2, aligned_edge=UP).to_edge(UP, buff=0.6)
+            rule = VGroup(T(r"$f''$ easy and $f'(c) = 0$: try the second.", 36, INK), T(r"Otherwise, or if $f''(c) = 0$: use the first.", 36, INK)).arrange(DOWN, buff=0.2)
+            rule.to_edge(DOWN, buff=0.5)
+            self.play(FadeIn(second[0]), FadeIn(first[0]), run_time=0.8)
+            b.line(1)
+            self.play(FadeIn(second[1][:2]), run_time=0.8)
+            b.line(2)
+            self.play(FadeIn(second[1][2:]), run_time=0.8)
+            b.line(3)
+            self.play(FadeIn(first[1]), run_time=1)
+            b.line(4)
+            self.play(FadeIn(rule), run_time=0.8)
         self.clear()
 
         ax, al = plot_axes([0, 6, 1], [0, 8, 2], w=7, h=5, coords=False)
@@ -74,12 +95,17 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A cubic", r"Use the Second Derivative Test to classify the critical points of $f(x) = x^3 - 3x^2 + 4$.",
-                     [r"f'(x) = 3x^2 - 6x = 3x(x - 2):\ \ x = 0,\ 2", r"f''(x) = 6x - 6", r"f''(0) = -6 < 0:\ \text{relative max at } x = 0",
-                      r"f''(2) = 6 > 0:\ \text{relative min at } x = 2"], at=[1, 2, 3, 4])
+                     [r"f'(x) = 3x^2 - 6x", r"= 3x(x - 2)", r"3x = 0 \text{ or } x - 2 = 0, \ \text{so}\ x = 0 \text{ or } x = 2", r"f''(x) = 6x - 6",
+                      r"f''(0) = -6 < 0:\ \text{concave down, relative max at } x = 0", r"f''(2) = 12 - 6 = 6 > 0:\ \text{concave up, relative min at } x = 2"],
+                     at=[1, 2, 2, 3, 4, 5])
+        q = staged_chart([0], ["-", "+"], words=["dec", "inc"], width=7)
         self.example("Example 2: When the test fails", r"Classify the critical point of $f(x) = x^4$.",
-                     [r"f'(x) = 4x^3 = 0 \text{ at } x = 0", r"f''(x) = 12x^2,\ \ f''(0) = 0:\ \text{inconclusive}",
-                      r"f' < 0 \text{ for } x < 0,\ \ f' > 0 \text{ for } x > 0:\ \text{relative min}"], at=[1, 2, 3])
+                     [r"f'(x) = 4x^3", r"4x^3 = 0, \ \text{so}\ x = 0", r"f''(x) = 12x^2, \ \ f''(0) = 0: \ \text{inconclusive}",
+                      r"TEXT:Switch to the first derivative test.", r"f'(-1) = -4 < 0", r"f'(1) = 4 > 0", r"- \text{ to } +: \ \text{relative min at } x = 0"],
+                     at=[1, 1, 2, 3, 3, 4, 5], figure=q, figure_at=3,
+                     cues={4: reveal_sign(q, 0), 5: lambda sc: (reveal_sign(q, 1)(sc), reveal_words(q)(sc)), 6: mark_point(q, 0, "min")})
         self.example("Example 3: The only critical point", r"Find the absolute minimum value of $f(x) = x + \dfrac{4}{x}$ on $(0, \infty)$. Justify.",
-                     [r"f'(x) = 1 - \frac{4}{x^2} = 0 \text{ at } x = 2", r"f''(x) = \frac{8}{x^3},\ \ f''(2) = 1 > 0:\ \text{relative min}",
-                      r"TEXT:It is the only critical point on $(0, \infty)$, so it is the absolute minimum.", r"f(2) = 2 + 2 = 4"], at=[1, 2, 3, 4])
+                     [r"f'(x) = 1 - \frac{4}{x^2}", r"1 - \frac{4}{x^2} = 0, \ \ \frac{4}{x^2} = 1, \ \ x^2 = 4, \ \ x = \pm 2",
+                      r"\text{only } x = 2 \text{ is in } (0, \infty)", r"f''(x) = \frac{8}{x^3}", r"f''(2) = \frac88 = 1 > 0: \ \text{relative min}",
+                      r"TEXT:It is the only critical point on $(0, \infty)$, so it is the absolute minimum.", r"f(2) = 2 + 2 = 4"], at=[1, 2, 2, 3, 4, 5, 6])
         self.finish()

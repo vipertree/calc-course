@@ -30,7 +30,7 @@ NOTES = [
     Video("s5_7.py::Lesson", "The second derivative test", 4),
 
     Section("The test"),
-    Text(r"At a horizontal tangent, the bend of the graph tells the story. A cap with a flat top is a peak; a cup with a flat bottom is a valley."),
+    Text(r"At a horizontal tangent, the bend of the graph tells the story. A hill with a flat top is a peak; a bowl with a flat bottom is a valley."),
     Formula("The Second Derivative Test", (
         r"Suppose $f'(c) = 0$. \par If $f''(c) < 0$ (concave \blank{down}), $f$ has a relative \blank{maximum} at $c$. \par "
         r"If $f''(c) > 0$ (concave \blank{up}), $f$ has a relative \blank{minimum} at $c$. \par "

@@ -32,12 +32,15 @@ NOTES = [
     Video("s5_6.py::Lesson", "Which way the graph bends", 4),
 
     Section("Concave up, concave down"),
-    Text(r"A graph is \blank{concave up} where it bends upward like a cup, and \blank{concave down} where it bends downward like a cap. "
+    Text(r"A graph is \blank{concave up} where it bends upward like a bowl, and \blank{concave down} where it bends downward like a hill. "
          r"Concave up means the graph lies \blank{above} its tangent lines (Topic 4.6); concave down means it lies below them."),
     Formula("Concavity from derivatives", (
         r"$f$ is concave up on an interval where $f'$ is \blank{increasing}, that is, where \[ f''(x) > 0. \] "
         r"$f$ is concave down where $f'$ is decreasing, that is, where \[ f''(x) < 0. \]")),
-    Text(r"Why: as you move right along a cup, the tangent slopes keep growing. Along a cap they keep shrinking."),
+    Text(r"Why: as you move right along a bowl, the tangent slopes keep growing. Along a hill they keep shrinking."),
+    Text(r"\textbf{Why ``up'' and ``down''?} In everyday English, \emph{concave} means caved in and \emph{convex} means bulging out. "
+         r"But a graph is a thin line: a hill looks concave from underneath and convex from above. So we say which way the curve "
+         r"\blank{opens}: a bowl opens upward (concave up), a hill opens downward (concave down)."),
 
     Section("Points of inflection"),
     Formula("Point of inflection", (

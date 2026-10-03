@@ -94,5 +94,5 @@ class Lesson(TranscriptScene):
         self.example("Example 3: From conditions to a sketch",
                      r"Sketch a continuous $f$ with $f(0) = 1$, $f'(x) < 0$ for $x < 0$, $f'(x) > 0$ for $x > 0$, and $f''(x) > 0$ for all $x$.",
                      [r"TEXT:$f$ falls, then rises: the minimum is at $(0, 1)$.", r"TEXT:$f'' > 0$ everywhere: concave up the whole way.",
-                      r"TEXT:A cup with its lowest point at $(0, 1)$."], at=[1, 2, 3])
+                      r"TEXT:A bowl with its lowest point at $(0, 1)$."], at=[1, 2, 3])
         self.finish()

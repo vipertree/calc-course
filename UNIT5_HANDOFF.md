@@ -64,11 +64,25 @@ video-review passes.
    lesson-making skill (done: .claude/skills/lesson-writing/SKILL.md).
 2. Second derivative test: spend time on it as a CHOICE vs. the first derivative test; when each is appropriate.
 
+**5.8** (Adder supplied an image of a chart; transcribed here)
+Adder's student chart, three columns: Function f | First derivative f' | Second derivative f''.
+  Group 1 (f alone): Positive / Zero / Negative  (f', f'' columns blank)
+  Group 2: Increasing | f' positive;  Decreasing | f' negative;  Local minimum, Local maximum, Horizontal tangent | f' zero
+  Group 3: Concave up | f' increasing | f'' positive;  Concave down | f' decreasing | f'' negative;
+           Inflection point | f' local min / local max / horizontal tangent | f'' zero
+1. Make a nice-looking version of this chart; it is the CENTERPIECE of 5.8.
+2. Add clarity on sign CHANGES: f' = 0 alone isn't a max/min (needs + to - or - to +); f'' = 0 alone isn't an
+   inflection point (needs a sign change). Hammer it.
+3. Practice both directions: f -> f' and f' -> f.
+4. Include constructed graphs of f' (random combos of line segments and semicircles), not only cubics whose
+   derivative students can reason out as a quadratic; draw conclusions about f from them.
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.6 | 1-2 above | done (transcript, scene, notes); 5.7/5.8 cup/cap wording -> bowl/hill too; not rendered | see git log |
 | 5.5 | 1 above | done (transcript, scene, notes, practice, quiz); not rendered | see git log |
 | 5.4 | 1 above | done (transcript, scene); not rendered | see git log |
 | 5.3 | 1-3 above | done (transcript, scene, notes, practice); not rendered | see git log |
@@ -108,3 +122,7 @@ video-review passes.
   output; to the x-axis = where, x = 3, an input; then the two question phrasings). Examples renamed: "Just the
   value", "Just the location", "Both". Practice: 3 generated items now ask "at what x" (asserted unique), plus one
   table item; quiz gets an "at what x" MCQ with the value-as-answer trap.
+- 5.6: opening beat renamed "Bowls and hills". New beat "Why up and down" (thin hill with an eye below = concave,
+  eye above = convex; arrows into the open side). All four examples have staged f'' sign charts ("down"/"up" words,
+  "inflection" marks) and step-by-step derivatives. cup/cap -> bowl/hill in 5.6 notes, 5.7 transcript + notes,
+  5.8 transcript + scene text.

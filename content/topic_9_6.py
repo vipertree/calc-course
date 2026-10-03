@@ -81,12 +81,12 @@ MCQS = [
     MCQ(r"A particle has $x'(t) = \sqrt t$ and $y'(t) = \cos t$. To three decimal places, the distance it travels for $0 \le t \le 3$ is", [r"$3.464$", rf"${_m4:.3f}$", r"$2.987$", r"$5.196$"], "B", rf"$\int_0^3 \sqrt{{t + \cos^2 t}}\,dt \approx {_m4:.3f}$.", calc=True),
 ]
 close("m4", _m4, 4.121, 5e-4)
-close("frq d", _d, 9.614, 5e-4)
 
 # ---------------------------------------------------------------- FRQ
 xp, yp = t**2 - 3 * t, sp.sqrt(t + 1)
 _d = NI(speed(xp, yp), 0, 4)
 _y4 = -1 + sp.integrate(yp, (t, 0, 4))
+close("frq d", _d, 9.614, 5e-4)
 same("frq", [speed(xp, yp).subs(t, 2), [sp.diff(xp, t).subs(t, 2), sp.simplify(sp.diff(yp, t).subs(t, 2))], sp.simplify((yp / xp).subs(t, 2)), 2 + sp.integrate(xp, (t, 0, 4)), sp.simplify(_y4 - (-1 + sp.Rational(2, 3) * (5 * sp.sqrt(5) - 1)))],
      [sp.sqrt(7), [1, sp.sqrt(3) / 6], -sp.sqrt(3) / 2, -sp.Rational(2, 3), 0])
 FRQS = [

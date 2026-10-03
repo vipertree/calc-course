@@ -505,6 +505,11 @@ def nudge_arrow(p0, p1, label="dx", side=DOWN, color=INK, size=30, offset=0.18):
     return VGroup(a, M(label, size, color).next_to(a, side, buff=0.08))
 
 
+def car_prop(width=1.1):
+    """Amara's car: a painted side-view sprite (assets/car.png, generated art), facing right."""
+    return ImageMobject(os.path.join(ASSETS, "car.png")).set_width(width)
+
+
 def zeno_bust(height=5.6):
     """Jan de Bisschop's etching of a bust of Zeno of Elea (c. 1670, Rijksmuseum, CC0); see assets/CREDITS.md."""
     return ImageMobject(os.path.join(ASSETS, "zeno.png")).set_height(height)

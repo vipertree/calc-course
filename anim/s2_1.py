@@ -47,9 +47,11 @@ class Lesson(TranscriptScene):
         rows = [["1", "24"], ["0.5", "30"], ["0.1", "34.8"], ["0.01", "35.88"], ["0.001", "35.988"]]
         tb = table([r"\Delta t", r"\text{average (m/s)}"], rows, size=32).to_edge(RIGHT, buff=0.9).shift(UP * 0.4)
         q = M(r"36\,?", 56, SECANT).next_to(tb, DOWN, buff=0.4)
+        zf = M(r"s(t) = 60t - 12t^2", 44, FUNC).next_to(tb, UP, buff=0.45)
         with self.beat("Zeno's arrow, again") as b:
             self.play(FadeIn(arrow), Create(outline), run_time=1.2)
             b.line(1)
+            self.play(Write(zf), run_time=1)
             self.play(FadeIn(tb, shift=LEFT * 0.3), run_time=1.2)
             self.play(Write(q), run_time=0.8)
             b.line(2)
@@ -63,18 +65,30 @@ class Lesson(TranscriptScene):
         # ---------------------------------------------------------------- Amara's drive
         ax, al = self.graph()
         curve = ax.plot(s, x_range=[0, 4.5], color=FUNC, stroke_width=5)
-        road = Line(LEFT * 5.5, RIGHT * 5.5, color=DIM, stroke_width=6).to_edge(UP, buff=0.5)
-        house = VGroup(Square(0.4, color=INK, stroke_width=3), Triangle(color=INK, stroke_width=3).scale(0.28).shift(UP * 0.33)).next_to(road.get_left(), UP, buff=0.05)
+        road = Line(LEFT * 5.5, RIGHT * 5.5, color=DIM, stroke_width=6).to_edge(UP, buff=1.0)
+        walls = Square(0.4, color=INK, stroke_width=3)
+        house = VGroup(walls, Triangle(color=INK, stroke_width=3).stretch_to_fit_width(0.52).stretch_to_fit_height(0.3).next_to(walls, UP, buff=0)).next_to(road.get_left(), LEFT, buff=0.75).align_to(road, DOWN)
         tt = ValueTracker(0)
         mile = lambda d: road.point_from_proportion(min(d / 22, 1))
-        car = always_redraw(lambda: RoundedRectangle(width=0.55, height=0.28, corner_radius=0.08, color=SECANT, fill_color=SECANT, fill_opacity=1)
-                            .move_to(mile(s(tt.get_value())) + UP * 0.2))
+        car = car_prop(1.3)
+        car.facing = 1
+
+        def drive(m):
+            t = tt.get_value()
+            way = 1 if 3 * (t - 2) * (t - 4) >= 0 else -1      # s'(t) = 3(t - 2)(t - 4): heading home between t = 2 and 4
+            if way != m.facing:
+                m.stretch(-1, 0)
+                m.facing = way
+            m.move_to(mile(s(t)) + UP * (m.height / 2 + 0.02))
+        drive(car)
+        car.add_updater(drive)
         with self.beat("Amara's drive") as b:
             self.play(Create(road), FadeIn(house), FadeIn(car), run_time=1.2)
             b.line(1)
             self.play(FadeIn(ax), FadeIn(al), FadeIn(M(r"s(t) = t^3 - 9t^2 + 24t", 40, FUNC).to_edge(RIGHT, buff=0.6).shift(UP * 1.6)), run_time=1)
             b.line(2)
             self.play(Create(curve), tt.animate.set_value(4.5), run_time=3.5, rate_func=linear)
+        car.clear_updaters()
         self.play(*[FadeOut(m) for m in self.mobjects if m not in (ax, al, curve)], run_time=0.5)
         self.remove(car)
 

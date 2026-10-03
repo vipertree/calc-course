@@ -6,28 +6,40 @@ from kit import *
 from style import *
 
 
-def zoom_view(fn, cx, cy, R, w=7.6, h=5, mag=None, smooth=True):
-    """The graph of fn in the window [cx - R, cx + R] x [cy - R*h/w, cy + R*h/w], drawn at the same size whatever R is."""
-    ry = R * h / w
-    ax = Axes(x_range=[cx - R, cx + R, R], y_range=[cy - ry, cy + ry, ry], x_length=w, y_length=h, tips=False,
-              axis_config={"color": DIM, "stroke_width": 2, "include_ticks": False}).set_opacity(0.0)
-    frame = Rectangle(width=w, height=h, color=DIM, stroke_width=2)
-    xs = np.linspace(cx - R, cx + R, 401)
-    pts = [ax.c2p(x, fn(x)) for x in xs if abs(fn(x) - cy) <= ry]
-    curve = VMobject(color=FUNC, stroke_width=5)
-    if smooth:
-        curve.set_points_smoothly(pts)
-    else:
-        curve.set_points_as_corners(pts)
-    label = M(rf"\times {mag}" if mag else r"\times 1", 36, DIM).next_to(frame, UP, buff=0.15).align_to(frame, RIGHT)
-    return VGroup(frame, curve, Dot(ax.c2p(cx, cy), color=INK, radius=0.07), label)
+def _nice_steps(R, half):
+    """Tick steps 1, 5, 10, 50, ... times a power of ten (each a multiple of the one before), with each step's spacing on
+    screen: half-width R maps to `half` scene units."""
+    k = int(np.floor(np.log10(R))) - 3
+    out = []
+    while True:
+        for m in (1, 5):
+            st = m * 10.0 ** k
+            if st > 2 * R:
+                return out
+            out.append((st, st / R * half))
+        k += 1
+
+
+_LABELS = {}
+
+
+def _label(text):
+    """A tick label; cached, since a zoom redraws every label on every frame."""
+    if text not in _LABELS:
+        _LABELS[text] = M(text, 22, DIM)
+    return _LABELS[text].copy()
+
+
+def _ramp(x, lo, hi):
+    return float(np.clip((x - lo) / (hi - lo), 0, 1))
 
 
 def tick_view(fn, R, w=7.6, h=5, labels=False, cx=0.0, cy=0.0, smooth=True, step=None):
-    """A window [cx - R, cx + R] x [cy - ry, cy + ry] with axes through the origin (when in view), tick marks every `step`
-    (default R/4), and, if labels=True, the tick values. The same picture at any R, so a zoom is a sequence of these."""
+    """A window [cx - R, cx + R] x [cy - ry, cy + ry] with axes through the origin (when in view) and tick marks.
+    The ticks come from the 1-5-10 ladder: a step's ticks fade in once they are far enough apart on screen, and its
+    labels (if labels=True) fade in once they have room, so redrawing this at a slowly changing R is a smooth zoom
+    (see zoom_tracker). `step` pins a single tick step instead (no fading)."""
     ry = R * h / w
-    step = step or R / 4
     frame = Rectangle(width=w, height=h, color=DIM, stroke_width=2)
     to = lambda x, y: frame.get_center() + RIGHT * (x - cx) / R * w / 2 + UP * (y - cy) / ry * h / 2
     g = VGroup(frame)
@@ -36,28 +48,68 @@ def tick_view(fn, R, w=7.6, h=5, labels=False, cx=0.0, cy=0.0, smooth=True, step
     if abs(cx) <= R:
         g.add(Line(to(0, cy - ry), to(0, cy + ry), color=DIM, stroke_width=2))
     fmt = lambda v: f"{v:.10f}".rstrip("0").rstrip(".") if abs(v) > 1e-12 else "0"
-    k0, k1 = int(np.ceil((cx - R) / step)), int(np.floor((cx + R) / step))
-    for k in range(k0, k1 + 1):
-        x = k * step
-        if k == 0 or abs(cy) > ry:
-            continue
-        g.add(Line(to(x, 0) + DOWN * 0.08, to(x, 0) + UP * 0.08, color=DIM, stroke_width=2))
-        if labels and k % 2 == 0:
-            g.add(M(fmt(x), 22, DIM).next_to(to(x, 0), DOWN, buff=0.12))
-    k0, k1 = int(np.ceil((cy - ry) / step)), int(np.floor((cy + ry) / step))
-    for k in range(k0, k1 + 1):
-        y = k * step
-        if k == 0 or abs(cx) > R:
-            continue
-        g.add(Line(to(0, y) + LEFT * 0.08, to(0, y) + RIGHT * 0.08, color=DIM, stroke_width=2))
-        if labels:
-            g.add(M(fmt(y), 22, DIM).next_to(to(0, y), LEFT, buff=0.12))
-    xs = np.linspace(cx - R, cx + R, 600)
+    steps = [(step, 9.0)] if step else _nice_steps(R, w / 2)
+    steps = [(st, sp) for st, sp in steps if sp >= 0.5]
+    if not steps:
+        steps = [(R, w / 2)]
+    fine = steps[0][0]
+
+    def alphas(v):
+        """(tick, label) opacity for the value v: the best over every ladder step v is a multiple of."""
+        ta = la = 0.0
+        for st, sp in steps:
+            q = v / st
+            if abs(q - round(q)) < 1e-6:
+                ta = max(ta, 1.0 if step else _ramp(sp, 0.5, 0.7))
+                la = max(la, 1.0 if step else _ramp(sp, 0.7, 0.95))
+        return ta, la
+
+    def edge(p, lo, hi, room):
+        return _ramp(min(p - lo, hi - p), room, room + 0.3)
+
+    L, Rt = frame.get_left()[0], frame.get_right()[0]
+    B, Tp = frame.get_bottom()[1], frame.get_top()[1]
+    if abs(cy) <= ry:
+        for k in range(int(np.ceil((cx - R) / fine)), int(np.floor((cx + R) / fine)) + 1):
+            x = k * fine
+            if k == 0:
+                continue
+            ta, la = alphas(x)
+            pt = to(x, 0)
+            if ta > 0:
+                g.add(Line(pt + DOWN * 0.08, pt + UP * 0.08, color=DIM, stroke_width=2).set_stroke(opacity=ta))
+            la *= edge(pt[0], L, Rt, 0.35)
+            if labels and la > 0:
+                g.add(_label(fmt(x)).next_to(pt, DOWN, buff=0.12).set_opacity(la))
+    if abs(cx) <= R:
+        for k in range(int(np.ceil((cy - ry) / fine)), int(np.floor((cy + ry) / fine)) + 1):
+            y = k * fine
+            if k == 0:
+                continue
+            ta, la = alphas(y)
+            pt = to(0, y)
+            if ta > 0:
+                g.add(Line(pt + LEFT * 0.08, pt + RIGHT * 0.08, color=DIM, stroke_width=2).set_stroke(opacity=ta))
+            la *= edge(pt[1], B, Tp, 0.2)
+            if labels and la > 0:
+                g.add(_label(fmt(y)).next_to(pt, LEFT, buff=0.12).set_opacity(la))
+    xs = np.linspace(cx - R, cx + R, 601)
     pts = [to(x, fn(x)) for x in xs if abs(fn(x) - cy) <= ry]
     curve = VMobject(color=FUNC, stroke_width=5)
     curve.set_points_smoothly(pts) if smooth else curve.set_points_as_corners(pts)
     g.add(curve)
     return g
+
+
+def zoom_tracker(R0, build):
+    """A continuous zoom: a tracker on log10 of the window half-width R, and the view `build(R)` redrawn every frame.
+    Animate it with zoom_to(tracker, R1); equal times give equal zoom factors, so it reads as a steady camera zoom."""
+    z = ValueTracker(np.log10(R0))
+    return z, always_redraw(lambda: build(10 ** z.get_value()))
+
+
+def zoom_to(z, R1):
+    return z.animate.set_value(np.log10(R1))
 
 
 class Lesson(TranscriptScene):
@@ -66,21 +118,24 @@ class Lesson(TranscriptScene):
     def construct(self):
         sq = lambda x: x * x
         wave = lambda x: np.sin(2 * x) + 0.001
-        v = tick_view(wave, 0.004, step=0.001).shift(DOWN * 0.3)
+        v = tick_view(wave, 0.004).shift(DOWN * 0.3)
         with self.beat("Guess the function") as b:
             self.play(FadeIn(v), run_time=1.2)
             b.line(1)
             g1 = M(r"y = 2x + 1\,?", 48, SECANT).next_to(v, UP, buff=0.25)
             self.play(Write(g1), run_time=1)
         with self.beat("Reveal the scale") as b:
-            v2 = tick_view(wave, 0.004, step=0.001, labels=True).shift(DOWN * 0.3)
+            v2 = tick_view(wave, 0.004, labels=True).shift(DOWN * 0.3)
             self.play(Transform(v, v2), run_time=1.2)
             b.line(1)
             g2 = M(r"y = 2x + 0.001\,?", 48, SECANT).move_to(g1)
             self.play(ReplacementTransform(g1, g2), run_time=1)
         with self.beat("Zoom out") as b:
-            for R in (0.02, 0.1, 0.4, 1.2, 3.2):
-                self.play(Transform(v, tick_view(wave, R, labels=True).shift(DOWN * 0.3)), run_time=1.4)
+            z, zv = zoom_tracker(0.004, lambda R: tick_view(wave, R, labels=True).shift(DOWN * 0.3))
+            self.remove(v)
+            self.add(zv)
+            self.play(zoom_to(z, 3.2), run_time=7, rate_func=smooth)
+            zv.clear_updaters()
             b.line(1)
             fn = M(r"y = \sin(2x) + 0.001", 48, FUNC).move_to(g2)
             self.play(ReplacementTransform(g2, fn), run_time=1)
@@ -102,8 +157,12 @@ class Lesson(TranscriptScene):
         v = tick_view(abs, 2, labels=True, smooth=False, cy=1).shift(DOWN * 0.3)
         with self.beat("A corner doesn't straighten") as b:
             self.play(FadeIn(v), run_time=1)
-            for R in (0.2, 0.02, 0.002):
-                self.play(Transform(v, tick_view(abs, R, labels=True, smooth=False, cy=R / 2).shift(DOWN * 0.3)), run_time=1.6)
+            z, zv = zoom_tracker(2, lambda R: tick_view(abs, R, labels=True, smooth=False, cy=R / 2).shift(DOWN * 0.3))
+            self.remove(v)
+            self.add(zv)
+            self.play(zoom_to(z, 0.002), run_time=6, rate_func=smooth)
+            zv.clear_updaters()
+            v = zv
             b.line(1)
             labs = VGroup(M(r"\text{slope } {-1}", 36, SECANT).move_to(v[0].get_center() + LEFT * 2.2 + UP * 1.4),
                           M(r"\text{slope } 1", 36, TANGENT).move_to(v[0].get_center() + RIGHT * 2.2 + UP * 1.4))

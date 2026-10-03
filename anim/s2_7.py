@@ -6,11 +6,16 @@ from kit import *
 from style import *
 
 
-def trig_axes(yl):
-    top, tl = plot_axes([0, 2 * PI, PI / 2], [-1.3, 1.3, 1], w=8.6, h=2.4, coords=False, ylabel=yl[0])
-    bot, bl = plot_axes([0, 2 * PI, PI / 2], [-1.3, 1.3, 1], w=8.6, h=2.4, coords=False, ylabel=yl[1])
+def trig_axes(yl, x0=0.0, u=1.25):
+    """Two stacked graphs over [x0, 2 pi], the function above and its slope below. Both axes use the same scale
+    (u scene units per 1 on x and on y), so a slope of 1 really looks like 45 degrees."""
+    xr, yr = [x0, 2 * PI, PI / 2], [-1.2, 1.2, 1]
+    top, tl = plot_axes(xr, yr, w=(2 * PI - x0) * u, h=2.4 * u, coords=False, ylabel=yl[0])
+    bot, bl = plot_axes(xr, yr, w=(2 * PI - x0) * u, h=2.4 * u, coords=False, ylabel=yl[1])
     g = VGroup(VGroup(top, tl), VGroup(bot, bl)).arrange(DOWN, buff=0.45).shift(DOWN * 0.2)
-    ticks = VGroup(*[M(s, 26, DIM).next_to(top.c2p(v, 0), DOWN, buff=0.12) for v, s in ((PI / 2, r"\tfrac{\pi}{2}"), (PI, r"\pi"), (3 * PI / 2, r"\tfrac{3\pi}{2}"), (2 * PI, r"2\pi"))])
+    names = {-PI / 2: r"-\tfrac{\pi}{2}", PI / 2: r"\tfrac{\pi}{2}", PI: r"\pi", 3 * PI / 2: r"\tfrac{3\pi}{2}", 2 * PI: r"2\pi"}
+    ticks = VGroup(*[M(t, 26, DIM).next_to(ax.c2p(v, 0), DOWN, buff=0.12) for ax in (top, bot) for v, t in names.items() if v >= x0 - 1e-9])
+    ticks.add(*[M(t, 24, DIM).next_to(ax.c2p(0, v), LEFT, buff=0.12) for ax in (top, bot) for v, t in ((1, "1"), (-1, "-1"))])
     return top, bot, VGroup(g, ticks)
 
 
@@ -37,8 +42,48 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("Sliding along a sine wave") as b:
-            top, bot, g = self.slide(np.sin, np.cos, ("y", r"\text{slope}"), DERIV, [(1, PI / 2), (None, PI), (2, 2 * PI - 0.001)], b)
-            self.play(FadeIn(M(r"\cos x", 40, DERIV).next_to(bot, RIGHT, buff=0.2).shift(UP * 0.6)), run_time=0.8)
+            top, bot, g = trig_axes(("y", r"\text{slope}"), x0=-PI / 2)
+            self.play(FadeIn(g), Create(top.plot(np.sin, x_range=[-PI / 2, 2 * PI], color=FUNC, stroke_width=4)), run_time=1.2)
+            self.play(FadeIn(M(r"y = \sin x", 38, FUNC).next_to(top.c2p(2 * PI, 0), RIGHT, buff=0.25).shift(UP * 0.5)), run_time=0.6)
+
+            def estimate(xv, slope, extra=()):
+                """The tangent line at xv, a dot on it, then its slope dropped onto the slope graph below."""
+                tan = tangent_line(top, np.sin, xv, slope, [xv - 1.1, xv + 1.1])
+                d = closed_dot(top, xv, np.sin(xv), INK)
+                self.play(FadeIn(d), Create(tan), *extra, run_time=1)
+                rec = closed_dot(bot, xv, slope, DERIV)
+                drop = DashedLine(top.c2p(xv, np.sin(xv)), bot.c2p(xv, slope), color=DIM, stroke_width=2)
+                self.play(Create(drop), run_time=0.6)
+                self.play(FadeIn(rec, scale=2), run_time=0.5)
+                self.play(FadeOut(drop), tan.animate.set_stroke(opacity=0.35), run_time=0.4)
+                return rec
+
+            b.line(1)
+            run = DashedLine(top.c2p(0, 0), top.c2p(1, 0), color=SECANT, stroke_width=3)
+            rise = DashedLine(top.c2p(1, 0), top.c2p(1, 1), color=SECANT, stroke_width=3)
+            rr = VGroup(run, rise, M("1", 28, SECANT).next_to(run, DOWN, buff=0.08), M("1", 28, SECANT).next_to(rise, RIGHT, buff=0.08))
+            rec = [estimate(0, 1, [Create(rr)])]
+            notes = [M(r"\approx 1", 32, DERIV).next_to(rec[0], RIGHT, buff=0.12)]
+            self.play(FadeIn(notes[0]), FadeOut(rr), run_time=0.6)
+            b.line(2)
+            rec.append(estimate(PI / 2, 0))
+            notes.append(M("0", 32, DERIV).next_to(rec[1], UP, buff=0.12))
+            self.play(FadeIn(notes[1]), run_time=0.4)
+            b.line(3)
+            rec.append(estimate(PI, -1))
+            notes.append(M(r"\approx -1", 32, DERIV).next_to(rec[2], RIGHT, buff=0.12))
+            self.play(FadeIn(notes[2]), run_time=0.4)
+            b.line(4)
+            self.play(*[FadeOut(n) for n in notes], run_time=0.4)
+            more = [closed_dot(bot, v, np.cos(v), DERIV).scale(0.8) for v in np.arange(-PI / 2, 2 * PI + 1e-6, PI / 12)
+                    if min(abs(v), abs(v - PI / 2), abs(v - PI)) > 1e-6]
+            self.play(LaggedStart(*[FadeIn(m, scale=2) for m in more], lag_ratio=0.12), run_time=3)
+            b.line(5)
+            cosc = bot.plot(np.cos, x_range=[-PI / 2, 2 * PI], color=DERIV, stroke_width=5)
+            self.play(Create(cosc), run_time=2.4)
+            b.line(6)
+            self.play(FadeIn(M(r"\cos x", 40, DERIV).next_to(bot.c2p(2 * PI, 0), RIGHT, buff=0.25).shift(UP * 0.5)), run_time=0.8)
+            self.play(Indicate(cosc, color=DERIV), run_time=1)
         self.clear()
         self.title()
 

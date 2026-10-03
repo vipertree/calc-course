@@ -6,6 +6,8 @@ py_compile, and `build.py X.Y --no-pdf`.
 
 ## Status
 
+Unit test: content/unit_8.py done (AB topics 8.1-8.12; 12 + 4 MCQ, 3 FRQs: rates from a table, particle motion, area and volume).
+
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
 | 8.1 | done | done | done (table FRQ: trapezoid average, MVT, average value vs average rate) | see git log |

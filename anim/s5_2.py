@@ -47,6 +47,24 @@ class Lesson(TranscriptScene):
             self.play(Indicate(marks[0], color=TANGENT), Indicate(marks[1], color=TANGENT), run_time=1)
         self.clear()
 
+        with self.beat("A little Latin") as b:
+            words = table([r"\text{one}", r"\text{two or more}"], [[r"\text{maximum}", r"\text{maxima}"], [r"\text{minimum}", r"\text{minima}"],
+                                                                  [r"\text{extremum}", r"\text{extrema}"]], size=46).shift(UP * 0.8 + LEFT * 1.6)
+            rows = [VGroup(*words.cells[r]) for r in (1, 2, 3)]
+            either = T("a max or a min", 34, SECANT).next_to(rows[2], RIGHT, buff=0.8)
+            english = T("In English, also: maximums, minimums, extreme values.", 36, DIM).next_to(words, DOWN, buff=0.9).set_x(0)
+            self.play(FadeIn(VGroup(*words.cells[0])), FadeIn(words[1]), run_time=0.6)
+            b.line(1)
+            self.play(FadeIn(rows[0]), run_time=0.6)
+            self.wait(1)
+            self.play(FadeIn(rows[1]), run_time=0.6)
+            b.line(2)
+            self.play(FadeIn(rows[2]), run_time=0.6)
+            self.play(FadeIn(either), run_time=0.6)
+            b.line(3)
+            self.play(FadeIn(english), run_time=0.8)
+        self.clear()
+
         with self.beat("The Extreme Value Theorem") as b:
             thm = VGroup(T(r"If $f$ is continuous on $[a, b]$, then $f$ has", 40), T(r"an absolute maximum and an absolute minimum on $[a, b]$.", 40)).arrange(DOWN, buff=0.25)
             box = VGroup(thm, SurroundingRectangle(thm, color=TANGENT, buff=0.3)).to_edge(UP, buff=0.4)
@@ -88,7 +106,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(m3), run_time=0.8)
         self.clear()
         self.example("Find the critical points", r"Find the critical points of $f(x) = x^4 - 8x^2$.",
-                     [r"f'(x) = 4x^3 - 16x = 4x(x - 2)(x + 2)", r"f'(x) = 0 \text{ at } x = -2,\ 0,\ 2", r"f' \text{ is never undefined}"], at=[1, 2, 3])
+                     [r"f'(x) = 4x^3 - 16x", r"= 4x(x^2 - 4)", r"= 4x(x - 2)(x + 2)", r"4x = 0 \text{ or } x - 2 = 0 \text{ or } x + 2 = 0",
+                      r"x = 0,\ x = 2,\ x = -2", r"f' \text{ is never undefined}"], at=[1, 2, 3, 4, 4, 5])
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\text{Critical point: } f'(c) = 0 \text{ or } f'(c) \text{ undefined}", 44, SECANT),
@@ -100,7 +119,8 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A cubic", r"Find the critical points of $f(x) = x^3 - 3x^2$.",
-                     [r"f'(x) = 3x^2 - 6x = 3x(x - 2)", r"f'(x) = 0 \text{ at } x = 0 \text{ and } x = 2", r"\text{critical points: } x = 0,\ x = 2"], at=[1, 2, 3])
+                     [r"f'(x) = 3x^2 - 6x", r"= 3x(x - 2)", r"3x = 0 \text{ or } x - 2 = 0", r"x = 0 \text{ or } x = 2",
+                      r"\text{critical points: } x = 0,\ x = 2"], at=[1, 2, 3, 3, 4])
         self.example("Example 2: A cusp", r"Find the critical points of $f(x) = x^{2/3}(x - 5)$, given $f'(x) = \dfrac{5(x - 2)}{3x^{1/3}}$.",
                      [r"f'(x) = 0 \text{ at } x = 2", r"f'(x) \text{ undefined at } x = 0, \text{ and } f(0) = 0 \text{ is defined}", r"\text{critical points: } x = 0,\ x = 2"], at=[1, 2, 3])
         self.example("Example 3: Is a maximum guaranteed?",

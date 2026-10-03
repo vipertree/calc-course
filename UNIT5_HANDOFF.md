@@ -26,11 +26,17 @@ video-review passes.
 5. Add a worked example from a TABLE (classic AP). Point out you have to pick the right pair of values whose average
    rate of change equals the target.
 
+**5.2**
+1. Add the usual "little Latin lesson": extremum/extrema, minimum/minima, maximum/maxima. In English we often say
+   minimums, maximums, or extreme values, but you'll see the Latinate forms; extrema = any plural of mins and maxes.
+2. (standing note) factoring steps in "Find the critical points" and Example 1 broken out.
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.2 | 1-2 above | done (transcript, scene, notes); not rendered | see git log |
 
 ## Notes for the merging agent
 
@@ -43,3 +49,5 @@ video-review passes.
   and the words line width in "The theorem".
 - 5.1 runtime went ~5.3 -> ~7.1 min.
 
+- 5.2 scene: new beat "A little Latin" (table of singular/plural, between "Absolute and relative" and the EVT).
+  "Find the critical points" and Example 1 now write one factoring step per line.

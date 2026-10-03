@@ -30,6 +30,8 @@ NOTES = [
     Section("Absolute and relative extrema"),
     Text(r"An \blank{absolute} (global) maximum is the largest value $f$ takes on its whole domain or interval. A \blank{relative} (local) maximum "
          r"is larger than every value nearby. Minimums are the same, with smallest."),
+    Text(r"\textbf{A little Latin.} One \emph{maximum}, two \emph{maxima}; one \emph{minimum}, two \emph{minima}. An \emph{extremum} is either "
+         r"one, a max or a min, and the plural is \blank{extrema}. In everyday English you'll also see maximums, minimums, and extreme values: same meaning."),
     graph("t5_2_pic", [("0.3*x^3 - 1.8*x^2 + 2.7*x + 1", -0.3, 4.6)], (-0.5, 5), (-1, 5), closed=[(-0.3, 0.02), (1, 2.2), (3, 1), (4.6, 4.53)],
           labels=[(1, 2.2, "above", "rel. max"), (3, 1, "below", "rel. min"), (4.6, 4.53, "left", "abs. max"), (-0.3, 0.02, "right", "abs. min")],
           caption="Extrema of a function on a closed interval."),

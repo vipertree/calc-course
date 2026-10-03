@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.10 | done | done (long-division layout drawn by hand) | done (FRQS = []) | see git log |
 | 6.9 | done | done (example_ref keeps the u/du recipe in the corner) | done (FRQS = []) | see git log |
 | 6.8 | done | done | done (FRQS = []) | see git log |
 | 6.7 | done | done | done | see git log |

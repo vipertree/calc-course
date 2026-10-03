@@ -62,6 +62,7 @@ video-review passes.
 **5.7**
 1. Slow down the algebra for derivatives, second derivatives, and solving for zero. Also: build this into the
    lesson-making skill (done: .claude/skills/lesson-writing/SKILL.md).
+2. Second derivative test: spend time on it as a CHOICE vs. the first derivative test; when each is appropriate.
 
 ## Status
 

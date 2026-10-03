@@ -54,6 +54,33 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(M(r"= \frac{d}{dx}\left(\frac{dy}{dx}\right)", 44, SECANT).next_to(names[2], DOWN, buff=0.6)), run_time=0.8)
         self.clear()
 
+        with self.beat("Keep going") as b:
+            # Adder: polynomials run out to 0; sine's derivatives cycle every four
+            chain = VGroup(*[M(t_, 44, c_) for t_, c_ in ((r"x^3 - 3x", FUNC), (r"3x^2 - 3", DERIV), (r"6x", TANGENT), (r"6", SECANT), (r"0", INK), (r"0", INK))])
+            arrows = VGroup()
+            row = VGroup()
+            for i, m in enumerate(chain):
+                row.add(m)
+                if i < len(chain) - 1:
+                    row.add(M(r"\to", 40, DIM))
+            row.arrange(RIGHT, buff=0.3).to_edge(UP, buff=0.9)
+            self.play(LaggedStart(*[FadeIn(m, shift=RIGHT * 0.2) for m in row], lag_ratio=0.25), run_time=2.4)
+            b.line(1)
+            self.play(Indicate(chain[4], color=SECANT, scale_factor=1.4), run_time=0.8)
+            b.line(2)
+            spots = [UP, RIGHT, DOWN, LEFT]
+            loop = VGroup(*[M(t_, 44, c_).move_to(DOWN * 1.2 + sp_ * 1.6 + (RIGHT * 1.0 if sp_ is RIGHT else LEFT * 1.0 if sp_ is LEFT else ORIGIN))
+                            for t_, c_, sp_ in zip([r"\sin x", r"\cos x", r"-\sin x", r"-\cos x"], [FUNC, DERIV, TANGENT, SECANT], spots)])
+            arcs = VGroup(*[CurvedArrow(loop[k].get_center() + 0.55 * (spots[(k + 1) % 4] - spots[k]) * 0.6 + spots[k] * -0.1,
+                                        loop[(k + 1) % 4].get_center() - 0.55 * (spots[(k + 1) % 4] - spots[k]) * 0.6,
+                                        angle=-PI / 3, color=DIM, stroke_width=3) for k in range(4)])
+            for k in range(4):
+                self.play(FadeIn(loop[k]), run_time=0.5)
+                self.play(Create(arcs[k]), run_time=0.5)
+            b.line(3)
+            self.play(Indicate(loop[0], color=FUNC, scale_factor=1.3), run_time=0.8)
+        self.clear()
+
         s = lambda t: t ** 3 - 6 * t * t + 9 * t
         v = lambda t: 3 * t * t - 12 * t + 9
         a = lambda t: 6 * t - 12

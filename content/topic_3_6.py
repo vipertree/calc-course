@@ -38,6 +38,10 @@ NOTES = [
     Formula("Notation", (
         r"\[ f''(x) \qquad y'' \qquad \frac{d^2y}{dx^2} \qquad \frac{d^2}{dx^2}\big[f(x)\big] \qquad\qquad f^{(4)}(x) \text{ for the fourth} \]"
         r"$\dfrac{d^2y}{dx^2}$ means \[ \frac{d}{dx}\left(\frac{dy}{dx}\right): \] the rate of change of the \blank{rate of change}.")),
+    Text(r"\textbf{Two things worth noticing.} Keep differentiating a polynomial and you always reach $0$: each derivative "
+         r"lowers the degree by one. For $x^3 - 3x$: $3x^2 - 3$, then $6x$, then $6$, then $0$. Sine does something different: its "
+         r"derivatives cycle, $\sin x \to \cos x \to -\sin x \to -\cos x \to \sin x$, back where it started every four derivatives. "
+         r"Both facts come back later in the course."),
 
     Section("What the second derivative measures"),
     Text(r"If $s(t)$ is position, then $s'(t) = v(t)$ is velocity, and $s''(t) = v'(t) = a(t)$ is \blank{acceleration}: how fast the velocity "

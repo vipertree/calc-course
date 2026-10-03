@@ -785,3 +785,21 @@ def base_region(P, top, bot, a, b, var="x", color=AREA, opacity=0.35, n=60):
 def rect_section(p0, p1, height, color=ACCUM):
     """A rectangle standing up on p0-p1 with the given screen height."""
     return Polygon(p0, p1, p1 + UP * height, p0 + UP * height).set_stroke(color, 3).set_fill(color, 0.35)
+
+
+def solid_about_vertical(ax, r_out, c, d, r_in=None, axis_x=0.0, n=9, color=ACCUM, tilt=0.32):
+    """solid_of_revolution's twin for a vertical axis x = axis_x: radii are functions of y on [c, d], cross sections are
+    flat ellipses (discs or washers) stacked up the axis."""
+    sx = ax.c2p(1, 0)[0] - ax.c2p(0, 0)[0]
+    def edge(r, sign):
+        return ax.plot_parametric_curve(lambda s: np.array([axis_x + sign * r(s), s, 0.0]), t_range=[c, d, 0.01], color=color, stroke_width=3)
+    out = VGroup(edge(r_out, 1), edge(r_out, -1))
+    if r_in is not None:
+        out.add(edge(r_in, 1).set_stroke(opacity=0.7), edge(r_in, -1).set_stroke(opacity=0.7))
+    for v in np.linspace(c, d, n):
+        R = abs(r_out(v)) * sx
+        out.add(Ellipse(width=max(2 * R, 0.02), height=max(2 * R * tilt, 0.02), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=0.18).move_to(ax.c2p(axis_x, v)))
+        if r_in is not None:
+            r = abs(r_in(v)) * sx
+            out.add(Ellipse(width=max(2 * r, 0.02), height=max(2 * r * tilt, 0.02), stroke_color=color, stroke_width=2, fill_color=BG, fill_opacity=1).move_to(ax.c2p(axis_x, v)))
+    return out

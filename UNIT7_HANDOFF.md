@@ -8,6 +8,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 7.7 | done | done | done (full AP DE FRQ: tangent line, over/under, particular solution) | see git log |
 | 7.6 | done | done | done (FRQS = []; the full DE FRQ is in 7.7) | see git log |
 | 7.5 (BC) | done | done | done (bc_only, FRQS = []) | see git log |
 | 7.4 | done | done | done (slope-field FRQ) | see git log |

@@ -192,7 +192,7 @@ class Lesson(TranscriptScene):
                      text=r"Find (a) $\dfrac{d}{dx}\sin(x^3)$ and (b) $\dfrac{d}{dx}e^{5x}$.")
         tb = table(["x", "f", "f'", "g", "g'"], [["1", "3", "-2", "4", "5"], ["4", "0", "7", "1", "-1"]], size=36)
         self.example("Example 4: From a table", VGroup(T(r"$h(x) = f(g(x))$. Find $h'(1)$.", 42), tb).arrange(DOWN, buff=0.3),
-                     [r"h'(1) = f'\big(g(1)\big)\cdot g'(1)", r"g(1) = 4 \ \Rightarrow\ f'(4) = 7", r"h'(1) = 7 \cdot 5 = 35", r"TEXT:We never used $f'(1) = -2$."], at=[1, 2, 3, 4],
+                     [r"h'(1) = f'\big(g(1)\big)\cdot g'(1)", r"g(1) = 4, \ \text{so } f'\big(g(1)\big) = f'(4) = 7", r"h'(1) = 7 \cdot 5 = 35", r"TEXT:We never used $f'(1) = -2$."], at=[1, 2, 3, 4],
                      ref=r"\frac{d}{dx}f\big(g(x)\big) = f'\big(g(x)\big)\cdot g'(x)",
                      text=r"$h(x) = f(g(x))$. Find $h'(1)$. \[ \begin{array}{c|cccc} x & f & f' & g & g' \\ \hline 1 & 3 & -2 & 4 & 5 \\ 4 & 0 & 7 & 1 & -1 \end{array} \]")
         self.finish()

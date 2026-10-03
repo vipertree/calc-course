@@ -607,3 +607,17 @@ def sheep(size=0.5):
     ears = VGroup(*[Ellipse(width=size * 0.14, height=size * 0.07, stroke_width=0, fill_color=MUZZLE, fill_opacity=1).move_to([size * 0.44, s * size * 0.17, 0])
                     for s in (1, -1)])
     return VGroup(body, ears, head)
+
+
+def water_tank(width=2.2, height=3.0):
+    """A glass tank with a faucet above its left edge. Returns (group, water(level)) where water(level) draws the water
+    for a fill fraction in [0, 1]; use it inside always_redraw."""
+    glass = RoundedRectangle(width=width, height=height, corner_radius=0.12, stroke_color=INK, stroke_width=3, fill_color=WATER_HI, fill_opacity=0.12)
+    spout = VGroup(Line(glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.2, glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.75, color=DIM, stroke_width=8),
+                   Line(glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.72, glass.get_corner(UL) + UP * 0.5 + RIGHT * 0.72, color=DIM, stroke_width=8))
+    group = VGroup(glass, spout)
+
+    def water(level):
+        h = max(level, 0.002) * (height - 0.08)
+        return Rectangle(width=width - 0.08, height=h, stroke_width=0, fill_color=WATER, fill_opacity=0.85).align_to(glass, DOWN).shift(UP * 0.04)
+    return group, water

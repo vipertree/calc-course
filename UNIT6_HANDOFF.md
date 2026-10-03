@@ -14,6 +14,7 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 
 | Topic | Transcript | Scene | Notes/problems | Commit |
 |---|---|---|---|---|
+| 6.5 | done | done | done | see git log |
 | 6.4 | done | done | done | see git log |
 | 6.3 | done | done | done (FRQS = [], MCQ-only topic on AP) | see git log |
 | 6.2 | done | done (riemann_boxes helper in kit) | done | see git log |
@@ -22,3 +23,4 @@ Topic list: web/course/syllabus.json (6.11-6.13 are BC-only).
 ## Notes for the merging agent
 
 - Always run `python3 build.py X.Y --no-pdf` (not just import): sympy key checks are collected and reported at the end of the build.
+- sympy leaves exp_polar in semicircle integrals; topic_6_5.py snaps values with nsimplify(N(e), [pi]) (`exact`). Reuse that pattern.

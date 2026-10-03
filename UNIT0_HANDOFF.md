@@ -14,7 +14,7 @@ Branch: `claude/admiring-feynman-m8ygr9`. Nothing rendered (no manim/kokoro/TeX 
 | # | Title | Transcript | Scene | Content | Notes |
 |---|---|---|---|---|---|
 | 0.1 | Angles and Radian Measure | done | done | done | |
-| 0.2 | The Unit Circle | | | | |
+| 0.2 | The Unit Circle | done | done | done | |
 | 0.3 | The Six Trigonometric Functions | | | | |
 | 0.4 | Graphs of Sine, Cosine, and Tangent | | | | |
 | 0.5 | Trigonometric Identities | | | | |

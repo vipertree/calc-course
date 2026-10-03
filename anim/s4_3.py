@@ -96,8 +96,8 @@ class Lesson(TranscriptScene):
                       r"P''(t) = -4", r"TEXT:The growth rate is decreasing by 4 fish per month, each month: growing, but more slowly."], at=[1, 2, 3, 3])
         self.example("Example 2: In and out of a tank",
                      r"Water flows into a tank at $R(t) = 20 + 4t$ gal/min and drains at $D(t) = 3t^2$ gal/min. Is the amount of water increasing or decreasing at $t = 3$? At $t = 4$?",
-                     [r"t = 3:\ \ R(3) - D(3) = 32 - 27 = 5 > 0 \ \Rightarrow\ \text{increasing at 5 gal/min}",
-                      r"t = 4:\ \ R(4) - D(4) = 36 - 48 = -12 < 0", r"\Rightarrow\ \text{decreasing at 12 gal/min}"], at=[1, 2, 3])
+                     [r"t = 3:\ \ R(3) - D(3) = 32 - 27 = 5 > 0,\ \text{so}\ \text{increasing at 5 gal/min}",
+                      r"t = 4:\ \ R(4) - D(4) = 36 - 48 = -12 < 0", r",\ \text{so}\ \text{decreasing at 12 gal/min}"], at=[1, 2, 3])
         self.example("Example 3: Marginal profit",
                      r"Revenue $R(x) = 40x - 0.02x^2$ and cost $C(x) = 12x + 3000$ dollars for $x$ items. Find $P'(500)$, and the $x$ where $P'(x) = 0$.",
                      [r"P(x) = R(x) - C(x) = 28x - 0.02x^2 - 3000", r"P'(x) = 28 - 0.04x", r"P'(500) = 8 \ \text{dollars per item}", r"P'(x) = 0 \ \text{at}\ x = 700"],

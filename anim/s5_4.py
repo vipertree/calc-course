@@ -66,7 +66,7 @@ class Lesson(TranscriptScene):
                      [r"f'(x) = 4x^3 - 12x^2 = 4x^2(x - 3)", r"\text{critical points: } x = 0,\ x = 3", r"\text{signs of } f' \text{: } -,\ -,\ +",
                       r"x = 0:\ \text{no sign change, neither}", r"x = 3:\ - \text{ to } +, \text{ relative minimum}"], at=[1, 2, 3, 4, 5])
         self.example("Example 2: A trig function", r"Find the relative extrema of $f(x) = x + 2\sin x$ on $(0, 2\pi)$.",
-                     [r"f'(x) = 1 + 2\cos x = 0 \ \Rightarrow\ \cos x = -\tfrac12", r"x = \tfrac{2\pi}{3},\ \tfrac{4\pi}{3}",
+                     [r"f'(x) = 1 + 2\cos x = 0,\ \text{so}\ \cos x = -\tfrac12", r"x = \tfrac{2\pi}{3},\ \tfrac{4\pi}{3}",
                       r"f'\left(\tfrac\pi2\right) = 1,\ \ f'(\pi) = -1,\ \ f'\left(\tfrac{3\pi}{2}\right) = 1",
                       r"\text{relative max at } \tfrac{2\pi}{3} \ (+ \text{ to } -)", r"\text{relative min at } \tfrac{4\pi}{3} \ (- \text{ to } +)"], at=[1, 1, 2, 3, 4])
         self.example("Example 3: Given the derivative", r"$f'(x) = (x - 1)(x + 2)e^{x}$. Find the relative extrema of $f$ and justify.",

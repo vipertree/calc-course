@@ -70,7 +70,7 @@ class Lesson(TranscriptScene):
             self.play(FadeOut(top), Write(res), run_time=1.2)
         self.clear()
         self.example("A sign chart", r"Let $f(x) = \dfrac{x + 3}{(x - 1)(x + 2)}$. Find $\displaystyle\lim_{x\to1^-} f(x)$ and $\displaystyle\lim_{x\to1^+} f(x)$.",
-                     [r"\text{near } x = 1: \ x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", r"\text{left: } \frac{(+)}{(-)(+)} = - \ \Rightarrow\ \lim_{x\to1^-} f(x) = -\infty", r"\text{right: } \frac{(+)}{(+)(+)} = + \ \Rightarrow\ \lim_{x\to1^+} f(x) = \infty"], at=[1, 2, 3])
+                     [r"\text{near } x = 1: \ x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", r"\text{left: } \frac{(+)}{(-)(+)} = -,\ \text{so}\ \lim_{x\to1^-} f(x) = -\infty", r"\text{right: } \frac{(+)}{(+)(+)} = +,\ \text{so}\ \lim_{x\to1^+} f(x) = \infty"], at=[1, 2, 3])
 
         with self.beat("Not every zero of the denominator") as b:
             e = M(r"\frac{x^2 - 1}{x - 1} = \frac{(x - 1)(x + 1)}{x - 1}", 56).shift(UP * 1.6)
@@ -104,7 +104,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: One side at a time", r"Find $\displaystyle\lim_{x\to4^-}\frac{2x + 1}{x - 4}$ and $\displaystyle\lim_{x\to4^+}\frac{2x + 1}{x - 4}$.",
-                     [r"\frac{9}{0}:\ \text{unbounded}", r"2x + 1 \approx 9 > 0", r"x \to 4^-:\ \frac{(+)}{(-)} = - \ \Rightarrow\ \lim_{x\to4^-}\frac{2x + 1}{x - 4} = -\infty", r"x \to 4^+:\ \frac{(+)}{(+)} = + \ \Rightarrow\ \lim_{x\to4^+}\frac{2x + 1}{x - 4} = \infty"],
+                     [r"\frac{9}{0}:\ \text{unbounded}", r"2x + 1 \approx 9 > 0", r"x \to 4^-:\ \frac{(+)}{(-)} = -,\ \text{so}\ \lim_{x\to4^-}\frac{2x + 1}{x - 4} = -\infty", r"x \to 4^+:\ \frac{(+)}{(+)} = +,\ \text{so}\ \lim_{x\to4^+}\frac{2x + 1}{x - 4} = \infty"],
                      at=[1, 2, 3, 4])
         self.example("Example 2: Which zeros make asymptotes?", r"Find the vertical asymptotes of $f(x) = \dfrac{x^2 - 9}{x^2 - 2x - 3}$.",
                      [r"\text{denominator } 0 \text{ at } x = 3,\ x = -1", r"\frac{(x - 3)(x + 3)}{(x - 3)(x + 1)}", r"x = 3:\ \text{hole}; \quad x = -1:\ \text{vertical asymptote}"],

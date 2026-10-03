@@ -391,6 +391,30 @@ def _units(a):
     return u[2:].strip() if u.startswith("\\ ") else u.strip()
 
 
+def fill_blanks(s):
+    """The source with every blank written as its answer, for reference pages (the formula sheet): \\mblank{X} -> X
+    (still inside its math), \\blank{X} -> X, \\pick{a|b}{X} -> X."""
+    s = re.sub(r"\\pick\{[^{}]*\}\{([^{}]*)\}", r"\1", s)
+    for cmd in (r"\mblank", r"\blank"):
+        out, pos = [], 0
+        while True:
+            i = s.find(cmd, pos)
+            if i < 0:
+                out.append(s[pos:])
+                break
+            j = i + len(cmd)
+            if j < len(s) and s[j] == "[":
+                j = s.index("]", j) + 1
+            if j >= len(s) or s[j] != "{":
+                out.append(s[pos:j]); pos = j
+                continue
+            arg, k = _braced(s, j)
+            out.append(s[pos:i] + arg)
+            pos = k
+        s = "".join(out)
+    return s
+
+
 def export(t: Topic, outdir, figdir):
     LEFTOVER.clear()
     pub, priv = {"number": t.number, "title": t.title, "unit": t.unit, "goals": html(t.goals),
@@ -399,6 +423,7 @@ def export(t: Topic, outdir, figdir):
 
     # notes: grouped into steps, a new step at each Section
     steps, cur, n_ex, n_chk = [], None, 0, 0
+    sheet = []          # every formula box and definition, filled in, for the course formula sheet
     blanks = Blanks(f"n{slug}")
     for b in t.notes:
         if isinstance(b, Section):
@@ -413,8 +438,10 @@ def export(t: Topic, outdir, figdir):
             cur["blocks"].append({"type": "text", "html": para(b.body, blanks)})
         elif isinstance(b, Formula):
             cur["blocks"].append({"type": "formula", "title": html(b.title), "html": para(b.body, blanks)})
+            sheet.append({"type": "formula", "title": html(b.title), "html": para(fill_blanks(b.body))})
         elif isinstance(b, Definition):
             cur["blocks"].append({"type": "definition", "title": html(b.title), "html": para(b.body, blanks)})
+            sheet.append({"type": "definition", "title": html(b.title), "html": para(fill_blanks(b.body))})
         elif isinstance(b, BigIdea):
             cur["blocks"].append({"type": "bigidea", "html": html(b.body)})
         elif isinstance(b, Meanings):
@@ -495,6 +522,7 @@ def export(t: Topic, outdir, figdir):
     pub["frq"] = frqs
 
     os.makedirs(outdir, exist_ok=True)
+    pub["formulas"] = sheet
     with open(os.path.join(outdir, f"{slug}.json"), "w") as fh:
         _no_leftover(pub.get("number") or pub.get("title"))
         json.dump({"public": pub, "private": priv}, fh, indent=1)

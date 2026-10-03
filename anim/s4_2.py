@@ -119,8 +119,8 @@ class Lesson(TranscriptScene):
                      at=[1, 2, 3])
         self.example("Example 2: Speeding up or slowing down?",
                      r"For $x(t) = t^3 - 6t^2 + 9t$, is the particle speeding up or slowing down at $t = 1.5$? At $t = 2.5$?",
-                     [r"t = 1.5:\ \ v = -2.25,\ \ a = 6(1.5) - 12 = -3 \ \Rightarrow\ \text{speeding up}",
-                      r"t = 2.5:\ \ v = -2.25,\ \ a = 6(2.5) - 12 = 3 \ \Rightarrow\ \text{slowing down}"], at=[1, 2])
+                     [r"t = 1.5:\ \ v = -2.25,\ \ a = 6(1.5) - 12 = -3,\ \text{so}\ \text{speeding up}",
+                      r"t = 2.5:\ \ v = -2.25,\ \ a = 6(2.5) - 12 = 3,\ \text{so}\ \text{slowing down}"], at=[1, 2])
         self.example("Example 3: Total distance", r"For $x(t) = t^3 - 6t^2 + 9t$, find the total distance traveled from $t = 0$ to $t = 4$.",
                      [r"\text{turning points: } t = 1,\ 3", r"x(0) = 0,\ x(1) = 4,\ x(3) = 0,\ x(4) = 4",
                       r"|4 - 0| + |0 - 4| + |4 - 0| = 12", r"\text{displacement: } x(4) - x(0) = 4"], at=[1, 1, 2, 3])

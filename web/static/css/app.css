@@ -307,6 +307,14 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 /* a display line that holds fill-in blanks: centered, display-style pieces with the inputs between them */
 .dline { display: block; text-align: center; margin: .7em 0; line-height: 2.4; }
 .nobr { white-space: nowrap; }
+/* the formula sheet: one card per formula, grouped by topic; topics not reached yet are grayed, still readable */
+.formula-sheet .unit-sheet { margin: 28px 0 10px; }
+.formula-sheet .sheet-topic { margin: 14px 0 22px; display: grid; gap: 10px; }
+.formula-sheet .sheet-topic.ahead { opacity: .45; }
+.formula-sheet .sheet-topic.ahead:hover { opacity: .8; }
+.formula-sheet .sheet-tag { font: 600 .95rem var(--font-ui); color: var(--ink-2); text-decoration: none; }
+.formula-sheet .sheet-tag:hover { text-decoration: underline; }
+.crumb-link { font-family: var(--font-ui); font-size: .9rem; color: inherit; }
 /* a check-box blank: its options sit side by side, each option's box and words kept together */
 .blank.pick { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; border: 0; background: none; min-width: 0; padding: 0; }
 .blank.pick .pick-opt { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; cursor: pointer; font-family: var(--font-ui); font-size: .95em; }

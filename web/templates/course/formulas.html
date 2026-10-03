@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Formula sheet · AP Calculus{% endblock %}
+{% block main %}
+<div class="mathy formula-sheet"><h1>Formula sheet</h1>
+<p class="muted">Every formula and definition from the lessons, in one place, each with the topic it comes from.{% if graying %}
+  Topics you haven't reached yet are grayed out, but they're all here.{% endif %}</p>
+{% for u in units %}
+<section class="unit-sheet" id="unit-{{ u.n }}">
+  <h2>Unit {{ u.n }}. {{ u.title }}</h2>
+  {% for r in u.rows %}
+  <div class="sheet-topic{% if r.ahead %} ahead{% endif %}">
+    <a class="sheet-tag" href="{% url 'lesson' r.n %}"><span class="chip-sm">{{ r.n }}</span> {{ r.title }}</a>
+    {% for f in r.items %}
+    <div class="block {{ f.type }}">{% if f.type == "formula" %}<span class="tag">{{ f.title|safe }}</span>{% else %}<div class="tag">{{ f.title|safe }}</div>{% endif %}<div>{{ f.html|safe }}</div></div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}<script>
+  // display math (\[...\]) and inline math, as on the lessons
+  window.addEventListener("load", () => { if (window.renderMathInElement) renderMathInElement(document.querySelector(".formula-sheet"), { throwOnError: false,
+    delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\[", right: "\\]", display: true }, { left: "$", right: "$", display: false }] }); });
+</script>{% endblock %}

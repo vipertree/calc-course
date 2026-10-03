@@ -35,8 +35,8 @@ class Lesson(TranscriptScene):
             u = M(r"\text{units of } W' = \frac{\text{liters}}{\text{minutes}} = \text{liters per minute}", 46, SECANT).next_to(labs, DOWN, buff=0.7).align_to(labs, LEFT)
             self.play(Write(u), run_time=1.4)
             b.line(2)
-            more = VGroup(M(r"V(t):\ \text{gallons},\ t:\ \text{hours} \ \Rightarrow\ \text{gallons per hour}", 36),
-                          M(r"C(n):\ \text{dollars},\ n:\ \text{items} \ \Rightarrow\ \text{dollars per item}", 36)).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
+            more = VGroup(M(r"V(t):\ \text{gallons},\ t:\ \text{hours},\ \text{so}\ \text{gallons per hour}", 36),
+                          M(r"C(n):\ \text{dollars},\ n:\ \text{items},\ \text{so}\ \text{dollars per item}", 36)).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
             more.next_to(u, DOWN, buff=0.6).align_to(labs, LEFT)
             self.play(FadeIn(more[0]), run_time=0.7)
             self.play(FadeIn(more[1]), run_time=0.7)

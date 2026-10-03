@@ -151,7 +151,7 @@ class Lesson(TranscriptScene):
                       a1.plot(lambda x: x * np.cos(3 / x) if x else 0, x_range=[-1, -0.005], color=FUNC, use_smoothing=False),
                       DashedVMobject(a1.plot(abs, x_range=[-1, 1], color=SECANT)), DashedVMobject(a1.plot(lambda x: -abs(x), x_range=[-1, 1], color=TANGENT)))
         self.example("Example 1: A squeeze with cosine", r"Find $\displaystyle\lim_{x\to0} x\cos\frac3x$.",
-                     [r"-1 \le \cos\frac3x \le 1", r"-|x| \le x\cos\frac3x \le |x|", r"\lim_{x\to0}\pm|x| = 0 \ \Rightarrow\ 0"], figure=fig1, at=[1, 2, 3])
+                     [r"-1 \le \cos\frac3x \le 1", r"-|x| \le x\cos\frac3x \le |x|", r"\lim_{x\to0}\pm|x| = 0,\ \text{so}\ 0"], figure=fig1, at=[1, 2, 3])
         a2, _ = plot_axes([2, 6, 1], [3, 11, 2], w=5.2, h=4.4)
         fig2 = VGroup(a2, a2.plot(lambda x: 4 * x - 9, x_range=[3, 5], color=TANGENT), a2.plot(lambda x: x * x - 4 * x + 7, x_range=[2, 6], color=SECANT),
                       closed_dot(a2, 4, 7))

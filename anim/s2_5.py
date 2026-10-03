@@ -232,12 +232,12 @@ class Lesson(TranscriptScene):
         self.example("Example 1: Straight from the rule", r"Find $\dfrac{d}{dx}\,x^7$ and $\dfrac{d}{dx}\,x^{-3}$.",
                      [r"POWER:x|7|6", r"POWER:x|-3|-4", r"= -\frac{3}{x^4}"], at=[1, 2, 3])
         self.example("Example 2: Rewrite, then differentiate", r"Find $\dfrac{dy}{dx}$ at $x = 4$ for $y = \dfrac{1}{\sqrt{x^3}}$.",
-                     [r"y = \frac{1}{x^{3/2}} = x^{-3/2}", r"POWER:x|-\tfrac32|-\tfrac52", r"4^{5/2} = 32 \ \Rightarrow\ \frac{dy}{dx}\Big|_{x=4} = -\frac{3}{2}\cdot\frac{1}{32} = -\frac{3}{64}"],
+                     [r"y = \frac{1}{x^{3/2}} = x^{-3/2}", r"POWER:x|-\tfrac32|-\tfrac52", r"4^{5/2} = 32,\ \text{so}\ \frac{dy}{dx}\Big|_{x=4} = -\frac{3}{2}\cdot\frac{1}{32} = -\frac{3}{64}"],
                      at=[1, 2, 3])
         a3, _ = plot_axes([0, 12, 4], [0, 3, 1], w=5.4, h=3.6)
         fig = VGroup(a3, a3.plot(np.cbrt, x_range=[0, 12, 0.01], color=FUNC, stroke_width=4), a3.plot(lambda x: 2 + (x - 8) / 12, x_range=[2, 12], color=TANGENT, stroke_width=4),
                      closed_dot(a3, 8, 2, INK))
         self.example("Example 3: A tangent line to a cube root", r"Find the equation for the line tangent to $y = \sqrt[3]{x}$ at $x = 8$.",
-                     [r"\sqrt[3]{8} = 2 \ \Rightarrow\ (8, 2)", r"POWER:x|\tfrac13|-\tfrac23", r"8^{2/3} = 4 \ \Rightarrow\ \text{slope } \frac13 \cdot \frac14 = \frac{1}{12}",
+                     [r"\sqrt[3]{8} = 2,\ \text{so}\ (8, 2)", r"POWER:x|\tfrac13|-\tfrac23", r"8^{2/3} = 4,\ \text{so}\ \text{slope } \frac13 \cdot \frac14 = \frac{1}{12}",
                       r"y - 2 = \frac{1}{12}(x - 8)"], figure=fig, at=[1, 2, 3, 4])
         self.finish()

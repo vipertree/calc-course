@@ -60,8 +60,10 @@ NOTES = [
 PRACTICE = [
     Item(r"$f$ is continuous on $[2, 6]$ with $f(2) = 10$ and $f(6) = -4$. What does the IVT guarantee about $f(c) = 3$?",
          selfcheck(r"c \in (2,6)"), r"$3$ is between $-4$ and $10$, so $f(c) = 3$ for at least one $c$ in $(2, 6)$.", work="1.8cm"),
-    Item(r"Show that $x^4 - 3x + 1 = 0$ has a root in $[0, 1]$. Enter the value of the function at $x = 1$.", num(-1),
-         r"The polynomial is continuous. $f(0) = 1 > 0$ and $f(1) = -1 < 0$. By the IVT, a root lies in $(0, 1)$.", work="2.4cm"),
+    Item(r"Prove that $x^4 - 3x + 1 = 0$ has a root in $[0, 1]$.", selfcheck(r"\text{IVT: } f(0) = 1 > 0,\ f(1) = -1 < 0"),
+         r"Let $f(x) = x^4 - 3x + 1$. $f$ is a polynomial, so it is continuous on $[0, 1]$. $f(0) = 1 > 0$ and $f(1) = -1 < 0$, "
+         r"so $0$ is between $f(1)$ and $f(0)$. Therefore, by the Intermediate Value Theorem, there is a value $c$ in $(0, 1)$ "
+         r"with $f(c) = 0$.", work="2.8cm"),
     Item(r"Values of a continuous function $k$ are shown."
          r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $x$ & 0 & 2 & 5 & 6 & 9 \\ \hline $k(x)$ & 4 & $-1$ & 3 & 7 & $-2$\end{tabular}}"
          r"\par What is the fewest number of zeros $k$ must have on $[0, 9]$?", num(3),
@@ -71,10 +73,12 @@ PRACTICE = [
     Item(r"Let $f(x) = \dfrac{1}{x}$. Then $f(-1) = -1$ and $f(1) = 1$, yet $f(x) \ne 0$ for all $x$. Why doesn't this contradict "
          r"the IVT?", selfcheck(r"\text{not continuous on } [-1,1]"),
          r"$f$ is not continuous on $[-1, 1]$ (it is undefined at $0$), so the IVT does not apply.", work="1.8cm"),
-    Item(r"Show that $e^x = 3 - x$ has a solution in $[0, 1]$. Enter $g(1)$ for $g(x) = e^x + x - 3$, rounded to three decimals.",
-         num(sp.E - 2, tol=0.0006, display=r"\approx 0.718"),
-         r"$g$ is continuous. $g(0) = -2 < 0$ and $g(1) = e - 2 \approx 0.718 > 0$, so $g(c) = 0$ for some $c$ in $(0,1)$.",
-         work="2.4cm", calc=True),
+    Item(r"Prove that $e^x = 3 - x$ has a solution in $[0, 1]$. (Hint: let $g(x) = e^x + x - 3$.)",
+         selfcheck(r"\text{IVT: } g(0) = -2 < 0,\ g(1) = e - 2 > 0"),
+         r"Let $g(x) = e^x + x - 3$, so a solution of $e^x = 3 - x$ is a zero of $g$. $g$ is continuous on $[0, 1]$. "
+         r"$g(0) = -2 < 0$ and $g(1) = e - 2 \approx 0.718 > 0$, so $0$ is between $g(0)$ and $g(1)$. Therefore, by the "
+         r"Intermediate Value Theorem, $g(c) = 0$ for some $c$ in $(0, 1)$, and that $c$ solves $e^c = 3 - c$.",
+         work="2.8cm", calc=True),
     Item(r"A car's speed is $0$ mph at 1:00 PM and $65$ mph at 1:10 PM. Use the IVT to explain why the speed was exactly $40$ mph "
          r"at some moment. What assumption do you need?", selfcheck(r"\text{speed is continuous}"),
          r"Assuming speed changes continuously, $40$ is between $0$ and $65$, so by the IVT the speed was $40$ mph at some time "
@@ -93,19 +97,20 @@ PRACTICE += [
          r"Must $f(c) = 0$?", selfcheck(r"\text{Yes; not necessarily}"),
          r"$5$ is between $2$ and $8$, so the IVT guarantees $f(c) = 5$ for some $c$ in $(-3, 1)$. $0$ is not between "
          r"$2$ and $8$, so the IVT says nothing about it. $f$ might or might not reach $0$.", work="2cm"),
-    Item(r"Show that $x^3 - 4x + 2 = 0$ has a root in $[1, 2]$. Enter the value of the left side at $x = 1$.", num(G.subs(x, 1)),
-         rf"The polynomial is continuous on $[1, 2]$. At $x = 1$ it is ${G.subs(x, 1)} < 0$ and at $x = 2$ it is "
-         rf"${G.subs(x, 2)} > 0$. By the IVT, it equals $0$ somewhere in $(1, 2)$.", work="2.4cm"),
+    Item(r"Prove that $x^3 - 4x + 2 = 0$ has a root in $[1, 2]$.", selfcheck(r"\text{IVT on } [1, 2]"),
+         rf"Let $f(x) = x^3 - 4x + 2$. $f$ is a polynomial, so it is continuous on $[1, 2]$. $f(1) = {G.subs(x, 1)} < 0$ and "
+         rf"$f(2) = {G.subs(x, 2)} > 0$, so $0$ is between $f(1)$ and $f(2)$. Therefore, by the Intermediate Value Theorem, "
+         rf"there is a value $c$ in $(1, 2)$ with $f(c) = 0$.", work="2.8cm"),
     Item(r"How many roots does the IVT guarantee for $x^3 - 4x + 2 = 0$ on $[-3, 2]$? Test the integers $-3, -2, \ldots, 2$.",
          num(3),
          "The values at $x = -3, -2, -1, 0, 1, 2$ are " + ", ".join(f"${G.subs(x, i)}$" for i in range(-3, 3))
          + r". The sign changes on $[-3, -2]$, $[0, 1]$ and $[1, 2]$, so there are at least $3$ roots. A cubic has at most "
          r"$3$, so there are exactly $3$.", work="2.6cm"),
-    Item(r"Show that $\sin x = \frac12 x$ has a solution in $\left[\frac\pi2, \pi\right]$. Enter $h\!\left(\frac\pi2\right)$ for "
-         r"$h(x) = \sin x - \frac12 x$, rounded to three decimals.",
-         num(1 - sp.pi / 4, tol=0.0006, display=r"\approx 0.215"),
-         r"$h$ is continuous. $h\!\left(\frac\pi2\right) = 1 - \frac\pi4 \approx 0.215 > 0$ and $h(\pi) = -\frac\pi2 < 0$. "
-         r"By the IVT, $h(c) = 0$ for some $c$ in the interval, so $\sin c = \frac12 c$.", work="2.4cm", calc=True),
+    Item(r"Prove that $\sin x = \frac12 x$ has a solution in $\left[\frac\pi2, \pi\right]$. (Hint: let $h(x) = \sin x - \frac12 x$.)",
+         selfcheck(r"\text{IVT: } h\left(\tfrac\pi2\right) > 0,\ h(\pi) < 0"),
+         r"Let $h(x) = \sin x - \frac12 x$. $h$ is continuous on $\left[\frac\pi2, \pi\right]$. $h\!\left(\frac\pi2\right) = 1 - \frac\pi4 "
+         r"\approx 0.215 > 0$ and $h(\pi) = -\frac\pi2 < 0$, so $0$ is between them. Therefore, by the Intermediate Value Theorem, "
+         r"$h(c) = 0$ for some $c$ in $\left(\frac\pi2, \pi\right)$, so $\sin c = \frac12 c$.", work="2.8cm", calc=True),
     Item(r"Values of a continuous function $w$ are shown."
          r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ & 0 & 3 & 5 & 8 & 10 \\ \hline $w(t)$ & $-3$ & 2 & 6 & 1 & 4\end{tabular}}"
          r"\par What is the fewest number of solutions of $w(t) = 3$ on $[0, 10]$?", num(3),

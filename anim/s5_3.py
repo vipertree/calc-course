@@ -35,8 +35,8 @@ class Lesson(TranscriptScene):
         self.title()
 
         with self.beat("The rule") as b:
-            r1 = M(r"f'(x) > 0 \text{ on an interval} \ \Rightarrow\ f \text{ is increasing there}", 46, DERIV)
-            r2 = M(r"f'(x) < 0 \text{ on an interval} \ \Rightarrow\ f \text{ is decreasing there}", 46, TANGENT)
+            r1 = M(r"f'(x) > 0 \text{ on an interval},\ \text{so}\ f \text{ is increasing there}", 46, DERIV)
+            r2 = M(r"f'(x) < 0 \text{ on an interval},\ \text{so}\ f \text{ is decreasing there}", 46, TANGENT)
             VGroup(r1, r2).arrange(DOWN, buff=0.8)
             self.play(Write(r1), run_time=1.2)
             b.line(1)

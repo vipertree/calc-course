@@ -54,7 +54,7 @@ class Lesson(TranscriptScene):
                 self.play(Write(m), run_time=1)
         self.clear()
         self.example("Setting up", r"A rectangle has perimeter $40$. Write its area as a function of its width $w$, and give the domain.",
-                     [r"2w + 2\ell = 40 \ \Rightarrow\ \ell = 20 - w", r"A(w) = w(20 - w)", r"0 < w < 20"], at=[1, 2, 3])
+                     [r"2w + 2\ell = 40,\ \text{so}\ \ell = 20 - w", r"A(w) = w(20 - w)", r"0 < w < 20"], at=[1, 2, 3])
 
         with self.beat("Then it's a Unit 5 problem") as b:
             lines = VGroup(M(r"A'(x) = 200 - 4x = 0 \text{ at } x = 50", 46), M(r"A''(x) = -4 < 0:\ \text{maximum}", 46, DERIV),

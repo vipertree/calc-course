@@ -69,8 +69,8 @@ class Lesson(TranscriptScene):
         with self.beat("Reading a domain") as b:
             e = M(r"\frac{\sqrt{x - 1}}{x - 4}", 72, FUNC).to_edge(UP, buff=0.6)
             self.play(Write(e), run_time=1)
-            c1 = M(r"x - 1 \ge 0 \Rightarrow x \ge 1", 44, SECANT).next_to(e, DOWN, buff=0.5).shift(LEFT * 3)
-            c2 = M(r"x - 4 \ne 0 \Rightarrow x \ne 4", 44, TANGENT).next_to(e, DOWN, buff=0.5).shift(RIGHT * 3)
+            c1 = M(r"x - 1 \ge 0,\ \text{so}\ x \ge 1", 44, SECANT).next_to(e, DOWN, buff=0.5).shift(LEFT * 3)
+            c2 = M(r"x - 4 \ne 0,\ \text{so}\ x \ne 4", 44, TANGENT).next_to(e, DOWN, buff=0.5).shift(RIGHT * 3)
             self.play(Write(c1), Write(c2), run_time=1.4)
             nl = NumberLine(x_range=[-1, 8, 1], length=11, color=DIM, include_numbers=True, font_size=28).shift(DOWN * 1.2)
             shade = Line(nl.n2p(1), nl.n2p(8), color=FUNC, stroke_width=10)
@@ -84,7 +84,7 @@ class Lesson(TranscriptScene):
         self.example("Read the domain", r"Where is $f(x) = \dfrac{\sqrt{x - 1}}{x - 4}$ continuous?",
                      [r"\sqrt{x - 1}: \ x \ge 1", r"x - 4 \ne 0: \ x \ne 4", r"\text{continuous on } [1, 4) \cup (4, \infty)"], at=[1, 2, 3])
         self.example("Logs and trig", r"Where are (a) $g(x) = \ln(9 - x^2)$ and (b) $h(x) = \tan x$ continuous?",
-                     [r"\text{(a) } 9 - x^2 > 0 \ \Rightarrow\ -3 < x < 3", r"\text{(b) } \tan x = \frac{\sin x}{\cos x}: \ \cos x \ne 0", r"x \ne \frac{\pi}{2} + k\pi"], at=[1, 2, 3])
+                     [r"\text{(a) } 9 - x^2 > 0,\ \text{so}\ -3 < x < 3", r"\text{(b) } \tan x = \frac{\sin x}{\cos x}: \ \cos x \ne 0", r"x \ne \frac{\pi}{2} + k\pi"], at=[1, 2, 3])
 
         with self.beat("Building bigger functions") as b:
             ops = VGroup(M(r"f + g", 50), M(r"f - g", 50), M(r"f\,g", 50), M(r"f\big(g(x)\big)", 50), M(r"\frac{f}{g}\ (g \ne 0)", 50, SECANT)).arrange(RIGHT, buff=0.8)
@@ -114,7 +114,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: A log over a line", r"Where is $f(x) = \dfrac{\ln(x + 2)}{x - 1}$ continuous?",
-                     [r"\text{built from continuous pieces: find the domain}", r"x + 2 > 0 \Rightarrow x > -2, \qquad x \ne 1", r"(-2, 1) \cup (1, \infty)"], at=[1, 2, 3])
+                     [r"\text{built from continuous pieces: find the domain}", r"x + 2 > 0,\ \text{so}\ x > -2, \qquad x \ne 1", r"(-2, 1) \cup (1, \infty)"], at=[1, 2, 3])
         self.example("Example 2: Factor the denominator", r"Where is $g(x) = \dfrac{x + 3}{x^2 - x - 6}$ discontinuous?",
                      [r"\text{rational: only where the denominator is } 0", r"x^2 - x - 6 = (x - 3)(x + 2)", r"x = 3 \text{ and } x = -2"], at=[1, 2, 3])
         self.example("Example 3: Two seams", r"Is $h$ continuous everywhere? \[ h(x) = \begin{cases} x + 2, & x < 0 \\ 2\cos x, & 0 \le x \le \pi \\ x - \pi - 2, & x > \pi \end{cases} \]",

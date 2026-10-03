@@ -114,8 +114,8 @@ class Lesson(TranscriptScene):
         self.example("Example 1: A second derivative", r"Find $f''(x)$ for $f(x) = x^4 - 3x^2 + e^{2x}$.",
                      [r"f'(x) = 4x^3 - 6x + 2e^{2x}", r"f''(x) = 12x^2 - 6 + 4e^{2x}"], at=[1, 2])
         self.example("Example 2: A particle", r"$s(t) = 2t^3 - 9t^2 + 12t$. Find the acceleration at $t = 2$, and when it is zero.",
-                     [r"v(t) = 6t^2 - 18t + 12, \quad a(t) = 12t - 18", r"a(2) = 24 - 18 = 6", r"12t - 18 = 0 \ \Rightarrow\ t = 1.5"], at=[1, 2, 3])
+                     [r"v(t) = 6t^2 - 18t + 12, \quad a(t) = 12t - 18", r"a(2) = 24 - 18 = 6", r"12t - 18 = 0,\ \text{so}\ t = 1.5"], at=[1, 2, 3])
         self.example("Example 3: Implicit, with a product", r"For $xy = 4$, find $y''$.",
-                     [r"y + x\,y' = 0 \ \Rightarrow\ y' = -\frac{y}{x}", r"y'' = -\frac{x\,y' - y}{x^2}", r"= -\frac{x\left(-\frac{y}{x}\right) - y}{x^2} = -\frac{-2y}{x^2} = \frac{2y}{x^2}"],
+                     [r"y + x\,y' = 0,\ \text{so}\ y' = -\frac{y}{x}", r"y'' = -\frac{x\,y' - y}{x^2}", r"= -\frac{x\left(-\frac{y}{x}\right) - y}{x^2} = -\frac{-2y}{x^2} = \frac{2y}{x^2}"],
                      at=[1, 2, 3])
         self.finish()

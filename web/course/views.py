@@ -67,6 +67,31 @@ def course_map(request):
     return render(request, "course/map.html", {"units": units, "current_unit": _current_unit(request.user)})
 
 
+def formulas(request):
+    """The course formula sheet: every formula box and definition from every lesson, filled in, by unit, each
+    tagged with its topic. A student sees it all, with the topics past the furthest one they've reached grayed."""
+    order = [t["n"] for u in content.syllabus() for t in u["topics"]]
+    reached = None
+    if request.user.is_authenticated:
+        touched = set(StepDone.objects.filter(user=request.user).values_list("topic", flat=True))
+        touched |= set(Response.objects.filter(user=request.user).values_list("topic", flat=True))
+        touched |= set(Draft.objects.filter(user=request.user).values_list("topic", flat=True))
+        idx = [order.index(t) for t in touched if t in order]
+        reached = max(idx) if idx else -1
+    units = []
+    for u in content.syllabus():
+        rows = []
+        for t in u["topics"]:
+            pub = content.public(t["n"]) if t["n"] in content.available() else None
+            if not pub or not pub.get("formulas"):
+                continue
+            ahead = reached is not None and order.index(t["n"]) > reached
+            rows.append({"n": t["n"], "title": t["title"], "ahead": ahead, "items": pub["formulas"]})
+        if rows:
+            units.append({"n": u["n"], "title": u["title"], "rows": rows})
+    return render(request, "course/formulas.html", {"units": units, "graying": reached is not None})
+
+
 def _current_unit(user):
     """The unit a student is working in: the one holding their most recent activity (a step finished, an answer
     checked or typed). Unit 1 for visitors and newcomers. The course map opens that unit and folds the rest."""

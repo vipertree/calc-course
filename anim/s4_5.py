@@ -90,7 +90,7 @@ class Lesson(TranscriptScene):
             self.play(Write(v), run_time=1.2)
         self.clear()
         self.example("A shadow", r"Ana, who is $5$ ft tall, walks away from a $15$-ft lamppost at $4$ ft/s. How fast is her shadow lengthening?",
-                     [r"\frac{15}{x + s} = \frac{5}{s} \ \Rightarrow\ 15s = 5x + 5s", r"s = \frac{x}{2}", r"\frac{ds}{dt} = \frac12\,\frac{dx}{dt} = \frac12(4) = 2 \text{ ft/s}"], at=[1, 2, 3])
+                     [r"\frac{15}{x + s} = \frac{5}{s},\ \text{so}\ 15s = 5x + 5s", r"s = \frac{x}{2}", r"\frac{ds}{dt} = \frac12\,\frac{dx}{dt} = \frac12(4) = 2 \text{ ft/s}"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
             again = steps.copy().scale(0.9)
@@ -105,7 +105,7 @@ class Lesson(TranscriptScene):
                       r"2(5)(2) + 2(12)\,\frac{dy}{dt} = 0", r"\frac{dy}{dt} = -\frac{20}{24} = -\frac56\ \text{ft/s}"], at=[1, 2, 3, 4, 5])
         self.example("Example 2: Filling a cone",
                      r"Water pours into a cone, point down, $9$ ft tall with radius $3$ ft, at $2$ ft$^3$/min. How fast is the water rising when it is $6$ ft deep?",
-                     [r"\frac{r}{h} = \frac39 \ \Rightarrow\ r = \frac h3", r"V = \frac13\pi\left(\frac h3\right)^2 h = \frac{\pi}{27}h^3",
+                     [r"\frac{r}{h} = \frac39,\ \text{so}\ r = \frac h3", r"V = \frac13\pi\left(\frac h3\right)^2 h = \frac{\pi}{27}h^3",
                       r"\frac{dV}{dt} = \frac{\pi}{9}h^2\,\frac{dh}{dt}", r"2 = \frac{\pi}{9}(36)\frac{dh}{dt} = 4\pi\,\frac{dh}{dt}",
                       r"\frac{dh}{dt} = \frac{1}{2\pi} \approx 0.16\ \text{ft/min}"], at=[1, 2, 3, 4, 5])
         self.example("Example 3: Two cars",

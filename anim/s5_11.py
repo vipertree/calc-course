@@ -98,6 +98,6 @@ class Lesson(TranscriptScene):
                      [r"D^2 = (x - 3)^2 + \left(\sqrt x\right)^2 = x^2 - 5x + 9", r"\frac{d}{dx}D^2 = 2x - 5 = 0 \text{ at } x = \frac52",
                       r"\text{second derivative } 2 > 0,\ \text{only critical point: minimum}", r"\left(\frac52, \sqrt{\frac52}\right),\ \ D = \frac{\sqrt{11}}{2}"], at=[1, 2, 3, 4])
         self.example("Example 3: The can", r"A closed cylindrical can holds $16\pi$ in$^3$. What radius and height use the least material?",
-                     [r"\pi r^2 h = 16\pi \ \Rightarrow\ h = \frac{16}{r^2}", r"S = 2\pi r^2 + 2\pi r h = 2\pi r^2 + \frac{32\pi}{r}",
+                     [r"\pi r^2 h = 16\pi,\ \text{so}\ h = \frac{16}{r^2}", r"S = 2\pi r^2 + 2\pi r h = 2\pi r^2 + \frac{32\pi}{r}",
                       r"S' = 4\pi r - \frac{32\pi}{r^2} = 0 \text{ at } r^3 = 8,\ r = 2", r"S'' > 0,\ \text{only critical point: } r = 2 \text{ in},\ h = 4 \text{ in}"], at=[1, 2, 3, 4])
         self.finish()

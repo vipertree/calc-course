@@ -111,10 +111,10 @@ class Lesson(TranscriptScene):
             b.line(1)
             bd.write(self, r"2.\ \ \lim_{x\to2^-}(x^2 + 1) = 5,\ \ \lim_{x\to2^+}(4x - 3) = 5,\ \text{so } \lim_{x\to2} f(x) = 5")
             b.line(2)
-            bd.write(self, r"3.\ \ \lim_{x\to2} f(x) = 5 = f(2) \ \Rightarrow\ f \text{ is continuous at } x = 2", SECANT)
+            bd.write(self, r"3.\ \ \lim_{x\to2} f(x) = 5 = f(2),\ \text{so}\ f \text{ is continuous at } x = 2", SECANT)
         self.clear()
         self.example("Justify continuity", r"Let $f(x) = \begin{cases} x^2 + 1, & x < 2 \\ 4x - 3, & x \ge 2 \end{cases}$. Is $f$ continuous at $x = 2$? Justify using the definition.",
-                     [r"f(2) = 4(2) - 3 = 5", r"\lim_{x\to2^-}(x^2 + 1) = 5, \quad \lim_{x\to2^+}(4x - 3) = 5 \ \Rightarrow\ \lim_{x\to2} f(x) = 5", r"\lim_{x\to2} f(x) = f(2): \ f \text{ is continuous at } x = 2"], at=[1, 2, 3])
+                     [r"f(2) = 4(2) - 3 = 5", r"\lim_{x\to2^-}(x^2 + 1) = 5, \quad \lim_{x\to2^+}(4x - 3) = 5,\ \text{so}\ \lim_{x\to2} f(x) = 5", r"\lim_{x\to2} f(x) = f(2): \ f \text{ is continuous at } x = 2"], at=[1, 2, 3])
         self.example("Justify discontinuity", r"Let $g(x) = \begin{cases} \dfrac{x^2 - 9}{x - 3}, & x \ne 3 \\ 5, & x = 3 \end{cases}$. Is $g$ continuous at $x = 3$?",
                      [r"g(3) = 5", r"x \ne 3: \ g(x) = \frac{\cancel{(x - 3)}(x + 3)}{\cancel{x - 3}} = x + 3", r"\lim_{x\to3} g(x) = 6 \ne 5 = g(3)", r"g \text{ is not continuous at } x = 3"], at=[1, 2, 3, 3])
 
@@ -141,11 +141,11 @@ class Lesson(TranscriptScene):
         self.example("Example 1: Is it continuous?", r"Is $f$ continuous at $x = 3$? \[ f(x) = \begin{cases} x^2 - 2, & x < 3 \\ 2x + 1, & x \ge 3 \end{cases} \]",
                      [r"1.\ \ f(3) = 2(3) + 1 = 7\ \checkmark",
                       r"2.\ \ \lim_{x\to3^-} f(x) = \lim_{x\to3^-}(x^2 - 2) = 7, \quad \lim_{x\to3^+} f(x) = \lim_{x\to3^+}(2x + 1) = 7\ \checkmark",
-                      r"3.\ \ \lim_{x\to3} f(x) = 7 = f(3)\ \checkmark \ \Rightarrow\ \text{continuous}"],
+                      r"3.\ \ \lim_{x\to3} f(x) = 7 = f(3)\ \checkmark,\ \text{so}\ \text{continuous}"],
                      at=[1, 2, 3])
         self.example("Example 2: Which condition fails?", r"Is $g$ continuous at $x = 4$? \[ g(x) = \begin{cases} \dfrac{x^2 - 16}{x - 4}, & x \ne 4 \\ 5, & x = 4 \end{cases} \]",
                      [r"1.\ \ g(4) = 5\ \checkmark", r"2.\ \ \lim_{x\to4} g(x) = \lim_{x\to4}\frac{(x - 4)(x + 4)}{x - 4} = \lim_{x\to4}(x + 4) = 8\ \checkmark",
-                      r"3.\ \ 8 \ne 5\ \times \ \Rightarrow\ \text{not continuous (removable)}"],
+                      r"3.\ \ 8 \ne 5\ \times,\ \text{so}\ \text{not continuous (removable)}"],
                      at=[1, 2, 3])
         self.example("Example 3: Finding the constant", r"Find $k$ so that $h$ is continuous at $x = 2$. \[ h(x) = \begin{cases} kx - 1, & x < 2 \\ x^2 + k, & x \ge 2 \end{cases} \]",
                      [r"\lim_{x\to2^-} h(x) = \lim_{x\to2^-}(kx - 1) = 2k - 1, \qquad h(2) = \lim_{x\to2^+}(x^2 + k) = 4 + k", r"2k - 1 = 4 + k", r"k = 5"], at=[1, 2, 3])

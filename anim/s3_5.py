@@ -31,17 +31,17 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
-        with self.beat("The last operation") as b:
-            f = M(r"x^2 \sin(3x)", 64, FUNC).to_edge(UP, buff=0.6)
+        with self.beat("The outermost operation") as b:
+            # Adder: read the outermost function or operation (not "the last thing you'd do to evaluate")
+            f = M(r"x^2", r"\cdot", r"\sin(3x)", 72, FUNC).shift(UP * 0.8)
             self.play(Write(f), run_time=1)
             b.line(1)
-            steps = VGroup(M(r"1.\ \ 2^2 = 4", 40), M(r"2.\ \ 3 \cdot 2 = 6", 40), M(r"3.\ \ \sin 6", 40), M(r"4.\ \ 4 \cdot \sin 6", 40, SECANT)).arrange(DOWN, aligned_edge=LEFT, buff=0.35)
-            steps.next_to(f, DOWN, buff=0.6)
-            for s in steps:
-                self.play(FadeIn(s, shift=RIGHT * 0.2), run_time=0.5)
+            br = VGroup(Brace(f[0], DOWN, color=DIM), Brace(f[2], DOWN, color=DIM))
+            self.play(GrowFromCenter(br[0]), GrowFromCenter(br[1]), run_time=0.9)
+            self.play(f[1].animate.set_color(SECANT).scale(1.4), run_time=0.6)
             b.line(2)
-            last = callout("last: multiply", SECANT, 34).next_to(steps[-1], RIGHT, buff=0.6)
-            self.play(FadeIn(last), Indicate(steps[-1], color=SECANT), run_time=1)
+            out = callout("outermost: a product", SECANT, 36).next_to(br, DOWN, buff=0.6)
+            self.play(FadeIn(out), run_time=0.8)
         self.clear()
 
         with self.beat("Then repeat inside") as b:
@@ -60,7 +60,7 @@ class Lesson(TranscriptScene):
             self.play(Indicate(res, color=DERIV), run_time=1)
         self.clear()
         self.example("Layers", r"Find $\dfrac{d}{dx}\left[x^2\sin(3x)\right]$.",
-                     [r"\text{last operation: a product } \underbrace{x^2}_{u}\,\underbrace{\sin(3x)}_{v}", r"u' = 2x, \qquad v' = \cos(3x)\cdot 3", r"u'v + uv' = 2x\sin(3x) + 3x^2\cos(3x)"], at=[1, 2, 3])
+                     [r"\text{outermost: a product } \underbrace{x^2}_{u}\,\underbrace{\sin(3x)}_{v}", r"u' = 2x, \qquad v' = \cos(3x)\cdot 3", r"u'v + uv' = 2x\sin(3x) + 3x^2\cos(3x)"], at=[1, 2, 3])
 
         with self.beat("Rewrite before you start") as b:
             f = M(r"\frac{x^3 - 2\sqrt{x}}{x}", 60).to_edge(UP, buff=0.5)
@@ -82,13 +82,13 @@ class Lesson(TranscriptScene):
                      [r"\frac{x^3 - 2x^{1/2}}{x} = x^2 - 2x^{-1/2}", r"\frac{d}{dx}\left[x^2 - 2x^{-1/2}\right] = 2x + x^{-3/2}", r"TEXT:Much shorter than the quotient rule."], at=[1, 2, 3])
 
         with self.beat("Close") as b:
-            box = self.toolbox("What's the last operation?").scale(1.2)
+            box = self.toolbox("What's the outermost operation?").scale(1.2)
             self.play(FadeIn(box), run_time=1)
         self.clear()
 
         self.examples_card()
         self.example("Example 1: Chain on the outside", r"Find $\dfrac{d}{dx}\sqrt{x e^x}$.",
-                     [r"\text{last: square root} \ \Rightarrow\ \frac{1}{2\sqrt{x e^x}} \cdot (x e^x)'", r"(x e^x)' = e^x + x e^x",
+                     [r"\text{outermost: square root},\ \text{so}\ \frac{1}{2\sqrt{x e^x}} \cdot (x e^x)'", r"(x e^x)' = e^x + x e^x",
                       r"\frac{d}{dx}\sqrt{x e^x} = \frac{e^x + x e^x}{2\sqrt{x e^x}}"], at=[1, 2, 3])
         self.example("Example 2: Logs first", r"Find $\dfrac{d}{dx}\ln\left(\dfrac{x^2}{x + 1}\right)$.",
                      [r"\ln\left(\frac{x^2}{x + 1}\right) = 2\ln x - \ln(x + 1)", r"\frac{d}{dx}\ln\left(\frac{x^2}{x + 1}\right) = \frac2x - \frac{1}{x + 1}"], at=[2, 3])

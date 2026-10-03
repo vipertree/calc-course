@@ -65,14 +65,14 @@ class Lesson(TranscriptScene):
             self.play(k.animate.set_value(-0.5), run_time=1.4)
             self.play(k.animate.set_value(2.2), run_time=1.2)
             b.line(2)
-            eq = M(r"2k + 1 = 3 \ \Rightarrow\ k = 1", 46, SECANT).next_to(pw, DOWN, buff=0.6)
+            eq = M(r"2k + 1 = 3,\ \text{so}\ k = 1", 46, SECANT).next_to(pw, DOWN, buff=0.6)
             self.play(k.animate.set_value(1), Write(eq), run_time=1.4)
         self.clear()
 
         self.example("Two unknowns, two seams", r"Find $a$ and $b$: \[ f(x) = \begin{cases} x + a, & x < -1 \\ bx^2 + 1, & -1 \le x \le 2 \\ 3x - 1, & x > 2 \end{cases} \]",
-                     [r"x = -1:\ \ -1 + a = b + 1", r"x = 2:\ \ 4b + 1 = 5 \ \Rightarrow\ b = 1", r"a = 3"], at=[0, 1, 1])
+                     [r"x = -1:\ \ -1 + a = b + 1", r"x = 2:\ \ 4b + 1 = 5,\ \text{so}\ b = 1", r"a = 3"], at=[0, 1, 1])
         self.example("Two seams", r"Find $a$ and $b$ so that $f(x) = \begin{cases} x + a, & x < -1 \\ bx^2 + 1, & -1 \le x \le 2 \\ 3x - 1, & x > 2 \end{cases}$ is continuous everywhere.",
-                     [r"x = 2: \ 4b + 1 = 3(2) - 1 = 5 \ \Rightarrow\ b = 1", r"x = -1: \ -1 + a = b(-1)^2 + 1 = 2", r"a = 3"], at=[1, 2, 3])
+                     [r"x = 2: \ 4b + 1 = 3(2) - 1 = 5,\ \text{so}\ b = 1", r"x = -1: \ -1 + a = b(-1)^2 + 1 = 2", r"a = 3"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
             card = VGroup(T("fill a hole with the limit", 46, SECANT), T("match the pieces at every seam", 46, TANGENT)).arrange(DOWN, buff=0.6)
@@ -87,6 +87,6 @@ class Lesson(TranscriptScene):
                      [r"\frac00:\ \text{use the conjugate}", r"\lim_{x\to3}\frac{(x + 1) - 4}{(x - 3)(\sqrt{x + 1} + 2)}", r"= \lim_{x\to3}\frac{1}{\sqrt{x + 1} + 2} = \frac14",
                       r"g(3) = \frac14"], at=[1, 2, 3, 3])
         self.example("Example 3: Two seams, two unknowns", r"Find $a$ and $b$ so that $f$ is continuous everywhere. \[ f(x) = \begin{cases} ax + 2, & x < 1 \\ x^2 + b, & 1 \le x \le 3 \\ 4x - 1, & x > 3 \end{cases} \]",
-                     [r"x = 3:\ \ f(3) = 9 + b, \quad \lim_{x\to3^+}(4x - 1) = 11 \ \Rightarrow\ b = 2",
-                      r"x = 1:\ \ \lim_{x\to1^-}(ax + 2) = a + 2, \quad f(1) = 1 + b = 3", r"a + 2 = 3 \ \Rightarrow\ a = 1"], at=[1, 2, 3])
+                     [r"x = 3:\ \ f(3) = 9 + b, \quad \lim_{x\to3^+}(4x - 1) = 11,\ \text{so}\ b = 2",
+                      r"x = 1:\ \ \lim_{x\to1^-}(ax + 2) = a + 2, \quad f(1) = 1 + b = 3", r"a + 2 = 3,\ \text{so}\ a = 1"], at=[1, 2, 3])
         self.finish()

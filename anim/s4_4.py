@@ -62,7 +62,7 @@ class Lesson(TranscriptScene):
             self.play(Write(res), run_time=1.2)
         self.clear()
         self.example("A growing square", r"The side $s$ of a square grows at $3$ cm/s. How fast is its area $A = s^2$ growing when $s = 4$ cm?",
-                     [r"A = s^2 \ \Rightarrow\ \frac{dA}{dt} = 2s\,\frac{ds}{dt}", r"= 2(4)(3) = 24 \text{ cm}^2\text{/s}"], at=[1, 2])
+                     [r"A = s^2,\ \text{so}\ \frac{dA}{dt} = 2s\,\frac{ds}{dt}", r"= 2(4)(3) = 24 \text{ cm}^2\text{/s}"], at=[1, 2])
 
         with self.beat("Close") as b:
             steps = VGroup(T("1. Relate the quantities.", 44), T(r"2. Differentiate with respect to $t$.", 44), T("3. Substitute.", 44)).arrange(DOWN, buff=0.5, aligned_edge=LEFT)

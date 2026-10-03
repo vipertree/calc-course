@@ -125,5 +125,5 @@ class Lesson(TranscriptScene):
                      Line(a3.c2p(0.4, 5), a3.c2p(1.6, 5), color=TANGENT, stroke_width=4), Line(a3.c2p(2.4, 1), a3.c2p(3.6, 1), color=TANGENT, stroke_width=4),
                      closed_dot(a3, 1, 5, INK), closed_dot(a3, 3, 1, INK))
         self.example("Example 3: Horizontal tangents", r"Where does $y = x^3 - 6x^2 + 9x + 1$ have horizontal tangent lines?",
-                     [r"\text{horizontal: slope } 0 \ \Rightarrow\ y' = 0", r"y' = 3x^2 - 12x + 9 = 3(x - 1)(x - 3) = 0", r"x = 1 \text{ and } x = 3"], figure=fig, at=[1, 2, 3])
+                     [r"\text{horizontal: slope } 0,\ \text{so}\ y' = 0", r"y' = 3x^2 - 12x + 9 = 3(x - 1)(x - 3) = 0", r"x = 1 \text{ and } x = 3"], figure=fig, at=[1, 2, 3])
         self.finish()

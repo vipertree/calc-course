@@ -42,7 +42,7 @@ class Lesson(TranscriptScene):
             self.play(Create(kl), FadeIn(M("k", 36, SECANT).next_to(kl, LEFT)), run_time=0.8)
             c = [x for x in np.linspace(0.5, 4.5, 4000) if abs(g(x) - k) < 0.005][0]
             self.play(FadeIn(Dot(a2.c2p(c, k), color=SECANT)), FadeIn(M("c", 36, SECANT).next_to(a2.c2p(c, 0), DOWN)), run_time=0.8)
-            st = T(r"$f$ continuous on $[a, b]$, $k$ between $f(a)$ and $f(b)$ \\ $\Rightarrow$ $f(c) = k$ for some $c$ in $(a, b)$", 34).to_edge(RIGHT, buff=0.5).shift(UP * 1.5)
+            st = T(r"$f$ continuous on $[a, b]$, $k$ between $f(a)$ and $f(b)$ \\ $,\ \text{so}\ $ $f(c) = k$ for some $c$ in $(a, b)$", 34).to_edge(RIGHT, buff=0.5).shift(UP * 1.5)
             self.play(FadeIn(st), run_time=1)
             b.line(1)
             self.play(Indicate(st, color=SECANT, scale_factor=1.02), run_time=1)

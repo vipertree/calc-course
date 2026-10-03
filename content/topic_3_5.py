@@ -21,19 +21,19 @@ NOTES = [
 
     Section("Read the outermost operation first"),
     Formula("A decision guide", (
-        r"Look at the \blank{last} operation you would do to evaluate the function at a number. \par "
+        r"Look at the outermost function or operation. \par "
         r"\quad $\bullet$ A sum or difference: differentiate \blank{term by term}. \par "
         r"\quad $\bullet$ A constant times something: keep the constant. \par "
         r"\quad $\bullet$ A product: the \blank{product rule}. \par "
         r"\quad $\bullet$ A quotient: the quotient rule, unless you can \blank{rewrite} it more simply first. \par "
-        r"\quad $\bullet$ A function of something that isn't just $x$: the \blank{chain rule}. \par "
+        r"\quad $\bullet$ A function with an inner function inside it, like $\sin(3x)$ or $(x^2 + 1)^5$: the \blank{chain rule}. \par "
         r"\quad $\bullet$ An equation that doesn't solve easily for $y$: implicit differentiation. \par "
         r"Then repeat the question for each piece.")),
     VideoExample('Layers', work="2.2cm"),
     VideoExample('Rewrite first', work="2.2cm"),
     BigIdea(r"There is no single rule to memorize. Peel the function from the outside in, and rewrite whenever it makes the work shorter."),
     Check(r"Which rule do you use first for $\left(x^2 + 1\right)^3\cos x$?", selfcheck(r"\text{product rule}"),
-          r"The last operation is multiplication: the product rule, with the chain rule inside the first factor."),
+          r"The outermost operation is multiplication: the product rule, with the chain rule inside the first factor."),
 ]
 same("ex1", D(x**2 * sp.sin(3 * x)), 2 * x * sp.sin(3 * x) + 3 * x**2 * sp.cos(3 * x))
 same("ex2", D((x**3 - 2 * sp.sqrt(x)) / x), 2 * x + x**sp.Rational(-3, 2))
@@ -92,9 +92,9 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"Which rule should you apply first to $\sin\left(x^2 e^x\right)$?", [r"Product rule", r"Chain rule", r"Quotient rule", r"Power rule"], "B",
-            r"The last operation is the sine of something: chain rule first (the inside then needs the product rule)."),
+            r"The outermost function is sine of something: chain rule first (the inside then needs the product rule)."),
         MCQ(r"Which rule should you apply first to $x^2\sin(e^x)$?", [r"Chain rule", r"Quotient rule", r"Product rule", r"Power rule"], "C",
-            r"The last operation is multiplication: product rule first."),
+            r"The outermost operation is multiplication: product rule first."),
         MCQ(r"Which is the fastest correct approach to $\dfrac{d}{dx}\left[\dfrac{x^5 + x}{x}\right]$?",
             [r"Quotient rule", r"Product rule", r"Implicit differentiation", r"Simplify to $x^4 + 1$ first"], "D", r"Divide first: $4x^3$."),
     ),

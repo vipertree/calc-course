@@ -13,6 +13,7 @@ urlpatterns = [
     path("logout/", auth.LogoutView.as_view(), name="logout"),
     path("join/", acc.join, name="join"),
     path("course/", v.course_map, name="map"),
+    path("formulas/", v.formulas, name="formulas"),
     re_path(rf"^topic/{NUM}/$", v.lesson, name="lesson"),
     re_path(rf"^topic/{NUM}/(?P<area>practice|quiz|testprep)/$", v.lesson, name="lesson_area"),
     re_path(r"^topic/(?P<num>\d{1,2}\.\d{1,2})/packet/$", v.packet, name="packet"),

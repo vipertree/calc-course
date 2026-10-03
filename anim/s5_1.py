@@ -90,7 +90,7 @@ class Lesson(TranscriptScene):
             self.play(Create(ring), FadeIn(T("not differentiable at $0$", 36, TANGENT).next_to(slopes, DOWN, buff=0.6).align_to(slopes, LEFT)), run_time=1)
         self.clear()
         self.example("From given values", r"$f$ is differentiable, $f(1) = 4$ and $f(5) = 12$. Must $f'(c) = 2$ for some $c$ in $(1, 5)$?",
-                     [r"\text{differentiable} \Rightarrow \text{continuous on } [1, 5], \text{ differentiable on } (1, 5)", r"\frac{f(5) - f(1)}{5 - 1} = \frac{12 - 4}{4} = 2", r"\text{MVT: } f'(c) = 2 \text{ for some } c \text{ in } (1, 5)"], at=[1, 2, 3])
+                     [r"\text{differentiable},\ \text{so}\ \text{continuous on } [1, 5], \text{ differentiable on } (1, 5)", r"\frac{f(5) - f(1)}{5 - 1} = \frac{12 - 4}{4} = 2", r"\text{MVT: } f'(c) = 2 \text{ for some } c \text{ in } (1, 5)"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
             thm2 = thm.copy()

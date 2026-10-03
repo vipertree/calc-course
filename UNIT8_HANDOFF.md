@@ -20,6 +20,7 @@ py_compile, and `build.py X.Y --no-pdf`.
 | 8.10 | done | done | done (FRQS = []) | see git log |
 | 8.11 | done | done | done (FRQS = []) | see git log |
 | 8.12 | done | done | done (full area and volume FRQ) | see git log |
+| 8.13 (BC) | done | done | done (bc_only, FRQS = []) | see git log |
 
 ## Notes for the merging agent
 

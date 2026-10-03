@@ -69,6 +69,7 @@ video-review passes.
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.5 | 1 above | done (transcript, scene, notes, practice, quiz); not rendered | see git log |
 | 5.4 | 1 above | done (transcript, scene); not rendered | see git log |
 | 5.3 | 1-3 above | done (transcript, scene, notes, practice); not rendered | see git log |
 | 5.2 | 1-4 above | done (transcript, scene, notes); not rendered | see git log |
@@ -103,3 +104,7 @@ video-review passes.
   graph practice items (figures t5_3_pq, t5_3_f) and t5_3_fp.
 - 5.4: "From a sign chart" and Examples 1-3 all use staged sign charts (kit.mark_point labels max/min/neither over
   each critical point, new helper) and spell out every test-value computation.
+- 5.5: new beat "Inputs and outputs" (continues the x^3 - 3x graph: dashed line to the y-axis = the max 18, an
+  output; to the x-axis = where, x = 3, an input; then the two question phrasings). Examples renamed: "Just the
+  value", "Just the location", "Both". Practice: 3 generated items now ask "at what x" (asserted unique), plus one
+  table item; quiz gets an "at what x" MCQ with the value-as-answer trap.

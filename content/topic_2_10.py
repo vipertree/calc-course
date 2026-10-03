@@ -27,14 +27,16 @@ NOTES = [
     Section("A quick review"),
     Text(r"On the unit circle, the point at angle $\theta$ is $(\cos\theta, \sin\theta)$. The other four trig functions are built from those two: "
          r"\[ \tan\theta = \frac{\sin\theta}{\cos\theta}, \quad \cot\theta = \frac{\cos\theta}{\sin\theta}, \quad "
-         r"\sec\theta = \frac{1}{\mblank{\cos\theta}}, \quad \csc\theta = \frac{1}{\mblank{\sin\theta}}. \] "
-         r"Secant goes with cosine and cosecant with sine: each pair has exactly one ``co.''"),
+         r"\sec\theta = \frac{1}{\cos\theta}, \quad \csc\theta = \frac{1}{\sin\theta}. \] "
+         r"Cotangent is the reciprocal of tangent, secant is the reciprocal of cosine, and cosecant is the reciprocal of sine. "
+         r"Secant goes with cosine and cosecant with sine: each pair has exactly one ``co.'' "
+         r"We'll also need the Pythagorean identity: \[ \sin^2\theta + \cos^2\theta = 1. \]"),
 
     Section("Tangent, from the quotient rule"),
     Text(r"Write \[ \tan x = \frac{\sin x}{\cos x} \] and use the quotient rule: "
          r"\[ \begin{aligned} \frac{d}{dx}\tan x &= \frac{\cos x\cdot\cos x - \sin x\cdot(-\sin x)}{\cos^2 x} \\ "
          r"&= \frac{\cos^2 x + \sin^2 x}{\cos^2 x} = \frac{1}{\cos^2 x}, \end{aligned} \] "
-         r"so $\dfrac{d}{dx}\tan x = \mblank{\sec^2 x}$."),
+         r"using the Pythagorean identity $\cos^2 x + \sin^2 x = 1$, so $\dfrac{d}{dx}\tan x = \mblank{\sec^2 x}$."),
     Text(r"\textbf{Picture it.} On the unit circle, the ray at angle $\theta$ meets the line $x = 1$ at height $\tan\theta$, at a distance "
          r"\blank{$\sec\theta$} from the origin. Nudge the angle by $d\theta$: that point sweeps about $\sec\theta\cdot d\theta$ "
          r"sideways, and because the line $x = 1$ is tilted at angle $\theta$ to that sweep, the height changes by about "
@@ -83,7 +85,7 @@ PRACTICE += [
          work="2cm"),
     Item(r"Use the quotient rule on $\cot x = \dfrac{\cos x}{\sin x}$ to show that its derivative is $-\csc^2 x$.",
          selfcheck(r"-\csc^2 x"),
-         r"$\dfrac{\sin x(-\sin x) - \cos x\cos x}{\sin^2 x} = \dfrac{-(\sin^2 x + \cos^2 x)}{\sin^2 x} = -\dfrac{1}{\sin^2 x} = -\csc^2 x$.",
+         r"$\dfrac{\sin x(-\sin x) - \cos x\cos x}{\sin^2 x} = \dfrac{-(\sin^2 x + \cos^2 x)}{\sin^2 x} = -\dfrac{1}{\sin^2 x} = -\csc^2 x$, using the Pythagorean identity $\sin^2 x + \cos^2 x = 1$.",
          work="2.6cm"),
     Item(r"For $0 < x < \pi$, where does $y = x - 2\sin x$ have a horizontal tangent? (A warm-up with the older rules.)",
          num(pi / 3), r"$1 - 2\cos x = 0$, so $\cos x = \frac12$ and $x = \frac\pi3$.", work="1.8cm"),
@@ -151,7 +153,7 @@ MCQS = [
     MCQ(r"Which is the derivative of $\dfrac{1 + \sec x}{\tan x}$? (Hint: simplify first.)",
         [r"$\dfrac{\sec x\tan x}{\sec^2 x}$", r"$-\dfrac{1}{1 - \cos x}$", r"$\csc x$", r"$\sec^2 x$"], "B",
         r"$\dfrac{1 + \sec x}{\tan x} = \dfrac{\cos x + 1}{\sin x}$. Quotient rule: $\dfrac{-\sin^2 x - (\cos x + 1)\cos x}{\sin^2 x} = "
-        r"\dfrac{-(1 + \cos x)}{1 - \cos^2 x} = -\dfrac{1}{1 - \cos x}$.", why_not={"A": "divided the derivatives"}),
+        r"\dfrac{-(1 + \cos x)}{1 - \cos^2 x} = -\dfrac{1}{1 - \cos x}$ (the Pythagorean identity turns $\sin^2 x$ into $1 - \cos^2 x$).", why_not={"A": "divided the derivatives"}),
     MCQ(r"A searchlight 50 meters from a wall makes angle $\theta$ with the perpendicular, and its spot is $s = 50\tan\theta$ meters from "
         r"the nearest point of the wall. How fast is $s$ changing with respect to $\theta$ when $\theta = \frac\pi4$?",
         [r"$50$ m per radian", r"$25$ m per radian", r"$100$ m per radian", r"$50\sqrt2$ m per radian"], "C",

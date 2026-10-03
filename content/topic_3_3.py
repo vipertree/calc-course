@@ -28,6 +28,15 @@ FIG_M = graph("t3_3_mirror", [("0.25*x^2+1", 0, 3.4), ("2*sqrt(x-1)", 1, 3.9, "d
 NOTES = [
     Video("s3_3.py::Lesson", "Derivatives of inverse functions", 5),
 
+    Section("What an inverse is"),
+    Text(r"We often think of an inverse as an algebraic reverse: undo each step, in the opposite order. That's useful, but the key "
+         r"definition is simpler. If $g$ is the inverse of $f$, then \[ f(a) = b \quad\text{means}\quad g(b) = a. \] "
+         r"The inputs become \blank{outputs}, and the outputs become \blank{inputs}. If $f(1) = 2$, then $g(2) = 1$."),
+    Text(r"\textbf{Three ways a problem can tell you $g$ is the inverse of $f$.} "
+         r"\par (a) It says so outright: ``$g$ is the inverse of $f$,'' or $g = f^{-1}$. "
+         r"\par (b) It gives the definition: for every $a$ and $b$, $f(a) = b$ means $g(b) = a$. "
+         r"\par (c) It says $f\big(g(x)\big) = x$ for every $x$ in the domain: $f$ undoes $g$."),
+
     Section("The mirror picture"),
     FIG_M,
     Text(r"The graph of $f^{-1}$ is the graph of $f$ reflected across the line $y = x$. The point $(a, b)$ on $f$ becomes the point "
@@ -36,7 +45,8 @@ NOTES = [
          r"$\displaystyle \dfrac{\Delta y}{\Delta x}$ turns into one with rise over run \blank{$\dfrac{\Delta x}{\Delta y}$}: the slope becomes its reciprocal."),
     Formula("Derivative of an inverse", (
         r"If $f(a) = b$ and $f'(a) \ne 0$, then $\displaystyle \left(f^{-1}\right)'(b) = \mblank{\frac{1}{f'(a)}}$. "
-        r"The slopes are reciprocals \blank{at matching points}: $b$ for the inverse, $a$ for $f$.")),
+        r"The slopes are reciprocals \blank{at matching points}: $b$ for the inverse, $a$ for $f$. To find $a$, ask: what $x$ gives "
+        r"an $f$ value of $b$?")),
 
     Section("Using it"),
     Example("Without a formula for the inverse", (
@@ -54,6 +64,8 @@ NOTES = [
     Check(r"$f(3) = 7$ and $f'(3) = 5$. Find $\left(f^{-1}\right)'(7)$.", num(sp.Rational(1, 5)), r"\[ \frac{1}{f'(3)} = \frac15. \]"),
 ]
 same("trap", 1 / sp.diff(x**3 + x, x).subs(x, 2), sp.Rational(1, 13))
+same("video examples", [1 / sp.Rational(3), 1 / sp.Rational(-4), 1 / sp.Rational(4), (x**3 + x + 1).subs(x, 1), inv_slope(x**3 + x + 1, 1)],
+     [sp.Rational(1, 3), sp.Rational(-1, 4), sp.Rational(1, 4), 3, sp.Rational(1, 4)])
 
 # ---------------------------------------------------------------- practice
 PR = [(x**3 + 2 * x, r"x^3 + 2x", 3), (x**5 + x, r"x^5 + x", 2), (2 * x + sp.exp(x), r"2x + e^x", 1),
@@ -67,7 +79,8 @@ for f, tex, b in PR:
 PRACTICE += [
     Item(r"$f(2) = 5$ and $f'(2) = -4$. Find $\left(f^{-1}\right)'(5)$.", num(sp.Rational(-1, 4)), r"$\dfrac{1}{f'(2)} = -\dfrac14$.", work="1.2cm"),
     Item(r"$h(0) = 3$, $h'(0) = 2$, $h(3) = 8$, $h'(3) = 6$. Find $\left(h^{-1}\right)'(3)$.", num(sp.Rational(1, 2)),
-         r"$h(0) = 3$, so the matching point is $x = 0$: $\dfrac{1}{h'(0)} = \dfrac12$. ($h'(3)$ is a distractor.)", work="1.6cm"),
+         r"$h^{-1}(3)$ asks: what $x$ gives an $h$ value of $3$? $h(0) = 3$, so $h^{-1}(3) = 0$, and $\left(h^{-1}\right)'(3) = \dfrac{1}{h'(0)} = \dfrac12$. "
+         r"($h'(3)$ is a distractor.)", work="1.6cm"),
     Item(r"The line $y = 4x - 7$ is tangent to the graph of an invertible $f$ at $x = 2$. Find $\left(f^{-1}\right)'(1)$.", num(sp.Rational(1, 4)),
          r"$f(2) = 4(2) - 7 = 1$ and $f'(2) = 4$. So $\left(f^{-1}\right)'(1) = \dfrac14$.", work="1.8cm"),
     Item(r"Let $g = f^{-1}$ with $f(x) = x^3 + x + 1$. Find the equation for the line tangent to $g$ at $x = 3$.", expr("x/4 + 1/4"),
@@ -83,9 +96,15 @@ PRACTICE += [
          selfcheck(r"\text{vertical tangent}"),
          r"A horizontal tangent on $f$ reflects into a vertical tangent on $f^{-1}$, which has no slope. The reciprocal $\frac10$ is undefined.", work="1.8cm"),
     Item(r"Values of an invertible $g$ are given: $g(2) = 5$, $g'(2) = \frac14$, $g(5) = 9$, $g'(5) = 3$. Find $\left(g^{-1}\right)'(5)$.", num(4),
-         r"$g(2) = 5$, so use $x = 2$: $\dfrac{1}{g'(2)} = 4$.", work="1.6cm"),
+         r"$g^{-1}(5)$ asks: what $x$ gives a $g$ value of $5$? $g(2) = 5$, so $g^{-1}(5) = 2$, and the slope is $\dfrac{1}{g'(2)} = 4$.", work="1.6cm"),
     Item(r"Values of an invertible $g$ are given: $g(2) = 5$, $g'(2) = \frac14$, $g(5) = 9$, $g'(5) = 3$. Find $\left(g^{-1}\right)'(9)$.",
-         num(sp.Rational(1, 3)), r"$g(5) = 9$, so use $x = 5$: $\dfrac{1}{g'(5)} = \dfrac13$.", work="1.6cm"),
+         num(sp.Rational(1, 3)), r"$g^{-1}(9)$ asks: what $x$ gives a $g$ value of $9$? $g(5) = 9$, so $g^{-1}(9) = 5$, and the slope is $\dfrac{1}{g'(5)} = \dfrac13$.", work="1.6cm"),
+    Item(r"$f\big(g(x)\big) = x$ for every $x$. If $f(1) = 4$ and $f'(1) = 6$, find $g'(4)$.", num(sp.Rational(1, 6)),
+         r"We're told $f\big(g(x)\big) = x$, so $g$ is the inverse of $f$. $g(4)$ asks: what $x$ gives an $f$ value of $4$? $f(1) = 4$, "
+         r"so $g(4) = 1$ and $g'(4) = \dfrac{1}{f'(1)} = \dfrac16$.", work="1.8cm"),
+    Item(r"For every $a$ and $b$, $f(a) = b$ means $k(b) = a$. If $f(x) = x^3 + 3x + 2$, find $k'(2)$.", num(sp.Rational(1, 3)),
+         r"That is the definition of an inverse, so $k = f^{-1}$. $k(2)$ asks: what $x$ gives an $f$ value of $2$? $f(0) = 2$, so $k(2) = 0$. "
+         r"$f'(x) = 3x^2 + 3$, so $f'(0) = 3$ and $k'(2) = \dfrac13$.", work="2cm"),
     Item(r"$f(x) = x + \sin x$ is invertible. Find $\left(f^{-1}\right)'(0)$.", num(sp.Rational(1, 2)),
          r"$f(0) = 0$, so the matching point is $x = 0$. $f'(0) = 1 + \cos 0 = 2$, so $\left(f^{-1}\right)'(0) = \dfrac12$.", work="1.8cm"),
 ]
@@ -93,6 +112,7 @@ same("p gens", [inv_slope(f, [r for r in sp.solve(sp.Eq(f, b), x) if r.is_real][
      [sp.Rational(1, 5), sp.Rational(1, 6), sp.Rational(1, 3), sp.Rational(1, 6), 6])
 same("p tangent", [(x**3 + x + 1).subs(x, 1), inv_slope(x**3 + x + 1, 1), sp.expand(1 + sp.Rational(1, 4) * (x - 3))],
      [3, sp.Rational(1, 4), x / 4 + sp.Rational(1, 4)])
+same("p cues", [(x**3 + 3 * x + 2).subs(x, 0), inv_slope(x**3 + 3 * x + 2, 0)], [2, sp.Rational(1, 3)])
 same("p others", [inv_slope(sp.exp(2 * x), 0), inv_slope(x + sp.sin(x), 0), sp.diff(sp.log(x) / 2, x).subs(x, 1)],
      [sp.Rational(1, 2), sp.Rational(1, 2), sp.Rational(1, 2)])
 
@@ -113,11 +133,11 @@ QUIZ = [
     ),
     Variants(
         Item(r"$g(1) = 3$, $g'(1) = 4$, $g(3) = 7$, $g'(3) = 2$. Find $\left(g^{-1}\right)'(3)$.", num(sp.Rational(1, 4)),
-             r"$g(1) = 3$, so use $x = 1$: $\dfrac{1}{g'(1)} = \dfrac14$.", work="1.6cm"),
+             r"$g^{-1}(3)$ asks: what $x$ gives a $g$ value of $3$? $g(1) = 3$, so $g^{-1}(3) = 1$: $\dfrac{1}{g'(1)} = \dfrac14$.", work="1.6cm"),
         Item(r"$g(2) = 0$, $g'(2) = 5$, $g(0) = 2$, $g'(0) = -1$. Find $\left(g^{-1}\right)'(2)$.", num(-1),
-             r"$g(0) = 2$, so use $x = 0$: $\dfrac{1}{g'(0)} = -1$.", work="1.6cm"),
+             r"$g^{-1}(2)$ asks: what $x$ gives a $g$ value of $2$? $g(0) = 2$, so $g^{-1}(2) = 0$: $\dfrac{1}{g'(0)} = -1$.", work="1.6cm"),
         Item(r"$g(5) = 1$, $g'(5) = 10$, $g(1) = 5$, $g'(1) = \frac12$. Find $\left(g^{-1}\right)'(1)$.", num(sp.Rational(1, 10)),
-             r"$g(5) = 1$, so use $x = 5$: $\dfrac{1}{g'(5)} = \dfrac1{10}$.", work="1.6cm"),
+             r"$g^{-1}(1)$ asks: what $x$ gives a $g$ value of $1$? $g(5) = 1$, so $g^{-1}(1) = 5$: $\dfrac{1}{g'(5)} = \dfrac1{10}$.", work="1.6cm"),
     ),
     Variants(
         MCQ(r"$f(2) = 7$. Which expression equals $\left(f^{-1}\right)'(7)$?", [r"$\dfrac{1}{f'(7)}$", r"$\dfrac{1}{f'(2)}$", r"$-f'(2)$", r"$f'(7)$"], "B",
@@ -146,7 +166,7 @@ MCQS = [
     MCQ(r"The table gives values of an invertible $f$."
         r"\par\centerline{\begin{tabular}{c|ccc} $x$ & 1 & 2 & 3 \\ \hline $f(x)$ & 3 & 1 & $-2$ \\ $f'(x)$ & $-4$ & $-2$ & $-5$\end{tabular}}"
         r"\par If $g = f^{-1}$, then $g'(1) =$", [r"$-\dfrac14$", r"$-4$", r"$-\dfrac12$", r"$-2$"], "C",
-        r"$f(2) = 1$, so $g'(1) = \dfrac{1}{f'(2)} = -\dfrac12$.", why_not={"A": "used $f'(1)$"}),
+        r"$g(1)$ asks: what $x$ gives an $f$ value of $1$? In the $f(x)$ row, $1$ sits under $x = 2$, so $g(1) = 2$ and $g'(1) = \dfrac{1}{f'(2)} = -\dfrac12$.", why_not={"A": "used $f'(1)$"}),
     MCQ(r"$f(x) = \ln x + x$. If $g = f^{-1}$, what is $g'(1)$?", [r"$2$", r"$1$", r"$\dfrac1e$", r"$\dfrac12$"], "D",
         r"$f(1) = 1$ and $f'(1) = 1 + 1 = 2$, so $\frac12$."),
     MCQ(r"$g$ is the inverse of $f(x) = 2x + \cos x$. Which is an equation of the line tangent to $g$ at $x = 1$?",
@@ -164,10 +184,12 @@ FRQS = [
         r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $0$ & $1$ & $3$ & $4$ \\ \hline $f(x)$ & $1$ & $3$ & $4$ & $8$ \\ "
         r"$f'(x)$ & $2$ & $\frac12$ & $\frac14$ & $5$\end{tabular}}"), [
         Part("a", r"Find $g'(3)$. Show the work that leads to your answer.", num(2),
-             r"$f(1) = 3$, so $g(3) = 1$ and $g'(3) = \dfrac{1}{f'\big(g(3)\big)} = \dfrac{1}{f'(1)} = \dfrac{1}{1/2} = 2$.",
+             r"$g(3)$ asks: what $x$ gives an $f$ value of $3$? In the $f(x)$ row, $3$ sits under $x = 1$, so $g(3) = 1$ and "
+             r"$g'(3) = \dfrac{1}{f'\big(g(3)\big)} = \dfrac{1}{f'(1)} = \dfrac{1}{1/2} = 2$.",
              [(1, "$g(3) = 1$"), (1, "answer $2$")], work="2.4cm"),
         Part("b", r"Write an equation for the line tangent to the graph of $y = g(x)$ at $x = 4$.", expr("4*x - 13"),
-             r"$f(3) = 4$, so $g(4) = 3$ and $g'(4) = \dfrac{1}{f'(3)} = 4$. The tangent line is $y = 3 + 4(x - 4)$.",
+             r"$g(4)$ asks: what $x$ gives an $f$ value of $4$? $f(3) = 4$, so $g(4) = 3$ and $g'(4) = \dfrac{1}{f'(3)} = 4$. "
+             r"The tangent line is $y = 3 + 4(x - 4)$.",
              [(1, "$g(4) = 3$"), (1, "$g'(4) = 4$ and the tangent line equation")], work="2.4cm"),
         Part("c", r"Let $k$ be the function defined by $k(x) = x\,g(x)$. Find $k'(4)$. Show the work that leads to your answer.",
              num(19),

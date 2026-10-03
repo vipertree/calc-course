@@ -4,7 +4,7 @@ CED: FUN-3.D.1 (implicit differentiation; the chain rule on terms in y). The cir
 """
 import sympy as sp
 
-from calclib import (FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num,
+from calclib import (FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, VideoExample, expr, num,
                      same, selfcheck)
 from calclib.figs import graph
 
@@ -28,31 +28,52 @@ NOTES = [
 
     Section("A curve that isn't a function"),
     FIG_C,
-    Text(r"The circle $x^2 + y^2 = 25$ fails the vertical line test, so it isn't the graph of one function. But near the point $(3, 4)$ it "
-         r"looks like the graph of a function, and it has a tangent line there. We want its \blank{slope} without solving for $y$."),
-    Text(r"\textbf{The idea.} Near $(3, 4)$, treat $y$ as some function of $x$, even though we don't write it down. Then $y^2$ is a "
-         r"\blank{composite} function, and the chain rule says \[ \frac{d}{dx}\left[y^2\right] = \mblank{2y\,\frac{dy}{dx}} \]."),
+    Text(r"Remember the vertical line test: a function has exactly one output for each input. The circle $x^2 + y^2 = 25$ has many "
+         r"inputs with two outputs. At $x = 3$, for example, $y$ can be $4$ or $-4$. A vertical line hits the circle twice, so the circle "
+         r"isn't the graph of a function."),
+    Text(r"That's okay: we can still find tangent lines. Near the point $(3, 4)$ the circle looks like the graph of a function, and it has a "
+         r"tangent line there. We want its \blank{slope} without solving for $y$."),
+    Text(r"\textbf{The idea.} Near $(3, 4)$, treat $y$ as some function of $x$, even though we don't write it down. Then "
+         r"$\dfrac{d}{dx}\left[y^2\right]$ asks for a derivative with respect to $x$ of something written in $y$. The chain rule is what makes "
+         r"that work, because it relates different rates: $y^2$ changes with $y$, and $y$ changes with $x$. So "
+         r"\[ \frac{d}{dx}\left[y^2\right] = \frac{d}{dy}\left[y^2\right]\cdot\frac{dy}{dx} = \mblank{2y\,\frac{dy}{dx}}. \]"),
+    Text(r"\textbf{The key point.} Every time we take the derivative of $y$ (or of something in $y$) with respect to $x$, we multiply by "
+         r"\blank{$\dfrac{dy}{dx}$}. Careful: that is not the same as ``every term with a $y$ gets a $\frac{dy}{dx}$.'' For example, "
+         r"$\dfrac{d}{dx}(xy) = y + x\dfrac{dy}{dx}$: the first $y$ came from differentiating $x$, so it has no $\frac{dy}{dx}$."),
 
     Section("The method"),
     Formula("Implicit differentiation", (
-        r"1. Differentiate both sides of the equation with respect to $x$. Every time you differentiate a term with $y$ in it, "
-        r"multiply by \blank{$\dfrac{dy}{dx}$} (the chain rule). \par "
+        r"1. Differentiate both sides of the equation with respect to $x$. Write it like algebra: "
+        r"$\dfrac{d}{dx}\big(\text{left side}\big) = \dfrac{d}{dx}\big(\text{right side}\big)$. Every time you take the derivative of $y$ "
+        r"(or of something in $y$) with respect to $x$, multiply by \blank{$\dfrac{dy}{dx}$} (the chain rule). \par "
         r"2. Collect the $\dfrac{dy}{dx}$ terms on one side and \blank{solve} for $\dfrac{dy}{dx}$.")),
     Example("The circle", r"Find $\dfrac{dy}{dx}$ for $x^2 + y^2 = 25$, and find the slope at $(3, 4)$.",
-            r"$\displaystyle 2x + 2y\dfrac{dy}{dx} = 0$, so \[ \frac{dy}{dx} = -\frac{x}{y}. \] At $(3, 4)$ the slope is $-\dfrac34$.", work="2.4cm", beat="Why the answer has y in it"),
+            r"\[ \frac{d}{dx}\left(x^2 + y^2\right) = \frac{d}{dx}(25) \] gives $\displaystyle 2x + 2y\dfrac{dy}{dx} = 0$, so "
+            r"\[ \frac{dy}{dx} = -\frac{x}{y}. \] At $(3, 4)$ the slope is $-\dfrac34$.", work="2.4cm", beat="Why the answer has y in it"),
     Text(r"The answer uses \emph{both} $x$ and $y$: the circle has two points above $x = 3$, and $-\dfrac{x}{y}$ gives the slope at each one. "
          r"At $(3, -4)$ it is $\dfrac34$."),
+    VideoExample("All tangent lines at x = 3", work="3.4cm"),
     Example("A product term", r"Find $\dfrac{dy}{dx}$ for $x^2 + xy + y^2 = 7$, then the slope at $(1, 2)$.",
+            r"\[ \frac{d}{dx}\left(x^2 + xy + y^2\right) = \frac{d}{dx}(7) \] "
             r"\[ 2x + \left(y + x\frac{dy}{dx}\right) + 2y\frac{dy}{dx} = 0. \] Collect: \[ (x + 2y)\frac{dy}{dx} = -(2x + y), \] so "
             r"\[ \frac{dy}{dx} = -\frac{2x + y}{x + 2y}. \] At $(1, 2)$: $-\dfrac45$.", work="3cm", beat="A product term"),
     Example("Horizontal and vertical tangents", r"Where does $x^2 + y^2 = 25$ have horizontal tangent lines? Vertical ones?",
-            r"\[ \frac{dy}{dx} = -\frac{x}{y}. \] Horizontal when the numerator is $0$ ($x = 0$): $(0, \pm5)$. Vertical when the denominator is $0$ "
-            r"($y = 0$): $(\pm5, 0)$.", work="2.4cm", beat="Horizontal and vertical tangents"),
-    BigIdea(r"Differentiate everything. Each $y$ term picks up a factor of $\frac{dy}{dx}$ from the chain rule. Then solve for $\frac{dy}{dx}$."),
-    Check(r"Find $\dfrac{dy}{dx}$ for $y^3 + x = 5$.", expr("-1/(3*y**2)"), r"$\displaystyle 3y^2\dfrac{dy}{dx} + 1 = 0$, so \[ \frac{dy}{dx} = -\frac{1}{3y^2}. \]"),
+            r"\[ \frac{dy}{dx} = -\frac{x}{y}. \] A horizontal tangent has slope $0$, so we want $\dfrac{dy}{dx} = 0$. A fraction is $0$ when its "
+            r"numerator is $0$: $x = 0$, which gives $(0, 5)$ and $(0, -5)$. A vertical tangent is like an infinite slope: the derivative blows up "
+            r"because we'd be dividing by zero. So set the denominator equal to $0$: $y = 0$, which gives $(5, 0)$ and $(-5, 0)$.",
+            work="2.8cm", beat="Horizontal and vertical tangents"),
+    BigIdea(r"Take $\frac{d}{dx}$ of both sides. Every time you take the derivative of $y$ (or of something in $y$) with respect to $x$, "
+            r"multiply by $\frac{dy}{dx}$. Then solve for $\frac{dy}{dx}$."),
+    Check(r"Find $\dfrac{dy}{dx}$ for $y^3 + x = 5$.", expr("-1/(3*y**2)"),
+          r"$\dfrac{d}{dx}\left(y^3 + x\right) = \dfrac{d}{dx}(5)$ gives $\displaystyle 3y^2\dfrac{dy}{dx} + 1 = 0$, so \[ \frac{dy}{dx} = -\frac{1}{3y^2}. \]"),
 ]
 same("ex3", imp(sp.sin(y) + sp.exp(x) - y), sp.exp(x) / (1 - sp.cos(y)))
 same("check", imp(y**3 + x - 5), -1 / (3 * y**2))
+# all the tangent lines at one x (video lesson example and Example 4)
+same("circle x=3", [sp.solve((x**2 + y**2 - 25).subs(x, 3), y), [imp(x**2 + y**2 - 25).subs({x: 3, y: v}) for v in (4, -4)]],
+     [[-4, 4], [sp.Rational(-3, 4), sp.Rational(3, 4)]])
+same("ellipse x=2", [sp.solve((x**2 + 4 * y**2 - 20).subs(x, 2), y), [imp(x**2 + 4 * y**2 - 20).subs({x: 2, y: v}) for v in (2, -2)]],
+     [[-2, 2], [sp.Rational(-1, 4), sp.Rational(1, 4)]])
 
 # ---------------------------------------------------------------- practice
 P = [(r"x^2 + 4y^2 = 16", x**2 + 4 * y**2 - 16), (r"xy = 6", x * y - 6), (r"y^2 = x^3 - 2x", y**2 - x**3 + 2 * x),

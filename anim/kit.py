@@ -201,13 +201,15 @@ class TranscriptScene(LessonScene):
     example_ref = None    # a formula (MathTex string) kept in the corner during worked examples, e.g. the chain rule
 
     def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
-                follow=False, ref=None):
+                follow=False, ref=None, cues=None):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
         figure: optional mobject shown on the right, with the problem, or from narration line `figure_at` on (so a
         warning's picture arrives with the words that explain it). follow: a first-of-its-kind problem students watch
         rather than try, so no "Pause and try it" cue and no think pause (Adder, 2026-10-02).
+        cues: {step index: function(scene)} run just before that step is written, e.g. to light up a table cell as the
+        narration points at it.
         text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
         ref = ref if ref is not None else self.example_ref
@@ -248,6 +250,8 @@ class TranscriptScene(LessonScene):
                 if cue is not None:
                     self.play(FadeOut(cue), run_time=0.3)
                     cue = None
+                if cues and k in cues:
+                    cues[k](self)
                 if isinstance(s, str) and s.startswith("PART:"):
                     # a multi-part question's next part, shown on its own (its [try it] pause follows) before its work
                     part = board.write(self, T(s[5:], 40, SECANT))

@@ -827,3 +827,18 @@ def drone(size=0.9):
     rotors = VGroup(*[Circle(radius=size * 0.18, stroke_color=DIM, stroke_width=2, fill_color=WATER_HI, fill_opacity=0.6).move_to(np.array([sx * size / 2, sy * size / 2, 0]))
                       for sx in (-1, 1) for sy in (-1, 1)])
     return VGroup(arms, rotors, body)
+
+
+def polar_curve(ax, f, t0, t1, color=FUNC, width=4):
+    """The polar curve r = f(theta), t0 <= theta <= t1, drawn on Cartesian axes."""
+    return ax.plot_parametric_curve(lambda s: np.array([f(s) * np.cos(s), f(s) * np.sin(s), 0.0]), t_range=[t0, t1, 0.01], color=color, stroke_width=width)
+
+
+def lighthouse(height=1.6):
+    """A striped lighthouse with a lamp (vector art)."""
+    w = height * 0.3
+    tower = Polygon([-w / 2, 0, 0], [w / 2, 0, 0], [w * 0.35, height, 0], [-w * 0.35, height, 0], stroke_color=INK, stroke_width=2, fill_color=PANEL, fill_opacity=1)
+    stripes = VGroup(*[Polygon([-w / 2 + k * 0.03, k * height / 4, 0], [w / 2 - k * 0.03, k * height / 4, 0], [w / 2 - (k + 0.5) * 0.03, (k + 0.5) * height / 4, 0], [-w / 2 + (k + 0.5) * 0.03, (k + 0.5) * height / 4, 0],
+                               stroke_width=0, fill_color=TANGENT, fill_opacity=1) for k in range(4)])
+    lamp = Circle(radius=w * 0.3, stroke_width=0, fill_color="#F6C945", fill_opacity=1).move_to([0, height + w * 0.2, 0])
+    return VGroup(tower, stripes, lamp)

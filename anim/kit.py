@@ -558,3 +558,12 @@ def reveal_sign(ch, *ks):
 def reveal_words(ch):
     """A cue for Scene.example: show the inc/dec (or max/min) words under the chart."""
     return lambda scene: scene.play(ch[4].animate.set_opacity(1), run_time=0.6)
+
+
+def mark_point(ch, k, text, color=SECANT, size=30):
+    """A cue for Scene.example: write a classification ("max", "min", "neither") above critical point k of a sign chart."""
+    def cue(scene):
+        lab = T(text, size, color).next_to(ch[1][k][2], UP, buff=0.12)
+        ch.add(lab)
+        scene.play(FadeIn(lab), run_time=0.5)
+    return cue

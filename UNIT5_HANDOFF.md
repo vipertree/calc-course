@@ -59,11 +59,16 @@ video-review passes.
    one side it's concave and from the other it's convex; that's why we say concave UP and concave DOWN, to be clear
    which side the opening faces.
 
+**5.7**
+1. Slow down the algebra for derivatives, second derivatives, and solving for zero. Also: build this into the
+   lesson-making skill (done: .claude/skills/lesson-writing/SKILL.md).
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.4 | 1 above | done (transcript, scene); not rendered | see git log |
 | 5.3 | 1-3 above | done (transcript, scene, notes, practice); not rendered | see git log |
 | 5.2 | 1-4 above | done (transcript, scene, notes); not rendered | see git log |
 
@@ -95,3 +100,5 @@ video-review passes.
   have staged sign charts and one algebra step per line. New Example 4 "From the graph of f" (positive f, negative
   f'). Runtime ~5 -> ~8.6 min. Notes: new sections "Graphs of f and f'" and "Reading the graph of f'", plus 5 new
   graph practice items (figures t5_3_pq, t5_3_f) and t5_3_fp.
+- 5.4: "From a sign chart" and Examples 1-3 all use staged sign charts (kit.mark_point labels max/min/neither over
+  each critical point, new helper) and spell out every test-value computation.

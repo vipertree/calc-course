@@ -6,6 +6,7 @@ and a given f'(x) = (x + 1)(x - 3)^2 (a sign that doesn't change at 3).
 """
 import sympy as sp
 
+from calclib.figs import graph
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, num,
                      same, selfcheck)
 
@@ -27,6 +28,12 @@ seteq("ex1", list(incdec(sp.diff(x**3 - 12 * x + 1, x))), [sp.Union(sp.Interval.
 seteq("ex2", list(incdec(sp.diff(x * sp.exp(-x), x))), [sp.Interval.open(-sp.oo, 1), sp.Interval.open(1, sp.oo)])
 seteq("ex3", list(incdec((x + 1) * (x - 3)**2)), [sp.Union(sp.Interval.open(-1, 3), sp.Interval.open(3, sp.oo)), sp.Interval.open(-sp.oo, -1)])
 
+FIG_FP = graph("t5_3_fp", [("-x-2", -4, -2), ("-sqrt(abs(4-x^2))", -2, 2), ("x-2", 2, 4), ("2+0*x", 4, 6)], xr=(-4, 6), yr=(-3, 3),
+               ylabel="f'(x)", caption="The graph of $f'$ (not $f$): two segments, a semicircle, and a flat segment.")
+FIG_PQ = graph("t5_3_pq", [("sqrt(abs(4-(x+1)^2))", -3, 1), ("-(x-1)", 1, 3), ("2*(x-3)-2", 3, 5)], xr=(-3, 5), yr=(-3, 3),
+               ylabel="f'(x)", caption="The graph of $f'$: a semicircle and two line segments.")
+FIG_F = graph("t5_3_f", [("(x^3-6*x^2+9*x)/2+1", 0, 4)], xr=(0, 4), yr=(0, 4), ylabel="f(x)", caption="The graph of $f$ (not $f'$).")
+
 NOTES = [
     Video("s5_3.py::Lesson", "Uphill and downhill", 4),
 
@@ -36,12 +43,22 @@ NOTES = [
         r"If $f'(x) < 0$ on an interval, $f$ is \blank{decreasing} on that interval.")),
     Text(r"Positive slope means the graph goes uphill as you read it left to right. The sign of $f'$ is what matters, not its size."),
 
+    Section("Graphs of $f$ and $f'$"),
+    Text(r"Stack the graph of $f'$ under the graph of $f$. Where $f$ climbs, the graph of $f'$ is \blank{above} the axis. Where $f$ falls, it is "
+         r"\blank{below}. At a peak or valley of $f$, the graph of $f'$ crosses \blank{zero}."),
+    Text(r"\textbf{Height is not slope.} $f$ can be positive while $f'$ is negative: the graph is above the axis but heading downhill. "
+         r"The sign of $f$ says where the graph \emph{is}. The sign of $f'$ says which way it's \emph{going}."),
     Section("A sign chart"),
     Formula("Finding where $f$ increases and decreases", (
         r"\textbf{1.} Find $f'(x)$. \par \textbf{2.} Find where $f'(x) = 0$ or is undefined: the \blank{critical points}. \par "
         r"\textbf{3.} Mark them on a number line. Between them, $f'$ can't change sign, so test \blank{one} value in each piece. \par "
         r"\textbf{4.} Read off the answer: $+$ means increasing, $-$ means decreasing.")),
     VideoExample('Increasing from a sign chart', work="3cm"),
+    Section("Reading the graph of $f'$"),
+    Text(r"Given the graph of $f'$, you don't need a formula. Read its sign: \blank{above} the axis means $f$ is increasing, below means "
+         r"$f$ is decreasing. Where the graph of $f'$ crosses from above to below, $f$ switches from increasing to decreasing. "
+         r"Careful: if the graph of $f'$ is heading down but still above the axis, $f$ is still \blank{increasing}."),
+    VideoExample('From the graph of f prime', work="3cm"),
     Text(r"\textbf{Justify with $f'$.} On the AP exam, say why: ``$f$ is increasing on $(2, \infty)$ because $f'(x) > 0$ there.'' "
          r"A sentence about the graph of $f$ alone doesn't earn the point."),
     BigIdea(r"The sign of $f'$ tells the direction of $f$. Critical points split the line into pieces, and $f'$ keeps one sign on each piece."),
@@ -78,6 +95,19 @@ PRACTICE += [
          r"$f' > 0$ on $(-3, 1)$, so $f$ increases there.", work="1.4cm"),
     Item(r"$f(x) = \sin x + \cos x$ on $(0, 2\pi)$. On what interval is $f$ decreasing? Enter the left endpoint.", num(sp.pi / 4),
          r"$f'(x) = \cos x - \sin x < 0$ on $\left(\frac\pi4, \frac{5\pi}{4}\right)$.", work="2.4cm"),
+]
+PRACTICE += [
+    Item(r"The graph of $f'$ is shown. On what open intervals is $f$ increasing?", selfcheck(r"(-3, 1) \text{ and } (4, 5)"),
+         r"$f' > 0$ where its graph is above the axis: on $(-3, 1)$ (the semicircle) and on $(4, 5)$.", work="1.6cm", figure=FIG_PQ),
+    Item(r"The graph of $f'$ is shown. At what value of $x$ does $f$ switch from increasing to decreasing?", num(1),
+         r"The graph of $f'$ crosses from above the axis to below at $x = 1$.", work="1.4cm", figure=FIG_PQ),
+    Item(r"The graph of $f'$ is shown. The graph of $f'$ is decreasing on $(-1, 1)$. Is $f$ increasing or decreasing on $(-1, 1)$? Explain.",
+         selfcheck(r"\text{increasing}"), r"Increasing: $f'$ is still positive on $(-1, 1)$ (above the axis), even though it's heading down.",
+         work="1.6cm", figure=FIG_PQ),
+    Item(r"The graph of $f$ is shown. On what open interval is $f'(x) < 0$?", selfcheck(r"(1, 3)"),
+         r"$f$ is decreasing from its peak at $x = 1$ to its valley at $x = 3$, so $f' < 0$ on $(1, 3)$.", work="1.4cm", figure=FIG_F),
+    Item(r"The graph of $f$ is shown. Is $f(2)$ positive or negative? Is $f'(2)$ positive or negative?", selfcheck(r"f(2) > 0,\ f'(2) < 0"),
+         r"The graph is above the axis at $x = 2$ but heading downhill: $f(2) = 2 > 0$ and $f'(2) < 0$.", work="1.4cm", figure=FIG_F),
 ]
 seteq("p", [incdec(sp.cos(x) - sp.sin(x), 0, 2 * sp.pi)[1], incdec((x - 2) * (x + 5))[1]], [sp.Interval.open(sp.pi / 4, 5 * sp.pi / 4), sp.Interval.open(-5, 2)])
 seteq("p2", [incdec(sp.diff(sp.log(x) / x, x), 0, sp.oo)[0], incdec(sp.diff(x + 4 / x, x), 0, sp.oo)[1], incdec(sp.diff(x * sp.exp(x), x))[0]],

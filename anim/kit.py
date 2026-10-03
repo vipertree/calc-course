@@ -538,3 +538,23 @@ def sign_chart(crit, signs, name="f'", width=10, words=None, size=44):
     wd = VGroup(*[T(w, 32, DIM).next_to(p, DOWN, buff=0.75) for w, p in zip(words or [], mids)])
     nm = M(name, 36, DIM).next_to(line, LEFT, buff=0.3)
     return VGroup(line, ticks, labels, sg, wd, nm)
+
+
+def staged_chart(crit, signs, words=None, name="f'", width=10):
+    """A sign chart for a worked example's figure (Adder, unit 5: a number line for every sign problem). The line,
+    ticks and critical points show with the figure; each sign and the words stay hidden until reveal_sign/reveal_words
+    run as cues, so the chart fills in as each test value is worked on the board."""
+    ch = sign_chart(crit, signs, name=name, width=width, words=words)
+    ch[3].set_opacity(0)
+    ch[4].set_opacity(0)
+    return ch
+
+
+def reveal_sign(ch, *ks):
+    """A cue for Scene.example: light up the signs of pieces ks (0 = leftmost)."""
+    return lambda scene: scene.play(*[ch[3][k].animate.set_opacity(1) for k in ks], run_time=0.6)
+
+
+def reveal_words(ch):
+    """A cue for Scene.example: show the inc/dec (or max/min) words under the chart."""
+    return lambda scene: scene.play(ch[4].animate.set_opacity(1), run_time=0.6)

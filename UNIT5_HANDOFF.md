@@ -35,11 +35,36 @@ video-review passes.
    one that shoots off to infinity.
 4. Define critical points very clearly: f' = 0 or f' undefined.
 
+**5.3**
+1. Slow the "where is x^3 - 3x^2 + 4 increasing" example: pause on "so we're asking when is f' > 0?", take the
+   derivative, show the solving, draw the number line, explain the pieces and why those test values, show each sign.
+2. More graphs in general: hammer the graphical relationship between f and f'. Point out f' can be negative where f
+   is positive.
+3. Graph-reading questions: given a graph of f' (lines, semicircles), when is f increasing, when does f have a max.
+   Look at f, answer about f' and f; look at f', answer about f. Check if a later section already does this; if not,
+   5.3 is where it gets hammered. (Finding: 5.8 does f'-graph reading incl. concavity, with one piecewise-linear FRQ;
+   nothing earlier. Decision: 5.3 gets the increasing/decreasing/turning-point readings; 5.8 keeps concavity.)
+
+**5.4**
+1. Every extrema problem working out +, -, + gets its own number-line sign chart, shown clearly, every one.
+
+**5.5**
+1. Emphasize inputs vs outputs: the max/min IS the function value (output); "when"/"where" is the x where it is
+   achieved, e.g. "maximum of 20 when x = 3". Include questions that ask only for the absolute max (value) and others
+   that ask where it is achieved.
+
+**5.6**
+1. Adder says "bowl" and "hill" (not cup/cap).
+2. Vocabulary: in English, concave = opened/caved in, convex = bulging the other way. A graph is a thin line, so from
+   one side it's concave and from the other it's convex; that's why we say concave UP and concave DOWN, to be clear
+   which side the opening faces.
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.3 | 1-3 above | done (transcript, scene, notes, practice); not rendered | see git log |
 | 5.2 | 1-4 above | done (transcript, scene, notes); not rendered | see git log |
 
 ## Notes for the merging agent
@@ -61,3 +86,12 @@ video-review passes.
   climbing the right branch, table x = 0.1/0.01/0.001). Check the inset boxes land on the open circle and the
   connector lines don't cross labels. "Critical points" now ends with a boxed definition at the bottom; the row of
   three mini-graphs moved to the top edge to make room.
+- NEW kit helpers (anim/kit.py, appended): staged_chart / reveal_sign / reveal_words. A sign chart passed as an
+  example's figure with figure_at, whose signs and words start at opacity 0 and are revealed by cues as each test
+  value is written. Used in 5.3 (and planned for 5.4). If the layout audit flags the hidden signs, that is why.
+- 5.3 scene: new beats "f and f prime together" (stacked f / f' with a TracedPath drawing f' as the tangent rides f,
+  colored by sign) and "Height is not slope" (x = 2: f > 0, f' < 0; x = 4.2: f < 0, f' > 0). New lesson example
+  "From the graph of f prime" (segments + semicircle, pieces recolor as read; notes_graph given). Examples 1-3 all
+  have staged sign charts and one algebra step per line. New Example 4 "From the graph of f" (positive f, negative
+  f'). Runtime ~5 -> ~8.6 min. Notes: new sections "Graphs of f and f'" and "Reading the graph of f'", plus 5 new
+  graph practice items (figures t5_3_pq, t5_3_f) and t5_3_fp.

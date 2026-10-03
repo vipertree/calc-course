@@ -32,8 +32,8 @@ NOTES = [
     Section("The values to know"),
     Text(r"The quadrantal angles land on the axes. The $45$-$45$-$90$ triangle with hypotenuse $1$ has legs $\frac{\sqrt2}{2}$; the $30$-$60$-$90$ triangle "
          r"(half of an equilateral triangle of side $1$) has legs $\frac12$ and $\frac{\sqrt3}{2}$."),
-    Table(r"$0$ & $1$ & $0$ & $0$ \\ $\frac{\pi}{6}$ & $\frac{\sqrt3}{2}$ & $\frac12$ & $\frac{\sqrt3}{3}$ \\ $\frac{\pi}{4}$ & $\frac{\sqrt2}{2}$ & $\frac{\sqrt2}{2}$ & $1$ \\ "
-          r"$\frac{\pi}{3}$ & $\frac12$ & $\frac{\sqrt3}{2}$ & $\sqrt3$ \\ $\frac{\pi}{2}$ & $0$ & $1$ & undefined \\ $\pi$ & $-1$ & $0$ & $0$ \\ $\frac{3\pi}{2}$ & $0$ & $-1$ & undefined",
+    Table(r"$0$ & $1$ & $0$ & $0$ \\[5pt] $\frac{\pi}{6}$ & $\frac{\sqrt3}{2}$ & $\frac12$ & $\frac{\sqrt3}{3}$ \\[5pt] $\frac{\pi}{4}$ & $\frac{\sqrt2}{2}$ & $\frac{\sqrt2}{2}$ & $1$ \\[5pt] "
+          r"$\frac{\pi}{3}$ & $\frac12$ & $\frac{\sqrt3}{2}$ & $\sqrt3$ \\[5pt] $\frac{\pi}{2}$ & $0$ & $1$ & undefined \\[5pt] $\pi$ & $-1$ & $0$ & $0$ \\[5pt] $\frac{3\pi}{2}$ & $0$ & $-1$ & undefined",
           "c|c|c|c", header=r"$\theta$ & $\cos\theta$ & $\sin\theta$ & $\tan\theta$"),
     Text(r"Memory check: as the angle grows from $\frac{\pi}{6}$ to $\frac{\pi}{3}$ the point rises, so sine goes up ($\frac12$, $\frac{\sqrt2}{2}$, $\frac{\sqrt3}{2}$) and cosine goes down."),
 

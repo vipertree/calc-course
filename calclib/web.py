@@ -453,7 +453,8 @@ def export(t: Topic, outdir, figdir):
                 {"src": figure_svg(f, figdir), "caption": html(f.caption)} for f in b.figures]})
         elif isinstance(b, Table):
             head = "<tr>" + "".join(f"<th>{html(c.strip())}</th>" for c in b.header.split("&")) + "</tr>" if b.header else ""
-            rows = [r for r in b.latex.split(r"\\") if r.strip()]
+            rows = [re.sub(r"^\s*\[[^\]]*\]", "", r) for r in b.latex.split(r"\\")]    # drop print row spacing like \\[5pt]
+            rows = [r for r in rows if r.strip()]
             body = "".join("<tr>" + "".join(f"<td>{html(c.strip(), blanks)}</td>" for c in r.split("&")) + "</tr>"
                            for r in rows)
             cur["blocks"].append({"type": "table", "html": f"<table class='data'>{head}{body}</table>"})

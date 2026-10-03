@@ -41,12 +41,12 @@ def _pi_ticks(lo, hi, step):
     return ("xtick={" + ",".join(f"{k * math.pi:.5f}" for k in ks) + "}, xticklabels={" + ",".join("{" + _pi_name(k) + "}" for k in ks) + "}")
 
 
-def unit_circle(name, angles=(), triangle=None, caption="", size="5cm", labels=True):
+def unit_circle(name, angles=(), triangle=None, caption="", size="6cm", labels=True):
     """A unit circle figure. angles: (theta in radians, label) points marked on the circle, label placed outside;
     triangle: an angle whose reference triangle (and ray) is drawn."""
     import math
     r = 2.0
-    body = [r"\draw[->, gray] (-2.6,0) -- (2.7,0) node[right] {$x$};", r"\draw[->, gray] (0,-2.6) -- (0,2.7) node[above] {$y$};",
+    body = [r"\draw[->, gray] (-2.9,0) -- (3.0,0) node[right] {$x$};", r"\draw[->, gray] (0,-2.9) -- (0,3.0) node[above] {$y$};",
             rf"\draw[thick] (0,0) circle ({r});"]
     if labels:
         body += [r"\node[below right, font=\footnotesize] at (2,0) {$1$};", r"\node[below left, font=\footnotesize] at (-2,0) {$-1$};",
@@ -60,7 +60,13 @@ def unit_circle(name, angles=(), triangle=None, caption="", size="5cm", labels=T
         c, s_ = r * math.cos(t), r * math.sin(t)
         body.append(rf"\fill ({c:.3f},{s_:.3f}) circle (2pt);")
         if lab:
-            body.append(rf"\node[font=\scriptsize] at ({1.38 * c:.3f},{1.25 * s_:.3f}) {{{lab}}};")
+            # anchored on the far side of the point, so a long label grows away from the circle; points on an axis
+            # put their label just beside the axis line, not on it
+            on_axis = abs(math.sin(t)) < 0.05 or abs(math.cos(t)) < 0.05
+            a = t + (0.35 if on_axis else 0)
+            # the compass anchor opposite the direction of the point (angle anchors sit mid-edge on a wide label)
+            anchor = ["west", "south west", "south", "south east", "east", "north east", "north", "north west"][round(math.degrees(a) / 45) % 8]
+            body.append(rf"\node[font=\footnotesize, anchor={anchor}, inner sep=2pt] at ({(r + 0.12) * math.cos(a):.3f},{(r + 0.12) * math.sin(a):.3f}) {{{lab}}};")
     return Figure(name=name, caption=caption, tikz=rf"\begin{{tikzpicture}}[scale={float(size.rstrip('cm')) / 5.4:.3f}]" + "".join(body) + r"\end{tikzpicture}")
 
 

@@ -32,7 +32,7 @@ NOTES = [
     Formula("Definitions", (r"$\arcsin x$ is the angle in $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ whose sine is $x$. "
                             r"$\arccos x$ is the angle in $\blank{[0, \pi]}$ whose cosine is $x$. "
                             r"$\arctan x$ is the angle in $\blank{\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)}$ whose tangent is $x$.")),
-    Table(r"$\arcsin x$ & $-1 \le x \le 1$ & $-\frac{\pi}{2} \le y \le \frac{\pi}{2}$ \\ $\arccos x$ & $-1 \le x \le 1$ & $0 \le y \le \pi$ \\ "
+    Table(r"$\arcsin x$ & $-1 \le x \le 1$ & $-\frac{\pi}{2} \le y \le \frac{\pi}{2}$ \\[5pt] $\arccos x$ & $-1 \le x \le 1$ & $0 \le y \le \pi$ \\[5pt] "
           r"$\arctan x$ & all real $x$ & $-\frac{\pi}{2} < y < \frac{\pi}{2}$", "l|c|c", header=r"function & inputs & outputs"),
     FIG_INV,
     VideoExample("Evaluating inverse trig functions", work="3cm"),

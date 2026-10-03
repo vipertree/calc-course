@@ -1,0 +1,21 @@
+# Unit 8 build: handoff log
+
+Branch: `claude/admiring-feynman-m8ygr9`, continuing after Unit 7 (UNIT7_HANDOFF.md). Same rules: built per
+.claude/skills/unit-building and lesson-writing; nothing rendered; each topic passes tools/transcripts.py,
+py_compile, and `build.py X.Y --no-pdf`.
+
+## Status
+
+| Topic | Transcript | Scene | Notes/problems | Commit |
+|---|---|---|---|---|
+| 8.1 | done | done | done (table FRQ: trapezoid average, MVT, average value vs average rate) | see git log |
+
+## Notes for the merging agent
+
+- New helpers:
+  - calclib/figs.py `region(name, fns, xr, yr, pieces, var="x"|"y")`: graph() with shaded regions (drawn under the
+    curves via graph()'s new `under=` argument).
+  - anim/kit.py `region(ax, top, bottom, a, b, var)`, `slice_rect(ax, top, bottom, at, d, var, label)`,
+    `solid_of_revolution(ax, r_out, a, b, r_in, axis_y)`, `cross_section(kind, p0, p1)`. None rendered yet: check
+    them on the first render of 8.4/8.7/8.9.
+- Render every scene and run video-review / notes-review.

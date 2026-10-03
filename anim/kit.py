@@ -664,3 +664,72 @@ def slope_field(ax, f, xs, ys, length=0.36, color=None, width=3):
             p = ax.c2p(x, y)
             segs.add(Line(p - d, p + d, color=color, stroke_width=width))
     return segs
+
+
+def region(ax, top, bottom, a, b, var="x", color=AREA, opacity=0.45, n=80):
+    """The region between two curves as a filled polygon. var="x": between y = bottom(x) and y = top(x), a <= x <= b.
+    var="y": between x = bottom(y) (left) and x = top(y) (right), a <= y <= b."""
+    s = np.linspace(a, b, n)
+    pts = [(v, top(v)) for v in s] + [(v, bottom(v)) for v in s[::-1]]
+    if var == "y":
+        pts = [(q, p) for p, q in pts]
+    return Polygon(*[ax.c2p(p, q) for p, q in pts], stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def slice_rect(ax, top, bottom, at, d, var="x", color=SECANT, label=None):
+    """A representative slice of width d at x = at (var="x", vertical) or y = at (var="y", horizontal), from bottom to
+    top, with an optional nudge_arrow label ("dx" or "dy") on its thickness."""
+    if var == "x":
+        pts = [ax.c2p(at - d / 2, bottom(at)), ax.c2p(at + d / 2, bottom(at)), ax.c2p(at + d / 2, top(at)), ax.c2p(at - d / 2, top(at))]
+    else:
+        pts = [ax.c2p(bottom(at), at - d / 2), ax.c2p(top(at), at - d / 2), ax.c2p(top(at), at + d / 2), ax.c2p(bottom(at), at + d / 2)]
+    rect = Polygon(*pts, stroke_color=color, stroke_width=3, fill_color=color, fill_opacity=0.55)
+    if label is None:
+        return rect
+    if var == "x":
+        arr = nudge_arrow(ax.c2p(at - d / 2, bottom(at)), ax.c2p(at + d / 2, bottom(at)), label=label, side=DOWN, color=color, size=26)
+    else:
+        arr = nudge_arrow(ax.c2p(top(at), at - d / 2), ax.c2p(top(at), at + d / 2), label=label, side=RIGHT, color=color, size=26)
+    return VGroup(rect, arr)
+
+
+def solid_of_revolution(ax, r_out, a, b, r_in=None, axis_y=0.0, n=9, color=ACCUM, tilt=0.32):
+    """A 2D sketch of a solid made by revolving about the horizontal line y = axis_y: the outline (curve and its mirror
+    image), n elliptical cross sections (discs, or washers when r_in is given), all in axis coordinates.
+    tilt is the ellipse's width-to-height ratio on screen."""
+    sy = ax.c2p(0, 1)[1] - ax.c2p(0, 0)[1]
+    def edge(r, sign):
+        return ax.plot(lambda v: axis_y + sign * r(v), x_range=[a, b], color=color, stroke_width=3)
+    out = VGroup(edge(r_out, 1), edge(r_out, -1))
+    if r_in is not None:
+        out.add(edge(r_in, 1).set_stroke(opacity=0.7), edge(r_in, -1).set_stroke(opacity=0.7))
+    for v in np.linspace(a, b, n):
+        R = abs(r_out(v)) * sy
+        e = Ellipse(width=max(2 * R * tilt, 0.02), height=max(2 * R, 0.02), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=0.18)
+        e.move_to(ax.c2p(v, axis_y))
+        out.add(e)
+        if r_in is not None:
+            r = abs(r_in(v)) * sy
+            out.add(Ellipse(width=max(2 * r * tilt, 0.02), height=max(2 * r, 0.02), stroke_color=color, stroke_width=2, fill_color=BG, fill_opacity=1).move_to(ax.c2p(v, axis_y)))
+    return out
+
+
+def cross_section(kind, p0, p1, color=ACCUM, squash=1.0):
+    """One cross section standing straight up (screen UP) on the base segment p0-p1 (screen points, e.g. the two ends
+    of a slice of a base region drawn in an oblique view). kind: "square", "rectangle2" (height twice the base),
+    "equilateral", "isosceles_right" (a leg on the base), or "semicircle" (diameter on the base).
+    squash scales heights to suit the view."""
+    p0, p1 = np.array(p0, dtype=float), np.array(p1, dtype=float)
+    s = np.linalg.norm(p1 - p0)
+    h = UP * s * squash
+    if kind in ("square", "rectangle2"):
+        k = 1 if kind == "square" else 2
+        shape = Polygon(p0, p1, p1 + k * h, p0 + k * h)
+    elif kind == "equilateral":
+        shape = Polygon(p0, p1, (p0 + p1) / 2 + 0.866 * h)
+    elif kind == "isosceles_right":
+        shape = Polygon(p0, p1, p0 + h)
+    else:
+        c, u = (p0 + p1) / 2, (p1 - p0) / 2
+        shape = Polygon(*[c + np.cos(t) * u + np.sin(t) * h / 2 for t in np.linspace(0, PI, 32)])
+    return shape.set_stroke(color, 3).set_fill(color, 0.35)

@@ -20,8 +20,8 @@ def _ticks(lo, hi, step):
 
 
 def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=(), caption="",
-          w="6.4cm", h="4.6cm", xstep=1, ystep=1, xlabel="x", ylabel="y", extra="", grid=True, samples=120):
-    body = []
+          w="6.4cm", h="4.6cm", xstep=1, ystep=1, xlabel="x", ylabel="y", extra="", grid=True, samples=120, under=""):
+    body = [under]  # drawn first, beneath the curves (shading)
     for f in fns:
         expr, a, b = f[0], f[1], f[2]
         style = "fn2" if len(f) > 3 and f[3] == "dashed" else "fn"
@@ -59,3 +59,20 @@ def slope_field(name, f, xs, ys, xr, yr, caption="", curves=(), w="6cm", h="6cm"
             hx, hy = dx / n * (length / 2) / ux, dy / n * (length / 2) / uy
             segs.append(rf"\draw[thick] (axis cs:{x - hx:.4f},{y - hy:.4f}) -- (axis cs:{x + hx:.4f},{y + hy:.4f});")
     return graph(name, list(curves), xr, yr, closed=closed, caption=caption, w=w, h=h, extra="".join(segs), xlabel=xlabel, ylabel=ylabel)
+
+
+def region(name, fns, xr, yr, pieces, caption="", var="x", **kw):
+    """A graph() with shaded regions. pieces: [(top, bottom, a, b), ...] with top/bottom Python callables of one
+    variable. var="x" shades between y = bottom(x) and y = top(x) for a <= x <= b; var="y" shades between
+    x = bottom(y) (left) and x = top(y) (right) for a <= y <= b. Curves themselves still come from fns."""
+    fills = []
+    for top, bottom, a, b in pieces:
+        n = 60
+        s = [a + (b - a) * i / n for i in range(n + 1)]
+        up = [(v, top(v)) for v in s]
+        down = [(v, bottom(v)) for v in reversed(s)]
+        pts = up + down
+        if var == "y":
+            pts = [(q, p) for p, q in pts]
+        fills.append(r"\fill[ink!14] " + " -- ".join(f"(axis cs:{p:.4f},{q:.4f})" for p, q in pts) + " -- cycle;")
+    return graph(name, fns, xr, yr, caption=caption, under="".join(fills), **kw)

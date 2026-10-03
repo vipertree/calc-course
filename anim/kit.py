@@ -519,8 +519,11 @@ def sign_chart(crit, signs, name="f'", width=10, words=None, size=44):
     line = Line(LEFT * width / 2, RIGHT * width / 2, color=DIM, stroke_width=3)
     n = len(crit)
     xs = [line.point_from_proportion((k + 1) / (n + 1)) for k in range(n)]
-    ticks = VGroup(*[Line(p + UP * 0.15, p + DOWN * 0.15, color=INK, stroke_width=3) for p in xs])
-    labels = VGroup(*[M(str(c), 34).next_to(p, DOWN, buff=0.25) for c, p in zip(crit, xs)])
+    # each zero gets a bold tick, a dot, and a dashed divider up through the sign row, so it's obvious which section
+    # each sign belongs to (Adder, 4.2)
+    ticks = VGroup(*[VGroup(Line(p + UP * 0.3, p + DOWN * 0.3, color=INK, stroke_width=5), Dot(p, radius=0.08, color=INK),
+                            DashedLine(p + UP * 0.3, p + UP * 1.0, color=DIM, stroke_width=2, dash_length=0.08)) for p in xs])
+    labels = VGroup(*[M(str(c), 36).next_to(p, DOWN, buff=0.35) for c, p in zip(crit, xs)])
     mids = [line.point_from_proportion((k + 0.5) / (n + 1)) for k in range(n + 1)]
     sg = VGroup(*[M(s, size, DERIV if s == "+" else (TANGENT if s == "-" else DIM)).next_to(p, UP, buff=0.25) for s, p in zip(signs, mids)])
     wd = VGroup(*[T(w, 32, DIM).next_to(p, DOWN, buff=0.75) for w, p in zip(words or [], mids)])

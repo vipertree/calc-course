@@ -100,11 +100,21 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
    shading of the inside/rim), not a closed rectangular prism.
 2. Closed cylinder example: use a visual too (the kind of sketch students would draw themselves).
 
+**5.12**
+1. Same phrasing changes Adder asked for in unit 3: no "blows up". Pause and ask students to think about going off to
+   infinity / what causes vertical tangent lines.
+2. N and D (numerator/denominator of dy/dx) are used but never introduced. Introduce: sometimes the derivative
+   comes out as a fraction; call the numerator N and the denominator D, and analyze each independently.
+3. Watch for points where the denominator is zero but the point isn't on the original curve (or the function
+   isn't defined there): that's not a vertical tangent; there is no derivative there at all.
+4. At least one example: find the equations of the (multiple) tangent lines to the curve at a given x value.
+
 ## Status
 
 | Topic | Request | Status | Commit |
 |---|---|---|---|
 | 5.1 | 1-5 above | done (transcript, scene, notes); not rendered | see git log |
+| 5.11 | 5.10/5.11 item 1, 5.11 items 1-2 | done (transcript, scene); not rendered | see git log |
 | 5.10 | 5.10/5.11 item 1 (for 5.10), 5.10 items 2-3 | done (transcript, scene, notes); not rendered | see git log |
 | 5.9 | 5.8 items 1-5 (chart centerpiece, sign changes, constructed f') | done (transcript, scene, notes); not rendered | see git log |
 | 5.8 | 1-6 above (light chart: the existing notes Table + Close table; full chart deferred to 5.9) | done; not rendered | see git log |
@@ -172,3 +182,8 @@ Adder's student chart, three columns: Function f | First derivative f' | Second 
   the domain is argued from the picture. "Setting up" has a live rectangle (always_redraw on a ValueTracker, drawn
   inside an invisible holder passed as the figure): shows w = 25 is impossible, then flattens toward w = 20 and 0.
   All algebra one step per line. Notes: "Find the domain from the picture".
+- 5.11: box() rewritten as an oblique open-top box with a fold angle (ValueTracker F, degrees): flaps fold up from
+  the flat sheet in the opening; inner faces darker, rim outlined. can() draws a student-style cylinder. Figures on
+  every example (labeled box, line + sliding distance segment, sqrt graph + D, cylinder with top/bottom then side
+  highlighted). Algebra one step per line. Check the box-label placement in Example 1 and the fold animation's
+  draw order at mid-fold.

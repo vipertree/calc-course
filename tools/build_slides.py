@@ -392,8 +392,8 @@ def build_deck(t, version, clips, log):
                 chunks.append(cur_chunk)
             for chunk in chunks:
                 clip, cap = take_clip()
-                figs = [b for b in chunk if isinstance(b, (Figure, FigureRow))]
-                rest = [b for b in chunk if not isinstance(b, (Figure, FigureRow))]
+                figs = [b for b in chunk if isinstance(b, Figure)]
+                rest = [b for b in chunk if not isinstance(b, Figure)]
                 if len(figs) == 1 and rest and clip is None:
                     body = f"<div class='with-fig'><div class='problem' style='font-size:inherit'>{''.join(block_html(b, version) for b in rest)}</div>{fig_html(figs[0], 'side')}</div>"
                 else:
@@ -471,6 +471,8 @@ def example_slides(num, k, ex, steps, fig, beat, version, clips, take_clip):
     or a slide with room to work it (blank version)."""
     kicker = f"{num} · Example {k}"
     problem = W.html(ex.body)
+    # restated above the work, the problem stays compact: its displayed formulas go back inline
+    compact = W.html(re.sub(r"\\\[(.+?)\\\]", lambda m: "$\\displaystyle " + m.group(1).strip() + "$", ex.body, flags=re.S))
     fig_h = fig_html(fig, "side") if fig is not None else ""
     take_clip()                                    # an example is never a section's animation slot
     clip = cap = None
@@ -495,7 +497,7 @@ def example_slides(num, k, ex, steps, fig, beat, version, clips, take_clip):
         main += fig_h
     out.append(slide("problem", kicker, W.html(ex.title), main, clip, cap or "", notes=notes))
     if version == "blank":
-        body = f"<div class='problem small'>{problem}</div>"
+        body = f"<div class='problem small'>{compact}</div>"
         body = f"<div class='with-fig'><div style='flex:1;display:flex;flex-direction:column'>{body}<div class='workroom'>Work it out here</div></div>{fig_h}</div>" \
             if fig_h else body + "<div class='workroom'>Work it out here</div>"
         out.append(slide("work", kicker, W.html(ex.title), body, notes="Problem: " + plain(ex.body)))
@@ -505,13 +507,13 @@ def example_slides(num, k, ex, steps, fig, beat, version, clips, take_clip):
         for j in range(1, len(lines) + 1):
             shown = [ln.replace("class='st ", "class='st now " if i == j - 1 else "class='st ", 1) if i < j
                      else ln.replace("class='st ", "class='st later ", 1) for i, ln in enumerate(lines)]
-            body = f"<div class='problem small'>{problem}</div><div class='steps'>{''.join(shown)}</div>"
+            body = f"<div class='problem small'>{compact}</div><div class='steps'>{''.join(shown)}</div>"
             if fig_h:
                 body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{fig_h}</div>"
             out.append(slide("step", f"{kicker} · Step {j} of {len(lines)}", W.html(ex.title), body,
                              notes="\n".join(sol_lines[:j])))
     else:
-        body = f"<div class='problem small'>{problem}</div><div class='answer'><div class='tag'>SOLUTION</div><div class='prose'>{W.html(ex.solution)}</div></div>"
+        body = f"<div class='problem small'>{compact}</div><div class='answer'><div class='tag'>SOLUTION</div><div class='prose'>{W.html(ex.solution)}</div></div>"
         if fig_h:
             body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{fig_h}</div>"
         out.append(slide("step", f"{kicker} · Solution", W.html(ex.title), body, notes=plain(ex.solution)))

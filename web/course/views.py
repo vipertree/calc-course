@@ -1,5 +1,6 @@
 import json
 import re
+from html import escape
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Q, Sum
@@ -11,8 +12,9 @@ from django.views.decorators.http import require_POST
 
 from accounts.models import Classroom, class_for, has_full_access
 from . import content, grading
-from . import assess, packets
-from .models import Draft, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
+from . import assess, exams, packets, slides
+from .context import THEMES
+from .models import Draft, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
 FREE_PRACTICE = 4          # practice problems anyone can try without an account
@@ -67,7 +69,8 @@ def course_map(request):
     groups = [{"modules": True, "units": [u for u in units if u["module"]]},
               {"modules": False, "units": [u for u in units if not u["module"]]}]
     return render(request, "course/map.html", {"groups": [g for g in groups if g["units"]],
-                                               "current_unit": _current_unit(request.user)})
+                                               "current_unit": _current_unit(request.user),
+                                               "exams": exams.available()})
 
 
 def formulas(request):
@@ -169,6 +172,7 @@ def lesson(request, num, area="notes"):
     return render(request, f"course/{area}.html", {
         "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
         "lesson_json": pub, "state_json": state, "packet": packets.available(num),
+        "slides": _is_teacher(request.user) and slides.manifest(num) is not None,
     })
 
 
@@ -470,10 +474,15 @@ def video(request, name):
     ext = path.suffix
     if ext not in _VIDEO_TYPES or path.parent != (settings.BASE_DIR / "static" / "video").resolve() or not path.is_file():
         raise Http404
+    return _ranged(request, path, _VIDEO_TYPES[ext])
+
+
+def _ranged(request, path, content_type):
+    """A file answered with HTTP Range support (206 partial content), so a <video> can seek."""
     size = path.stat().st_size
     m = _RANGE.fullmatch(request.headers.get("Range", "").strip())
     if not m or (not m[1] and not m[2]):
-        resp = FileResponse(open(path, "rb"), content_type=_VIDEO_TYPES[ext])
+        resp = FileResponse(open(path, "rb"), content_type=content_type)
         resp["Accept-Ranges"] = "bytes"
         resp["Content-Length"] = str(size)
         return resp
@@ -488,7 +497,7 @@ def video(request, name):
     with open(path, "rb") as f:
         f.seek(start)
         data = f.read(end - start + 1)
-    resp = HttpResponse(data, status=206, content_type=_VIDEO_TYPES[ext])
+    resp = HttpResponse(data, status=206, content_type=content_type)
     resp["Content-Range"] = f"bytes {start}-{end}/{size}"
     resp["Accept-Ranges"] = "bytes"
     resp["Content-Length"] = str(len(data))
@@ -531,7 +540,8 @@ def _handout_rows(num, title):
         if (d / student).is_file():
             docs.append({"label": label, "student": reverse("handout_pdf", args=[num, student]),
                          "key": reverse("handout_pdf", args=[num, key]) if (d / key).is_file() else None})
-    return {"num": num, "title": title, "docs": docs}
+    deck = reverse("slides", args=[num]) if not num.startswith("U") and slides.manifest(num) else None
+    return {"num": num, "title": title, "docs": docs, "slides": deck}
 
 
 def handouts(request):
@@ -541,7 +551,7 @@ def handouts(request):
     tests = content.unit_tests()
     for u in content.syllabus():
         rows = [_handout_rows(t["n"], t["title"]) for t in u["topics"]]
-        rows = [r for r in rows if r["docs"]]
+        rows = [r for r in rows if r["docs"] or r["slides"]]
         test = _handout_rows(f"U{u['n']}", "Unit test") if u["n"] in tests else None
         if rows or (test and test["docs"]):
             units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows, "test": test})
@@ -594,4 +604,175 @@ def packet(request, num):
     data = packets.stamp(packets.base_path(num), packets.holder_name(request.user), p.code)
     resp = HttpResponse(data, content_type="application/pdf")
     resp["Content-Disposition"] = f'attachment; filename="{num}-packet-{p.code}.pdf"'
+    return resp
+
+
+# ------------------------------------------------------------------ full-length practice exams
+def _exam_or_404(slug):
+    pub = exams.public(slug)
+    if not pub:
+        raise Http404("That exam isn't available.")
+    return pub
+
+
+def exam_list(request):
+    rows = []
+    for slug in exams.available():
+        pub = exams.public(slug)
+        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"],
+                     "open": exams.can_take(request.user, pub) if request.user.is_authenticated else not pub["members_only"]})
+    return render(request, "course/exams.html", {"exams": rows})
+
+
+def exam_home(request, slug):
+    """An exam's front page: what it is, start or resume, earlier sittings, and the print copies."""
+    pub = _exam_or_404(slug)
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    if not exams.can_take(request.user, pub):
+        return render(request, "course/locked.html", {"what": "More practice exams"})
+    attempts = list(ExamAttempt.objects.filter(user=request.user, exam=slug))
+    for a in attempts:
+        exams.sync(a, pub)
+    past = [{"id": a.pk, "started": a.started, "summary": exams.summary(a, pub)} for a in attempts if a.finished]
+    live = next((a for a in attempts if not a.finished), None)
+    return render(request, "course/exam_home.html", {
+        "E": pub, "slug": slug, "live": live, "past": past,
+        "live_part": live and exams.parts(pub)[live.part],
+        "print_ready": {k: (PDF_DIR / f"exam-{slug}" / f"exam-{slug}-exam{'-key' if k == 'key' else ''}-classic.pdf").is_file() for k in ("exam", "key")}})
+
+
+@login_required
+@require_POST
+def exam_start(request, slug):
+    pub = _exam_or_404(slug)
+    if not exams.can_take(request.user, pub):
+        return HttpResponseForbidden("Members only.")
+    live = next((a for a in ExamAttempt.objects.filter(user=request.user, exam=slug, finished__isnull=True)
+                 if not exams.sync(a, pub).finished), None)
+    if live is None:
+        live = ExamAttempt.objects.create(user=request.user, exam=slug)
+    return redirect("exam_attempt", slug=slug, pk=live.pk)
+
+
+@login_required
+@require_POST
+def exam_discard(request, slug, pk):
+    """Throw away an unfinished sitting, so the next one starts from Part A."""
+    ExamAttempt.objects.filter(user=request.user, exam=slug, pk=pk, finished__isnull=True).delete()
+    return redirect("exam_home", slug=slug)
+
+
+def _attempt(request, slug, pk):
+    pub = _exam_or_404(slug)
+    att = get_object_or_404(ExamAttempt, pk=pk, exam=slug, user=request.user)
+    return pub, exams.sync(att, pub)
+
+
+@login_required
+def exam_attempt(request, slug, pk):
+    pub, att = _attempt(request, slug, pk)
+    data = exams.report(att, pub) if att.finished else exams.live_state(att, pub)
+    return render(request, "course/exam.html", {"E": pub, "slug": slug, "att": att, "data": data,
+                                                "meta": {k: pub[k] for k in ("slug", "title", "course")}})
+
+
+@login_required
+@require_POST
+def api_exam(request, slug, pk, action):
+    """The sitting's actions. Every reply carries the fresh state, so the page follows the server, never its own clock."""
+    pub, att = _attempt(request, slug, pk)
+    d = _body(request)
+    ok, status, extra = True, 200, {}
+    if action == "begin":
+        exams.begin(att, pub)
+    elif action == "submit":
+        ok = exams.submit_part(att, pub, str(d.get("part", "")))
+    elif action == "answer":
+        ok, why = exams.answer(att, pub, str(d.get("item", "")), str(d.get("value", "")))
+        extra["reason"] = why
+    elif action == "flag":
+        ok = exams.flag(att, pub, str(d.get("item", "")), bool(d.get("on")))
+    elif action == "frq":
+        ok = exams.set_frq(att, pub, str(d.get("part", "")), d.get("checks"))
+        if ok:
+            extra.update({"summary": exams.summary(att, pub), "units": exams.by_unit(att, pub)})
+    elif action != "state":
+        raise Http404
+    if not ok:
+        status = 409
+    if action != "frq":
+        extra["state"] = {"finished": True} if att.finished else exams.live_state(att, pub)
+    return JsonResponse({"ok": ok, **extra}, status=status)
+
+
+def exam_pdf(request, slug, kind):
+    """The printable exam, or its key with every solution and scoring guide. Same access as the exam itself."""
+    pub = _exam_or_404(slug)
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    if not exams.can_take(request.user, pub):
+        return HttpResponseForbidden("Members only.")
+    name = f"exam-{slug}-exam{'-key' if kind == 'key' else ''}-classic.pdf"
+    path = PDF_DIR / f"exam-{slug}" / name
+    if not path.is_file():
+        raise Http404
+    return FileResponse(open(path, "rb"), content_type="application/pdf", filename=name)
+
+
+# ------------------------------------------------------------------ teacher slide decks (tools/build_slides.py)
+def _is_teacher(user):
+    p = getattr(user, "profile", None) if user.is_authenticated else None
+    return bool(p and p.is_teacher)
+
+
+def slides_page(request, num):
+    """A topic's slide decks: present either version in the browser, or download it for PowerPoint."""
+    if not _is_teacher(request.user):
+        return HttpResponseForbidden("Teachers only.")
+    m = slides.manifest(num)
+    if m is None:
+        raise Http404("This topic has no slides yet.")
+    unit, meta = content.topic_meta(num)
+    versions = []
+    for key, label in slides.VERSIONS:
+        v = m["versions"].get(key)
+        if not v:
+            continue
+        versions.append({"key": key, "label": label, "slides": v["slides"], "clips": v.get("clips", 0),
+                         "html": reverse("slides_file", args=[num, v["html"]]),
+                         "pptx": reverse("slides_file", args=[num, v["pptx"]]) if v.get("pptx") else None})
+    return render(request, "teacher/slides.html", {"num": num, "title": (meta or {}).get("title") or m.get("title", ""),
+                                                   "versions": versions, "has_clips": any(v["clips"] for v in versions)})
+
+
+def slides_file(request, num, name):
+    """A deck, its PowerPoint file, or one of its clips. Teachers only, whatever the file."""
+    if not _is_teacher(request.user):
+        return HttpResponseForbidden("Teachers only.")
+    path = slides.path_for(num, name)
+    if path is None:
+        raise Http404
+    ext = path.suffix
+    if ext == ".html":
+        # the deck opens in the look the teacher picked on the site, and says whose copy it is
+        page = path.read_text()
+        theme = request.COOKIES.get("theme", "")
+        if theme in dict(THEMES):
+            page = page.replace('<html lang="en">', f'<html lang="en" data-theme="{theme}">', 1)
+        name_line = f"<div class='for'>Prepared for {escape(packets.holder_name(request.user))}</div>"
+        page = page.replace("<!--slides-for-->", name_line, 1)
+        resp = HttpResponse(page, content_type=slides.TYPES[ext])
+        resp["Cache-Control"] = "private, no-cache"
+        return resp
+    if settings.SLIDES_ACCEL:
+        resp = HttpResponse(content_type=slides.TYPES[ext])
+        resp["X-Accel-Redirect"] = f"{settings.SLIDES_ACCEL.rstrip('/')}/{num}/{name}"
+    elif ext == ".mp4":
+        resp = _ranged(request, path, slides.TYPES[ext])
+    else:
+        resp = FileResponse(open(path, "rb"), content_type=slides.TYPES[ext])
+    if ext == ".pptx":
+        resp["Content-Disposition"] = f'attachment; filename="{path.name}"'
+    resp["Cache-Control"] = "private, max-age=3600"
     return resp

@@ -102,6 +102,12 @@ STORAGES = {
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Teacher slide decks (tools/build_slides.py). Kept outside static/ so nginx never serves them to just anyone; Django
+# checks the account first. With SLIDES_ACCEL set (e.g. "/protected-slides/"), Django answers with X-Accel-Redirect
+# to that internal nginx location instead of streaming the file itself (docs/teacher-slides.md).
+SLIDES_DIR = Path(os.environ.get("SLIDES_DIR") or REPO / "build" / "slides")
+SLIDES_ACCEL = os.environ.get("SLIDES_ACCEL", "")
+
 if PROD:
     SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

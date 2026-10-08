@@ -20,3 +20,4 @@ ap-calculus-ab-and-bc-course-and-exam-description.pdf
 voice/
 .env
 .claude/worktrees/
+web/course/content/exams/*.json

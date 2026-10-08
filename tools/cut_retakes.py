@@ -151,6 +151,37 @@ def find_cuts(words, skip=()):
     return cuts, notes
 
 
+PAUSE_MAX = 1.4      # a silence between words longer than this is cut down (Adder: long pauses dragged)
+PAUSE_LEFT = (0.35, 0.25)   # what stays: after the last sound, before the next word
+
+
+def word_end(audio, sr, e, limit=0.8, floor_db=-40):
+    """Where speech really stops after a word Whisper says ends at e (it often ends long numbers early)."""
+    win, t, quiet = int(0.05 * sr), e, 0
+    while t - e < limit:
+        seg = audio[int(t * sr):int(t * sr) + win]
+        if len(seg) == 0:
+            break
+        quiet = quiet + 1 if 20 * np.log10(np.sqrt(np.mean(seg ** 2)) + 1e-9) < floor_db else 0
+        if quiet >= 2:
+            return t - 0.05
+        t += 0.05
+    return t
+
+
+def long_pauses(words, audio, sr, cuts):
+    """Cuts that shorten every long silence between words to about PAUSE_LEFT."""
+    out = []
+    for a, b in zip(words, words[1:]):
+        if any(s0 <= a["s"] < s1 or s0 <= b["s"] < s1 for s0, s1, _ in cuts):
+            continue
+        end = word_end(audio, sr, a["e"])
+        c0, c1 = end + PAUSE_LEFT[0], b["s"] - PAUSE_LEFT[1]
+        if b["s"] - end > PAUSE_MAX and c1 - c0 > 0.2:
+            out.append((round(c0, 3), round(c1, 3), "long pause"))
+    return out
+
+
 def apply_cuts(audio, sr, cuts, words):
     """Edited audio and word list. Cuts sit in the gap before a word, so a short crossfade hides each splice."""
     keep, cursor = [], 0.0
@@ -185,6 +216,10 @@ def main(slug):
     rec = json.load(open(ALIGNED / f"{slug}.words.json"))
     words = rec["words"]
     fix = json.load(open(ALIGNED / f"{slug}.cuts.json")) if (ALIGNED / f"{slug}.cuts.json").exists() else {}
+    src = ROOT / "voice" / "adder-lesson-recordings" / "cleaned" / f"{slug}.wav"
+    audio, sr = sf.read(str(src), dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
     cuts, flagged = find_cuts(words, fix.get("skip", []))
     # the slate ("Okay, recording 1.1.") before the lesson starts
     us = units(words)
@@ -195,6 +230,7 @@ def main(slug):
                 cuts.append((0.0, words[us[nxt][0]]["s"] - 0.1, "slate"))
             break
     cuts += [(a, b, "added by hand") for a, b in fix.get("add", [])]
+    cuts += long_pauses(words, audio, sr, cuts)
     merged = []
     for a, b, why in sorted(cuts):
         if merged and a <= merged[-1][1]:
@@ -202,10 +238,6 @@ def main(slug):
         else:
             merged.append((a, b, why))
     cuts = merged
-    src = ROOT / "voice" / "adder-lesson-recordings" / "cleaned" / f"{slug}.wav"
-    audio, sr = sf.read(str(src), dtype="float32")
-    if audio.ndim > 1:
-        audio = audio.mean(axis=1)
     edited, new_words = apply_cuts(audio, sr, cuts, words)
     sf.write(str(ALIGNED / f"{slug}.edited.wav"), edited, sr)
     json.dump({"duration": round(len(edited) / sr, 3), "words": new_words, "source_words": f"{slug}.words.json",
@@ -214,7 +246,13 @@ def main(slug):
     with open(ALIGNED / f"{slug}.cuts.md", "w") as fh:
         fh.write(f"# {slug}: bad takes removed\n\nTimes are in the cleaned recording. Fixes go in `{slug}.cuts.json` "
                  "(`\"add\": [[start, end]]` for a missed cut, `\"skip\": [cue time]` to keep one).\n\n")
+        pauses = [c for c in cuts if c[2] == "long pause"]
+        if pauses:
+            fh.write(f"{len(pauses)} long pauses shortened ({sum(b - a for a, b, _ in pauses):.1f}s removed; "
+                     f"every silence over {PAUSE_MAX}s now leaves about {sum(PAUSE_LEFT):.1f}s).\n\n")
         for a, b, why in cuts:
+            if why == "long pause":
+                continue
             removed = text(words, *[i for i in [next(i for i, w in enumerate(words) if w["s"] >= a - 1e-6),
                                                  next((i for i, w in enumerate(words) if w["s"] >= b - 1e-6), len(words))]])
             fh.write(f"## {int(a // 60)}:{a % 60:04.1f} to {int(b // 60)}:{b % 60:04.1f} ({b - a:.1f}s), {why}\n\n"
@@ -222,7 +260,8 @@ def main(slug):
     total = sum(b - a for a, b, _ in cuts)
     print(f"{slug}: {len(cuts)} cuts, {total:.1f}s removed" + (f"; CHECK BY EAR at {flagged}" if flagged else ""))
     for a, b, why in cuts:
-        print(f"  {a:7.2f}-{b:7.2f}  {why}")
+        if why != "long pause":
+            print(f"  {a:7.2f}-{b:7.2f}  {why}")
 
 
 if __name__ == "__main__":

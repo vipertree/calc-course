@@ -296,13 +296,13 @@ class Lesson(TranscriptScene):
                       r"= \lim_{h\to0}\frac{60 + 60h - 12 - 24h - 12h^2 - 48}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{60} + 60h - \cancel{12} - 24h - 12h^2 - \cancel{48}}{h} = \lim_{h\to0}\frac{36h - 12h^2}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{h}(36 - 12h)}{\cancel{h}}", r"= \lim_{h\to0}(36 - 12h) = 36 \text{ m/s}",
-                      r"TEXT:The velocity at an instant is the limit of the average velocities around it."], at=[1, 2, 3, 4, 5, 6], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
+                      r"TEXT:The velocity at an instant is the limit of the average velocities around it."], at=[1, 2, 3, 4, 5, 6], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}", follow=True)
         self.example("The h form", r"Let $f(x) = x^2$. Use the definition to find $f'(3)$.",
                      [r"f'(3) = \lim_{h\to0}\frac{(3 + h)^2 - 9}{h}", r"= \lim_{h\to0}\frac{\cancel{9} + 6h + h^2 - \cancel{9}}{h}",
                       r"= \lim_{h\to0}\frac{\cancel{h}(6 + h)}{\cancel{h}}", r"= \lim_{h\to0}(6 + h) = 6"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{h\to0}\frac{f(a + h) - f(a)}{h}")
         self.example("The x to a form", r"Let $g(x) = \dfrac{1}{x}$. Use the $x \to a$ form of the definition to find $g'(2)$.",
                      [r"g'(2) = \lim_{x\to2}\frac{\frac1x - \frac12}{x - 2} = \lim_{x\to2}\frac{\frac{2 - x}{2x}}{x - 2}", r"= \lim_{x\to2}\frac{2 - x}{2x(x - 2)}",
-                      r"= \lim_{x\to2}\frac{-\cancel{(x - 2)}}{2x\cancel{(x - 2)}}", r"= \lim_{x\to2}\left(-\frac{1}{2x}\right) = -\frac14"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{x\to a}\frac{f(x) - f(a)}{x - a}")
+                      r"= \lim_{x\to2}\frac{-\cancel{(x - 2)}}{2x\cancel{(x - 2)}}", r"= \lim_{x\to2}\left(-\frac{1}{2x}\right) = -\frac14"], at=[1, 2, 3, 4], ref=r"f'(a) = \lim_{x\to a}\frac{f(x) - f(a)}{x - a}", follow=True)
 
         # ---------------------------------------------------------------- worked examples
         self.examples_card()

@@ -70,7 +70,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Two unknowns, two seams", r"Find $a$ and $b$: \[ f(x) = \begin{cases} x + a, & x < -1 \\ bx^2 + 1, & -1 \le x \le 2 \\ 3x - 1, & x > 2 \end{cases} \]",
-                     [r"x = -1:\ \ -1 + a = b + 1", r"x = 2:\ \ 4b + 1 = 5,\ \text{so}\ b = 1", r"a = 3"], at=[0, 1, 1])
+                     [r"x = -1:\ \ -1 + a = b + 1", r"x = 2:\ \ 4b + 1 = 5,\ \text{so}\ b = 1", r"a = 3"], at=[0, 1, 1], follow=True)
         self.example("Two seams", r"Find $a$ and $b$ so that $f(x) = \begin{cases} x + a, & x < -1 \\ bx^2 + 1, & -1 \le x \le 2 \\ 3x - 1, & x > 2 \end{cases}$ is continuous everywhere.",
                      [r"x = 2: \ 4b + 1 = 3(2) - 1 = 5,\ \text{so}\ b = 1", r"x = -1: \ -1 + a = b(-1)^2 + 1 = 2", r"a = 3"], at=[1, 2, 3])
 

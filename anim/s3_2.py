@@ -125,7 +125,7 @@ class Lesson(TranscriptScene):
         self.example("All tangent lines at x = 3", r"Find the equations of all lines tangent to $x^2 + y^2 = 25$ at $x = 3$.",
                      [r"\frac{d}{dx}\left(x^2 + y^2\right) = \frac{d}{dx}(25)", r"2x + 2y\,\frac{dy}{dx} = 0", r"\frac{dy}{dx} = -\frac{x}{y}",
                       r"9 + y^2 = 25,\ \text{so } y = 4 \text{ or } y = -4", r"(3, 4):\ \ y - 4 = -\tfrac34(x - 3)", r"(3, -4):\ \ y + 4 = \tfrac34(x - 3)"],
-                     figure=fig4, at=[1, 2, 2, 3, 4, 5])
+                     figure=fig4, at=[1, 2, 2, 3, 4, 5], follow=True)
 
         with self.beat("A product term") as b:
             eq = M(r"x^2 + ", r"xy", r" + y^2 = 7", 50).to_edge(UP, buff=0.5)

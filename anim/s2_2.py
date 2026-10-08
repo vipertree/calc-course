@@ -103,7 +103,7 @@ class Lesson(TranscriptScene):
 
         self.example("The derivative of x squared", r"Use the definition to find $f'(x)$ for $f(x) = x^2$.",
                      [r"f'(x) = \lim_{h\to0}\frac{(x + h)^2 - x^2}{h}", r"= \lim_{h\to0}\frac{\cancel{x^2} + 2xh + h^2 - \cancel{x^2}}{h}",
-                      r"= \lim_{h\to0}\frac{\cancel{h}(2x + h)}{\cancel{h}}", r"= \lim_{h\to0}(2x + h) = 2x"], at=[1, 2, 3, 4])
+                      r"= \lim_{h\to0}\frac{\cancel{h}(2x + h)}{\cancel{h}}", r"= \lim_{h\to0}(2x + h) = 2x"], at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Prime notation") as b:
             p1 = M(r"f'(x) = 2x", 56, DERIV).shift(UP * 2.2)
@@ -202,7 +202,7 @@ class Lesson(TranscriptScene):
                       closed_dot(a2, 3, 9, INK))
         self.example("A tangent line", r"Find the equation of the line tangent to $f(x) = x^2$ at $x = 3$. Write it in slope-intercept form.",
                      [r"f(3) = 9,\ \text{so}\ (3, 9)", r"f'(3) = 2 \cdot 3 = 6", r"y - 9 = 6(x - 3)", r"y = 6x - 18 + 9 = 6x - 9",
-                      r"TEXT:Point-slope form is fine unless a form is asked for, or you are matching a simplified choice."], figure=fig2, at=[1, 2, 3, 4, 5])
+                      r"TEXT:Point-slope form is fine unless a form is asked for, or you are matching a simplified choice."], figure=fig2, at=[1, 2, 3, 4, 5], follow=True)
         self.example("Units", r"$V(t)$ is the volume of water in a tank, in liters, $t$ minutes after it starts draining. Interpret $V'(4) = -12$.",
                      [r"\text{units of } V' = \frac{\text{liters}}{\text{minute}}", r"-12 < 0:\ \text{decreasing}",
                       r"TEXT:At $t = 4$ minutes, the volume of water is decreasing at $12$ liters per minute.",

@@ -69,7 +69,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Dividing by the highest power", r"Divide top and bottom by $x^2$",
-                     [r"\lim_{x\to\infty}\frac{3x^2 + x}{x^2 + 1} = \lim_{x\to\infty}\frac{3 + \frac1x}{1 + \frac{1}{x^2}}", r"= \frac{3 + 0}{1 + 0} = 3"], at=[0, 1])
+                     [r"\lim_{x\to\infty}\frac{3x^2 + x}{x^2 + 1} = \lim_{x\to\infty}\frac{3 + \frac1x}{1 + \frac{1}{x^2}}", r"= \frac{3 + 0}{1 + 0} = 3"], at=[0, 1], follow=True)
 
         with self.beat("Three cases for rational functions") as b:
             cols = VGroup(VGroup(T("bottom degree bigger", 34, DIM), M(r"\frac{2x}{x^2 + 1} \to 0", 44)),
@@ -103,7 +103,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(p3), run_time=1)
         self.clear()
         self.example("Roots at negative infinity", r"Find $\displaystyle\lim_{x\to-\infty}\frac{\sqrt{4x^2 + 1}}{x}$.",
-                     [r"\text{leading terms: } \frac{\sqrt{4x^2}}{x} = \frac{2|x|}{x}", r"x < 0: \ |x| = -x", r"\lim_{x\to-\infty}\frac{\sqrt{4x^2 + 1}}{x} = \lim_{x\to-\infty}\frac{2(-x)}{x} = -2"], at=[1, 2, 3])
+                     [r"\text{leading terms: } \frac{\sqrt{4x^2}}{x} = \frac{2|x|}{x}", r"x < 0: \ |x| = -x", r"\lim_{x\to-\infty}\frac{\sqrt{4x^2 + 1}}{x} = \lim_{x\to-\infty}\frac{2(-x)}{x} = -2"], at=[1, 2, 3], follow=True)
 
         with self.beat("Close") as b:
             v = view(500)

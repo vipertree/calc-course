@@ -114,7 +114,7 @@ class Lesson(TranscriptScene):
             bd.write(self, r"3.\ \ \lim_{x\to2} f(x) = 5 = f(2),\ \text{so}\ f \text{ is continuous at } x = 2", SECANT)
         self.clear()
         self.example("Justify continuity", r"Let $f(x) = \begin{cases} x^2 + 1, & x < 2 \\ 4x - 3, & x \ge 2 \end{cases}$. Is $f$ continuous at $x = 2$? Justify using the definition.",
-                     [r"f(2) = 4(2) - 3 = 5", r"\lim_{x\to2^-}(x^2 + 1) = 5, \quad \lim_{x\to2^+}(4x - 3) = 5,\ \text{so}\ \lim_{x\to2} f(x) = 5", r"\lim_{x\to2} f(x) = f(2): \ f \text{ is continuous at } x = 2"], at=[1, 2, 3])
+                     [r"f(2) = 4(2) - 3 = 5", r"\lim_{x\to2^-}(x^2 + 1) = 5, \quad \lim_{x\to2^+}(4x - 3) = 5,\ \text{so}\ \lim_{x\to2} f(x) = 5", r"\lim_{x\to2} f(x) = f(2): \ f \text{ is continuous at } x = 2"], at=[1, 2, 3], follow=True)
         self.example("Justify discontinuity", r"Let $g(x) = \begin{cases} \dfrac{x^2 - 9}{x - 3}, & x \ne 3 \\ 5, & x = 3 \end{cases}$. Is $g$ continuous at $x = 3$?",
                      [r"g(3) = 5", r"x \ne 3: \ g(x) = \frac{\cancel{(x - 3)}(x + 3)}{\cancel{x - 3}} = x + 3", r"\lim_{x\to3} g(x) = 6 \ne 5 = g(3)", r"g \text{ is not continuous at } x = 3"], at=[1, 2, 3, 3])
 

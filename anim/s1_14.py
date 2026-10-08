@@ -70,7 +70,7 @@ class Lesson(TranscriptScene):
             self.play(FadeOut(top), Write(res), run_time=1.2)
         self.clear()
         self.example("A sign chart", r"Let $f(x) = \dfrac{x + 3}{(x - 1)(x + 2)}$. Find $\displaystyle\lim_{x\to1^-} f(x)$ and $\displaystyle\lim_{x\to1^+} f(x)$.",
-                     [r"\text{near } x = 1: \ x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", r"\text{left: } \frac{(+)}{(-)(+)} = -,\ \text{so}\ \lim_{x\to1^-} f(x) = -\infty", r"\text{right: } \frac{(+)}{(+)(+)} = +,\ \text{so}\ \lim_{x\to1^+} f(x) = \infty"], at=[1, 2, 3])
+                     [r"\text{near } x = 1: \ x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", r"\text{left: } \frac{(+)}{(-)(+)} = -,\ \text{so}\ \lim_{x\to1^-} f(x) = -\infty", r"\text{right: } \frac{(+)}{(+)(+)} = +,\ \text{so}\ \lim_{x\to1^+} f(x) = \infty"], at=[1, 2, 3], follow=True)
 
         with self.beat("Not every zero of the denominator") as b:
             e = M(r"\frac{x^2 - 1}{x - 1} = \frac{(x - 1)(x + 1)}{x - 1}", 56).shift(UP * 1.6)

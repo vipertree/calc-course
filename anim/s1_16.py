@@ -76,7 +76,7 @@ class Lesson(TranscriptScene):
             self.play(Flash(a4.c2p(root, 0), color=SECANT), FadeIn(T(r"a root in $(0, 1)$", 40, SECANT).next_to(vals, DOWN, buff=0.4)), run_time=1)
         self.clear()
         self.example("A root exists", r"Show that $x^3 + x - 1 = 0$ has a solution between $x = 0$ and $x = 1$.",
-                     [r"f(x) = x^3 + x - 1 \text{ is a polynomial: continuous on } [0, 1]", r"f(0) = -1 < 0 < 1 = f(1)", r"\text{IVT: } f(c) = 0 \text{ for some } c \text{ in } (0, 1)"], at=[1, 2, 3])
+                     [r"f(x) = x^3 + x - 1 \text{ is a polynomial: continuous on } [0, 1]", r"f(0) = -1 < 0 < 1 = f(1)", r"\text{IVT: } f(c) = 0 \text{ for some } c \text{ in } (0, 1)"], at=[1, 2, 3], follow=True)
         self.example("A given value", r"Show that $\cos x = x$ for some $x$ in $\left[0, \dfrac\pi2\right]$.",
                      [r"g(x) = \cos x - x \text{ is continuous on } \left[0, \tfrac\pi2\right]", r"g(0) = 1 > 0, \quad g\left(\tfrac\pi2\right) = -\tfrac\pi2 < 0", r"\text{IVT: } g(c) = 0, \text{ so } \cos c = c"], at=[1, 2, 3])
 

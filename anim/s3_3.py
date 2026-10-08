@@ -133,7 +133,7 @@ class Lesson(TranscriptScene):
                      [r"TEXT:Cue: the problem names $g^{-1}$ outright.", r"TEXT:$\left(g^{-1}\right)'(4)$ needs $g^{-1}(4)$: what $x$ gives $g(x) = 4$?",
                       r"g(1) = 4, \ \text{so } g^{-1}(4) = 1", r"\left(g^{-1}\right)'(4) = \frac{1}{g'(1)} = \frac13",
                       r"TEXT:Not $\frac{1}{g'(4)}$: the $4$ is an output of $g$."], at=[1, 2, 3, 4, 5], figure=gtab,
-                     cues={2: lambda sc: self.find_x(gtab, 1)})
+                     cues={2: lambda sc: self.find_x(gtab, 1)}, follow=True)
 
         with self.beat("Implicit differentiation agrees") as b:
             board = Board()

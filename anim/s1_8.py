@@ -129,11 +129,11 @@ class Lesson(TranscriptScene):
             self.play(Write(res), run_time=1.2)
         self.clear()
         self.example("Match the angle", r"Find $\displaystyle\lim_{x\to0}\frac{\sin(5x)}{x}$.",
-                     [r"\lim_{x\to0}\frac{\sin 5x}{x} = \lim_{x\to0} 5\cdot\frac{\sin 5x}{5x}", r"u = 5x \to 0: \quad \frac{\sin u}{u} \to 1", r"= 5 \cdot 1 = 5"], at=[1, 2, 3])
+                     [r"\lim_{x\to0}\frac{\sin 5x}{x} = \lim_{x\to0} 5\cdot\frac{\sin 5x}{5x}", r"u = 5x \to 0: \quad \frac{\sin u}{u} \to 1", r"= 5 \cdot 1 = 5"], at=[1, 2, 3], follow=True)
         self.example("Rewrite first", r"Find $\displaystyle\lim_{x\to0}\frac{\tan x}{x}$.",
                      [r"\lim_{x\to0}\frac{\tan x}{x} = \lim_{x\to0}\frac{\sin x}{x}\cdot\frac{1}{\cos x}", r"= 1 \cdot \frac{1}{1} = 1"], at=[1, 2])
         self.example("Squeeze with a bounded factor", r"Find $\displaystyle\lim_{x\to0} x\cos\frac{1}{x^2}$.",
-                     [r"-1 \le \cos\frac{1}{x^2} \le 1", r"-|x| \le x\cos\frac{1}{x^2} \le |x|", r"\lim_{x\to0}(-|x|) = \lim_{x\to0}|x| = 0", r"\lim_{x\to0} x\cos\frac{1}{x^2} = 0"], at=[1, 2, 3, 4])
+                     [r"-1 \le \cos\frac{1}{x^2} \le 1", r"-|x| \le x\cos\frac{1}{x^2} \le |x|", r"\lim_{x\to0}(-|x|) = \lim_{x\to0}|x| = 0", r"\lim_{x\to0} x\cos\frac{1}{x^2} = 0"], at=[1, 2, 3, 4], follow=True)
 
         self.example("A second special limit", r"$\displaystyle\lim_{x\to0}\frac{1 - \cos x}{x}$",
                      [r"\lim_{x\to0}\frac{1 - \cos x}{x}\cdot\frac{1 + \cos x}{1 + \cos x} = \lim_{x\to0}\frac{\sin^2 x}{x(1 + \cos x)}",

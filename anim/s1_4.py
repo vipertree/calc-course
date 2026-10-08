@@ -60,7 +60,7 @@ class Lesson(TranscriptScene):
         self.clear()
         own = table(["x", "0.9", "0.99", "0.999", "1.001", "1.01", "1.1"], [["f(x)", "2.71", "2.9701", "2.997", "3.003", "3.0301", "3.31"]], size=30)
         self.example("Your own table", r"Use a table to estimate $\displaystyle\lim_{x\to1}\frac{x^3 - 1}{x - 1}$.",
-                     [r"\text{left: } 2.71,\ 2.9701,\ 2.997", r"\text{right: } 3.31,\ 3.0301,\ 3.003", r"\lim_{x\to1}\frac{x^3 - 1}{x - 1} \approx 3"], at=[1, 2, 3], figure=own)
+                     [r"\text{left: } 2.71,\ 2.9701,\ 2.997", r"\text{right: } 3.31,\ 3.0301,\ 3.003", r"\lim_{x\to1}\frac{x^3 - 1}{x - 1} \approx 3"], at=[1, 2, 3], figure=own, follow=True)
 
         with self.beat("Trap one: unlucky inputs") as b:
             t2 = blank_table(["x", "0.1", "0.01", "0.001"], [[r"\sin\frac{\pi}{x}", "0", "0", "0"]], size=40)

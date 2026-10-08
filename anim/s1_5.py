@@ -89,7 +89,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(note), run_time=0.8)
         self.clear()
         self.example("Using given limits", r"Suppose $\displaystyle\lim_{x\to4} f(x) = 3$ and $\displaystyle\lim_{x\to4} g(x) = -2$. Find the limit as $x \to 4$ of (a) $2f(x) - g(x)$, (b) $f(x)g(x)$, (c) $\dfrac{f(x)}{g(x)}$, (d) $\left[f(x)\right]^2 + g(x)$, (e) $\sqrt{f(x) + 6}$.",
-                     [r"\text{(a) } \lim_{x\to4}\left[2f(x) - g(x)\right] = 2(3) - (-2) = 8", r"\text{(b) } \lim_{x\to4} f(x)g(x) = 3(-2) = -6", r"\text{(c) } \lim_{x\to4}\frac{f(x)}{g(x)} = \frac{3}{-2} = -\frac32", r"\text{(d) } \lim_{x\to4}\left(\left[f(x)\right]^2 + g(x)\right) = 3^2 + (-2) = 7", r"\text{(e) } \lim_{x\to4}\sqrt{f(x) + 6} = \sqrt{3 + 6} = 3"], at=[1, 2, 3, 4, 5])
+                     [r"\text{(a) } \lim_{x\to4}\left[2f(x) - g(x)\right] = 2(3) - (-2) = 8", r"\text{(b) } \lim_{x\to4} f(x)g(x) = 3(-2) = -6", r"\text{(c) } \lim_{x\to4}\frac{f(x)}{g(x)} = \frac{3}{-2} = -\frac32", r"\text{(d) } \lim_{x\to4}\left(\left[f(x)\right]^2 + g(x)\right) = 3^2 + (-2) = 7", r"\text{(e) } \lim_{x\to4}\sqrt{f(x) + 6} = \sqrt{3 + 6} = 3"], at=[1, 2, 3, 4, 5], follow=True)
 
         ax2, al2 = plot_axes([0, 4, 1], [0, 12, 2], w=7, h=5)
         VGroup(ax2, al2).to_edge(LEFT, buff=0.7).shift(DOWN * 0.3)

@@ -91,7 +91,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(res), run_time=0.8)
         self.clear()
         self.example("Signs near a zero denominator", r"Find (a) $\displaystyle\lim_{x\to2}\frac{x + 1}{(x - 2)^2}$ and (b) $\displaystyle\lim_{x\to2}\frac{x + 1}{x - 2}$.",
-                     [r"\text{(a) } \frac{3}{0}: \ (x - 2)^2 > 0 \text{ on both sides}", r"\lim_{x\to2}\frac{x + 1}{(x - 2)^2} = \infty", r"\text{(b) } \lim_{x\to2^-}\frac{x + 1}{x - 2} = -\infty, \quad \lim_{x\to2^+}\frac{x + 1}{x - 2} = \infty", r"\text{the limit does not exist}"], at=[1, 2, 3, 4])
+                     [r"\text{(a) } \frac{3}{0}: \ (x - 2)^2 > 0 \text{ on both sides}", r"\lim_{x\to2}\frac{x + 1}{(x - 2)^2} = \infty", r"\text{(b) } \lim_{x\to2^-}\frac{x + 1}{x - 2} = -\infty, \quad \lim_{x\to2^+}\frac{x + 1}{x - 2} = \infty", r"\text{the limit does not exist}"], at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Absolute values and pieces") as b:
             e = M(r"\lim_{x\to2}\frac{|x - 2|}{x - 2}", 64, FUNC).shift(UP * 1.8)

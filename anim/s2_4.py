@@ -211,7 +211,7 @@ class Lesson(TranscriptScene):
                       closed_dot(a0, 1, 1, INK))
         self.example("Check value and slope", r"Is $f$ differentiable at $x = 1$? \[ f(x) = \begin{cases} x^2, & x \le 1 \\ 2x - 1, & x > 1 \end{cases} \]",
                      [r"\text{values: } 1^2 = 1, \quad \lim_{x\to1^+}(2x - 1) = 1 \ \checkmark", r"\text{slopes: } 2x\big|_{x=1} = 2, \quad \text{line slope } 2 \ \checkmark",
-                      r"\text{differentiable at } x = 1,\ \ f'(1) = 2"], figure=fig0, at=[1, 2, 3])
+                      r"\text{differentiable at } x = 1,\ \ f'(1) = 2"], figure=fig0, at=[1, 2, 3], follow=True)
 
         with self.beat("Close") as b:
             l = tick_view(wave, 0.01, w=5.2, h=3.6, labels=True)

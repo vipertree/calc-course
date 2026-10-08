@@ -107,7 +107,7 @@ class Lesson(TranscriptScene):
                      [r"\underbrace{(x^3 - 1)}_{u}\,\underbrace{e^x}_{v}", r"u' = 3x^2, \qquad v' = e^x", r"u'v + uv' = 3x^2e^x + (x^3 - 1)e^x = e^x(x^3 + 3x^2 - 1)"], at=[1, 2, 3])
         self.example("At a point, no formula needed", r"$f(x) = (x^2 + 1)(x^3 - 2x)$. Find $f'(2)$.",
                      [r"\underbrace{(x^2 + 1)}_{u}\,\underbrace{(x^3 - 2x)}_{v}", r"u(2) = 5, \qquad v(2) = 8 - 4 = 4",
-                      r"u' = 2x:\ u'(2) = 4, \qquad v' = 3x^2 - 2:\ v'(2) = 10", r"f'(2) = u'(2)v(2) + u(2)v'(2) = (4)(4) + (5)(10) = 66"], at=[1, 2, 3, 4])
+                      r"u' = 2x:\ u'(2) = 4, \qquad v' = 3x^2 - 2:\ v'(2) = 10", r"f'(2) = u'(2)v(2) + u(2)v'(2) = (4)(4) + (5)(10) = 66"], at=[1, 2, 3, 4], follow=True)
         self.example("In context", r"Revenue is $R = pq$. At one moment the price $p = 40$ dollars and is rising at $2$ dollars per week, while sales $q = 300$ and are falling at $10$ per week. How fast is revenue changing?",
                      [r"u = p = 40,\ \ u' = 2, \qquad v = q = 300,\ \ v' = -10", r"R' = u'v + uv' = (2)(300) + (40)(-10)", r"= 600 - 400 = 200 \text{ dollars per week}"], at=[1, 2, 3])
 

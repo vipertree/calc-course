@@ -528,7 +528,8 @@ class Headers(TestCase):
             self.assertIsNone(handler.search(text), p)
             self.assertNotRegex(text, r"\b(alert|confirm|prompt)\(", p)
         for p in (WEB / "static" / "js").glob("*.js"):
-            self.assertNotRegex(p.read_text(), r"(window\.|\s|^)(alert|confirm|prompt)\(", p)
+            code = re.sub(r"/\*.*?\*/|//[^\n]*", "", p.read_text(), flags=re.S)       # comments may name them
+            self.assertNotRegex(code, r"(window\.|\s|^)(alert|confirm|prompt)\(", p)
 
     def test_safe_filter_only_on_author_content(self):
         """|safe is allowed on lesson content compiled from our own files and on fixed font strings, never on

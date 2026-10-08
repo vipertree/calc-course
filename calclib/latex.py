@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import sys
 
-from . import (glue_punct, expand_for_print, FRQ, MCQ, BigIdea, Check, Definition, Example, Figure, Formula,
+from . import (glue_punct, unit_label, topic_name, expand_for_print, FRQ, MCQ, BigIdea, Check, Definition, Example, Figure, Formula,
                Item, Meanings, form, n_forms, Section, Table, Text, Topic, Video, Desmos, FigureRow)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,11 +59,11 @@ def preamble(theme, key, docline):
 
 # ------------------------------------------------------------------ notes
 def notes_tex(t: Topic, key, theme):
-    return "\n\n".join([preamble(theme, key, f"Topic {t.number}"), _notes_body(t), r"\end{document}"])
+    return "\n\n".join([preamble(theme, key, f"{topic_name(t.number)}"), _notes_body(t), r"\end{document}"])
 
 
 def _notes_body(t: Topic):
-    out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Guided Notes}}",
+    out = [rf"\topictitle{{{t.label}}}{{{t.title}}}{{{t.unit}}}{{Guided Notes}}",
            rf"\objectives{{{t.goals}}}"]
     blocks = list(t.notes)
     for k, b in enumerate(blocks):
@@ -188,19 +188,19 @@ def _list(items, compact):
 
 
 def _practice_body(t, key, compact=False):
-    return "\n".join([rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
+    return "\n".join([rf"\topictitle{{{t.label}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
                       r"Give exact answers unless a problem says to round."]
                      + _list([(_mcq(it, key) if isinstance(it, MCQ) else _item(i, it, key)) for i, it in enumerate(t.practice)], compact))
 
 
 def practice_tex(t, key, theme):
-    return "\n".join([preamble(theme, key, f"Topic {t.number} Practice"), _practice_body(t, key), r"\end{document}"])
+    return "\n".join([preamble(theme, key, f"{topic_name(t.number)} Practice"), _practice_body(t, key), r"\end{document}"])
 
 
 def quiz_tex(t, key, theme, k=0):
     name = "Quiz" + (f", Form {'ABCDEF'[k]}" if n_forms(t.quiz) > 1 else "")
-    out = [preamble(theme, key, f"Topic {t.number} {name}"),
-           rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{{name}}}",
+    out = [preamble(theme, key, f"{topic_name(t.number)} {name}"),
+           rf"\topictitle{{{t.label}}}{{{t.title}}}{{{t.unit}}}{{{name}}}",
            r"No calculator unless a question is marked [calculator]. Show your work.",
            r"\begin{enumerate}"]
     for it in form(t.quiz, k):
@@ -210,7 +210,7 @@ def quiz_tex(t, key, theme, k=0):
 
 
 def _testprep_body(t, key, compact=False):
-    out = [rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
+    out = [rf"\topictitle{{{t.label}}}{{{t.title}}}{{{t.unit}}}{{AP Test Prep}}",
            r"\sect{Multiple choice}"]
     out += _list([_mcq(q, key) for q in t.mcq], compact)
     out += ([r"\sect{Free response}"] if t.frq else [])   # some topics have no AP-style FRQ
@@ -219,7 +219,7 @@ def _testprep_body(t, key, compact=False):
 
 
 def testprep_tex(t, key, theme):
-    return "\n".join([preamble(theme, key, f"Topic {t.number} Test Prep"), _testprep_body(t, key), r"\end{document}"])
+    return "\n".join([preamble(theme, key, f"{topic_name(t.number)} Test Prep"), _testprep_body(t, key), r"\end{document}"])
 
 
 def packet_tex(t, key, theme, compact=False):
@@ -230,7 +230,7 @@ def packet_tex(t, key, theme, compact=False):
     in two columns."""
     parts = [("Lesson", _notes_body(t)), ("Practice", _practice_body(t, key, compact)),
              ("AP Test Prep", _testprep_body(t, key, compact))]
-    out = [preamble(theme, key, f"Topic {t.number} Packet")]
+    out = [preamble(theme, key, f"{topic_name(t.number)} Packet")]
     for k, (name, body) in enumerate(parts):
         if k == 1 and not compact:
             out.append(r"\clearpage")
@@ -243,11 +243,11 @@ def packet_tex(t, key, theme, compact=False):
 
 
 def unittest_tex(u, key, theme, k=0):
-    title = f"Unit {u.unit} Test" + (f", Form {'ABCDEF'[k]}" if n_forms(u.mcq_a, u.mcq_b, u.frq) > 1 else "")
+    title = f"{unit_label(u.unit)} Test" + (f", Form {'ABCDEF'[k]}" if n_forms(u.mcq_a, u.mcq_b, u.frq) > 1 else "")
     mcq_a, mcq_b, frqs = form(u.mcq_a, k), form(u.mcq_b, k), form(u.frq, k)
     na, nb, fpts = len(mcq_a), len(mcq_b), sum(f.points for f in frqs)
     out = [preamble(theme, key, title),
-           rf"\topictitle{{U{u.unit}}}{{{u.title}}}{{Unit {u.unit} Test\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}",
+           rf"\topictitle{{U{u.unit}}}{{{u.title}}}{{{unit_label(u.unit)} Test\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}",
            # the scoring, up front: every multiple-choice question is 1 point; each FRQ shows its own points
            r"{\small\hfont\textbf{Scoring}\enspace "
            + rf"Part A: {_count(na, 'question')}, 1 point each ({_count(na, 'point')}).\enspace "

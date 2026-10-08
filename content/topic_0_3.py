@@ -111,6 +111,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.3", title="The Six Trigonometric Functions",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: right-triangle and reciprocal trigonometric functions"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: right-triangle and reciprocal trigonometric functions"],
     goals=r"Use SOH CAH TOA and the reciprocal functions $\csc$, $\sec$, $\cot$ to evaluate trig functions and solve right triangles.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

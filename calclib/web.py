@@ -417,7 +417,7 @@ def fill_blanks(s):
 
 def export(t: Topic, outdir, figdir):
     LEFTOVER.clear()
-    pub, priv = {"number": t.number, "title": t.title, "unit": t.unit, "goals": html(t.goals),
+    pub, priv = {"number": t.number, "label": t.label, "title": t.title, "unit": t.unit, "goals": html(t.goals),
                  "ced": t.ced, "bc_only": t.bc_only}, {"blanks": {}, "items": {}}
     slug = t.number.replace(".", "_")
 

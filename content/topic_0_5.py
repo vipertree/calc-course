@@ -121,6 +121,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.5", title="Trigonometric Identities",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: trigonometric identities"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: trigonometric identities"],
     goals=r"Use the Pythagorean, symmetry, sum, double-angle and power-reducing identities to simplify expressions and find exact values.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

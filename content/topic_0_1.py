@@ -115,6 +115,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.1", title="Angles and Radian Measure",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: radian measure"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: radian measure"],
     goals=r"Measure angles in radians, convert to and from degrees, find coterminal angles, and use $s = r\theta$ and $A = \frac12 r^2\theta$.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

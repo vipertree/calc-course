@@ -33,6 +33,11 @@ class Lesson(TranscriptScene):
             self.play(Indicate(read, color=ACCUM), run_time=1)
             b.line(2)
             self.play(Circumscribe(rect, color=SECANT), run_time=1.2)
+        # the title card sits between the opening and the next beat, which builds on the same graph
+        opening = list(self.mobjects)
+        self.play(*[FadeOut(m) for m in opening], run_time=0.5)
+        self.title()
+        self.play(*[FadeIn(m) for m in opening], run_time=0.5)
 
         with self.beat("Area means amount") as b:
             self.play(FadeOut(tank), FadeOut(wat), FadeOut(read), run_time=0.5)

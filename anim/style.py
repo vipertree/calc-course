@@ -173,7 +173,8 @@ def formula_box(mob, color=INK, buff=0.25):
 
 
 def title_card(topic, title, unit):
-    num = T(f"Topic {topic}", 30, DIM)
+    """topic: a number like "2.1" (shown as "Topic 2.1"), or a ready-made label for a module lesson."""
+    num = T(topic if not topic[:1].isdigit() else f"Topic {topic}", 30, DIM)
     ttl = T(title, 54).set_max_width(12)
     un = T(unit, 28, DIM)
     rule = Line(LEFT * 3, RIGHT * 3, color=FUNC, stroke_width=3)

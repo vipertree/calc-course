@@ -4,6 +4,7 @@ from manim import *
 
 from kit import *
 from style import *
+from props import car_sprite, face
 
 
 def stack3(xr, yranges, labels, w=7.2, h=1.75):
@@ -88,8 +89,14 @@ class Lesson(TranscriptScene):
         g.to_edge(LEFT, buff=0.8).shift(DOWN * 0.45)
         track = Line(LEFT * 3.6, RIGHT * 3.6, color=DIM, stroke_width=4).next_to(g, UP, buff=0.35).align_to(g, LEFT)
         T_ = ValueTracker(0)
-        car = always_redraw(lambda: RoundedRectangle(width=0.5, height=0.26, corner_radius=0.08, color=SECANT, fill_color=SECANT, fill_opacity=1)
-                            .move_to(track.point_from_proportion(min(max(s(T_.get_value()) / 9, 0), 1)) + UP * 0.2))
+        car = car_sprite(0.8)
+
+        def drive(m):
+            u = T_.get_value()
+            face(m, 1 if v(u) > 0 else (-1 if v(u) < 0 else 0))    # it faces the way it moves; at a stop it keeps its heading
+            m.move_to(track.point_from_proportion(min(max(s(u) / 9, 0), 1)) + UP * (m.height / 2 + 0.03))
+        car.add_updater(drive)
+        car.update()
         cursor = always_redraw(lambda: Line(axs[0].c2p(T_.get_value(), 9), axs[2].c2p(T_.get_value(), -14), color=INK, stroke_width=2, stroke_opacity=0.6))
         with self.beat("Position, velocity, acceleration") as b:
             eqs = VGroup(M(r"s(t) = t^3 - 6t^2 + 9t", 34, FUNC), M(r"v(t) = 3t^2 - 12t + 9", 34, DERIV), M(r"a(t) = 6t - 12", 34, TANGENT))

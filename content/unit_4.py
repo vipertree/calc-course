@@ -24,13 +24,6 @@ def pick(stem, right, wrong, letter, solution, why=None, calc=False):
     return MCQ(stem, choices, letter, solution, why_not=why_not, calc=calc)
 
 
-def dist(xf, a, b):
-    """Total distance traveled by position xf(t) on [a, b]."""
-    v = sp.diff(xf, t)
-    pts = [a] + sorted(r for r in sp.solve(v, t) if r.is_real and a < r < b) + [b]
-    return sum(abs(xf.subs(t, q) - xf.subs(t, p)) for p, q in zip(pts, pts[1:]))
-
-
 def lin(f, a, at):
     return f.subs(x, a) + sp.diff(f, x).subs(x, a) * (at - a)
 
@@ -61,16 +54,18 @@ A = [
              {r"moving left": "$v > 0$ means moving right"}),
     ),
     Variants(
-        pick(r"A particle moves with position $x(t) = t^2 - 4t$. What is the total distance it travels from $t = 0$ to $t = 5$?", r"$13$",
-             [r"$5$", r"$9$", r"$4$"], "B", r"It turns at $t = 2$: $x(0) = 0$, $x(2) = -4$, $x(5) = 5$. Distance $4 + 9 = 13$.", {r"$5$": "that's the displacement"}),
-        pick(r"A particle moves with position $x(t) = t^2 - 6t$. What is the total distance it travels from $t = 0$ to $t = 8$?", r"$34$",
-             [r"$16$", r"$25$", r"$9$"], "D", r"It turns at $t = 3$: $x(0) = 0$, $x(3) = -9$, $x(8) = 16$. Distance $9 + 25 = 34$.", {r"$16$": "that's the displacement"}),
+        pick(r"A particle moves with position $x(t) = t^3 - 6t^2 + 9t$. On which interval is it moving to the left?", r"$1 < t < 3$",
+             [r"$0 < t < 1$", r"$t > 3$", r"$t > 2$"], "B", r"Moving left means $v(t) < 0$. $v(t) = 3t^2 - 12t + 9 = 3(t - 1)(t - 3) < 0$ for $1 < t < 3$.",
+             {r"$t > 2$": "that's where $a > 0$"}),
+        pick(r"A particle moves with position $x(t) = t^3 - 9t^2 + 24t$. On which interval is it moving to the left?", r"$2 < t < 4$",
+             [r"$0 < t < 2$", r"$t > 3$", r"$t > 4$"], "D", r"Moving left means $v(t) < 0$. $v(t) = 3t^2 - 18t + 24 = 3(t - 2)(t - 4) < 0$ for $2 < t < 4$.",
+             {r"$t > 3$": "that's where $a > 0$"}),
     ),
     Variants(
         pick(r"The radius of a circle grows at $3$ cm/s. How fast is its area growing when $r = 5$ cm?", r"$30\pi$ cm$^2$/s",
              [r"$10\pi$ cm$^2$/s", r"$25\pi$ cm$^2$/s", r"$6\pi$ cm$^2$/s"], "D", r"$\dfrac{dA}{dt} = 2\pi r\dfrac{dr}{dt} = 2\pi(5)(3)$.",
              {r"$10\pi$ cm$^2$/s": "forgot $\\frac{dr}{dt}$", r"$25\pi$ cm$^2$/s": "that's the area"}),
-        pick(r"The radius of a sphere grows at $1$ cm/s. How fast is its volume growing when $r = 2$ cm?", r"$16\pi$ cm$^3$/s",
+        pick(r"The radius of a sphere grows at $1$ cm/s. How fast is its volume growing when $r = 2$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", r"$16\pi$ cm$^3$/s",
              [r"$\frac{32}{3}\pi$ cm$^3$/s", r"$4\pi$ cm$^3$/s", r"$8\pi$ cm$^3$/s"], "A", r"$\dfrac{dV}{dt} = 4\pi r^2\dfrac{dr}{dt} = 4\pi(4)(1)$.",
              {r"$\frac{32}{3}\pi$ cm$^3$/s": "that's the volume"}),
     ),
@@ -123,7 +118,7 @@ A = [
 ]
 same("A2", [sp.solve(3 * t**2 - 6 * t - 9, t), sp.solve(3 * t**2 - 12, t)], [[-1, 3], [-2, 2]])
 same("A3", [(t**2 - 4 * t + 3).subs(t, sp.Rational(5, 2)), (t**2 - 6 * t + 8).subs(t, 5)], [sp.Rational(-3, 4), 3])
-same("A4", [dist(t**2 - 4 * t, 0, 5), dist(t**2 - 6 * t, 0, 8)], [13, 34])
+same("A4", [sp.solve(sp.diff(t**3 - 6 * t**2 + 9 * t, t), t), sp.solve(sp.diff(t**3 - 9 * t**2 + 24 * t, t), t)], [[1, 3], [2, 4]])
 same("A7", [lin(sp.sqrt(x), 16, sp.Rational(164, 10)), lin(sp.cbrt(x), 27, sp.Rational(2754, 100))], [sp.Rational(405, 100), sp.Rational(302, 100)])
 same("A9", [sp.limit((sp.exp(2 * x) - 1) / sp.sin(x), x, 0), sp.limit(sp.sin(5 * x) / (2 * x), x, 0)], [2, sp.Rational(5, 2)])
 same("A10", [sp.limit((2 * x**2 - 1) / (5 * x**2 + 3 * x), x, sp.oo), sp.limit(x**3 / sp.exp(x), x, sp.oo)], [sp.Rational(2, 5), 0])
@@ -136,9 +131,9 @@ B = [
              [r"$1.571$", r"$1.772$", r"$2.171$"], "A", r"$v$ first changes sign where $t^2 = \frac\pi2$: $t \approx 1.253$.", {r"$1.571$": "that's $t^2$"}, calc=True),
     ),
     Variants(
-        pick(r"The radius of a sphere grows at $0.5$ cm/s. How fast is the volume growing when $r = 3.2$ cm?", r"$64.340$ cm$^3$/s",
+        pick(r"The radius of a sphere grows at $0.5$ cm/s. How fast is the volume growing when $r = 3.2$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", r"$64.340$ cm$^3$/s",
              [r"$137.258$ cm$^3$/s", r"$128.680$ cm$^3$/s", r"$20.106$ cm$^3$/s"], "D", r"$4\pi(3.2)^2(0.5) \approx 64.340$.", {r"$137.258$ cm$^3$/s": "that's the volume"}, calc=True),
-        pick(r"The radius of a sphere grows at $0.4$ cm/s. How fast is the volume growing when $r = 2.7$ cm?", r"$36.644$ cm$^3$/s",
+        pick(r"The radius of a sphere grows at $0.4$ cm/s. How fast is the volume growing when $r = 2.7$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", r"$36.644$ cm$^3$/s",
              [r"$82.448$ cm$^3$/s", r"$91.609$ cm$^3$/s", r"$13.572$ cm$^3$/s"], "C", r"$4\pi(2.7)^2(0.4) \approx 36.644$.", {r"$82.448$ cm$^3$/s": "that's the volume"}, calc=True),
     ),
     Variants(
@@ -175,8 +170,7 @@ def motion_frq(xf, T, t_c):
     rest = sorted(sp.solve(v, t))
     vc, ac = v.subs(t, t_c), a.subs(t, t_c)
     word = "increasing" if vc * ac > 0 else "decreasing"
-    d = dist(xf, 0, T)
-    pts = [0] + rest + [T]
+    acc = [a.subs(t, r_) for r_ in rest]
     frq = FRQ("A particle on a line", (
         rf"A particle moves along the $x$-axis so that its position at time $t$ is given by $x(t) = {sp.latex(xf)}$, where $x(t)$ is "
         rf"measured in feet and $t$ is measured in seconds, for $0 \le t \le {T}$."), [
@@ -187,18 +181,18 @@ def motion_frq(xf, T, t_c):
              selfcheck(rf"\text{{{word.capitalize()}}}"),
              rf"$v({t_c}) = {sp.latex(vc)}$ and $a({t_c}) = {sp.latex(ac)}$. They have {'the same sign' if vc * ac > 0 else 'opposite signs'}, so the speed of the particle is {word}.",
              [(1, "$v$ and $a$ at that time"), (1, "conclusion with the sign reason")], work="2.2cm"),
-        Part("d", rf"Find the total distance traveled by the particle over the time interval $0 \le t \le {T}$.", num(d),
-             r"The particle turns at the rest times. " + ", ".join(f"$x({p}) = {xf.subs(t, p)}$" for p in pts)
-             + rf". Distance $= {' + '.join(str(abs(xf.subs(t, q) - xf.subs(t, p))) for p, q in zip(pts, pts[1:]))} = {d}$ feet.",
-             [(1, "uses the turning points"), (1, "positions"), (1, "total")], work="3cm"),
+        Part("d", r"Find the acceleration of the particle at each time it is at rest.",
+             selfcheck(rf"a({rest[0]}) = {acc[0]},\ a({rest[1]}) = {acc[1]}"),
+             rf"$a(t) = {sp.latex(a)}$, so $a({rest[0]}) = {acc[0]}$ and $a({rest[1]}) = {acc[1]}$ feet per second per second.",
+             [(1, "$a(t)$"), (1, "both values")], work="2cm"),
     ], frq_type="Particle motion")
-    return frq, [v, rest, word, d]
+    return frq, [v, rest, word, acc]
 
 
 F1A, mA = motion_frq(2 * t**3 - 9 * t**2 + 12 * t + 1, 3, sp.Rational(1, 2))
 F1B, mB = motion_frq(t**3 - 12 * t**2 + 36 * t - 5, 7, 3)
-same("F1 A", mA[1] + [mA[3]], [1, 2, 11])
-same("F1 B", mB[1] + [mB[3]], [2, 6, 71])
+same("F1 A", mA[1] + mA[3], [1, 2, -6, 6])
+same("F1 B", mB[1] + mB[3], [2, 6, -12, 12])
 assert (mA[2], mB[2]) == ("decreasing", "increasing")
 
 

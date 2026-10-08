@@ -34,6 +34,8 @@ NOTES = [
           r"$\dfrac{f(b) - f(a)}{b - a}$ & the average rate of change on $[a, b]$ & liters per minute \\ "
           r"$f'(a)$ & the rate of change at the instant $x = a$ & liters per minute", "lll",
           header=r"expression & meaning & units (tank example)"),
+    Text(r"An average rate is not an instantaneous rate. But when all you have is a table of values, the average rate over the "
+         r"\blank{smallest} interval around $a$ is your best \blank{estimate} of $f'(a)$, the instantaneous rate."),
     BigIdea(r"A derivative in context is a rate: name the moment, name the quantity, say increasing or decreasing, and give the "
             r"rate with its units."),
     Check(r"$P(t)$ is the population of a town, in people, $t$ years after 2020. What are the units of $P'(t)$?",

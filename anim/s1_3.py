@@ -4,13 +4,7 @@ from manim import *
 
 from kit import *
 from style import *
-
-
-def car(color):
-    body = RoundedRectangle(width=0.5, height=0.24, corner_radius=0.06, color=color, fill_color=color, fill_opacity=1)
-    cab = RoundedRectangle(width=0.26, height=0.14, corner_radius=0.04, color=color, fill_color=color, fill_opacity=1).next_to(body, UP, buff=0)
-    wheels = VGroup(*[Dot(radius=0.06, color=INK).move_to(body.get_bottom() + RIGHT * dx) for dx in (-0.15, 0.15)])
-    return VGroup(body, cab, wheels)
+from props import car_on_graph
 
 
 def jump_graph(w=7.4, h=5.2):
@@ -27,8 +21,8 @@ class Lesson(TranscriptScene):
         ax, al, L, R, o, c = jump_graph()
         g = VGroup(ax, al, L, R, o, c).to_edge(LEFT, buff=0.7).shift(DOWN * 0.2)
         xl, xr = ValueTracker(0.3), ValueTracker(3.7)
-        cl = always_redraw(lambda: car(SECANT).move_to(ax.c2p(xl.get_value(), 1 + xl.get_value()) + UP * 0.2))
-        cr = always_redraw(lambda: car(TANGENT).move_to(ax.c2p(xr.get_value(), 4 + 0.5 * (xr.get_value() - 2)) + UP * 0.2))
+        cl = car_on_graph(ax, lambda u: 1 + u, xl, 1)
+        cr = car_on_graph(ax, lambda u: 4 + 0.5 * (u - 2), xr, -1)
         hl = always_redraw(lambda: DashedLine(ax.c2p(0, 1 + xl.get_value()), ax.c2p(xl.get_value(), 1 + xl.get_value()), color=SECANT))
         hr = always_redraw(lambda: DashedLine(ax.c2p(0, 4 + 0.5 * (xr.get_value() - 2)), ax.c2p(xr.get_value(), 4 + 0.5 * (xr.get_value() - 2)), color=TANGENT))
         with self.beat("Two roads to one point") as b:
@@ -82,7 +76,7 @@ class Lesson(TranscriptScene):
             b.line(1)
             self.play(Create(ax2.plot(np.sqrt, x_range=[0, 4], color=FUNC, stroke_width=5)), FadeIn(shade), FadeIn(nolab), run_time=1.4)
             xv = ValueTracker(3.5)
-            cc = always_redraw(lambda: car(TANGENT).move_to(ax2.c2p(xv.get_value(), np.sqrt(xv.get_value())) + UP * 0.2))
+            cc = car_on_graph(ax2, lambda u: np.sqrt(max(u, 0)), xv, -1)
             self.add(cc)
             self.play(xv.animate.set_value(0.02), run_time=2)
             b.line(2)
@@ -159,8 +153,8 @@ class Lesson(TranscriptScene):
             VGroup(ax4, al4).shift(DOWN * 0.3)
             f4 = lambda x: 4 - (x - 2) ** 2 / 2
             xa, xb = ValueTracker(0.3), ValueTracker(3.7)
-            ca = always_redraw(lambda: car(SECANT).move_to(ax4.c2p(xa.get_value(), f4(xa.get_value())) + UP * 0.2))
-            cb = always_redraw(lambda: car(TANGENT).move_to(ax4.c2p(xb.get_value(), f4(xb.get_value())) + UP * 0.2))
+            ca = car_on_graph(ax4, f4, xa, 1)
+            cb = car_on_graph(ax4, f4, xb, -1)
             self.play(FadeIn(ax4), FadeIn(al4), Create(ax4.plot(f4, x_range=[0, 4], color=FUNC, stroke_width=5)), FadeIn(open_dot(ax4, 2, 4)), run_time=1.4)
             self.add(ca, cb)
             self.play(xa.animate.set_value(1.85), xb.animate.set_value(2.15), run_time=2.4)

@@ -100,7 +100,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(P, scale=0.5), FadeIn(M("(1, 48)", 26).next_to(P, UL, buff=0.08)), run_time=0.6)
             self.play(FadeIn(Q, scale=0.5), FadeIn(M("(2, 72)", 26).next_to(Q, DR, buff=0.08)), run_time=0.6)
 
-        with self.beat("Two average velocities") as b:
+        with self.beat("Average velocity") as b:
             run = DashedLine(ax.c2p(1, 48), ax.c2p(2, 48), color=DIM)
             rise = DashedLine(ax.c2p(2, 48), ax.c2p(2, 72), color=DIM)
             sec = secant_line(ax, s, 1, 2, [0.4, 2.5])

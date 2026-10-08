@@ -115,6 +115,10 @@ class TranscriptScene(LessonScene):
 
     def _write_audit(self):
         import json
+        if getattr(self, "_voice_beats", None):
+            vm = [dict(m, **self._voice_beats[m["beat"]]) for m in self._voice_map if m["beat"] in self._voice_beats]
+            with open(os.path.join(config.media_dir, f"voicemap_{self.NUM.replace('.', '_')}.json"), "w") as f:
+                json.dump(vm, f, indent=1)
         out = os.path.join(config.media_dir, f"layout_{self.NUM.replace('.', '_')}.json")
         with open(out, "w") as f:
             json.dump(sorted(self._issues.values(), key=lambda d: d["t"]), f, indent=1)
@@ -144,9 +148,13 @@ class TranscriptScene(LessonScene):
     def beat(self, name, think=False):
         if name not in self.beats:
             raise KeyError(f"{self.NUM}: no beat named {name!r}. Beats: {self.order}")
+        if name in self.used:
+            raise KeyError(f"{self.NUM}: beat {name!r} is narrated twice")
         lines = self.beats[name]["say"]
         self._beat_now = name
         with self.voiceover(text=self._text(lines, think)) as tr:
+            # where this beat's narration starts in the video (the caption builder maps Adder's words with it)
+            self._voice_map.append({"beat": name, "video_start": round(self.renderer.time, 3)})
             yield Beat(self, tr, len(lines))
         self.used.append(name)
 

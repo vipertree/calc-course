@@ -244,6 +244,108 @@ class KokoroService(SpeechService):
                 "word_boundaries": boundaries}
 
 
+class RecordedService(SpeechService):
+    """Adder's own narration (CALC_VOICE=adder): each beat plays its slice of his cleaned recording.
+
+    tools/align_recording.py finds where each beat and each narration line starts in the recording
+    (voice/aligned/<UU-TT>.beats.json). Here a beat's audio is that slice, and the bookmarks the scene waits on
+    land where he starts the matching line, so animations follow his pacing. A [try it] think pause still gets its
+    silence (PAUSE_SECONDS["W"]) inserted at that point; [pause] marks get nothing, since his own pauses are real.
+    """
+
+    def __init__(self, scene, beats_json, **kwargs):
+        import json
+        initialize_speech_service(self, kwargs)
+        self.scene = scene
+        self.align = json.load(open(beats_json))
+        self.root = os.path.dirname(os.path.dirname(os.path.abspath(beats_json)))
+        self._audio = None
+
+    def _wav(self):
+        if self._audio is None:
+            import soundfile as sf
+            self._audio = sf.read(os.path.join(os.path.dirname(self.root), self.align["source"]), dtype="float32")
+        return self._audio
+
+    def generate_from_text(self, text, cache_dir=None, path=None, **kwargs):
+        import soundfile as sf
+        cache_dir = cache_dir or self.cache_dir
+        name = self.scene._beat_now
+        b = self.align["beats"].get(name)
+        if b is None:
+            raise KeyError(f"{name!r} is not in the alignment for this recording; re-run tools/align_recording.py")
+        input_data = {"input_text": text, "service": "adder", "beat": name, "start": b["start"], "end": b["end"],
+                      "lines": b["lines"], "source": self.align["source"]}
+        think = PAUSE_SECONDS["W"]
+        lines_rel = [t - b["start"] for t in b["lines"]] + [b["end"] - b["start"]]
+        w_ats = []
+        li = 0
+        for p in re.split(_BOOK, text):
+            if re.match(_BOOK, p):
+                mark = re.search(r"mark\s*=\s*['\"](\w+)", p).group(1)
+                if mark.startswith("L") and mark[1:].isdigit():
+                    li = int(mark[1:])
+                elif mark.startswith("W") and mark[1:].isdigit():
+                    w_ats.append(lines_rel[min(li + 1, len(lines_rel) - 1)])
+        # remembered for the caption builder (also on a cache hit): where his words sit inside this beat's audio
+        self.scene._voice_beats[name] = {"rec_start": b["start"], "rec_end": b["end"], "inserts": sorted(w_ats), "think": think}
+        cached = self.get_cached_result(input_data, cache_dir)
+        if cached is not None:
+            return cached
+        audio_path = self.get_audio_basename(input_data) + ".wav"
+        data, sr = self._wav()
+        if data.ndim > 1:
+            data = data.mean(axis=1)
+        lines = [t - b["start"] for t in b["lines"]] + [b["end"] - b["start"]]
+        think = PAUSE_SECONDS["W"]
+
+        # walk the text: each line's pieces get times interpolated inside that line's span of the recording
+        parts = re.split(_BOOK, text)
+        line_text = [""]
+        for p in parts:
+            if re.match(_BOOK, p):
+                mark = re.search(r"mark\s*=\s*['\"](\w+)", p).group(1)
+                if mark.startswith("L") and mark[1:].isdigit():
+                    line_text.append("")
+                continue
+            line_text[-1] += p
+        boundaries, offset, li, in_line, shift, inserts = [], 0, 0, 0, 0.0, []
+        for p in parts:
+            if re.match(_BOOK, p):
+                mark = re.search(r"mark\s*=\s*['\"](\w+)", p).group(1)
+                if mark.startswith("L") and mark[1:].isdigit():
+                    li, in_line = int(mark[1:]), 0
+                elif mark.startswith("W") and mark[1:].isdigit():
+                    # think pause: silence at the end of this line (where the next one starts)
+                    at = lines[min(li + 1, len(lines) - 1)]
+                    inserts.append(at)
+                    shift += think
+                continue
+            span = max(1, len(line_text[min(li, len(line_text) - 1)]))
+            frac = min(1.0, in_line / span)
+            src_t = lines[li] + (lines[min(li + 1, len(lines) - 1)] - lines[li]) * frac
+            out_t = src_t + think * sum(1 for x in inserts if x <= src_t + 1e-6)
+            boundaries.append({"audio_offset": int(out_t * AUDIO_OFFSET_RESOLUTION), "text_offset": offset,
+                               "word_length": len(p), "text": p, "boundary_type": "Word"})
+            offset += len(p)
+            in_line += len(p)
+
+        clip = data[int(b["start"] * sr):int(b["end"] * sr)]
+        chunks, last = [], 0
+        for at in sorted(inserts):
+            cut = int(at * sr)
+            chunks += [clip[last:cut], np.zeros(int(think * sr), dtype=clip.dtype)]
+            last = cut
+        chunks.append(clip[last:])
+        total = sum(len(c) for c in chunks) / sr
+        boundaries.append({"audio_offset": int(total * AUDIO_OFFSET_RESOLUTION), "text_offset": offset,
+                           "word_length": 1, "text": ".", "boundary_type": "Word"})
+        sf.write(os.path.join(cache_dir, audio_path), np.concatenate(chunks), sr)
+        assert offset == len(remove_bookmarks(text))
+        return {"input_text": text, "input_data": input_data, "original_audio": audio_path,
+                "word_boundaries": boundaries}
+
+
 def _trim(samples, sr, thresh=0.004):
     """Drop leading/trailing silence so stitched chunks don't leave gaps."""
     idx = np.where(np.abs(samples) > thresh)[0]
@@ -273,4 +375,12 @@ class LessonScene(VoiceoverScene, MovingCameraScene):
             self.camera.background_image = _themes.background(THEME, self.camera.pixel_width, self.camera.pixel_height)
             self.camera.init_background()
         voice = os.environ.get("CALC_VOICE", "am_michael")
-        self.set_speech_service(KokoroService(voice=voice))
+        self._voice_beats, self._voice_map = {}, []
+        if voice == "adder":
+            # Adder's recording, lined up by tools/align_recording.py (voice/aligned/<UU-TT>.beats.json)
+            u, t = self.NUM.split(".")
+            path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "voice", "aligned",
+                                f"{int(u):02d}-{int(t):02d}.beats.json")
+            self.set_speech_service(RecordedService(self, path))
+        else:
+            self.set_speech_service(KokoroService(voice=voice))

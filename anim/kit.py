@@ -298,15 +298,19 @@ def next_topic(num):
 
 
 def wrap_tex(text, width):
-    """Break prose into lines of about `width` characters with LaTeX \\\\, never inside $...$ math."""
-    words, lines, cur, in_math = text.split(" "), [], "", False
+    """Break prose into lines of about `width` characters with LaTeX \\\\, never inside $...$ or \\[...\\] math."""
+    words, lines, cur, in_math, in_display = text.split(" "), [], "", False, False
     for w in words:
-        if cur and not in_math and len(cur) + 1 + len(w) > width:
+        if cur and not in_math and not in_display and len(cur) + 1 + len(w) > width:
             lines.append(cur)
             cur = w
         else:
             cur = f"{cur} {w}" if cur else w
         in_math ^= w.count("$") % 2 == 1
+        if "\\[" in w:
+            in_display = True
+        if "\\]" in w:
+            in_display = False
     lines.append(cur)
     return r" \\ ".join(lines)
 

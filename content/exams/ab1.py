@@ -450,7 +450,11 @@ q4 = {-4: 5 - semi4, 4: 5 + I(x, 0, 2) + I(4 - x, 2, 4), 5: 5 + I(x, 0, 2) + I(4
 same("Q4 f(-4), f(4), f(5)", [q4[-4], q4[4], q4[5]], [5 + 2 * sp.pi, 9, sp.Rational(17, 2)])
 check("Q4 absolute max at x = -4", float(q4[-4]) > max(5, float(q4[4]), float(q4[5])))
 FIG4 = graph("exam_ab1_q4", [("-sqrt(max(0,4-(x+2)^2))", -4, 0), ("x", 0, 2), ("4-x", 2, 5)], (-4.5, 5.5), (-2.5, 2.5),
-             closed=[(-4, 0), (5, -1)], caption=r"The graph of $f'$, the derivative of $f$.", w="8.6cm", h="5cm", ylabel="y", samples=200)
+             closed=[(-4, 0), (5, -1)], caption=r"The graph of $f'$, the derivative of $f$.", w="11cm", h="6.6cm", ylabel="y", samples=200)
+# y tick labels to the right of the axis, so the semicircle never runs through "-1"; x labels a touch lower, clear of the dots
+FIG4.tikz = FIG4.tikz.replace(r"\begin{axis}[calcaxes", r"\begin{axis}[calcaxes, yticklabel style={anchor=west, xshift=3pt}, xticklabel style={yshift=-3pt}", 1)
+# the semicircle drops straight down from (-4, 0), through where the "-4" tick label would sit: label it to the left
+FIG4.tikz = FIG4.tikz.replace("xtick={-4,", "xtick={", 1).replace(r"\end{axis}", r"\node[anchor=north east, font=\footnotesize, inner sep=2pt] at (axis cs:-4.08,-0.05) {$-4$};\end{axis}", 1)
 FRQ4 = FRQ("The graph of a derivative", (
     r"Let $f$ be a function defined on the closed interval $[-4, 5]$ with $f(0) = 5$. The graph of $f'$, the derivative of $f$, consists of a semicircle and two line segments, as shown in the figure."), [
     Part("a", r"Find $f(4)$ and $f(-4)$.", selfcheck(r"f(4) = 9,\ f(-4) = 5 + 2\pi"),
@@ -482,11 +486,11 @@ sketch5 = 2 - sp.exp(x**3 / 3)
 same("Q5 solution", [sp.diff(sol5, x) - dy5(x, sol5), sol5.subs(x, 1), sp.diff(sketch5, x) - dy5(x, sketch5), sketch5.subs(x, 0)], [0, 3, 0, 1])
 d2_5 = sp.diff(dy5(x, yx), x).subs(sp.diff(yx, x), dy5(x, yx))
 same("Q5 second derivative at (1, 3)", d2_5.subs(yx, 3).subs(x, 1), 3)
-FIG5 = slope_field("exam_ab1_q5", lambda X, Y: X * X * (Y - 2), [-2, -1, 0, 1, 2], [-1, 0, 1, 2, 3, 4], (-2.6, 2.6), (-1.6, 4.6),
-                   caption=r"The slope field for $\frac{dy}{dx} = x^2(y - 2)$.", w="6cm", h="7cm", length=0.36)
+FIG5 = slope_field("exam_ab1_q5", lambda X, Y: X * X * (Y - 2), [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], [-1, 0, 1, 2, 3, 4], (-2, 2), (-1.6, 4.6),
+                   caption=r"The slope field for $\frac{dy}{dx} = x^2(y - 2)$.", w="7cm", h="7.5cm", length=0.3)
 FRQ5 = FRQ("A differential equation", (
     r"Consider the differential equation $\dfrac{dy}{dx} = x^2(y - 2)$. A slope field for the differential equation is shown."), [
-    Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 1)$. (Copy the slope field onto your paper, or use the printed exam.)",
+    Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 1)$.",
          selfcheck(r"\text{a curve through } (0, 1) \text{ that stays below } y = 2"),
          r"The curve passes through $(0, 1)$ with a horizontal tangent there, follows the slopes, decreases from left to right, stays below the line $y = 2$, and approaches $y = 2$ as $x$ decreases.",
          [(1, r"A curve through $(0, 1)$ that follows the slope field and stays below $y = 2$.")], work="1cm", topic="7.4"),

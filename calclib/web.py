@@ -578,3 +578,56 @@ def export_test(u: UnitTest, outdir, figdir):
         _no_leftover(pub.get("number") or pub.get("title"))
         json.dump({"public": pub, "private": priv}, fh, indent=1)
     return path
+
+
+def export_exam(e, outdir, figdir):
+    """Exam -> content/exams/<slug>.json. The page gets the questions part by part; answers, solutions, rubrics and
+    each question's syllabus topic stay in the private half until the server grades or the exam is over."""
+    LEFTOVER.clear()
+    priv = {"items": {}}
+
+    def fig(f):
+        return {"src": figure_svg(f, figdir), "caption": html(f.caption)} if f is not None else None
+
+    def mcqs(qs, start):
+        out = []
+        for i, q in enumerate(qs, start):
+            iid = f"{e.slug}-m{i}"
+            out.append({"id": iid, "n": i, "html": para(q.stem), "choices": [html(c) for c in q.choices], "figure": fig(q.figure)})
+            priv["items"][iid] = {"answer": q.correct, "solution": html(q.solution), "topic": q.topic,
+                                  "why_not": {k: html(w) for k, w in q.why_not.items()}}
+        return out
+
+    def frqs(fs, start):
+        out = []
+        for i, f in enumerate(fs, start):
+            fid = f"{e.slug}-f{i}"
+            parts = []
+            for p in f.parts:
+                pid = f"{fid}{p.label}"
+                pts = sum(x for x, _ in p.rubric)
+                parts.append({"id": pid, "label": p.label, "html": para(p.prompt), "points": pts})
+                priv["items"][pid] = {"solution": html(p.solution), "display": p.answer.tex(), "topic": p.topic, "points": pts,
+                                      "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
+            # "Question n" only, as on the exam: a title or FRQ type would hint at the method
+            out.append({"id": fid, "n": i, "title": f"Question {i}", "html": para(f.intro), "calc": f.calc,
+                        "points": f.points, "parts": parts, "figure": fig(f.figure)})
+        return out
+
+    na, nb, fa = len(e.mcq_a), len(e.mcq_b), len(e.frq_a)
+    m = e.minutes
+    parts = [
+        {"key": "1A", "section": "Section I", "name": "Part A", "kind": "mcq", "calc": False, "minutes": m[0], "items": mcqs(e.mcq_a, 1)},
+        {"key": "1B", "section": "Section I", "name": "Part B", "kind": "mcq", "calc": True, "minutes": m[1], "items": mcqs(e.mcq_b, na + 1)},
+        {"key": "2A", "section": "Section II", "name": "Part A", "kind": "frq", "calc": True, "minutes": m[2], "items": frqs(e.frq_a, 1)},
+        {"key": "2B", "section": "Section II", "name": "Part B", "kind": "frq", "calc": False, "minutes": m[3], "items": frqs(e.frq_b, fa + 1)},
+    ]
+    pub = {"slug": e.slug, "title": e.title, "course": e.course, "members_only": e.members_only, "intro": html(e.intro),
+           "parts": parts, "mc_weight": e.mc_weight, "cutoffs": [list(c) for c in e.cutoffs],
+           "mc_total": na + nb, "frq_total": sum(f.points for f in e.frq_a + e.frq_b)}
+    os.makedirs(outdir, exist_ok=True)
+    path = os.path.join(outdir, f"{e.slug}.json")
+    _no_leftover(e.title)
+    with open(path, "w") as fh:
+        json.dump({"public": pub, "private": priv}, fh, indent=1)
+    return path

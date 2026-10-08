@@ -4,6 +4,7 @@
     python3 build.py 2.1 --theme modern     # another theme
     python3 build.py 2.1 --docs notes       # just the guided notes
     python3 build.py 2.1 --preview          # also write PNG previews to the scratch dir
+    python3 build.py exam-ab1 --web         # a full practice exam: the web JSON plus the printable exam and key
 
 The packet (lesson + practice + AP test prep in one PDF) is the base the web app stamps with each
 student's name and packet ID on download; build/pdf/fonts/ gets the font that stamp is set in.
@@ -23,6 +24,8 @@ PREVIEW_DIR = os.environ.get("CALC_PREVIEW", os.path.join(ROOT, "build", "previe
 
 
 def load(num):
+    if num.lower().startswith("exam-"):          # a full practice exam: exam-ab1 -> content/exams/ab1.py
+        return importlib.import_module("content.exams." + num[5:].lower()).EXAM
     if num.upper().startswith("U"):
         return importlib.import_module("content.unit_" + num[1:]).TEST
     mod = importlib.import_module("content.topic_" + num.replace(".", "_"))
@@ -41,12 +44,18 @@ def main():
 
     topics = [load(n) for n in a.topics]
     for t in topics:
-        (calclib.validate_test if isinstance(t, calclib.UnitTest) else calclib.validate)(t)
+        (calclib.validate_exam if isinstance(t, calclib.Exam) else
+         calclib.validate_test if isinstance(t, calclib.UnitTest) else calclib.validate)(t)
     calclib.fail_if_needed()
 
     if a.web:
         from calclib import web
         for t in topics:
+            if isinstance(t, calclib.Exam):
+                p = web.export_exam(t, os.path.join(ROOT, "web", "course", "content", "exams"),
+                                    os.path.join(ROOT, "web", "static", "figures"))
+                print("  " + os.path.relpath(p, ROOT))
+                continue
             fn = web.export_test if isinstance(t, calclib.UnitTest) else web.export
             p = fn(t, os.path.join(ROOT, "web", "course", "content"),
                    os.path.join(ROOT, "web", "static", "figures"))
@@ -56,7 +65,8 @@ def main():
     stamp_font()
     for t in topics:
         outdir = os.path.join(ROOT, "build", "pdf", t.number)
-        docs = ["unittest"] if isinstance(t, calclib.UnitTest) else a.docs.split(",")
+        docs = (["exam"] if isinstance(t, calclib.Exam) else
+                ["unittest"] if isinstance(t, calclib.UnitTest) else a.docs.split(","))
         for doc in docs:
             # quizzes and tests come in forms A, B, C... when their slots have variants
             nf = 1

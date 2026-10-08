@@ -274,9 +274,71 @@ def _count(n, word):
     return f"{n}~{word}{'' if n == 1 else 's'}"         # ~: the number never ends a line
 
 
+def exam_tex(e, key, theme):
+    """A full practice exam as one printable booklet: a cover with the timing table and directions, Section I
+    (multiple choice, numbered 1 to 45 straight through), then Section II with each free-response question on its own
+    page. The key adds the answer grid up front, solutions under every question, the scoring guide under every
+    FRQ part, and a page for working out the composite and the estimated AP score."""
+    na, nb = len(e.mcq_a), len(e.mcq_b)
+    fa, fb = len(e.frq_a), len(e.frq_b)
+    m = e.minutes
+    frq_pts = sum(f.points for f in e.frq_a + e.frq_b)
+    rows = [("Section I, Part A", "Multiple choice", _count(na, "question"), f"{m[0]} minutes", "Not allowed"),
+            ("Section I, Part B", "Multiple choice", _count(nb, "question"), f"{m[1]} minutes", "Graphing calculator required"),
+            ("Section II, Part A", "Free response", _count(fa, "question"), f"{m[2]} minutes", "Graphing calculator required"),
+            ("Section II, Part B", "Free response", _count(fb, "question"), f"{m[3]} minutes", "Not allowed")]
+    table = (r"\begin{center}\renewcommand{\arraystretch}{1.35}\begin{tabular}{@{}llll>{\raggedright\arraybackslash}p{3.6cm}@{}}\toprule "
+             r"{\hfont\bfseries Part} & {\hfont\bfseries Type} & {\hfont\bfseries Questions} & {\hfont\bfseries Time} & {\hfont\bfseries Calculator} \\ \midrule "
+             + r" \\ ".join(" & ".join(r) for r in rows) + r" \\ \bottomrule\end{tabular}\end{center}")
+    out = [preamble(theme, key, e.title + (" Key" if key else "")),
+           rf"\topictitle{{{e.course}}}{{{e.title}}}{{AP Calculus {e.course}}}{{{'Answer key and scoring guide' if key else 'Full-length practice exam'}}}",
+           table,
+           r"\sect{Directions}",
+           r"Time each part separately and stop when its time is up. Once a part is over, do not go back to it. "
+           r"You may take a short break between Section I and Section II.",
+           r"\par \textbf{Multiple choice.} Choose the best answer for each question. There is no penalty for guessing, so answer every question. "
+           r"Unless a question says otherwise, the domain of a function $f$ is all real numbers $x$ for which $f(x)$ is a real number.",
+           r"\par \textbf{Free response.} Show all of your work, and write your answers in the space under each part. "
+           r"Justify answers where a question asks you to. On the calculator part, give decimal answers correct to three places after the decimal point, "
+           r"and write the setup (such as the integral) before the number: a bare calculator result earns no credit.",
+           rf"\par \textbf{{Scoring.}} Section I is {na + nb} questions at 1 point each; Section II is {fa + fb} questions worth 9 points each ({frq_pts} points). "
+           r"The two sections count equally."]
+    if key:
+        letters = [q.correct for q in e.mcq_a + e.mcq_b]
+        cells = [rf"{i + 1}.\,{l}" for i, l in enumerate(letters)]
+        grid = r" \\ ".join(" & ".join(cells[r:r + 9]) for r in range(0, len(cells), 9))
+        out += [r"\sect{Multiple-choice answers}", r"\begin{center}\begin{tabular}{*{9}{l}}" + grid + r"\end{tabular}\end{center}"]
+    head = lambda title, n, mins, calc: [r"\clearpage", rf"\sect{{{title}}}",
+                                          rf"{{\small\hfont {_count(n, 'question')}\enspace\textperiodcentered\enspace {mins} minutes\enspace\textperiodcentered\enspace {calc}}}\par"]
+    out += head("Section I, Part A: multiple choice", na, m[0], "no calculator")
+    out += [r"\begin{enumerate}"] + [_mcq(q, key) for q in e.mcq_a] + [r"\end{enumerate}"]
+    out += head("Section I, Part B: multiple choice", nb, m[1], "graphing calculator required")
+    out += [rf"\begin{{enumerate}}\setcounter{{enumi}}{{{na}}}"] + [_mcq(q, key) for q in e.mcq_b] + [r"\end{enumerate}"]
+    out += head("Section II, Part A: free response", fa, m[2], "graphing calculator required")
+    for n, f in enumerate(e.frq_a, 1):
+        out += ([r"\clearpage"] if n > 1 else []) + [_frq(f, key, n)]
+    out += head("Section II, Part B: free response", fb, m[3], "no calculator")
+    for n, f in enumerate(e.frq_b, fa + 1):
+        out += ([r"\clearpage"] if n > fa + 1 else []) + [_frq(f, key, n)]
+    if key:
+        mc_total = na + nb
+        cut = r" \\ ".join(rf"{s} & {lo}" + (rf" to {hi}" if hi is not None else " and up")
+                             for (s, lo), hi in zip(e.cutoffs, [None] + [c[1] - 1 for c in e.cutoffs[:-1]]))
+        cut += rf" \\ 1 & 0 to {e.cutoffs[-1][1] - 1}"
+        out += [r"\clearpage", r"\sect{Your score}",
+                rf"Multiple-choice points (out of {mc_total}) $\times\ {e.mc_weight:g}$ \hfill \rule{{2.2cm}}{{0.4pt}}\par",
+                rf"Free-response points (out of {frq_pts}) \hfill \rule{{2.2cm}}{{0.4pt}}\par",
+                rf"Composite score (out of {round(mc_total * e.mc_weight + frq_pts)}): the sum of the two lines above \hfill \rule{{2.2cm}}{{0.4pt}}\par",
+                r"\medskip Estimated AP score from the composite:",
+                r"\begin{center}\begin{tabular}{ll}\toprule {\hfont\bfseries AP score} & {\hfont\bfseries Composite} \\ \midrule " + cut + r" \\ \bottomrule\end{tabular}\end{center}",
+                r"These cutoffs are an estimate. The College Board sets the real ones each year from that year's exam, so treat the result as a range, not a promise."]
+    out.append(r"\end{document}")
+    return "\n".join(out)
+
+
 DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testprep": testprep_tex,
         "packet": packet_tex, "packetcompact": lambda t, key, theme: packet_tex(t, key, theme, compact=True),
-        "unittest": unittest_tex}
+        "unittest": unittest_tex, "exam": exam_tex}
 
 
 # ------------------------------------------------------------------ compile

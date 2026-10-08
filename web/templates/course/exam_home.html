@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ E.title }} · AP Calculus{% endblock %}
+{% block crumbs %}<a class="muted crumb" href="{% url 'exams' %}" style="font-family:var(--font-ui);font-size:.9rem">Practice exams</a>{% endblock %}
+{% block main %}
+<div class="narrow mathy">
+<div class="lesson-head"><span class="chip">{{ E.course }}</span><span class="unit">Full-length practice exam</span><h1>{{ E.title }}</h1></div>
+
+<table class="data exam-outline">
+  <tr><th>Part</th><th>Questions</th><th>Time</th><th>Calculator</th></tr>
+  {% for p in E.parts %}<tr><td>{{ p.section }}, {{ p.name }}</td><td>{{ p.items|length }} {% if p.kind == "mcq" %}multiple choice{% else %}free response{% endif %}</td>
+    <td>{{ p.minutes }} minutes</td><td>{% if p.calc %}Graphing calculator{% else %}None{% endif %}</td></tr>{% endfor %}
+</table>
+
+<div class="card exam-start">
+{% if live %}
+  <h2>You have an exam in progress</h2>
+  <p>{% if live.part_started %}{{ live_part.section }}, {{ live_part.name }} is running, and its clock kept going while you were away.
+     {% else %}Next up: {{ live_part.section }}, {{ live_part.name }}. Its clock starts when you press Start.{% endif %}</p>
+  <div class="row">
+    <a class="btn primary" href="{% url 'exam_attempt' slug live.pk %}">Go back to the exam</a>
+    <details class="discard"><summary class="btn">Start over instead</summary>
+      <form method="post" action="{% url 'exam_discard' slug live.pk %}">{% csrf_token %}
+        <p>This deletes your answers so far. The new exam starts at Section I, Part A.</p>
+        <button class="btn" type="submit">Delete it and start over</button></form></details>
+  </div>
+{% else %}
+  <h2>Before you start</h2>
+  <ul>
+    <li>Set aside 3 hours 15 minutes, plus a break between the two sections if you want one.</li>
+    <li>Each part has its own clock, which keeps running if you close the page. When a part ends, you can't go back to it.</li>
+    <li>Have paper and a pencil for the free response. The calculator parts have a graphing calculator built in.</li>
+    <li>When you finish, multiple choice is graded right away. Then you score your free response with the scoring guide and get an estimated AP score.</li>
+  </ul>
+  <form method="post" action="{% url 'exam_start' slug %}">{% csrf_token %}<button class="btn primary" type="submit">Go to Section I, Part A</button></form>
+  <p class="muted small">The clock doesn't start until you press Start on the next screen.</p>
+{% endif %}
+</div>
+
+{% if past %}
+<h2>Your results</h2>
+<table class="data exam-past">
+  <tr><th>Taken</th><th>Multiple choice</th><th>Free response</th><th>Estimated AP score</th><th></th></tr>
+  {% for a in past %}<tr><td>{{ a.started|date:"M j, Y" }}</td><td>{{ a.summary.mc }} / {{ a.summary.mc_total }}</td>
+    <td>{{ a.summary.frq }} / {{ a.summary.frq_total }}{% if a.summary.frq_parts_scored < a.summary.frq_parts %} <small class="muted">(not all scored)</small>{% endif %}</td>
+    <td>{{ a.summary.ap }}</td><td><a href="{% url 'exam_attempt' slug a.id %}">Score report</a></td></tr>{% endfor %}
+</table>
+{% endif %}
+
+{% if print_ready.exam %}
+<details class="card print-test">
+  <summary>Prefer paper? Print the exam</summary>
+  <p>Take it with a timer, part by part, then check it against the key, which has every solution and the scoring guide for each free-response question.</p>
+  <div class="row"><a class="btn small" href="{% url 'exam_pdf' slug 'exam' %}" target="_blank" rel="noopener">The exam (PDF)</a>
+    {% if print_ready.key %}<a class="btn small" href="{% url 'exam_pdf' slug 'key' %}" target="_blank" rel="noopener">Answer key and scoring guide (PDF)</a>{% endif %}</div>
+</details>
+{% endif %}
+</div>
+{% endblock %}

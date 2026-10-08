@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}{{ E.title }} · AP Calculus{% endblock %}
+{% block crumbs %}{% if att.finished %}<a class="muted crumb" href="{% url 'exam_home' slug %}" style="font-family:var(--font-ui);font-size:.9rem">{{ E.title }}</a>{% endif %}{% endblock %}
+{% block head %}{% if DESMOS_API_KEY and not att.finished %}<script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey={{ DESMOS_API_KEY }}"></script>{% endif %}{% endblock %}
+{% block main %}
+<div id="exam" class="mathy" data-api="{% url 'api_exam' slug att.pk 'state' %}" data-static="{% static '' %}" data-home="{% url 'exam_home' slug %}" data-topic="{% url 'lesson' '0.0' %}"></div>
+{{ data|json_script:"exam-data" }}{{ meta|json_script:"exam-meta" }}
+{% endblock %}
+{% block scripts %}<script>window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/exam.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>{% endblock %}

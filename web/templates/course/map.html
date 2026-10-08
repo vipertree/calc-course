@@ -3,6 +3,8 @@
 {% block main %}
 <div class="mathy"><h1>Course map</h1>
 <p class="muted">One lesson per topic in the College Board course description. Lessons that are ready are highlighted.</p>
+{% if exams %}<a class="topic ready exam-promo" href="{% url 'exams' %}"><span class="n">Exam</span>
+  <span style="flex:1"><strong>Full-length practice exam</strong><br><small class="muted">The whole AP Calculus AB exam, timed part by part, with an estimated AP score at the end. The first one is free.</small></span></a>{% endif %}
 {% for u in units %}
 <details class="unit" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
   <summary><h2><span class="chev" aria-hidden="true"></span>Unit {{ u.n }}. {{ u.title }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>

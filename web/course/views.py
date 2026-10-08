@@ -11,8 +11,8 @@ from django.views.decorators.http import require_POST
 
 from accounts.models import Classroom, class_for, has_full_access
 from . import content, grading
-from . import assess, packets
-from .models import Draft, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
+from . import assess, exams, packets
+from .models import Draft, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
 FREE_PRACTICE = 4          # practice problems anyone can try without an account
@@ -64,7 +64,7 @@ def course_map(request):
         tests = content.unit_tests()
         best_u = best.get(f"U{u['n']}")
         units.append({**u, "topics": topics, "test": u["n"] in tests, "test_num": f"U{u['n']}", "test_best": best_u})
-    return render(request, "course/map.html", {"units": units, "current_unit": _current_unit(request.user)})
+    return render(request, "course/map.html", {"units": units, "current_unit": _current_unit(request.user), "exams": exams.available()})
 
 
 def formulas(request):
@@ -592,3 +592,116 @@ def packet(request, num):
     resp = HttpResponse(data, content_type="application/pdf")
     resp["Content-Disposition"] = f'attachment; filename="{num}-packet-{p.code}.pdf"'
     return resp
+
+
+# ------------------------------------------------------------------ full-length practice exams
+def _exam_or_404(slug):
+    pub = exams.public(slug)
+    if not pub:
+        raise Http404("That exam isn't available.")
+    return pub
+
+
+def exam_list(request):
+    rows = []
+    for slug in exams.available():
+        pub = exams.public(slug)
+        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"],
+                     "open": exams.can_take(request.user, pub) if request.user.is_authenticated else not pub["members_only"]})
+    return render(request, "course/exams.html", {"exams": rows})
+
+
+def exam_home(request, slug):
+    """An exam's front page: what it is, start or resume, earlier sittings, and the print copies."""
+    pub = _exam_or_404(slug)
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    if not exams.can_take(request.user, pub):
+        return render(request, "course/locked.html", {"what": "More practice exams"})
+    attempts = list(ExamAttempt.objects.filter(user=request.user, exam=slug))
+    for a in attempts:
+        exams.sync(a, pub)
+    past = [{"id": a.pk, "started": a.started, "summary": exams.summary(a, pub)} for a in attempts if a.finished]
+    live = next((a for a in attempts if not a.finished), None)
+    return render(request, "course/exam_home.html", {
+        "E": pub, "slug": slug, "live": live, "past": past,
+        "live_part": live and exams.parts(pub)[live.part],
+        "print_ready": {k: (PDF_DIR / f"exam-{slug}" / f"exam-{slug}-exam{'-key' if k == 'key' else ''}-classic.pdf").is_file() for k in ("exam", "key")}})
+
+
+@login_required
+@require_POST
+def exam_start(request, slug):
+    pub = _exam_or_404(slug)
+    if not exams.can_take(request.user, pub):
+        return HttpResponseForbidden("Members only.")
+    live = next((a for a in ExamAttempt.objects.filter(user=request.user, exam=slug, finished__isnull=True)
+                 if not exams.sync(a, pub).finished), None)
+    if live is None:
+        live = ExamAttempt.objects.create(user=request.user, exam=slug)
+    return redirect("exam_attempt", slug=slug, pk=live.pk)
+
+
+@login_required
+@require_POST
+def exam_discard(request, slug, pk):
+    """Throw away an unfinished sitting, so the next one starts from Part A."""
+    ExamAttempt.objects.filter(user=request.user, exam=slug, pk=pk, finished__isnull=True).delete()
+    return redirect("exam_home", slug=slug)
+
+
+def _attempt(request, slug, pk):
+    pub = _exam_or_404(slug)
+    att = get_object_or_404(ExamAttempt, pk=pk, exam=slug, user=request.user)
+    return pub, exams.sync(att, pub)
+
+
+@login_required
+def exam_attempt(request, slug, pk):
+    pub, att = _attempt(request, slug, pk)
+    data = exams.report(att, pub) if att.finished else exams.live_state(att, pub)
+    return render(request, "course/exam.html", {"E": pub, "slug": slug, "att": att, "data": data,
+                                                "meta": {k: pub[k] for k in ("slug", "title", "course")}})
+
+
+@login_required
+@require_POST
+def api_exam(request, slug, pk, action):
+    """The sitting's actions. Every reply carries the fresh state, so the page follows the server, never its own clock."""
+    pub, att = _attempt(request, slug, pk)
+    d = _body(request)
+    ok, status, extra = True, 200, {}
+    if action == "begin":
+        exams.begin(att, pub)
+    elif action == "submit":
+        ok = exams.submit_part(att, pub, str(d.get("part", "")))
+    elif action == "answer":
+        ok, why = exams.answer(att, pub, str(d.get("item", "")), str(d.get("value", "")))
+        extra["reason"] = why
+    elif action == "flag":
+        ok = exams.flag(att, pub, str(d.get("item", "")), bool(d.get("on")))
+    elif action == "frq":
+        ok = exams.set_frq(att, pub, str(d.get("part", "")), d.get("checks"))
+        if ok:
+            extra.update({"summary": exams.summary(att, pub), "units": exams.by_unit(att, pub)})
+    elif action != "state":
+        raise Http404
+    if not ok:
+        status = 409
+    if action != "frq":
+        extra["state"] = {"finished": True} if att.finished else exams.live_state(att, pub)
+    return JsonResponse({"ok": ok, **extra}, status=status)
+
+
+def exam_pdf(request, slug, kind):
+    """The printable exam, or its key with every solution and scoring guide. Same access as the exam itself."""
+    pub = _exam_or_404(slug)
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    if not exams.can_take(request.user, pub):
+        return HttpResponseForbidden("Members only.")
+    name = f"exam-{slug}-exam{'-key' if kind == 'key' else ''}-classic.pdf"
+    path = PDF_DIR / f"exam-{slug}" / name
+    if not path.is_file():
+        raise Http404
+    return FileResponse(open(path, "rb"), content_type="application/pdf", filename=name)

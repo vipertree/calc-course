@@ -1,120 +1,120 @@
-"""Topic 0.2: The unit circle (trig review; not a CED topic).
+"""Trig Review lesson 0.2 (T2): Angles and radian measure (trig review; not a CED topic).
 
-cos and sin as the coordinates of the point at angle theta on the unit circle; cos^2 + sin^2 = 1; the quadrantal angles;
-the 45-45-90 and 30-60-90 triangles give the first-quadrant values; reference angles; signs by quadrant; tan = sin/cos as
-the slope of the terminal side. Lesson example: cos and sin of 5pi/6. Worked examples: 4pi/3, -pi/4, 3pi and 3pi/2,
-cos from sin = 3/5 in quadrant II.
+Prerequisite for every trig topic in the course: angles in standard position, radians (one radius of arc), converting
+with 180 degrees = pi, the landmark angles, coterminal angles, arc length s = r theta and sector area A = r^2 theta / 2.
+Lesson example: 150 degrees to radians. Worked examples: 5pi/4 to degrees, coterminal with 17pi/6, a pendulum's arc,
+a pizza slice.
 """
 import sympy as sp
 
-from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Table, Text, Topic, Variants, Video, num, same, selfcheck)
+from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, close, num, same, selfcheck)
 from calclib.figs import unit_circle
 
-pi, r2, r3 = sp.pi, sp.sqrt(2), sp.sqrt(3)
-same("lesson", [sp.cos(5 * pi / 6), sp.sin(5 * pi / 6)], [-r3 / 2, sp.Rational(1, 2)])
-same("ex", [sp.cos(4 * pi / 3), sp.sin(4 * pi / 3), sp.sin(-pi / 4), sp.cos(-pi / 4), sp.cos(3 * pi), sp.sin(3 * pi / 2)],
-     [-sp.Rational(1, 2), -r3 / 2, -r2 / 2, r2 / 2, -1, -1])
-same("ex4", [-sp.sqrt(1 - sp.Rational(9, 25)), sp.Rational(3, 5) / (-sp.Rational(4, 5))], [-sp.Rational(4, 5), -sp.Rational(3, 4)])
+pi = sp.pi
+same("lesson", [150 * pi / 180], [5 * pi / 6])
+same("ex1-2", [sp.Rational(5, 4) * 180, sp.Rational(17, 6) * pi - 2 * pi], [225, 5 * pi / 6])
+close("ex3", float(80 * pi / 6), 41.89, 0.01)
+close("ex4", float(sp.Rational(1, 2) * 64 * pi / 4), 25.13, 0.01)
 
-FIG_DEF = unit_circle("t0_2_def", [(0.9, r"$(\cos\theta, \sin\theta)$")], triangle=0.9, caption="The point at angle $\\theta$ is $(\\cos\\theta, \\sin\\theta)$.")
-FIG_REF = unit_circle("t0_2_ref", [(5 * float(pi) / 6, r"$\left(-\frac{\sqrt3}{2}, \frac12\right)$"), (float(pi) / 6, r"$\left(\frac{\sqrt3}{2}, \frac12\right)$")],
-                      triangle=5 * float(pi) / 6, caption="$\\frac{5\\pi}{6}$ has reference angle $\\frac{\\pi}{6}$: same numbers, the quadrant sets the signs.")
+FIG_LAND = unit_circle("t0_2_land", [(k * float(pi) / 6, l) for k, l in ((0, "$0$"), (1, r"$\frac{\pi}{6}$"), (3, r"$\frac{\pi}{2}$"), (5, r"$\frac{5\pi}{6}$"),
+                                                                        (6, r"$\pi$"), (9, r"$\frac{3\pi}{2}$"))] +
+                       [(float(pi) / 4, r"$\frac{\pi}{4}$"), (float(pi) / 3, r"$\frac{\pi}{3}$")],
+                       caption="Landmark angles. Count in sixths, fourths, or thirds of $\\pi$.", labels=False)
 
 NOTES = [
-    Video("s0_2.py::Lesson", "The unit circle", 8),
+    Video("s0_2.py::Lesson", "Angles and radian measure", 6),
 
-    Section("Sine and cosine"),
-    Formula("Definition", (r"The \textbf{unit circle} is $x^2 + y^2 = 1$. The point at angle $\theta$ on it is \[ (\cos\theta,\ \sin\theta). \] "
-                           r"Cosine is the $\blank{x}$-coordinate (how far across); sine is the $\blank{y}$-coordinate (how far up).")),
-    FIG_DEF,
-    Formula("The Pythagorean identity", r"\[ \cos^2\theta + \sin^2\theta = 1 \] for every angle $\theta$, because every point of the unit circle is $1$ from the center."),
+    Section("Angles in standard position"),
+    Text(r"An angle in \textbf{standard position} starts on the positive $x$-axis (the \textbf{initial side}) and turns to the \textbf{terminal side}. "
+         r"Counterclockwise turns are positive; clockwise turns are negative."),
 
-    Section("The values to know"),
-    Text(r"The quadrantal angles land on the axes. The $45$-$45$-$90$ triangle with hypotenuse $1$ has legs $\frac{\sqrt2}{2}$; the $30$-$60$-$90$ triangle "
-         r"(half of an equilateral triangle of side $1$) has legs $\frac12$ and $\frac{\sqrt3}{2}$."),
-    Table(r"$0$ & $1$ & $0$ & $0$ \\[5pt] $\frac{\pi}{6}$ & $\frac{\sqrt3}{2}$ & $\frac12$ & $\frac{\sqrt3}{3}$ \\[5pt] $\frac{\pi}{4}$ & $\frac{\sqrt2}{2}$ & $\frac{\sqrt2}{2}$ & $1$ \\[5pt] "
-          r"$\frac{\pi}{3}$ & $\frac12$ & $\frac{\sqrt3}{2}$ & $\sqrt3$ \\[5pt] $\frac{\pi}{2}$ & $0$ & $1$ & undefined \\[5pt] $\pi$ & $-1$ & $0$ & $0$ \\[5pt] $\frac{3\pi}{2}$ & $0$ & $-1$ & undefined",
-          "c|c|c|c", header=r"$\theta$ & $\cos\theta$ & $\sin\theta$ & $\tan\theta$"),
-    Text(r"Memory check: as the angle grows from $\frac{\pi}{6}$ to $\frac{\pi}{3}$ the point rises, so sine goes up ($\frac12$, $\frac{\sqrt2}{2}$, $\frac{\sqrt3}{2}$) and cosine goes down."),
+    Section("Radians"),
+    Text(r"Lay one radius of a circle along the circle: the angle it cuts off is \textbf{one radian}, about $57.3^\circ$. The circumference is $2\pi r$, "
+         r"so $2\pi$ radius lengths fit around."),
+    Formula("Radian facts", (r"A full turn is \[ 360^\circ = \blank{2\pi} \text{ radians}, \qquad \text{so} \qquad 180^\circ = \blank{\pi} \text{ radians}. \]"
+                             r"Degrees to radians: multiply by $\frac{\pi}{180^\circ}$. Radians to degrees: multiply by $\frac{180^\circ}{\pi}$.")),
+    VideoExample("Converting 150 degrees", work="2.4cm"),
+    Text(r"\textbf{Landmark angles.} $30^\circ = \frac{\pi}{6}$, $45^\circ = \frac{\pi}{4}$, $60^\circ = \frac{\pi}{3}$, $90^\circ = \frac{\pi}{2}$, $180^\circ = \pi$, "
+         r"$270^\circ = \frac{3\pi}{2}$. The rest are multiples: $\frac{5\pi}{6}$ is five $30^\circ$ steps, $150^\circ$."),
+    FIG_LAND,
 
-    Section("Reference angles and signs"),
-    Text(r"The \textbf{reference angle} is the acute angle between the terminal side and the $x$-axis. It gives the numbers; the quadrant gives the signs: "
-         r"cosine is positive on the right half (quadrants I and IV), sine is positive on the top half (quadrants I and II)."),
-    FIG_REF,
-    VideoExample("Sine and cosine of 5π/6", work="3cm"),
+    Section("Coterminal angles"),
+    Text(r"Angles with the same terminal side are \textbf{coterminal}. Adding or subtracting $2\pi$ (any number of times) gives a coterminal angle: "
+         r"$\frac{\pi}{3}$, $\frac{7\pi}{3}$ and $-\frac{5\pi}{3}$ all point the same way."),
 
-    Section("Tangent"),
-    Formula("Tangent", r"\[ \tan\theta = \frac{\sin\theta}{\cos\theta}, \] the slope of the terminal side. It is undefined where $\cos\theta = 0$ ($\theta = \frac{\pi}{2}, \frac{3\pi}{2}, \dots$)."),
-    BigIdea(r"On the unit circle, $\cos\theta$ is how far across and $\sin\theta$ is how far up. Know the first quadrant; everything else is a reflection with signs."),
-    Check(r"Find $\cos\frac{7\pi}{4}$.", selfcheck(r"\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant IV, where cosine is positive."),
+    Section("Arc length and sector area"),
+    Formula("Arc length and sector area", (r"On a circle of radius $r$, an angle of $\theta$ radians cuts off \[ \text{arc length } s = \blank{r\theta} "
+                                           r"\qquad \text{and a sector of area } A = \blank{\tfrac12 r^2\theta}. \] Both need $\theta$ in radians.")),
+    BigIdea(r"Half a turn is $\pi$ radians. Radians measure an angle by the arc it cuts off on a circle of radius $1$, which is why calculus uses them."),
+    Check(r"Convert $240^\circ$ to radians.", selfcheck(r"\frac{4\pi}{3}"), r"$240 \cdot \frac{\pi}{180} = \frac{4\pi}{3}$."),
 ]
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
-    Item(r"Find $\sin\frac{\pi}{3}$.", num(r3 / 2, display=r"\frac{\sqrt3}{2}"), r"The point at $\frac{\pi}{3}$ is $\left(\frac12, \frac{\sqrt3}{2}\right)$.", work="0.8cm"),
-    Item(r"Find $\cos\frac{3\pi}{4}$.", num(-r2 / 2, display=r"-\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant II: cosine negative.", work="1cm"),
-    Item(r"Find $\sin\frac{7\pi}{6}$.", num(-sp.Rational(1, 2), display=r"-\frac12"), r"Reference angle $\frac{\pi}{6}$, quadrant III: sine negative.", work="1cm"),
-    Item(r"Find $\cos\frac{5\pi}{3}$.", num(sp.Rational(1, 2), display=r"\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant IV: cosine positive.", work="1cm"),
-    Item(r"Find $\tan\frac{2\pi}{3}$.", num(-r3, display=r"-\sqrt3"), r"$\frac{\sqrt3/2}{-1/2} = -\sqrt3$.", work="1cm"),
-    Item(r"Find $\sin\left(-\frac{\pi}{2}\right)$.", num(-1), r"$-\frac{\pi}{2}$ lands at $(0, -1)$.", work="0.8cm"),
-    Item(r"Find $\cos\frac{11\pi}{6}$.", num(r3 / 2, display=r"\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{6}$, quadrant IV.", work="1cm"),
-    Item(r"Find $\tan\frac{5\pi}{4}$.", num(1), r"Both coordinates are $-\frac{\sqrt2}{2}$, so the slope is $1$.", work="1cm"),
-    MCQ(r"In which quadrant are $\sin\theta < 0$ and $\cos\theta > 0$?", ["I", "II", "III", "IV"], "D", r"Below the $x$-axis and to the right of the $y$-axis.",
-        {"B": "that is sine positive, cosine negative"}),
-    Item(r"$\cos\theta = -\frac{5}{13}$ and $\theta$ is in quadrant III. Find $\sin\theta$.", num(-sp.Rational(12, 13), display=r"-\frac{12}{13}"),
-         r"$\sin^2\theta = 1 - \frac{25}{169} = \frac{144}{169}$; quadrant III, so $\sin\theta = -\frac{12}{13}$.", work="1.6cm"),
-    Item(r"$\sin\theta = \frac{1}{3}$ and $\frac{\pi}{2} < \theta < \pi$. Find $\cos\theta$.", num(-2 * r2 / 3, display=r"-\frac{2\sqrt2}{3}"),
-         r"$\cos^2\theta = \frac89$, and cosine is negative in quadrant II: $-\frac{2\sqrt2}{3}$.", work="1.6cm"),
-    Item(r"Find $\sin\frac{13\pi}{6}$.", num(sp.Rational(1, 2), display=r"\frac12"), r"$\frac{13\pi}{6} - 2\pi = \frac{\pi}{6}$.", work="1cm"),
+    Item(r"Convert $45^\circ$ to radians.", num(pi / 4, display=r"\frac{\pi}{4}"), r"$45 \cdot \frac{\pi}{180} = \frac{\pi}{4}$.", work="1cm"),
+    Item(r"Convert $300^\circ$ to radians.", num(5 * pi / 3, display=r"\frac{5\pi}{3}"), r"$300 \cdot \frac{\pi}{180} = \frac{5\pi}{3}$.", work="1cm"),
+    Item(r"Convert $-135^\circ$ to radians.", num(-3 * pi / 4, display=r"-\frac{3\pi}{4}"), r"$-135 \cdot \frac{\pi}{180} = -\frac{3\pi}{4}$.", work="1cm"),
+    Item(r"Convert $\frac{2\pi}{3}$ to degrees.", num(120, display=r"120^\circ"), r"$\frac{2\pi}{3} \cdot \frac{180}{\pi} = 120^\circ$.", work="1cm"),
+    Item(r"Convert $\frac{7\pi}{6}$ to degrees.", num(210, display=r"210^\circ"), r"$\frac{7 \cdot 180}{6} = 210^\circ$.", work="1cm"),
+    Item(r"Convert $2$ radians to degrees, to the nearest tenth.", num(360 / pi, tol=0.05), r"$2 \cdot \frac{180}{\pi} \approx 114.6^\circ$.", work="1cm", calc=True),
+    Item(r"Find the angle between $0$ and $2\pi$ coterminal with $\frac{11\pi}{4}$.", num(3 * pi / 4, display=r"\frac{3\pi}{4}"), r"$\frac{11\pi}{4} - \frac{8\pi}{4} = \frac{3\pi}{4}$.", work="1.2cm"),
+    Item(r"Find the angle between $0$ and $2\pi$ coterminal with $-\frac{\pi}{6}$.", num(11 * pi / 6, display=r"\frac{11\pi}{6}"), r"$-\frac{\pi}{6} + \frac{12\pi}{6} = \frac{11\pi}{6}$.", work="1.2cm"),
+    MCQ(r"In which quadrant is the terminal side of $\frac{5\pi}{3}$?", ["I", "II", "III", "IV"], "D", r"$\frac{5\pi}{3} = 300^\circ$, between $270^\circ$ and $360^\circ$.",
+        {"C": r"$\frac{5\pi}{3}$ is past $\frac{3\pi}{2}$"}),
+    Item(r"A circle has radius $6$ cm. Find the length of the arc cut off by an angle of $\frac{\pi}{3}$.", num(2 * pi, display=r"2\pi \text{ cm}"), r"$s = r\theta = 6 \cdot \frac{\pi}{3} = 2\pi$ cm.", work="1.2cm"),
+    Item(r"A sector of a circle of radius $10$ has area $25\pi$. Find its angle in radians.", num(pi / 2, display=r"\frac{\pi}{2}"),
+         r"$\frac12 \cdot 100 \cdot \theta = 25\pi$, so $\theta = \frac{\pi}{2}$.", work="1.4cm"),
+    Item(r"A wheel of radius $35$ cm rolls without slipping through $3$ full turns. How far does it roll, to the nearest centimeter?", num(210 * pi, tol=0.5),
+         r"$\theta = 6\pi$, $s = 35 \cdot 6\pi = 210\pi \approx 660$ cm.", work="1.4cm", calc=True),
 ]
-same("p", [sp.cos(3 * pi / 4), sp.sin(7 * pi / 6), sp.cos(5 * pi / 3), sp.tan(2 * pi / 3), sp.cos(11 * pi / 6), sp.tan(5 * pi / 4), sp.sin(13 * pi / 6)],
-     [-r2 / 2, -sp.Rational(1, 2), sp.Rational(1, 2), -r3, r3 / 2, 1, sp.Rational(1, 2)])
+same("p", [300 * pi / 180, -135 * pi / 180, sp.Rational(7, 6) * 180, sp.Rational(11, 4) * pi - 2 * pi], [5 * pi / 3, -3 * pi / 4, 210, 3 * pi / 4])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"Find $\cos\frac{2\pi}{3}$.", num(-sp.Rational(1, 2), display=r"-\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant II.", work="1cm"),
-        Item(r"Find $\sin\frac{5\pi}{4}$.", num(-r2 / 2, display=r"-\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant III.", work="1cm"),
-        Item(r"Find $\cos\frac{7\pi}{6}$.", num(-r3 / 2, display=r"-\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{6}$, quadrant III.", work="1cm"),
+        Item(r"Convert $210^\circ$ to radians.", num(7 * pi / 6, display=r"\frac{7\pi}{6}"), r"$210 \cdot \frac{\pi}{180} = \frac{7\pi}{6}$.", work="1cm"),
+        Item(r"Convert $135^\circ$ to radians.", num(3 * pi / 4, display=r"\frac{3\pi}{4}"), r"$135 \cdot \frac{\pi}{180} = \frac{3\pi}{4}$.", work="1cm"),
+        Item(r"Convert $330^\circ$ to radians.", num(11 * pi / 6, display=r"\frac{11\pi}{6}"), r"$330 \cdot \frac{\pi}{180} = \frac{11\pi}{6}$.", work="1cm"),
     ),
     Variants(
-        Item(r"Find $\sin\frac{5\pi}{3}$.", num(-r3 / 2, display=r"-\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{3}$, quadrant IV.", work="1cm"),
-        Item(r"Find $\sin\frac{3\pi}{4}$.", num(r2 / 2, display=r"\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant II.", work="1cm"),
-        Item(r"Find $\cos\left(-\frac{\pi}{3}\right)$.", num(sp.Rational(1, 2), display=r"\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant IV.", work="1cm"),
+        Item(r"Convert $\frac{3\pi}{2}$ to degrees.", num(270, display=r"270^\circ"), r"$\frac{3 \cdot 180}{2} = 270^\circ$.", work="1cm"),
+        Item(r"Convert $\frac{5\pi}{6}$ to degrees.", num(150, display=r"150^\circ"), r"$\frac{5 \cdot 180}{6} = 150^\circ$.", work="1cm"),
+        Item(r"Convert $\frac{7\pi}{4}$ to degrees.", num(315, display=r"315^\circ"), r"$\frac{7 \cdot 180}{4} = 315^\circ$.", work="1cm"),
     ),
     Variants(
-        Item(r"Find $\tan\frac{\pi}{6}$.", num(r3 / 3, display=r"\frac{\sqrt3}{3}"), r"$\frac{1/2}{\sqrt3/2} = \frac{1}{\sqrt3} = \frac{\sqrt3}{3}$.", work="1cm"),
-        Item(r"Find $\tan\frac{4\pi}{3}$.", num(r3, display=r"\sqrt3"), r"$\frac{-\sqrt3/2}{-1/2} = \sqrt3$.", work="1cm"),
-        Item(r"Find $\tan\frac{7\pi}{4}$.", num(-1), r"$\frac{-\sqrt2/2}{\sqrt2/2} = -1$.", work="1cm"),
+        Item(r"Find the angle between $0$ and $2\pi$ coterminal with $\frac{13\pi}{6}$.", num(pi / 6, display=r"\frac{\pi}{6}"), r"Subtract $2\pi = \frac{12\pi}{6}$.", work="1cm"),
+        Item(r"Find the angle between $0$ and $2\pi$ coterminal with $-\frac{3\pi}{4}$.", num(5 * pi / 4, display=r"\frac{5\pi}{4}"), r"Add $2\pi = \frac{8\pi}{4}$.", work="1cm"),
+        Item(r"Find the angle between $0$ and $2\pi$ coterminal with $\frac{10\pi}{3}$.", num(4 * pi / 3, display=r"\frac{4\pi}{3}"), r"Subtract $2\pi = \frac{6\pi}{3}$.", work="1cm"),
     ),
     Variants(
-        MCQ(r"Which is the value of $\cos\pi$?", [r"$0$", r"$1$", r"$-1$", "undefined"], "C", r"The point at $\pi$ is $(-1, 0)$.", {"A": r"that is $\sin\pi$"}),
-        MCQ(r"Which is the value of $\sin\frac{\pi}{2}$?", [r"$1$", r"$0$", r"$-1$", "undefined"], "A", r"The point at $\frac{\pi}{2}$ is $(0, 1)$.", {"B": r"that is $\cos\frac{\pi}{2}$"}),
+        Item(r"Find the arc length cut off by an angle of $\frac{3\pi}{4}$ on a circle of radius $8$.", num(6 * pi, display=r"6\pi"), r"$s = 8 \cdot \frac{3\pi}{4} = 6\pi$.", work="1cm"),
+        Item(r"Find the arc length cut off by an angle of $\frac{\pi}{5}$ on a circle of radius $15$.", num(3 * pi, display=r"3\pi"), r"$s = 15 \cdot \frac{\pi}{5} = 3\pi$.", work="1cm"),
     ),
     Variants(
-        Item(r"$\sin\theta = -\frac45$ and $\theta$ is in quadrant IV. Find $\cos\theta$.", num(sp.Rational(3, 5), display=r"\frac35"), r"$\cos^2\theta = \frac{9}{25}$; positive in quadrant IV.", work="1.4cm"),
-        Item(r"$\cos\theta = \frac{8}{17}$ and $\theta$ is in quadrant IV. Find $\sin\theta$.", num(-sp.Rational(15, 17), display=r"-\frac{15}{17}"), r"$\sin^2\theta = \frac{225}{289}$; negative in quadrant IV.", work="1.4cm"),
+        Item(r"Find the area of a sector with radius $6$ and angle $\frac{\pi}{3}$.", num(6 * pi, display=r"6\pi"), r"$A = \frac12 \cdot 36 \cdot \frac{\pi}{3} = 6\pi$.", work="1cm"),
+        Item(r"Find the area of a sector with radius $4$ and angle $\frac{3\pi}{2}$.", num(12 * pi, display=r"12\pi"), r"$A = \frac12 \cdot 16 \cdot \frac{3\pi}{2} = 12\pi$.", work="1cm"),
     ),
 ]
-same("q", [sp.cos(2 * pi / 3), sp.sin(5 * pi / 4), sp.cos(7 * pi / 6), sp.sin(5 * pi / 3), sp.sin(3 * pi / 4), sp.tan(pi / 6), sp.tan(4 * pi / 3), sp.tan(7 * pi / 4)],
-     [-sp.Rational(1, 2), -r2 / 2, -r3 / 2, -r3 / 2, r2 / 2, r3 / 3, r3, -1])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\sin\frac{11\pi}{6} = $", [r"$-\frac12$", r"$\frac12$", r"$-\frac{\sqrt3}{2}$", r"$\frac{\sqrt3}{2}$"], "A", r"Reference angle $\frac{\pi}{6}$, quadrant IV: sine negative.",
-        {"B": "sine is negative in quadrant IV", "C": r"that is $\sin\frac{5\pi}{3}$"}),
-    MCQ(r"If $\tan\theta > 0$ and $\sin\theta < 0$, then $\theta$ is in quadrant", ["I", "II", "III", "IV"], "C", r"Sine negative means III or IV; tangent positive needs cosine negative too: III."),
-    MCQ(r"$\cos\theta = -\frac{2}{3}$ and $\pi < \theta < \frac{3\pi}{2}$. Then $\sin\theta = $",
-        [r"$\frac{\sqrt5}{3}$", r"$-\frac13$", r"$\frac13$", r"$-\frac{\sqrt5}{3}$"], "D", r"$\sin^2\theta = 1 - \frac49 = \frac59$; quadrant III, so negative.", {"A": "sine is negative in quadrant III", "B": r"$1 - \frac23$ is not $\sin\theta$"}),
-    MCQ(r"Which of the following is undefined?", [r"$\sin\frac{3\pi}{2}$", r"$\tan\frac{3\pi}{2}$", r"$\cos\frac{\pi}{2}$", r"$\tan\pi$"], "B", r"$\cos\frac{3\pi}{2} = 0$, so $\tan\frac{3\pi}{2} = \frac{-1}{0}$.",
-        {"C": r"$\cos\frac{\pi}{2} = 0$ is defined", "D": r"$\tan\pi = \frac{0}{-1} = 0$"}),
+    MCQ(r"Which angle is coterminal with $\frac{\pi}{4}$?", [r"$-\frac{\pi}{4}$", r"$\frac{5\pi}{4}$", r"$\frac{9\pi}{4}$", r"$\frac{3\pi}{4}$"], "C",
+        r"$\frac{\pi}{4} + 2\pi = \frac{9\pi}{4}$.", {"B": r"$\frac{\pi}{4} + \pi$ points the opposite way", "A": "that is its reflection across the $x$-axis"}),
+    MCQ(r"An angle of $1$ radian is closest to", [r"$1^\circ$", r"$57^\circ$", r"$90^\circ$", r"$180^\circ$"], "B", r"$\frac{180^\circ}{\pi} \approx 57.3^\circ$.",
+        {"D": r"that is $\pi$ radians"}),
+    MCQ(r"A sprinkler sprays water over a sector of radius $20$ feet and angle $120^\circ$. What area does it water?",
+        [r"$\frac{400\pi}{3}$ ft$^2$", r"$\frac{40\pi}{3}$ ft$^2$", r"$2400$ ft$^2$", r"$800\pi$ ft$^2$"], "A",
+        r"$120^\circ = \frac{2\pi}{3}$, $A = \frac12 \cdot 400 \cdot \frac{2\pi}{3} = \frac{400\pi}{3}$.", {"B": "that is the arc length", "C": "the angle must be in radians"}),
+    MCQ(r"The minute hand of a clock is $9$ cm long. How far does its tip travel in $20$ minutes?",
+        [r"$3\pi$ cm", r"$9\pi$ cm", r"$27\pi$ cm", r"$6\pi$ cm"], "D", r"$20$ minutes is $\frac13$ of a turn, $\theta = \frac{2\pi}{3}$, $s = 9 \cdot \frac{2\pi}{3} = 6\pi$.",
+        {"A": r"$\theta = \frac{\pi}{3}$ would be $10$ minutes"}),
 ]
-same("m", [sp.sin(11 * pi / 6), -sp.sqrt(1 - sp.Rational(4, 9))], [-sp.Rational(1, 2), -sp.sqrt(5) / 3])
+same("m", [sp.Rational(1, 2) * 400 * 2 * pi / 3, 9 * 2 * pi / 3], [400 * pi / 3, 6 * pi])
 
 FRQS = []
 
 TOPIC = Topic(
-    number="0.2", title="The Unit Circle",
-    unit="Trig Review (a free module)", ced=["Prerequisite: unit circle trigonometry"],
-    goals=r"Read $\sin\theta$, $\cos\theta$ and $\tan\theta$ off the unit circle at every landmark angle, using reference angles and the signs by quadrant.",
+    number="0.2", title="Angles and Radian Measure",
+    unit="Trig Review (a free module)", ced=["Prerequisite: radian measure"],
+    goals=r"Measure angles in radians, convert to and from degrees, find coterminal angles, and use $s = r\theta$ and $A = \frac12 r^2\theta$.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

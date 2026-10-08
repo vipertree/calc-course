@@ -1,117 +1,152 @@
-"""Topic 0.7: Inverse trigonometric functions (trig review; not a CED topic; Topic 3.4 differentiates them).
+"""Trig Review lesson 0.7 (T7): Solving trigonometric equations (trig review; not a CED topic).
 
-Restricting sine, cosine and tangent to one-to-one pieces; arcsin, arccos, arctan with their inputs and outputs; the
-notation sin^-1 x = arcsin x (not 1/sin x); sin(arcsin x) = x but arcsin(sin x) answers in arcsin's range; triangles for
-compositions; solving with a calculator. Lesson example: arcsin(-1/2), arccos(-1/2), arctan(sqrt 3). Worked examples:
-arctan(-1) and arccos(-sqrt2/2), cos(arcsin 2/3), tan(arccos x), 3 sin x = 1.
+Two angles per value in one turn (plus 2k pi); isolate the trig function; factor instead of dividing by a trig function;
+rewrite with an identity so the angles match; for kx, solve over k turns then divide. Lesson example: 2cos x + 1 = 0.
+Worked examples: tan x = -1, 2sin^2 x - sin x - 1 = 0, cos 2x = cos x, sin 2x = sqrt(3)/2.
 """
 import sympy as sp
 
-from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Table, Text, Topic, Variants, Video, close, expr, num, same, selfcheck)
-from calclib.figs import graph
+from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, num, same, selfcheck)
+from calclib.figs import unit_circle
 
-pi, x = sp.pi, sp.Symbol("x", positive=True)
-r2, r3 = sp.sqrt(2), sp.sqrt(3)
-same("lesson", [sp.asin(-sp.Rational(1, 2)), sp.acos(-sp.Rational(1, 2)), sp.atan(r3)], [-pi / 6, 2 * pi / 3, pi / 3])
-same("undo", [sp.asin(sp.sin(5 * pi / 6))], [pi / 6])
-same("ex1", [sp.atan(-1), sp.acos(-r2 / 2)], [-pi / 4, 3 * pi / 4])
-same("ex2", [sp.cos(sp.asin(sp.Rational(2, 3)))], [sp.sqrt(5) / 3])
-same("ex3", [sp.simplify(sp.tan(sp.acos(sp.Rational(1, 3))) - sp.sqrt(1 - sp.Rational(1, 9)) * 3)], [0])
-close("ex4", float(sp.asin(sp.Rational(1, 3))), 0.340, 5e-4)
-close("ex4b", float(pi - sp.asin(sp.Rational(1, 3))), 2.802, 5e-4)
+pi, x = sp.pi, sp.Symbol("x", real=True)
 
-FIG_INV = graph("t0_7_inv", [("rad(asin(x))", -1, 1), ("rad(atan(x))", -4, 4, "dashed")], xr=(-4.2, 4.2), yr=(-1.9, 1.9), w="9cm", h="4.6cm",
-                hlines=(1.5708, -1.5708), caption=r"$y = \arcsin x$ (solid) and $y = \arctan x$ (dashed, with asymptotes $y = \pm\frac{\pi}{2}$).")
+
+def roots(eq, n=24000):
+    """Numeric roots of eq on [0, 2pi): grid points where |eq| has a small local minimum, polished with findroot."""
+    import mpmath
+    f = sp.lambdify(x, eq, "mpmath")
+    h = 2 * mpmath.pi / n
+    vals = [abs(f(k * h)) for k in range(n + 2)]
+    out = []
+    for k in range(n + 1):
+        if vals[k] <= vals[k - 1] and vals[k] <= vals[k + 1] and vals[k] < 1e-2:
+            try:
+                r = mpmath.findroot(f, k * h, tol=1e-20)
+            except (ValueError, ZeroDivisionError):
+                r = k * h
+            if abs(f(r)) < 1e-9:
+                r = float(r) % (2 * float(sp.pi))
+                if min((abs(r - o) for o in out), default=1) > 1e-6 and 2 * float(sp.pi) - r > 1e-6:
+                    out.append(r)
+    return sorted(out)
+
+
+def sols(eq, want):
+    """The solutions of eq = 0 on [0, 2pi) are exactly `want` (each checked exactly, the count numerically)."""
+    for w in want:
+        if sp.simplify(eq.subs(x, w)) != 0:
+            raise SystemExit(f"solution check failed: {w} does not solve {eq}")
+    got = roots(eq)
+    if len(got) != len(want) or any(abs(a - float(b)) > 1e-6 for a, b in zip(got, sorted(want, key=float))):
+        raise SystemExit(f"solution check failed: {eq}: numeric roots {got}, want {sorted(want, key=float)}")
+
+
+sols(2 * sp.cos(x) + 1, {2 * pi / 3, 4 * pi / 3})
+sols(2 * sp.sin(x)**2 - sp.sin(x), {0, pi, pi / 6, 5 * pi / 6})
+sols(sp.sin(2 * x) - sp.cos(x), {pi / 2, 3 * pi / 2, pi / 6, 5 * pi / 6})
+sols(sp.sin(2 * x) - 1, {pi / 4, 5 * pi / 4})
+sols(sp.tan(x) + 1, {3 * pi / 4, 7 * pi / 4})
+sols(2 * sp.sin(x)**2 - sp.sin(x) - 1, {7 * pi / 6, 11 * pi / 6, pi / 2})
+sols(sp.cos(2 * x) - sp.cos(x), {0, 2 * pi / 3, 4 * pi / 3})
+sols(sp.sin(2 * x) - sp.sqrt(3) / 2, {pi / 6, pi / 3, 7 * pi / 6, 4 * pi / 3})
+
+FIG_HALF = unit_circle("t0_7_half", [(float(pi) / 6, r"$\frac{\pi}{6}$"), (5 * float(pi) / 6, r"$\frac{5\pi}{6}$")],
+                       caption=r"$\sin x = \frac12$: two points at height $\frac12$ in one turn.", labels=False)
 
 NOTES = [
-    Video("s0_7.py::Lesson", "Inverse trigonometric functions", 7),
+    Video("s0_7.py::Lesson", "Solving trigonometric equations", 8),
 
-    Section("Restricting to one piece"),
-    Text(r"To run a function backward, every output must come from one input. Sine repeats, so we keep one piece on which it takes each value once: "
-         r"sine on $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$, cosine on $[0, \pi]$, tangent on $\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)$."),
-    Formula("Definitions", (r"$\arcsin x$ is the angle in $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ whose sine is $x$. "
-                            r"$\arccos x$ is the angle in $\blank{[0, \pi]}$ whose cosine is $x$. "
-                            r"$\arctan x$ is the angle in $\blank{\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)}$ whose tangent is $x$.")),
-    Table(r"$\arcsin x$ & $-1 \le x \le 1$ & $-\frac{\pi}{2} \le y \le \frac{\pi}{2}$ \\[5pt] $\arccos x$ & $-1 \le x \le 1$ & $0 \le y \le \pi$ \\[5pt] "
-          r"$\arctan x$ & all real $x$ & $-\frac{\pi}{2} < y < \frac{\pi}{2}$", "l|c|c", header=r"function & inputs & outputs"),
-    FIG_INV,
-    VideoExample("Evaluating inverse trig functions", work="3cm"),
+    Section("Two angles per value"),
+    Text(r"In one turn, $\sin x = c$ (for $-1 < c < 1$) has two solutions: the points of the unit circle at height $c$. Likewise $\cos x = c$ has two, at the points with "
+         r"$x$-coordinate $c$. Adding $2k\pi$ gives all the others."),
+    FIG_HALF,
+    Formula("Method", (r"1. \blank{Isolate} the trig function (or move everything to one side and factor). \\ 2. Find the \blank{reference angle}. "
+                       r"\\ 3. Use every quadrant where the sign is right. \\ 4. List the solutions in the interval asked for.")),
+    VideoExample("Solving 2cos x + 1 = 0", work="3cm"),
 
-    Section("Notation and compositions"),
-    Text(r"$\sin^{-1} x$ means $\arcsin x$, \textbf{not} $\frac{1}{\sin x}$ (that is $\csc x$)."),
-    Text(r"$\sin(\arcsin x) = x$ for $-1 \le x \le 1$. The other order answers in arcsine's range: $\arcsin\left(\sin\frac{5\pi}{6}\right) = \arcsin\frac12 = \frac{\pi}{6}$."),
-    Text(r"\textbf{Compositions with a triangle.} For $\cos(\arcsin\frac23)$, let $\theta = \arcsin\frac23$: opposite $2$, hypotenuse $3$, adjacent $\sqrt5$, so $\cos\theta = \frac{\sqrt5}{3}$."),
-    Text(r"\textbf{Calculator.} $\arcsin$ gives only one solution of $\sin x = c$. Find the other from the quadrants: for $\sin x = \frac13$, $x \approx 0.340$ and $x \approx \pi - 0.340 \approx 2.802$."),
-    BigIdea(r"An inverse trig function returns an angle, always from its own range: $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ for arcsine and arctangent (open for arctangent), $[0, \pi]$ for arccosine."),
-    Check(r"Find $\arccos 0$.", selfcheck(r"\frac{\pi}{2}"), r"The angle in $[0, \pi]$ with cosine $0$."),
+    Section("Factoring and identities"),
+    Text(r"\textbf{Never divide by a trig function}: dividing $2\sin^2 x = \sin x$ by $\sin x$ loses $x = 0$ and $x = \pi$. Move everything to one side and factor: "
+         r"$\sin x(2\sin x - 1) = 0$."),
+    Text(r"When the angles don't match ($\sin 2x$ and $\cos x$), rewrite with an identity first: $2\sin x\cos x = \cos x$, then factor out $\cos x$."),
+
+    Section("Multiple angles"),
+    Text(r"For $\sin 2x = 1$ on $0 \le x < 2\pi$, the angle $2x$ runs over $0 \le 2x < 4\pi$: two turns. Solve for $2x$ on both turns ($\frac{\pi}{2}$, $\frac{5\pi}{2}$), then divide: $x = \frac{\pi}{4}, \frac{5\pi}{4}$."),
+    BigIdea(r"Find every solution in the interval: two per turn for most values, and $k$ turns' worth when the angle is $kx$."),
+    Check(r"Solve $\cos x = 0$ for $0 \le x < 2\pi$.", selfcheck(r"x = \frac{\pi}{2}, \ \frac{3\pi}{2}"), r"The top and bottom of the circle."),
 ]
 
 # ---------------------------------------------------------------- practice
+I = r" for $0 \le x < 2\pi$."
 PRACTICE = [
-    Item(r"Find $\arcsin\frac{\sqrt2}{2}$.", num(pi / 4, display=r"\frac{\pi}{4}"), r"In $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$ with sine $\frac{\sqrt2}{2}$.", work="0.8cm"),
-    Item(r"Find $\arccos\frac{\sqrt3}{2}$.", num(pi / 6, display=r"\frac{\pi}{6}"), r"In $[0, \pi]$ with cosine $\frac{\sqrt3}{2}$.", work="0.8cm"),
-    Item(r"Find $\arctan\left(-\sqrt3\right)$.", num(-pi / 3, display=r"-\frac{\pi}{3}"), r"Tangent is odd; $-\frac{\pi}{3}$ is in range.", work="0.8cm"),
-    Item(r"Find $\arccos(-1)$.", num(pi, display=r"\pi"), r"$\cos\pi = -1$.", work="0.8cm"),
-    Item(r"Find $\arcsin(-1)$.", num(-pi / 2, display=r"-\frac{\pi}{2}"), r"$\sin\left(-\frac{\pi}{2}\right) = -1$.", work="0.8cm"),
-    Item(r"Find $\arccos\left(-\frac{\sqrt3}{2}\right)$.", num(5 * pi / 6, display=r"\frac{5\pi}{6}"), r"Reference angle $\frac{\pi}{6}$ in quadrant II.", work="1cm"),
-    Item(r"Find $\arcsin\left(\sin\frac{2\pi}{3}\right)$.", num(pi / 3, display=r"\frac{\pi}{3}"), r"$\sin\frac{2\pi}{3} = \frac{\sqrt3}{2}$, and $\arcsin\frac{\sqrt3}{2} = \frac{\pi}{3}$.", work="1cm"),
-    Item(r"Find $\arccos\left(\cos\left(-\frac{\pi}{4}\right)\right)$.", num(pi / 4, display=r"\frac{\pi}{4}"), r"$\cos\left(-\frac{\pi}{4}\right) = \frac{\sqrt2}{2}$; arccosine answers in $[0, \pi]$.", work="1cm"),
-    Item(r"Find $\sin\left(\arccos\frac{4}{5}\right)$.", num(sp.Rational(3, 5), display=r"\frac35"), r"Adjacent $4$, hypotenuse $5$, opposite $3$.", work="1.2cm"),
-    Item(r"Find $\sec\left(\arctan\frac{5}{12}\right)$.", num(sp.Rational(13, 12), display=r"\frac{13}{12}"), r"Opposite $5$, adjacent $12$, hypotenuse $13$.", work="1.2cm"),
-    Item(r"Write $\cos(\arcsin x)$ as an algebraic expression.", expr(sp.sqrt(1 - x**2)), r"Opposite $x$, hypotenuse $1$: $\sqrt{1 - x^2}$ (nonnegative, since arcsine is in quadrant I or IV).", work="1.4cm"),
-    Item(r"Solve $\tan x = 2$ for $0 \le x < 2\pi$, to three decimal places.", selfcheck(r"x \approx 1.107, \ 4.249"), r"$\arctan 2 \approx 1.107$; add $\pi$: $4.249$.", work="1.4cm", calc=True),
+    Item(r"Solve $\cos x = \frac{\sqrt2}{2}$" + I, selfcheck(r"x = \frac{\pi}{4}, \ \frac{7\pi}{4}"), r"Reference angle $\frac{\pi}{4}$; cosine positive in I and IV.", work="1.2cm"),
+    Item(r"Solve $2\sin x + \sqrt3 = 0$" + I, selfcheck(r"x = \frac{4\pi}{3}, \ \frac{5\pi}{3}"), r"$\sin x = -\frac{\sqrt3}{2}$: III and IV.", work="1.4cm"),
+    Item(r"Solve $\tan x = \sqrt3$" + I, selfcheck(r"x = \frac{\pi}{3}, \ \frac{4\pi}{3}"), r"Tangent positive in I and III.", work="1.2cm"),
+    Item(r"Solve $\sin x = -1$" + I, num(3 * pi / 2, display=r"\frac{3\pi}{2}"), r"The bottom of the circle.", work="1cm"),
+    Item(r"Solve $4\cos^2 x = 1$" + I, selfcheck(r"x = \frac{\pi}{3}, \ \frac{2\pi}{3}, \ \frac{4\pi}{3}, \ \frac{5\pi}{3}"), r"$\cos x = \pm\frac12$: keep both signs.", work="1.6cm"),
+    Item(r"Solve $\sin x\cos x = 0$" + I, selfcheck(r"x = 0, \ \frac{\pi}{2}, \ \pi, \ \frac{3\pi}{2}"), r"$\sin x = 0$ or $\cos x = 0$.", work="1.4cm"),
+    Item(r"Solve $2\cos^2 x + \cos x = 0$" + I, selfcheck(r"x = \frac{\pi}{2}, \ \frac{3\pi}{2}, \ \frac{2\pi}{3}, \ \frac{4\pi}{3}"), r"$\cos x(2\cos x + 1) = 0$.", work="1.6cm"),
+    Item(r"Solve $2\cos^2 x - 3\cos x + 1 = 0$" + I, selfcheck(r"x = 0, \ \frac{\pi}{3}, \ \frac{5\pi}{3}"), r"$(2\cos x - 1)(\cos x - 1) = 0$.", work="1.8cm"),
+    Item(r"Solve $\cos 2x = \frac12$" + I, selfcheck(r"x = \frac{\pi}{6}, \ \frac{5\pi}{6}, \ \frac{7\pi}{6}, \ \frac{11\pi}{6}"), r"$2x = \frac{\pi}{3}, \frac{5\pi}{3}, \frac{7\pi}{3}, \frac{11\pi}{3}$.", work="1.8cm"),
+    Item(r"Solve $\sin 2x = \sin x$" + I, selfcheck(r"x = 0, \ \pi, \ \frac{\pi}{3}, \ \frac{5\pi}{3}"), r"$\sin x(2\cos x - 1) = 0$.", work="1.8cm"),
+    MCQ(r"A student divides $\tan^2 x = \tan x$ by $\tan x$ and gets $\tan x = 1$. Which solutions in $0 \le x < 2\pi$ are lost?", [r"$\frac{\pi}{4}$ and $\frac{5\pi}{4}$", r"$0$ and $\pi$", r"$\frac{\pi}{2}$ and $\frac{3\pi}{2}$", "none"], "B",
+        r"$\tan x(\tan x - 1) = 0$ also gives $\tan x = 0$: $x = 0, \pi$.", {"A": "those are the ones the student found", "C": r"$\tan x$ is undefined there"}),
+    Item(r"The Ferris wheel height is $h(t) = 25 - 20\cos\left(\frac{\pi t}{2}\right)$. Find the times $0 \le t < 4$ when $h(t) = 15$.", selfcheck(r"t = \frac23, \ \frac{10}{3}"),
+         r"$\cos\frac{\pi t}{2} = \frac12$: $\frac{\pi t}{2} = \frac{\pi}{3}, \frac{5\pi}{3}$, so $t = \frac23, \frac{10}{3}$.", work="2cm"),
 ]
-same("p", [sp.acos(-r3 / 2), sp.asin(sp.sin(2 * pi / 3)), sp.acos(sp.cos(-pi / 4)), sp.sin(sp.acos(sp.Rational(4, 5))), 1 / sp.cos(sp.atan(sp.Rational(5, 12)))],
-     [5 * pi / 6, pi / 3, pi / 4, sp.Rational(3, 5), sp.Rational(13, 12)])
-close("p12", float(sp.atan(2) + pi), 4.249, 5e-4)
+sols(4 * sp.cos(x)**2 - 1, {pi / 3, 2 * pi / 3, 4 * pi / 3, 5 * pi / 3})
+sols(2 * sp.cos(x)**2 - 3 * sp.cos(x) + 1, {0, pi / 3, 5 * pi / 3})
+sols(sp.cos(2 * x) - sp.Rational(1, 2), {pi / 6, 5 * pi / 6, 7 * pi / 6, 11 * pi / 6})
+sols(sp.sin(2 * x) - sp.sin(x), {0, pi, pi / 3, 5 * pi / 3})
+same("p12", [25 - 20 * sp.cos(pi * sp.Rational(2, 3) / 2), 25 - 20 * sp.cos(pi * sp.Rational(10, 3) / 2)], [15, 15])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"Find $\arcsin\frac{\sqrt3}{2}$.", num(pi / 3, display=r"\frac{\pi}{3}"), r"$\sin\frac{\pi}{3} = \frac{\sqrt3}{2}$.", work="0.8cm"),
-        Item(r"Find $\arcsin\left(-\frac{\sqrt2}{2}\right)$.", num(-pi / 4, display=r"-\frac{\pi}{4}"), r"Sine is odd.", work="0.8cm"),
-        Item(r"Find $\arctan\frac{\sqrt3}{3}$.", num(pi / 6, display=r"\frac{\pi}{6}"), r"$\tan\frac{\pi}{6} = \frac{\sqrt3}{3}$.", work="0.8cm"),
+        Item(r"Solve $2\sin x = 1$" + I, selfcheck(r"x = \frac{\pi}{6}, \ \frac{5\pi}{6}"), r"$\sin x = \frac12$.", work="1.2cm"),
+        Item(r"Solve $2\cos x = \sqrt3$" + I, selfcheck(r"x = \frac{\pi}{6}, \ \frac{11\pi}{6}"), r"$\cos x = \frac{\sqrt3}{2}$: I and IV.", work="1.2cm"),
+        Item(r"Solve $\sqrt2\sin x + 1 = 0$" + I, selfcheck(r"x = \frac{5\pi}{4}, \ \frac{7\pi}{4}"), r"$\sin x = -\frac{\sqrt2}{2}$: III and IV.", work="1.2cm"),
     ),
     Variants(
-        Item(r"Find $\arccos\left(-\frac{\sqrt2}{2}\right)$.", num(3 * pi / 4, display=r"\frac{3\pi}{4}"), r"Quadrant II.", work="0.8cm"),
-        Item(r"Find $\arccos\frac12$.", num(pi / 3, display=r"\frac{\pi}{3}"), r"$\cos\frac{\pi}{3} = \frac12$.", work="0.8cm"),
-        Item(r"Find $\arccos\left(-\frac{\sqrt3}{2}\right)$.", num(5 * pi / 6, display=r"\frac{5\pi}{6}"), r"Quadrant II.", work="0.8cm"),
+        Item(r"Solve $\tan x + \sqrt3 = 0$" + I, selfcheck(r"x = \frac{2\pi}{3}, \ \frac{5\pi}{3}"), r"Tangent negative in II and IV.", work="1.2cm"),
+        Item(r"Solve $\sqrt3\tan x = 1$" + I, selfcheck(r"x = \frac{\pi}{6}, \ \frac{7\pi}{6}"), r"$\tan x = \frac{\sqrt3}{3}$: I and III.", work="1.2cm"),
     ),
     Variants(
-        MCQ(r"$\arcsin\left(\sin\frac{3\pi}{4}\right) = $", [r"$\frac{3\pi}{4}$", r"$\frac{\pi}{4}$", r"$-\frac{\pi}{4}$", r"$\frac{\sqrt2}{2}$"], "B", r"$\sin\frac{3\pi}{4} = \frac{\sqrt2}{2}$; $\arcsin\frac{\sqrt2}{2} = \frac{\pi}{4}$.",
-            {"A": r"$\frac{3\pi}{4}$ is outside arcsine's range", "D": "arcsine returns an angle"}),
-        MCQ(r"$\arccos\left(\cos\frac{5\pi}{3}\right) = $", [r"$\frac{5\pi}{3}$", r"$-\frac{\pi}{3}$", r"$\frac{\pi}{3}$", r"$\frac12$"], "C", r"$\cos\frac{5\pi}{3} = \frac12$; $\arccos\frac12 = \frac{\pi}{3}$.",
-            {"A": r"$\frac{5\pi}{3}$ is outside $[0, \pi]$", "B": r"arccosine never returns a negative angle"}),
+        Item(r"Solve $2\sin^2 x + \sin x = 0$" + I, selfcheck(r"x = 0, \ \pi, \ \frac{7\pi}{6}, \ \frac{11\pi}{6}"), r"$\sin x(2\sin x + 1) = 0$.", work="1.6cm"),
+        Item(r"Solve $2\cos^2 x = \cos x$" + I, selfcheck(r"x = \frac{\pi}{2}, \ \frac{3\pi}{2}, \ \frac{\pi}{3}, \ \frac{5\pi}{3}"), r"$\cos x(2\cos x - 1) = 0$.", work="1.6cm"),
     ),
     Variants(
-        Item(r"Find $\tan\left(\arcsin\frac{3}{5}\right)$.", num(sp.Rational(3, 4), display=r"\frac34"), r"Opposite $3$, hypotenuse $5$, adjacent $4$.", work="1.2cm"),
-        Item(r"Find $\cos\left(\arctan\frac{8}{15}\right)$.", num(sp.Rational(15, 17), display=r"\frac{15}{17}"), r"Opposite $8$, adjacent $15$, hypotenuse $17$.", work="1.2cm"),
-        Item(r"Find $\sin\left(\arccos\frac{5}{13}\right)$.", num(sp.Rational(12, 13), display=r"\frac{12}{13}"), r"Adjacent $5$, hypotenuse $13$, opposite $12$.", work="1.2cm"),
+        Item(r"Solve $2\sin^2 x + \sin x - 1 = 0$" + I, selfcheck(r"x = \frac{\pi}{6}, \ \frac{5\pi}{6}, \ \frac{3\pi}{2}"), r"$(2\sin x - 1)(\sin x + 1) = 0$.", work="1.8cm"),
+        Item(r"Solve $2\cos^2 x + \cos x - 1 = 0$" + I, selfcheck(r"x = \frac{\pi}{3}, \ \pi, \ \frac{5\pi}{3}"), r"$(2\cos x - 1)(\cos x + 1) = 0$.", work="1.8cm"),
     ),
     Variants(
-        MCQ(r"$\sin^{-1} x$ means", [r"$\frac{1}{\sin x}$", r"$\csc x$", r"$-\sin x$", r"$\arcsin x$"], "D", r"The $-1$ marks the inverse function.", {"A": r"that is $(\sin x)^{-1}$"}),
-        MCQ(r"Which value is in the range of $\arccos x$?", [r"$-\frac{\pi}{4}$", r"$\frac{3\pi}{4}$", r"$\frac{3\pi}{2}$", r"$-\pi$"], "B", r"The range is $[0, \pi]$.", {"A": r"that is in arcsine's range"}),
+        MCQ(r"How many solutions does $\sin 3x = 1$ have for $0 \le x < 2\pi$?", ["1", "2", "3", "6"], "C", r"$3x$ covers three turns, one solution per turn.", {"A": "the angle $3x$ goes around three times"}),
+        MCQ(r"How many solutions does $\cos 2x = 0$ have for $0 \le x < 2\pi$?", ["2", "4", "1", "8"], "B", r"$2x$ covers two turns, two solutions per turn.", {"A": "the angle $2x$ goes around twice"}),
     ),
 ]
-same("q", [sp.tan(sp.asin(sp.Rational(3, 5))), sp.cos(sp.atan(sp.Rational(8, 15))), sp.sin(sp.acos(sp.Rational(5, 13)))], [sp.Rational(3, 4), sp.Rational(15, 17), sp.Rational(12, 13)])
+sols(2 * sp.sin(x)**2 + sp.sin(x) - 1, {pi / 6, 5 * pi / 6, 3 * pi / 2})
+sols(2 * sp.cos(x)**2 + sp.cos(x) - 1, {pi / 3, pi, 5 * pi / 3})
+same("q5", [len(roots(sp.sin(3 * x) - 1)), len(roots(sp.cos(2 * x)))], [3, 4])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\arctan(-1) + \arccos(-1) = $", [r"$\frac{3\pi}{4}$", r"$0$", r"$\frac{5\pi}{4}$", r"$-\frac{5\pi}{4}$"], "A", r"$-\frac{\pi}{4} + \pi = \frac{3\pi}{4}$.", {"B": r"$\arccos(-1) = \pi$, not $\frac{\pi}{4}$"}),
-    MCQ(r"$\cos\left(\arcsin\left(-\frac{1}{3}\right)\right) = $", [r"$-\frac{2\sqrt2}{3}$", r"$\frac{2\sqrt2}{3}$", r"$\frac{\sqrt2}{3}$", r"$-\frac13$"], "B",
-        r"$\arcsin\left(-\frac13\right)$ is in quadrant IV, where cosine is positive: $\sqrt{1 - \frac19} = \frac{2\sqrt2}{3}$.", {"A": "arcsine of a negative number is in quadrant IV, where cosine is positive"}),
-    MCQ(r"A ramp rises $1$ ft over a horizontal run of $12$ ft. To the nearest tenth of a degree, its angle with the ground is", [r"$4.8^\circ$", r"$85.2^\circ$", r"$0.1^\circ$", r"$4.5^\circ$"], "A",
-        r"$\arctan\frac{1}{12} \approx 4.76^\circ$ (degree mode).", {"C": "that is the angle in radians, rounded", "B": "that is the angle at the top"}, calc=True),
-    MCQ(r"Which equation has exactly one solution?", [r"$\sin x = \frac12$ for $0 \le x < 2\pi$", r"$\cos x = 0$ for $0 \le x < 2\pi$", r"$\tan x = 3$ for $0 \le x < 2\pi$", r"$\tan x = 3$ for $-\frac{\pi}{2} < x < \frac{\pi}{2}$"], "D",
-        r"Tangent takes each value once on $\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)$: $x = \arctan 3$.", {"C": r"$\arctan 3$ and $\arctan 3 + \pi$"}),
+    MCQ(r"The solutions of $2\cos x + \sqrt2 = 0$ for $0 \le x < 2\pi$ are", [r"$\frac{\pi}{4}, \frac{7\pi}{4}$", r"$\frac{3\pi}{4}, \frac{5\pi}{4}$", r"$\frac{3\pi}{4}, \frac{7\pi}{4}$", r"$\frac{5\pi}{4}, \frac{7\pi}{4}$"], "B",
+        r"$\cos x = -\frac{\sqrt2}{2}$: quadrants II and III.", {"A": "cosine is negative here", "D": "that is where sine is negative"}),
+    MCQ(r"How many solutions does $\sin^2 x = \frac14$ have for $0 \le x < 2\pi$?", ["1", "2", "3", "4"], "D", r"$\sin x = \pm\frac12$: two angles each.", {"B": r"keep both signs of $\pm\frac12$"}),
+    MCQ(r"Which value is a solution of $\cos 2x = \sin x$?", [r"$\frac{\pi}{6}$", r"$\frac{\pi}{3}$", r"$\frac{\pi}{4}$", r"$\pi$"], "A",
+        r"$1 - 2\sin^2 x = \sin x$: $(2\sin x - 1)(\sin x + 1) = 0$, so $\sin x = \frac12$ or $-1$; $\frac{\pi}{6}$ works."),
+    MCQ(r"The depth of water is $d(t) = 8 + 3\cos\left(\frac{\pi t}{6}\right)$ meters, $t$ hours after midnight. At what times $0 \le t < 12$ is the depth $9.5$ m?",
+        [r"$t = 1, 11$", r"$t = 4, 8$", r"$t = 2, 10$", r"$t = 2, 4$"], "C", r"$\cos\frac{\pi t}{6} = \frac12$: $\frac{\pi t}{6} = \frac{\pi}{3}, \frac{5\pi}{3}$, so $t = 2, 10$.",
+        {"B": r"that solves $\cos\frac{\pi t}{6} = -\frac12$"}),
 ]
-same("m", [sp.atan(-1) + sp.acos(-1), sp.cos(sp.asin(-sp.Rational(1, 3)))], [3 * pi / 4, 2 * r2 / 3])
-close("m3", float(sp.atan(sp.Rational(1, 12)) * 180 / pi), 4.76, 0.005)
+sols(2 * sp.cos(x) + sp.sqrt(2), {3 * pi / 4, 5 * pi / 4})
+sols(sp.cos(2 * x) - sp.sin(x), {pi / 6, 5 * pi / 6, 3 * pi / 2})
+same("m4", [8 + 3 * sp.cos(pi * 2 / 6), 8 + 3 * sp.cos(pi * 10 / 6)], [sp.Rational(19, 2), sp.Rational(19, 2)])
 
 FRQS = []
 
 TOPIC = Topic(
-    number="0.7", title="Inverse Trigonometric Functions",
-    unit="Trig Review (a free module)", ced=["Prerequisite: inverse trigonometric functions"],
-    goals=r"Evaluate $\arcsin$, $\arccos$ and $\arctan$ from their ranges, simplify compositions with a triangle, and solve trig equations with a calculator.",
+    number="0.7", title="Solving Trigonometric Equations",
+    unit="Trig Review (a free module)", ced=["Prerequisite: solving trigonometric equations"],
+    goals=r"Find every solution of a trig equation in an interval, by isolating, factoring, using identities, and handling multiple angles.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

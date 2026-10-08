@@ -1,116 +1,120 @@
-"""Topic 0.3: The six trigonometric functions (trig review; not a CED topic).
+"""Trig Review lesson 0.3 (T3): The unit circle (trig review; not a CED topic).
 
-Right-triangle ratios (SOH CAH TOA) from scaling the unit-circle triangle; sin = y/r, cos = x/r, tan = y/x for a point on
-the terminal side; csc, sec, cot as reciprocals; where each is undefined. Lesson example: legs 8 and 15. Worked examples:
-sec(5pi/4) and csc(5pi/6), a tree's height, a ladder, sin and sec from tan = 2 in quadrant III.
+cos and sin as the coordinates of the point at angle theta on the unit circle; cos^2 + sin^2 = 1; the quadrantal angles;
+the 45-45-90 and 30-60-90 triangles give the first-quadrant values; reference angles; signs by quadrant; tan = sin/cos as
+the slope of the terminal side. Lesson example: cos and sin of 5pi/6. Worked examples: 4pi/3, -pi/4, 3pi and 3pi/2,
+cos from sin = 3/5 in quadrant II.
 """
 import sympy as sp
 
-from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, close, num, same, selfcheck)
-from calclib.figs import triangle
+from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Table, Text, Topic, Variants, Video, num, same, selfcheck)
+from calclib.figs import unit_circle
 
-pi, r2, r3, r5 = sp.pi, sp.sqrt(2), sp.sqrt(3), sp.sqrt(5)
-deg = lambda d: d * pi / 180
-same("lesson", [sp.sqrt(8**2 + 15**2)], [17])
-same("ex1", [1 / sp.cos(5 * pi / 4), 1 / sp.sin(5 * pi / 6)], [-r2, 2])
-close("ex2", float(20 * sp.tan(deg(35))), 14.0, 0.05)
-close("ex3", float(6 * sp.sin(deg(70))), 5.64, 0.005)
-same("ex4", [-2 / r5, r5 / -1], [-2 * r5 / 5, -r5])
+pi, r2, r3 = sp.pi, sp.sqrt(2), sp.sqrt(3)
+same("lesson", [sp.cos(5 * pi / 6), sp.sin(5 * pi / 6)], [-r3 / 2, sp.Rational(1, 2)])
+same("ex", [sp.cos(4 * pi / 3), sp.sin(4 * pi / 3), sp.sin(-pi / 4), sp.cos(-pi / 4), sp.cos(3 * pi), sp.sin(3 * pi / 2)],
+     [-sp.Rational(1, 2), -r3 / 2, -r2 / 2, r2 / 2, -1, -1])
+same("ex4", [-sp.sqrt(1 - sp.Rational(9, 25)), sp.Rational(3, 5) / (-sp.Rational(4, 5))], [-sp.Rational(4, 5), -sp.Rational(3, 4)])
 
-FIG_SOH = triangle("t0_3_soh", 4, 3, opp="opposite", adj="adjacent", hyp="hypotenuse", caption="Sides named from the angle $\\theta$.")
+FIG_DEF = unit_circle("t0_3_def", [(0.9, r"$(\cos\theta, \sin\theta)$")], triangle=0.9, caption="The point at angle $\\theta$ is $(\\cos\\theta, \\sin\\theta)$.")
+FIG_REF = unit_circle("t0_3_ref", [(5 * float(pi) / 6, r"$\left(-\frac{\sqrt3}{2}, \frac12\right)$"), (float(pi) / 6, r"$\left(\frac{\sqrt3}{2}, \frac12\right)$")],
+                      triangle=5 * float(pi) / 6, caption="$\\frac{5\\pi}{6}$ has reference angle $\\frac{\\pi}{6}$: same numbers, the quadrant sets the signs.")
 
 NOTES = [
-    Video("s0_3.py::Lesson", "The six trigonometric functions", 7),
+    Video("s0_3.py::Lesson", "The unit circle", 8),
 
-    Section("Right-triangle ratios"),
-    Text(r"Scaling the unit-circle triangle by $r$ keeps the angle and makes the legs $r\cos\theta$ and $r\sin\theta$. So in any right triangle:"),
-    Formula("SOH CAH TOA", r"\[ \sin\theta = \frac{\text{opposite}}{\text{hypotenuse}}, \qquad \cos\theta = \frac{\text{adjacent}}{\text{hypotenuse}}, \qquad \tan\theta = \frac{\text{opposite}}{\text{adjacent}}. \]"),
-    FIG_SOH,
-    VideoExample("Ratios from sides", work="3cm"),
+    Section("Sine and cosine"),
+    Formula("Definition", (r"The \textbf{unit circle} is $x^2 + y^2 = 1$. The point at angle $\theta$ on it is \[ (\cos\theta,\ \sin\theta). \] "
+                           r"Cosine is the $\blank{x}$-coordinate (how far across); sine is the $\blank{y}$-coordinate (how far up).")),
+    FIG_DEF,
+    Formula("The Pythagorean identity", r"\[ \cos^2\theta + \sin^2\theta = 1 \] for every angle $\theta$, because every point of the unit circle is $1$ from the center."),
 
-    Section("Any angle"),
-    Formula("A point on the terminal side", (r"If $(x, y)$ is on the terminal side of $\theta$ at distance $r = \sqrt{x^2 + y^2}$ from the origin, then "
-                                            r"\[ \sin\theta = \blank{\frac{y}{r}}, \qquad \cos\theta = \blank{\frac{x}{r}}, \qquad \tan\theta = \blank{\frac{y}{x}}. \]")),
+    Section("The values to know"),
+    Text(r"The quadrantal angles land on the axes. The $45$-$45$-$90$ triangle with hypotenuse $1$ has legs $\frac{\sqrt2}{2}$; the $30$-$60$-$90$ triangle "
+         r"(half of an equilateral triangle of side $1$) has legs $\frac12$ and $\frac{\sqrt3}{2}$."),
+    Table(r"$0$ & $1$ & $0$ & $0$ \\[5pt] $\frac{\pi}{6}$ & $\frac{\sqrt3}{2}$ & $\frac12$ & $\frac{\sqrt3}{3}$ \\[5pt] $\frac{\pi}{4}$ & $\frac{\sqrt2}{2}$ & $\frac{\sqrt2}{2}$ & $1$ \\[5pt] "
+          r"$\frac{\pi}{3}$ & $\frac12$ & $\frac{\sqrt3}{2}$ & $\sqrt3$ \\[5pt] $\frac{\pi}{2}$ & $0$ & $1$ & undefined \\[5pt] $\pi$ & $-1$ & $0$ & $0$ \\[5pt] $\frac{3\pi}{2}$ & $0$ & $-1$ & undefined",
+          "c|c|c|c", header=r"$\theta$ & $\cos\theta$ & $\sin\theta$ & $\tan\theta$"),
+    Text(r"Memory check: as the angle grows from $\frac{\pi}{6}$ to $\frac{\pi}{3}$ the point rises, so sine goes up ($\frac12$, $\frac{\sqrt2}{2}$, $\frac{\sqrt3}{2}$) and cosine goes down."),
 
-    Section("The reciprocal functions"),
-    Formula("Cosecant, secant, cotangent", r"\[ \csc\theta = \frac{1}{\sin\theta}, \qquad \sec\theta = \frac{1}{\cos\theta}, \qquad \cot\theta = \frac{1}{\tan\theta} = \frac{\cos\theta}{\sin\theta}. \]"
-            r"Memory tip: each pair has exactly one ``co'': sine with \textbf{co}secant, \textbf{co}sine with secant."),
-    Text(r"\textbf{Undefined.} $\tan\theta$ and $\sec\theta$ divide by $\cos\theta$: undefined at $\frac{\pi}{2} + k\pi$. $\cot\theta$ and $\csc\theta$ divide by $\sin\theta$: undefined at $k\pi$."),
-    BigIdea(r"Sine, cosine and tangent are ratios of sides; cosecant, secant and cotangent are their reciprocals. For angles past $\frac{\pi}{2}$, use a point $(x, y)$ and its distance $r$."),
-    Check(r"Find $\sec\frac{\pi}{3}$.", selfcheck("2"), r"$\cos\frac{\pi}{3} = \frac12$, so $\sec\frac{\pi}{3} = 2$."),
+    Section("Reference angles and signs"),
+    Text(r"The \textbf{reference angle} is the acute angle between the terminal side and the $x$-axis. It gives the numbers; the quadrant gives the signs: "
+         r"cosine is positive on the right half (quadrants I and IV), sine is positive on the top half (quadrants I and II)."),
+    FIG_REF,
+    VideoExample("Sine and cosine of 5π/6", work="3cm"),
+
+    Section("Tangent"),
+    Formula("Tangent", r"\[ \tan\theta = \frac{\sin\theta}{\cos\theta}, \] the slope of the terminal side. It is undefined where $\cos\theta = 0$ ($\theta = \frac{\pi}{2}, \frac{3\pi}{2}, \dots$)."),
+    BigIdea(r"On the unit circle, $\cos\theta$ is how far across and $\sin\theta$ is how far up. Know the first quadrant; everything else is a reflection with signs."),
+    Check(r"Find $\cos\frac{7\pi}{4}$.", selfcheck(r"\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant IV, where cosine is positive."),
 ]
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
-    Item(r"A right triangle has legs $3$ and $4$. $\theta$ is opposite the side of length $3$. Find $\cos\theta$.", num(sp.Rational(4, 5), display=r"\frac45"), r"Hypotenuse $5$; $\cos\theta = \frac45$.", work="1.2cm"),
-    Item(r"A right triangle has hypotenuse $13$ and one leg $5$. $\theta$ is opposite the leg of length $5$. Find $\tan\theta$.", num(sp.Rational(5, 12), display=r"\frac{5}{12}"),
-         r"Other leg $\sqrt{169 - 25} = 12$; $\tan\theta = \frac{5}{12}$.", work="1.4cm"),
-    Item(r"Find $\csc\frac{\pi}{6}$.", num(2), r"$\frac{1}{\sin(\pi/6)} = \frac{1}{1/2} = 2$.", work="0.8cm"),
-    Item(r"Find $\sec\frac{3\pi}{4}$.", num(-r2, display=r"-\sqrt2"), r"$\frac{1}{-\sqrt2/2} = -\sqrt2$.", work="1cm"),
-    Item(r"Find $\cot\frac{\pi}{3}$.", num(r3 / 3, display=r"\frac{\sqrt3}{3}"), r"$\frac{\cos}{\sin} = \frac{1/2}{\sqrt3/2} = \frac{1}{\sqrt3} = \frac{\sqrt3}{3}$.", work="1cm"),
-    Item(r"Find $\csc\frac{3\pi}{2}$.", num(-1), r"$\sin\frac{3\pi}{2} = -1$.", work="0.8cm"),
-    Item(r"The point $(5, -12)$ is on the terminal side of $\theta$. Find $\sin\theta$.", num(-sp.Rational(12, 13), display=r"-\frac{12}{13}"), r"$r = 13$, $\sin\theta = \frac{y}{r} = -\frac{12}{13}$.", work="1.2cm"),
-    Item(r"The point $(-2, -2)$ is on the terminal side of $\theta$. Find $\sec\theta$.", num(-r2, display=r"-\sqrt2"), r"$r = 2\sqrt2$, $\sec\theta = \frac{r}{x} = \frac{2\sqrt2}{-2} = -\sqrt2$.", work="1.2cm"),
-    MCQ(r"For which value of $\theta$ is $\cot\theta$ undefined?", [r"$\frac{\pi}{2}$", r"$\pi$", r"$\frac{\pi}{4}$", r"$\frac{3\pi}{2}$"], "B", r"$\cot\theta = \frac{\cos\theta}{\sin\theta}$ and $\sin\pi = 0$.",
-        {"A": r"$\cot\frac{\pi}{2} = 0$", "D": r"$\cot\frac{3\pi}{2} = 0$"}),
-    Item(r"A kite string $50$ m long makes a $40^\circ$ angle with the ground. How high is the kite, to the nearest tenth of a meter?", num(50 * sp.sin(deg(40)), tol=0.05),
-         r"$h = 50\sin 40^\circ \approx 32.1$ m.", work="1.4cm", calc=True),
-    Item(r"A ramp rises $1.2$ m over a horizontal distance of $8$ m. Find the angle it makes with the ground, in degrees, to the nearest tenth.", num(sp.atan(sp.Rational(12, 80)) * 180 / pi, tol=0.05),
-         r"$\tan\theta = \frac{1.2}{8} = 0.15$, $\theta = \tan^{-1}(0.15) \approx 8.5^\circ$.", work="1.4cm", calc=True),
-    Item(r"$\cos\theta = \frac{2}{5}$ and $\theta$ is in quadrant IV. Find $\tan\theta$.", num(-sp.sqrt(21) / 2, display=r"-\frac{\sqrt{21}}{2}"),
-         r"Point $(2, y)$ with $r = 5$: $y = -\sqrt{21}$; $\tan\theta = -\frac{\sqrt{21}}{2}$.", work="1.6cm"),
+    Item(r"Find $\sin\frac{\pi}{3}$.", num(r3 / 2, display=r"\frac{\sqrt3}{2}"), r"The point at $\frac{\pi}{3}$ is $\left(\frac12, \frac{\sqrt3}{2}\right)$.", work="0.8cm"),
+    Item(r"Find $\cos\frac{3\pi}{4}$.", num(-r2 / 2, display=r"-\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant II: cosine negative.", work="1cm"),
+    Item(r"Find $\sin\frac{7\pi}{6}$.", num(-sp.Rational(1, 2), display=r"-\frac12"), r"Reference angle $\frac{\pi}{6}$, quadrant III: sine negative.", work="1cm"),
+    Item(r"Find $\cos\frac{5\pi}{3}$.", num(sp.Rational(1, 2), display=r"\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant IV: cosine positive.", work="1cm"),
+    Item(r"Find $\tan\frac{2\pi}{3}$.", num(-r3, display=r"-\sqrt3"), r"$\frac{\sqrt3/2}{-1/2} = -\sqrt3$.", work="1cm"),
+    Item(r"Find $\sin\left(-\frac{\pi}{2}\right)$.", num(-1), r"$-\frac{\pi}{2}$ lands at $(0, -1)$.", work="0.8cm"),
+    Item(r"Find $\cos\frac{11\pi}{6}$.", num(r3 / 2, display=r"\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{6}$, quadrant IV.", work="1cm"),
+    Item(r"Find $\tan\frac{5\pi}{4}$.", num(1), r"Both coordinates are $-\frac{\sqrt2}{2}$, so the slope is $1$.", work="1cm"),
+    MCQ(r"In which quadrant are $\sin\theta < 0$ and $\cos\theta > 0$?", ["I", "II", "III", "IV"], "D", r"Below the $x$-axis and to the right of the $y$-axis.",
+        {"B": "that is sine positive, cosine negative"}),
+    Item(r"$\cos\theta = -\frac{5}{13}$ and $\theta$ is in quadrant III. Find $\sin\theta$.", num(-sp.Rational(12, 13), display=r"-\frac{12}{13}"),
+         r"$\sin^2\theta = 1 - \frac{25}{169} = \frac{144}{169}$; quadrant III, so $\sin\theta = -\frac{12}{13}$.", work="1.6cm"),
+    Item(r"$\sin\theta = \frac{1}{3}$ and $\frac{\pi}{2} < \theta < \pi$. Find $\cos\theta$.", num(-2 * r2 / 3, display=r"-\frac{2\sqrt2}{3}"),
+         r"$\cos^2\theta = \frac89$, and cosine is negative in quadrant II: $-\frac{2\sqrt2}{3}$.", work="1.6cm"),
+    Item(r"Find $\sin\frac{13\pi}{6}$.", num(sp.Rational(1, 2), display=r"\frac12"), r"$\frac{13\pi}{6} - 2\pi = \frac{\pi}{6}$.", work="1cm"),
 ]
-same("p", [1 / sp.cos(3 * pi / 4), sp.cot(pi / 3), 1 / sp.sin(3 * pi / 2)], [-r2, r3 / 3, -1])
-close("p10", float(50 * sp.sin(deg(40))), 32.14, 0.01)
-close("p11", float(sp.atan(0.15) * 180 / sp.pi), 8.53, 0.01)
+same("p", [sp.cos(3 * pi / 4), sp.sin(7 * pi / 6), sp.cos(5 * pi / 3), sp.tan(2 * pi / 3), sp.cos(11 * pi / 6), sp.tan(5 * pi / 4), sp.sin(13 * pi / 6)],
+     [-r2 / 2, -sp.Rational(1, 2), sp.Rational(1, 2), -r3, r3 / 2, 1, sp.Rational(1, 2)])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"A right triangle has legs $7$ and $24$. $\theta$ is opposite the side of length $7$. Find $\sin\theta$.", num(sp.Rational(7, 25), display=r"\frac{7}{25}"), r"Hypotenuse $25$.", work="1.2cm"),
-        Item(r"A right triangle has legs $9$ and $40$. $\theta$ is opposite the side of length $40$. Find $\cos\theta$.", num(sp.Rational(9, 41), display=r"\frac{9}{41}"), r"Hypotenuse $41$; adjacent $9$.", work="1.2cm"),
-        Item(r"A right triangle has legs $20$ and $21$. $\theta$ is opposite the side of length $20$. Find $\tan\theta$.", num(sp.Rational(20, 21), display=r"\frac{20}{21}"), r"Opposite over adjacent.", work="1.2cm"),
+        Item(r"Find $\cos\frac{2\pi}{3}$.", num(-sp.Rational(1, 2), display=r"-\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant II.", work="1cm"),
+        Item(r"Find $\sin\frac{5\pi}{4}$.", num(-r2 / 2, display=r"-\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant III.", work="1cm"),
+        Item(r"Find $\cos\frac{7\pi}{6}$.", num(-r3 / 2, display=r"-\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{6}$, quadrant III.", work="1cm"),
     ),
     Variants(
-        Item(r"Find $\sec\frac{\pi}{6}$.", num(2 * r3 / 3, display=r"\frac{2\sqrt3}{3}"), r"$\frac{1}{\sqrt3/2} = \frac{2}{\sqrt3} = \frac{2\sqrt3}{3}$.", work="1cm"),
-        Item(r"Find $\csc\frac{\pi}{4}$.", num(r2, display=r"\sqrt2"), r"$\frac{1}{\sqrt2/2} = \sqrt2$.", work="1cm"),
-        Item(r"Find $\sec\frac{2\pi}{3}$.", num(-2), r"$\frac{1}{-1/2} = -2$.", work="1cm"),
+        Item(r"Find $\sin\frac{5\pi}{3}$.", num(-r3 / 2, display=r"-\frac{\sqrt3}{2}"), r"Reference angle $\frac{\pi}{3}$, quadrant IV.", work="1cm"),
+        Item(r"Find $\sin\frac{3\pi}{4}$.", num(r2 / 2, display=r"\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant II.", work="1cm"),
+        Item(r"Find $\cos\left(-\frac{\pi}{3}\right)$.", num(sp.Rational(1, 2), display=r"\frac12"), r"Reference angle $\frac{\pi}{3}$, quadrant IV.", work="1cm"),
     ),
     Variants(
-        Item(r"Find $\cot\frac{5\pi}{6}$.", num(-r3, display=r"-\sqrt3"), r"$\frac{-\sqrt3/2}{1/2} = -\sqrt3$.", work="1cm"),
-        Item(r"Find $\cot\frac{3\pi}{4}$.", num(-1), r"$\frac{-\sqrt2/2}{\sqrt2/2} = -1$.", work="1cm"),
-        Item(r"Find $\csc\frac{4\pi}{3}$.", num(-2 * r3 / 3, display=r"-\frac{2\sqrt3}{3}"), r"$\frac{1}{-\sqrt3/2} = -\frac{2\sqrt3}{3}$.", work="1cm"),
+        Item(r"Find $\tan\frac{\pi}{6}$.", num(r3 / 3, display=r"\frac{\sqrt3}{3}"), r"$\frac{1/2}{\sqrt3/2} = \frac{1}{\sqrt3} = \frac{\sqrt3}{3}$.", work="1cm"),
+        Item(r"Find $\tan\frac{4\pi}{3}$.", num(r3, display=r"\sqrt3"), r"$\frac{-\sqrt3/2}{-1/2} = \sqrt3$.", work="1cm"),
+        Item(r"Find $\tan\frac{7\pi}{4}$.", num(-1), r"$\frac{-\sqrt2/2}{\sqrt2/2} = -1$.", work="1cm"),
     ),
     Variants(
-        Item(r"The point $(-8, 6)$ is on the terminal side of $\theta$. Find $\cos\theta$.", num(-sp.Rational(4, 5), display=r"-\frac45"), r"$r = 10$, $\frac{x}{r} = -\frac{8}{10}$.", work="1cm"),
-        Item(r"The point $(-5, -12)$ is on the terminal side of $\theta$. Find $\csc\theta$.", num(-sp.Rational(13, 12), display=r"-\frac{13}{12}"), r"$r = 13$, $\frac{r}{y} = -\frac{13}{12}$.", work="1cm"),
+        MCQ(r"Which is the value of $\cos\pi$?", [r"$0$", r"$1$", r"$-1$", "undefined"], "C", r"The point at $\pi$ is $(-1, 0)$.", {"A": r"that is $\sin\pi$"}),
+        MCQ(r"Which is the value of $\sin\frac{\pi}{2}$?", [r"$1$", r"$0$", r"$-1$", "undefined"], "A", r"The point at $\frac{\pi}{2}$ is $(0, 1)$.", {"B": r"that is $\cos\frac{\pi}{2}$"}),
     ),
     Variants(
-        Item(r"A $10$ m ladder makes a $65^\circ$ angle with the ground. How high up the wall does it reach, to the nearest hundredth?", num(10 * sp.sin(deg(65)), tol=0.01), r"$10\sin 65^\circ \approx 9.06$ m.", work="1.2cm", calc=True),
-        Item(r"From $40$ m away, the angle up to the top of a building is $52^\circ$. How tall is it, to the nearest tenth?", num(40 * sp.tan(deg(52)), tol=0.05), r"$40\tan 52^\circ \approx 51.2$ m.", work="1.2cm", calc=True),
+        Item(r"$\sin\theta = -\frac45$ and $\theta$ is in quadrant IV. Find $\cos\theta$.", num(sp.Rational(3, 5), display=r"\frac35"), r"$\cos^2\theta = \frac{9}{25}$; positive in quadrant IV.", work="1.4cm"),
+        Item(r"$\cos\theta = \frac{8}{17}$ and $\theta$ is in quadrant IV. Find $\sin\theta$.", num(-sp.Rational(15, 17), display=r"-\frac{15}{17}"), r"$\sin^2\theta = \frac{225}{289}$; negative in quadrant IV.", work="1.4cm"),
     ),
 ]
-same("q", [1 / sp.cos(pi / 6), 1 / sp.sin(pi / 4), sp.cot(5 * pi / 6), sp.cot(3 * pi / 4), 1 / sp.sin(4 * pi / 3)], [2 * r3 / 3, r2, -r3, -1, -2 * r3 / 3])
+same("q", [sp.cos(2 * pi / 3), sp.sin(5 * pi / 4), sp.cos(7 * pi / 6), sp.sin(5 * pi / 3), sp.sin(3 * pi / 4), sp.tan(pi / 6), sp.tan(4 * pi / 3), sp.tan(7 * pi / 4)],
+     [-sp.Rational(1, 2), -r2 / 2, -r3 / 2, -r3 / 2, r2 / 2, r3 / 3, r3, -1])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"In a right triangle, $\sin\theta = \frac{5}{13}$. Then $\tan\theta = $", [r"$\frac{12}{13}$", r"$\frac{5}{12}$", r"$\frac{13}{12}$", r"$\frac{12}{5}$"], "B",
-        r"Legs $5$ and $12$, hypotenuse $13$: $\tan\theta = \frac{5}{12}$.", {"A": r"that is $\cos\theta$", "D": r"that is $\cot\theta$"}),
-    MCQ(r"$\sec\theta = -2$ and $\sin\theta > 0$. Then $\theta$ could be", [r"$\frac{\pi}{3}$", r"$\frac{4\pi}{3}$", r"$\frac{5\pi}{3}$", r"$\frac{2\pi}{3}$"], "D",
-        r"$\cos\theta = -\frac12$ with $\sin\theta > 0$: quadrant II, $\frac{2\pi}{3}$.", {"B": r"$\sin\frac{4\pi}{3} < 0$", "A": r"$\sec\frac{\pi}{3} = 2$"}),
-    MCQ(r"A plane takes off at a $12^\circ$ angle and flies in a straight line. After it has flown $3000$ m, what is its altitude, to the nearest meter?",
-        [r"$624$ m", r"$638$ m", r"$2934$ m", r"$14{,}114$ m"], "A", r"$3000\sin 12^\circ \approx 623.7$.", {"B": r"that uses $\tan 12^\circ$", "C": r"that is the horizontal distance"}, calc=True),
-    MCQ(r"Which expression equals $\cot\theta\,\sec\theta$ wherever both are defined?", [r"$\sin\theta$", r"$\cos\theta$", r"$\tan\theta$", r"$\csc\theta$"], "D",
-        r"$\frac{\cos\theta}{\sin\theta} \cdot \frac{1}{\cos\theta} = \frac{1}{\sin\theta}$."),
+    MCQ(r"$\sin\frac{11\pi}{6} = $", [r"$-\frac12$", r"$\frac12$", r"$-\frac{\sqrt3}{2}$", r"$\frac{\sqrt3}{2}$"], "A", r"Reference angle $\frac{\pi}{6}$, quadrant IV: sine negative.",
+        {"B": "sine is negative in quadrant IV", "C": r"that is $\sin\frac{5\pi}{3}$"}),
+    MCQ(r"If $\tan\theta > 0$ and $\sin\theta < 0$, then $\theta$ is in quadrant", ["I", "II", "III", "IV"], "C", r"Sine negative means III or IV; tangent positive needs cosine negative too: III."),
+    MCQ(r"$\cos\theta = -\frac{2}{3}$ and $\pi < \theta < \frac{3\pi}{2}$. Then $\sin\theta = $",
+        [r"$\frac{\sqrt5}{3}$", r"$-\frac13$", r"$\frac13$", r"$-\frac{\sqrt5}{3}$"], "D", r"$\sin^2\theta = 1 - \frac49 = \frac59$; quadrant III, so negative.", {"A": "sine is negative in quadrant III", "B": r"$1 - \frac23$ is not $\sin\theta$"}),
+    MCQ(r"Which of the following is undefined?", [r"$\sin\frac{3\pi}{2}$", r"$\tan\frac{3\pi}{2}$", r"$\cos\frac{\pi}{2}$", r"$\tan\pi$"], "B", r"$\cos\frac{3\pi}{2} = 0$, so $\tan\frac{3\pi}{2} = \frac{-1}{0}$.",
+        {"C": r"$\cos\frac{\pi}{2} = 0$ is defined", "D": r"$\tan\pi = \frac{0}{-1} = 0$"}),
 ]
-close("m3", float(3000 * sp.sin(deg(12))), 623.7, 0.05)
-close("m3b", float(3000 * sp.tan(deg(12))), 637.7, 0.1)
-same("m4", [sp.simplify(sp.cot(sp.Symbol("t")) / sp.cos(sp.Symbol("t")) - 1 / sp.sin(sp.Symbol("t")))], [0])
+same("m", [sp.sin(11 * pi / 6), -sp.sqrt(1 - sp.Rational(4, 9))], [-sp.Rational(1, 2), -sp.sqrt(5) / 3])
 
 FRQS = []
 
 TOPIC = Topic(
-    number="0.3", title="The Six Trigonometric Functions",
-    unit="Trig Review (a free module)", ced=["Prerequisite: right-triangle and reciprocal trigonometric functions"],
-    goals=r"Use SOH CAH TOA and the reciprocal functions $\csc$, $\sec$, $\cot$ to evaluate trig functions and solve right triangles.",
+    number="0.3", title="The Unit Circle",
+    unit="Trig Review (a free module)", ced=["Prerequisite: unit circle trigonometry"],
+    goals=r"Read $\sin\theta$, $\cos\theta$ and $\tan\theta$ off the unit circle at every landmark angle, using reference angles and the signs by quadrant.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

@@ -1,126 +1,119 @@
-"""Topic 0.5: Trigonometric identities (trig review; not a CED topic).
+"""Trig Review lesson 0.5 (T5): Graphs of sine, cosine, and tangent (trig review; not a CED topic).
 
-The three Pythagorean identities; even/odd and cofunction identities; sum and difference formulas; double-angle formulas
-(three forms of cos 2a); power-reducing formulas (needed later to integrate sin^2 and cos^2). Lesson example: simplify
-(1 - cos^2 x)/(sin x cos x). Worked examples: cos(pi/12), verifying sec x - cos x = sin x tan x, sin 2x and cos 2x from
-sin x = 3/5, simplifying sin 2x/(1 + cos 2x).
+sin and cos as waves of period 2pi and range [-1, 1]; cos is sin shifted left pi/2; y = A sin(B(x - C)) + D: amplitude |A|,
+period 2pi/|B|, shift C, midline y = D; tan: period pi, asymptotes where cos x = 0; sec, csc, cot from their partners.
+Lesson example: y = 3cos(2x) + 1. Worked examples: y = -2 sin(pi x/3) + 5, an equation from a graph, a Ferris wheel,
+asymptotes of tan(2x).
 """
 import sympy as sp
 
-from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, expr, num, same, selfcheck)
+from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num, same, selfcheck)
+from calclib.figs import graph
 
-pi, x = sp.pi, sp.Symbol("x")
-r2, r3 = sp.sqrt(2), sp.sqrt(3)
+pi, x, t = sp.pi, sp.Symbol("x"), sp.Symbol("t")
+same("ex1", [2 * pi / (pi / 3)], [6])
+same("ex2", [(3 * sp.cos(pi * x / 2) + 2).subs(x, v) for v in (0, 2, 4)], [5, -1, 5])
+h = 25 - 20 * sp.cos(pi * t / 2)
+same("ex3", [h.subs(t, 0), h.subs(t, 1), h.subs(t, 2)], [5, 25, 45])
 
-
-def ident(name, a, b):
-    """a == b for every x (checked symbolically, then at sample points)."""
-    if sp.simplify(a - b) != 0:
-        for v in (0.3, 1.1, 2.5, -0.7):
-            if abs(complex(sp.N((a - b).subs(x, v)))) > 1e-9:
-                raise SystemExit(f"identity check failed: {name}")
-
-
-ident("lesson", (1 - sp.cos(x)**2) / (sp.sin(x) * sp.cos(x)), sp.tan(x))
-same("ex1", [sp.cos(pi / 12)], [(sp.sqrt(6) + r2) / 4])
-ident("ex2", 1 / sp.cos(x) - sp.cos(x), sp.sin(x) * sp.tan(x))
-same("ex3", [2 * sp.Rational(3, 5) * (-sp.Rational(4, 5)), 1 - 2 * sp.Rational(9, 25)], [-sp.Rational(24, 25), sp.Rational(7, 25)])
-ident("ex4", sp.sin(2 * x) / (1 + sp.cos(2 * x)), sp.tan(x))
-ident("power", sp.sin(x)**2, (1 - sp.cos(2 * x)) / 2)
+FIG_SINCOS = graph("t0_5_sincos", [("sin(deg(x))", -6.5, 6.5), ("cos(deg(x))", -6.5, 6.5, "dashed")], xr=(-6.6, 6.6), yr=(-1.5, 1.5), xpi=0.5, w="12cm", h="4cm",
+                   caption=r"$y = \sin x$ (solid) and $y = \cos x$ (dashed): period $2\pi$, range $-1 \le y \le 1$.")
+FIG_TAN = graph("t0_5_tan", [("tan(deg(x))", -4.6, -1.72), ("tan(deg(x))", -1.42, 1.42), ("tan(deg(x))", 1.72, 4.6)], xr=(-4.7, 4.7), yr=(-4.5, 4.5), xpi=0.5,
+                vlines=(-4.712, -1.5708, 1.5708, 4.712), w="9cm", h="5cm", caption=r"$y = \tan x$: period $\pi$, asymptotes at $x = \frac{\pi}{2} + k\pi$.")
 
 NOTES = [
-    Video("s0_5.py::Lesson", "Trigonometric identities", 8),
+    Video("s0_5.py::Lesson", "Graphs of sine, cosine, and tangent", 9),
 
-    Text(r"An \textbf{identity} is an equation that is true for every input where both sides are defined. Calculus uses identities to rewrite expressions into easier forms."),
+    Section("Sine and cosine"),
+    Text(r"Plot the height of the point on the unit circle against the angle and you get $y = \sin x$; plot how far across and you get $y = \cos x$. "
+         r"Both repeat every $2\pi$ (their \textbf{period}) and stay between $-1$ and $1$. Cosine is sine slid $\frac{\pi}{2}$ to the left."),
+    FIG_SINCOS,
+    Text(r"$\sin x = 0$ at $x = k\pi$; $\cos x = 0$ at $x = \frac{\pi}{2} + k\pi$ ($k$ any integer)."),
 
-    Section("Pythagorean identities"),
-    Formula("Pythagorean identities", r"\[ \sin^2\theta + \cos^2\theta = 1, \qquad \tan^2\theta + 1 = \sec^2\theta, \qquad 1 + \cot^2\theta = \csc^2\theta. \] "
-            r"The second and third come from dividing the first by $\cos^2\theta$ and by $\sin^2\theta$."),
-    VideoExample("Simplifying an expression", work="2.6cm"),
+    Section("Transformations"),
+    Formula("Sinusoids", (r"\[ y = A\sin\big(B(x - C)\big) + D \qquad \text{or} \qquad y = A\cos\big(B(x - C)\big) + D \] "
+                          r"amplitude $= \blank{|A|}$, \quad period $= \blank{\frac{2\pi}{|B|}}$, \quad shift $C$ to the right, \quad midline $y = \blank{D}$. "
+                          r"The maximum is $D + |A|$ and the minimum is $D - |A|$. A negative $A$ flips the wave.")),
+    VideoExample("Describing a cosine graph", work="3cm"),
 
-    Section("Even, odd, and cofunction identities"),
-    Formula("Symmetry", r"\[ \cos(-\theta) = \cos\theta, \qquad \sin(-\theta) = -\sin\theta, \qquad \tan(-\theta) = -\tan\theta \] "
-            r"\[ \sin\left(\tfrac{\pi}{2} - \theta\right) = \cos\theta, \qquad \cos\left(\tfrac{\pi}{2} - \theta\right) = \sin\theta \]"),
-    Text(r"Cosine is \textbf{even} (its graph is symmetric about the $y$-axis); sine and tangent are \textbf{odd}. ``Cosine'' is the sine of the complementary angle."),
-
-    Section("Sum, difference, and double angles"),
-    Formula("Sum and difference", r"\[ \sin(a \pm b) = \sin a\cos b \pm \cos a\sin b, \qquad \cos(a \pm b) = \cos a\cos b \mp \sin a\sin b. \] "
-            r"Warning: $\sin(a + b) \ne \sin a + \sin b$."),
-    Formula("Double angles", (r"Set $b = a$: \[ \sin 2a = \blank{2\sin a\cos a}, \qquad \cos 2a = \cos^2 a - \sin^2 a = \blank{2\cos^2 a - 1} = \blank{1 - 2\sin^2 a}. \]")),
-    Formula("Power-reducing", (r"Solve the last two forms of $\cos 2x$ for the square: \[ \cos^2 x = \blank{\frac{1 + \cos 2x}{2}}, \qquad \sin^2 x = \blank{\frac{1 - \cos 2x}{2}}. \]")),
-    BigIdea(r"Most simplifications start from $\sin^2\theta + \cos^2\theta = 1$ or from rewriting everything in sines and cosines."),
-    Check(r"Simplify $\cos^2 x - \cos^4 x$ as a product of powers of $\sin x$ and $\cos x$.", selfcheck(r"\sin^2 x\cos^2 x"), r"$\cos^2 x(1 - \cos^2 x) = \cos^2 x\sin^2 x$."),
+    Section("Tangent and the reciprocal functions"),
+    Text(r"$\tan x = \frac{\sin x}{\cos x}$ is zero where $\sin x = 0$ and has a vertical asymptote where $\cos x = 0$. Each branch rises; the period is $\pi$."),
+    FIG_TAN,
+    Text(r"$\sec x$ and $\csc x$ are U-shaped branches touching $\cos x$ and $\sin x$ at their peaks and troughs, with asymptotes where the partner is $0$. "
+         r"$\cot x$ has falling branches and asymptotes at $x = k\pi$."),
+    BigIdea(r"Read a sinusoid's shape off its formula: amplitude from $A$, period from $B$, shift from $C$, midline from $D$."),
+    Check(r"Find the period of $y = \cos(4x)$.", selfcheck(r"\frac{\pi}{2}"), r"$\frac{2\pi}{4} = \frac{\pi}{2}$."),
 ]
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
-    Item(r"Simplify $\sin x\cot x$.", expr(sp.cos(x)), r"$\sin x \cdot \frac{\cos x}{\sin x} = \cos x$.", work="1cm"),
-    Item(r"Simplify $\sec^2 x - \tan^2 x$.", num(1), r"$\tan^2 x + 1 = \sec^2 x$.", work="1cm"),
-    Item(r"Simplify $\dfrac{1 - \sin^2 x}{\cos x}$.", expr(sp.cos(x)), r"$\frac{\cos^2 x}{\cos x} = \cos x$.", work="1cm"),
-    Item(r"Simplify $(1 + \tan^2 x)\cos^2 x$.", num(1), r"$\sec^2 x\cos^2 x = 1$.", work="1cm"),
-    Item(r"Simplify $\cos(-x)\sec x$.", num(1), r"$\cos(-x) = \cos x$.", work="1cm"),
-    Item(r"Find the exact value of $\sin\frac{\pi}{12}$.", num((sp.sqrt(6) - r2) / 4, display=r"\frac{\sqrt6 - \sqrt2}{4}"),
-         r"$\sin\left(\frac{\pi}{3} - \frac{\pi}{4}\right) = \frac{\sqrt3}{2}\cdot\frac{\sqrt2}{2} - \frac12\cdot\frac{\sqrt2}{2}$.", work="1.6cm"),
-    Item(r"Find the exact value of $\cos\frac{7\pi}{12}$.", num((r2 - sp.sqrt(6)) / 4, display=r"\frac{\sqrt2 - \sqrt6}{4}"),
-         r"$\cos\left(\frac{\pi}{3} + \frac{\pi}{4}\right) = \frac12\cdot\frac{\sqrt2}{2} - \frac{\sqrt3}{2}\cdot\frac{\sqrt2}{2}$.", work="1.6cm"),
-    Item(r"$\cos x = \frac{5}{13}$ and $x$ is in quadrant I. Find $\sin 2x$.", num(sp.Rational(120, 169), display=r"\frac{120}{169}"), r"$\sin x = \frac{12}{13}$; $2 \cdot \frac{12}{13}\cdot\frac{5}{13}$.", work="1.4cm"),
-    Item(r"$\cos x = -\frac{1}{3}$. Find $\cos 2x$.", num(-sp.Rational(7, 9), display=r"-\frac79"), r"$2\cos^2 x - 1 = \frac29 - 1$.", work="1.2cm"),
-    Item(r"Write $\cos^2(3x)$ without a square.", expr((1 + sp.cos(6 * x)) / 2), r"$\frac{1 + \cos 6x}{2}$.", work="1cm"),
-    MCQ(r"Which is an identity?", [r"$\sin 2x = 2\sin x$", r"$\cos(x + y) = \cos x + \cos y$", r"$\sin^2 x = 1 - \cos^2 x$", r"$\tan^2 x = \sec^2 x + 1$"], "C",
-        r"From $\sin^2 x + \cos^2 x = 1$.", {"D": r"$\tan^2 x = \sec^2 x - 1$", "A": r"try $x = \frac{\pi}{2}$: $0 \ne 2$"}),
-    Item(r"Show that $\dfrac{\cos x}{1 - \sin x} = \dfrac{1 + \sin x}{\cos x}$.", selfcheck(r"\text{multiply by } \tfrac{1 + \sin x}{1 + \sin x}"),
-         r"$\frac{\cos x(1 + \sin x)}{1 - \sin^2 x} = \frac{\cos x(1 + \sin x)}{\cos^2 x} = \frac{1 + \sin x}{\cos x}$.", work="2.4cm"),
+    Item(r"Find the amplitude of $y = -5\cos x$.", num(5), r"$|-5| = 5$.", work="0.8cm"),
+    Item(r"Find the period of $y = \sin(3x)$.", num(2 * pi / 3, display=r"\frac{2\pi}{3}"), r"$\frac{2\pi}{3}$.", work="0.8cm"),
+    Item(r"Find the period of $y = \cos\left(\frac{x}{2}\right)$.", num(4 * pi, display=r"4\pi"), r"$\frac{2\pi}{1/2} = 4\pi$.", work="0.8cm"),
+    Item(r"Find the period of $y = \sin(\pi x)$.", num(2), r"$\frac{2\pi}{\pi} = 2$.", work="0.8cm"),
+    Item(r"Find the maximum value of $y = 4\sin(2x) - 3$.", num(1), r"$-3 + 4 = 1$.", work="0.8cm"),
+    Item(r"Find the minimum value of $y = 2 - 6\cos x$.", num(-4), r"Midline $2$, amplitude $6$: $2 - 6 = -4$.", work="0.8cm"),
+    Item(r"Find the midline of $y = 3\cos(x - \pi) + 7$.", selfcheck("y = 7"), r"$D = 7$.", work="0.8cm"),
+    Item(r"Find the period of $y = \tan(3x)$.", num(pi / 3, display=r"\frac{\pi}{3}"), r"Tangent's period is $\pi$; $\frac{\pi}{3}$.", work="0.8cm"),
+    MCQ(r"Which function has a maximum at $x = 0$?", [r"$y = \sin x$", r"$y = -\cos x$", r"$y = \cos x$", r"$y = \tan x$"], "C", r"$\cos 0 = 1$, its largest value.",
+        {"B": r"$-\cos x$ has a minimum at $0$", "A": r"$\sin 0 = 0$ is on the midline"}),
+    Item(r"Write a sine function with amplitude $2$, period $\pi$, and midline $y = -1$.", selfcheck(r"y = 2\sin(2x) - 1"), r"$B = \frac{2\pi}{\pi} = 2$: $y = 2\sin(2x) - 1$.", work="1.2cm"),
+    Item(r"Find the first vertical asymptote of $y = \tan\left(\frac{x}{2}\right)$ to the right of $x = 0$.", num(pi, display=r"\pi"), r"$\frac{x}{2} = \frac{\pi}{2}$, so $x = \pi$.", work="1cm"),
+    Item(r"The temperature in a city is modeled by $T(m) = 60 - 20\cos\left(\frac{\pi m}{6}\right)$ degrees, $m$ months after January 1. What is the highest temperature, and in which month $m$ does it occur ($0 \le m < 12$)?",
+         selfcheck(r"80^\circ \text{ at } m = 6"), r"Maximum $60 + 20 = 80$ when $\cos\frac{\pi m}{6} = -1$: $\frac{\pi m}{6} = \pi$, $m = 6$ (July 1).", work="1.6cm"),
 ]
-same("p", [sp.sin(pi / 12), sp.cos(7 * pi / 12), 2 * sp.Rational(12, 13) * sp.Rational(5, 13), 2 * sp.Rational(1, 9) - 1], [(sp.sqrt(6) - r2) / 4, (r2 - sp.sqrt(6)) / 4, sp.Rational(120, 169), -sp.Rational(7, 9)])
-ident("p12", sp.cos(x) / (1 - sp.sin(x)), (1 + sp.sin(x)) / sp.cos(x))
+same("p", [2 * pi / (sp.Rational(1, 2)), 2 * pi / pi], [4 * pi, 2])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"Simplify $\tan x\cos x$.", expr(sp.sin(x)), r"$\frac{\sin x}{\cos x}\cos x$.", work="1cm"),
-        Item(r"Simplify $\cot x\sec x$.", expr(1 / sp.sin(x), display=r"\csc x"), r"$\frac{\cos x}{\sin x}\cdot\frac{1}{\cos x} = \csc x$.", work="1cm"),
-        Item(r"Simplify $\csc x\tan x$.", expr(1 / sp.cos(x), display=r"\sec x"), r"$\frac{1}{\sin x}\cdot\frac{\sin x}{\cos x} = \sec x$.", work="1cm"),
+        Item(r"Find the period of $y = 3\sin(4x)$.", num(pi / 2, display=r"\frac{\pi}{2}"), r"$\frac{2\pi}{4}$.", work="0.8cm"),
+        Item(r"Find the period of $y = \cos\left(\frac{\pi x}{4}\right)$.", num(8), r"$\frac{2\pi}{\pi/4} = 8$.", work="0.8cm"),
+        Item(r"Find the period of $y = -2\sin(6x) + 1$.", num(pi / 3, display=r"\frac{\pi}{3}"), r"$\frac{2\pi}{6}$.", work="0.8cm"),
     ),
     Variants(
-        Item(r"Simplify $\csc^2 x - \cot^2 x$.", num(1), r"$1 + \cot^2 x = \csc^2 x$.", work="1cm"),
-        Item(r"Simplify $\dfrac{1 - \cos^2 x}{\sin x}$.", expr(sp.sin(x)), r"$\frac{\sin^2 x}{\sin x}$.", work="1cm"),
-        Item(r"Simplify $\dfrac{\sec^2 x - 1}{\tan x}$.", expr(sp.tan(x)), r"$\frac{\tan^2 x}{\tan x}$.", work="1cm"),
+        Item(r"Find the maximum value of $y = 5 - 3\sin(2x)$.", num(8), r"$5 + 3$.", work="0.8cm"),
+        Item(r"Find the minimum value of $y = 4\cos(x) + 9$.", num(5), r"$9 - 4$.", work="0.8cm"),
+        Item(r"Find the maximum value of $y = -7\cos(3x) - 2$.", num(5), r"$-2 + 7$.", work="0.8cm"),
     ),
     Variants(
-        Item(r"Find the exact value of $\cos\frac{5\pi}{12}$.", num((sp.sqrt(6) - r2) / 4, display=r"\frac{\sqrt6 - \sqrt2}{4}"), r"$\cos\left(\frac{\pi}{4} + \frac{\pi}{6}\right)$.", work="1.6cm"),
-        Item(r"Find the exact value of $\sin\frac{5\pi}{12}$.", num((sp.sqrt(6) + r2) / 4, display=r"\frac{\sqrt6 + \sqrt2}{4}"), r"$\sin\left(\frac{\pi}{4} + \frac{\pi}{6}\right)$.", work="1.6cm"),
+        MCQ(r"The graph of $y = \sin\left(x - \frac{\pi}{3}\right)$ is the graph of $y = \sin x$ shifted", [r"left $\frac{\pi}{3}$", r"right $\frac{\pi}{3}$", r"up $\frac{\pi}{3}$", r"down $\frac{\pi}{3}$"], "B",
+            r"$x - C$ slides right $C$.", {"A": r"$x + \frac{\pi}{3}$ would slide left"}),
+        MCQ(r"The graph of $y = \cos x - 2$ is the graph of $y = \cos x$ shifted", [r"left $2$", r"right $2$", r"up $2$", r"down $2$"], "D", r"Subtracting outside lowers the midline.",
+            {"B": "a shift right changes $x$, inside"}),
     ),
     Variants(
-        Item(r"$\sin x = \frac45$ and $x$ is in quadrant II. Find $\sin 2x$.", num(-sp.Rational(24, 25), display=r"-\frac{24}{25}"), r"$\cos x = -\frac35$; $2\cdot\frac45\cdot\left(-\frac35\right)$.", work="1.4cm"),
-        Item(r"$\sin x = \frac{1}{4}$. Find $\cos 2x$.", num(sp.Rational(7, 8), display=r"\frac78"), r"$1 - 2\cdot\frac{1}{16}$.", work="1.2cm"),
-        Item(r"$\cos x = \frac{3}{5}$ and $x$ is in quadrant IV. Find $\sin 2x$.", num(-sp.Rational(24, 25), display=r"-\frac{24}{25}"), r"$\sin x = -\frac45$; $2\cdot\left(-\frac45\right)\cdot\frac35$.", work="1.4cm"),
+        Item(r"Find the vertical asymptotes of $y = \tan x$ for $0 \le x \le 2\pi$.", selfcheck(r"x = \frac{\pi}{2}, \ \frac{3\pi}{2}"), r"Where $\cos x = 0$.", work="1cm"),
+        Item(r"Find the vertical asymptotes of $y = \sec x$ for $0 \le x \le 2\pi$.", selfcheck(r"x = \frac{\pi}{2}, \ \frac{3\pi}{2}"), r"Where $\cos x = 0$.", work="1cm"),
+        Item(r"Find the vertical asymptotes of $y = \csc x$ for $0 < x < 2\pi$.", selfcheck(r"x = \pi"), r"Where $\sin x = 0$.", work="1cm"),
     ),
     Variants(
-        MCQ(r"$\sin^2 x = $", [r"$\frac{1 + \cos 2x}{2}$", r"$\frac{1 - \cos 2x}{2}$", r"$1 - \cos 2x$", r"$\frac{1 - \cos x}{2}$"], "B", r"Solve $\cos 2x = 1 - 2\sin^2 x$ for $\sin^2 x$.", {"A": r"that is $\cos^2 x$"}),
-        MCQ(r"$\cos^2 x = $", [r"$\frac{1 - \cos 2x}{2}$", r"$1 + \cos 2x$", r"$\frac{1 + \cos 2x}{2}$", r"$\frac{1 + \cos x}{2}$"], "C", r"Solve $\cos 2x = 2\cos^2 x - 1$ for $\cos^2 x$.", {"A": r"that is $\sin^2 x$"}),
+        Item(r"A sinusoid has a maximum of $9$ and a minimum of $1$. Find its amplitude.", num(4), r"$\frac{9 - 1}{2}$.", work="1cm"),
+        Item(r"A sinusoid has a maximum of $3$ and a minimum of $-7$. Find its midline value $D$.", num(-2), r"$\frac{3 + (-7)}{2}$.", work="1cm"),
     ),
 ]
-same("q", [sp.cos(5 * pi / 12), sp.sin(5 * pi / 12)], [(sp.sqrt(6) - r2) / 4, (sp.sqrt(6) + r2) / 4])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\dfrac{\sin x}{1 + \cos x} + \dfrac{1 + \cos x}{\sin x} = $", [r"$2\csc x$", r"$2\sec x$", r"$1$", r"$2\sin x$"], "A",
-        r"Common denominator: $\frac{\sin^2 x + 1 + 2\cos x + \cos^2 x}{\sin x(1 + \cos x)} = \frac{2(1 + \cos x)}{\sin x(1 + \cos x)} = \frac{2}{\sin x}$."),
-    MCQ(r"$\cos^4 x - \sin^4 x = $", [r"$1$", r"$\cos 2x$", r"$\sin 2x$", r"$\cos^2 x$"], "B", r"$(\cos^2 x - \sin^2 x)(\cos^2 x + \sin^2 x) = \cos 2x \cdot 1$.", {"A": "that drops the first factor"}),
-    MCQ(r"If $\tan x = \frac34$ and $x$ is in quadrant III, then $\sin 2x = $", [r"$-\frac{24}{25}$", r"$\frac{7}{25}$", r"$\frac{12}{25}$", r"$\frac{24}{25}$"], "D",
-        r"$\sin x = -\frac35$, $\cos x = -\frac45$; $2\left(-\frac35\right)\left(-\frac45\right) = \frac{24}{25}$.", {"A": "both sine and cosine are negative, so the product is positive", "B": r"that is $\cos 2x$"}),
-    MCQ(r"Which expression equals $\sin\left(x + \frac{\pi}{2}\right)$?", [r"$\sin x$", r"$-\sin x$", r"$\cos x$", r"$-\cos x$"], "C",
-        r"$\sin x\cos\frac{\pi}{2} + \cos x\sin\frac{\pi}{2} = \cos x$.", {"A": r"$\sin\left(x + \frac{\pi}{2}\right) \ne \sin x + \sin\frac{\pi}{2}$ either"}),
+    MCQ(r"Which equation has amplitude $3$ and period $4\pi$?", [r"$y = 3\sin(2x)$", r"$y = 3\sin\left(\frac{x}{2}\right)$", r"$y = 4\sin(3x)$", r"$y = \frac12\sin(3x)$"], "B",
+        r"$\frac{2\pi}{1/2} = 4\pi$.", {"A": r"period $\pi$"}),
+    MCQ(r"The depth of water in a harbor is $d(t) = 8 + 3\cos\left(\frac{\pi t}{6}\right)$ meters, $t$ hours after midnight. When is the water first at its lowest after midnight?",
+        [r"$t = 3$", r"$t = 12$", r"$t = 6$", r"$t = 9$"], "C", r"Lowest when $\cos\frac{\pi t}{6} = -1$: $\frac{\pi t}{6} = \pi$, $t = 6$.", {"B": "that is the next high tide", "A": "the depth is at the midline then"}),
+    MCQ(r"Which function has period $\pi$ and passes through the origin?", [r"$y = \cos(2x)$", r"$y = \sin\left(\frac{x}{2}\right)$", r"$y = \tan(2x)$", r"$y = \tan x$"], "D",
+        r"$\tan x$ has period $\pi$ and $\tan 0 = 0$.", {"A": r"$\cos 0 = 1$", "C": r"period $\frac{\pi}{2}$"}),
+    MCQ(r"A sinusoid has a maximum at $(0, 6)$ and the next minimum at $(5, 2)$. Which equation fits?",
+        [r"$y = 2\cos\left(\frac{\pi x}{5}\right) + 4$", r"$y = 4\cos\left(\frac{\pi x}{5}\right) + 2$", r"$y = 2\cos\left(\frac{2\pi x}{5}\right) + 4$", r"$y = 2\sin\left(\frac{\pi x}{5}\right) + 4$"], "A",
+        r"Midline $4$, amplitude $2$, period $10$ so $B = \frac{\pi}{5}$, and a maximum at $0$ means cosine.", {"C": "max to min is half a period, so the period is 10", "D": "sine starts on the midline"}),
 ]
-ident("m1", sp.sin(x) / (1 + sp.cos(x)) + (1 + sp.cos(x)) / sp.sin(x), 2 / sp.sin(x))
-ident("m2", sp.cos(x)**4 - sp.sin(x)**4, sp.cos(2 * x))
-same("m3", [2 * (-sp.Rational(3, 5)) * (-sp.Rational(4, 5))], [sp.Rational(24, 25)])
-ident("m4", sp.sin(x + pi / 2), sp.cos(x))
+d = 8 + 3 * sp.cos(pi * t / 6)
+same("m2", [d.subs(t, 6)], [5])
+y4 = 2 * sp.cos(pi * x / 5) + 4
+same("m4", [y4.subs(x, 0), y4.subs(x, 5)], [6, 2])
 
 FRQS = []
 
 TOPIC = Topic(
-    number="0.5", title="Trigonometric Identities",
-    unit="Trig Review (a free module)", ced=["Prerequisite: trigonometric identities"],
-    goals=r"Use the Pythagorean, symmetry, sum, double-angle and power-reducing identities to simplify expressions and find exact values.",
+    number="0.5", title="Graphs of Sine, Cosine, and Tangent",
+    unit="Trig Review (a free module)", ced=["Prerequisite: graphs of trigonometric functions"],
+    goals=r"Graph sine, cosine and tangent, and read amplitude, period, shift and midline from $y = A\sin\big(B(x - C)\big) + D$.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

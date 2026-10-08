@@ -1,5 +1,5 @@
 """Unit 0 test: Trig Review. Same format as the AP-style unit tests: 12 MCQ (no calculator), 4 MCQ (calculator), 3 FRQ.
-Two forms (A and B) for every slot. Covers 0.1-0.7.
+Two forms (A and B) for every slot. Covers lessons 0.1-0.8 (T1-T8).
 
 Choices are built by `pick`, which puts the keyed answer at a planned letter. Every keyed value is checked with sympy.
 The FRQs use AP phrasing ("Show that", "Find all values", "Indicate units of measure") on trig-only setups: a sinusoid
@@ -201,8 +201,8 @@ F2B = ident_frq(r"\sec x - \sin x\tan x = \cos x",
                 r"$2(1 - \cos^2 x) - \cos x - 1 = 0$, so $2\cos^2 x + \cos x - 1 = 0$ and $(2\cos x - 1)(\cos x + 1) = 0$. $\cos x = \frac12$: $x = \frac{\pi}{3}, \frac{5\pi}{3}$; $\cos x = -1$: $x = \pi$.",
                 r"$\sin\theta = \frac25$ and $\frac{\pi}{2} < \theta < \pi$.", r"-\frac{4\sqrt{21}}{25}", r"\frac{17}{25}",
                 r"$\cos\theta = -\sqrt{1 - \frac{4}{25}} = -\frac{\sqrt{21}}{5}$ (quadrant II). $\sin 2\theta = 2\cdot\frac25\cdot\left(-\frac{\sqrt{21}}{5}\right) = -\frac{4\sqrt{21}}{25}$; $\cos 2\theta = 1 - 2\sin^2\theta = \frac{17}{25}$.")
-# the solution sets in (b) are complete: checked numerically by 0.6's root scan
-from content.topic_0_6 import roots  # noqa: E402
+# the solution sets in (b) are complete: checked numerically by the root scan in 0.7 (T7)
+from content.topic_0_7 import roots  # noqa: E402
 same("F2 counts", [len(roots(2 * sp.cos(x)**2 + 3 * sp.sin(x) - 3)), len(roots(2 * sp.sin(x)**2 - sp.cos(x) - 1))], [3, 3])
 
 

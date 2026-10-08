@@ -1,4 +1,4 @@
-"""Topic 0.2: The unit circle. Narration comes from transcripts/0_2.md."""
+"""Trig Review lesson 0.2 (T2): Angles and radian measure. Narration comes from transcripts/0_2.md."""
 import numpy as np
 from manim import *
 
@@ -6,186 +6,185 @@ from kit import *
 from style import *
 
 
-def quadrant_signs(uc, rows, size=30):
-    """Sign labels in each quadrant of a TrigCircle: rows[q] is a list of (tex, color) for quadrant q (0 = I)."""
-    out = VGroup()
-    for q, items in enumerate(rows):
-        a = PI / 4 + q * PI / 2
-        g = VGroup(*[M(t, size, c) for t, c in items]).arrange(DOWN, buff=0.12)
-        out.add(g.move_to(uc.c + 0.55 * uc.r * np.array([np.cos(a), np.sin(a), 0])))
-    return out
+def wheel_at(th, u, x0, ground):
+    """A bicycle wheel of radius u (one 'unit') that has rolled through angle th from x = x0."""
+    c = np.array([x0 + u * th, ground + u, 0])
+    rim = Circle(radius=u, stroke_color=INK, stroke_width=6).move_to(c)
+    spokes = VGroup(*[Line(c, c + u * np.array([np.cos(a - th), np.sin(a - th), 0]), color=DIM, stroke_width=2) for a in np.linspace(0, TAU, 12, endpoint=False)])
+    dot = Dot(c + u * np.array([np.cos(-PI / 2 - th), np.sin(-PI / 2 - th), 0]), radius=0.1, color=TANGENT)
+    return VGroup(spokes, rim, Dot(c, radius=0.07, color=INK), dot)
 
 
-def circle_figure(t, ref, coords):
-    """A unit circle with the point at angle t, its reference triangle, and the point at the reference angle."""
-    uc = TrigCircle(r=2.0)
-    g = VGroup(uc, uc.drop(t, SECANT), uc.ray(t), uc.dot(t, FUNC), uc.angle_arc(t, SECANT, radius=0.45),
-               DashedLine(uc.c, uc.pt(ref), color=DIM), uc.dot(ref, DIM))
-    g.add(uc.coord(t, coords, FUNC, size=28))
-    return g
+def pizza(r=1.2, slice_angle=PI / 4):
+    """A pizza with one slice pulled out a little (vector art)."""
+    crust, cheese = "#D9A35B", "#F6D67A"
+    rest = AnnularSector(inner_radius=0, outer_radius=r, angle=TAU - slice_angle, start_angle=slice_angle, fill_color=cheese, fill_opacity=1, stroke_color=crust, stroke_width=8)
+    piece = Sector(radius=r, angle=slice_angle, fill_color=cheese, fill_opacity=1, stroke_color=crust, stroke_width=8).shift(0.3 * np.array([np.cos(slice_angle / 2), np.sin(slice_angle / 2), 0]))
+    rng = np.random.default_rng(7)
+    pep = VGroup(*[Circle(radius=0.11, stroke_width=0, fill_color="#B5332E", fill_opacity=1).move_to(rr * np.array([np.cos(a), np.sin(a), 0]))
+                   for rr, a in zip(r * (0.25 + 0.6 * rng.random(9)), slice_angle + (TAU - slice_angle) * rng.random(9))])
+    return VGroup(rest, pep, piece)
 
 
 class Lesson(TranscriptScene):
     NUM = "0.2"
 
     def construct(self):
-        with self.beat("A point going around") as b:
-            W = ferris_wheel(2.0).move_to(LEFT * 2.6 + DOWN * 0.1)
-            hub = W[0].get_center()
-            self.play(FadeIn(W), run_time=0.8)
-            th = ValueTracker(-PI / 2)
-            rider = always_redraw(lambda: Dot(hub + 2.0 * np.array([np.cos(th.get_value()), np.sin(th.get_value()), 0]), radius=0.14, color=TANGENT))
-            up = always_redraw(lambda: DashedLine(rider.get_center(), np.array([1.6, rider.get_center()[1], 0]), color=FUNC))
-            across = always_redraw(lambda: DashedLine(rider.get_center(), np.array([rider.get_center()[0], -3.3, 0]), color=DERIV))
-            scale_up = Line(np.array([1.6, hub[1] - 2.2, 0]), np.array([1.6, hub[1] + 2.2, 0]), color=FUNC, stroke_width=4)
-            scale_ac = Line(np.array([hub[0] - 2.4, -3.3, 0]), np.array([hub[0] + 2.4, -3.3, 0]), color=DERIV, stroke_width=4)
-            self.play(FadeIn(rider), Create(scale_up), Create(scale_ac), Create(up), Create(across), run_time=1)
-            self.play(FadeIn(T("how far up", 30, FUNC).next_to(scale_up, RIGHT, buff=0.2)), FadeIn(T("how far across", 30, DERIV).next_to(scale_ac, RIGHT, buff=0.2)), run_time=0.6)
+        with self.beat("Measuring a turn") as b:
+            u, x0, ground = 0.9, -5.4, -2.4
+            road = Line(LEFT * 6.4 + UP * ground, RIGHT * 6.4 + UP * ground, color=INK, stroke_width=4)
+            th = ValueTracker(0)
+            wheel = always_redraw(lambda: wheel_at(th.get_value(), u, x0, ground))
+            trail = always_redraw(lambda: Line(np.array([x0, ground, 0]), np.array([x0 + u * th.get_value() + 1e-3, ground, 0]), color=TANGENT, stroke_width=8))
+            proto = VGroup(Arc(radius=1.1, angle=PI, color=DIM, stroke_width=3), Line(LEFT * 1.1, RIGHT * 1.1, color=DIM, stroke_width=3),
+                           M(r"360^\circ\,?", 40, DIM).shift(UP * 0.5)).move_to(RIGHT * 4 + UP * 2.2)
+            self.play(Create(road), FadeIn(wheel), FadeIn(proto), run_time=1)
             b.line(1)
-            self.play(th.animate.set_value(-PI / 2 + 2 * PI), run_time=4, rate_func=linear)
+            self.add(trail)
+            for k, (stop, lab) in enumerate(((PI / 2, "1.57"), (PI, "3.14"), (2 * PI, "6.28"))):
+                self.play(th.animate.set_value(stop), run_time=1.4)
+                self.play(FadeIn(M(lab, 30, TANGENT).move_to(np.array([x0 + u * stop, ground - 0.4, 0]))), run_time=0.4)
             b.line(2)
-            self.play(FadeIn(M(r"\text{across} = \cos\theta, \quad \text{up} = \sin\theta", 40).to_corner(UR, buff=0.6)), run_time=0.8)
+            self.play(FadeOut(proto), FadeIn(T("distance rolled = angle turned, in radians", 36, TANGENT).to_edge(UP, buff=0.8)), run_time=0.8)
         self.clear()
         self.title()
 
-        with self.beat("Sine and cosine on the unit circle") as b:
-            uc = TrigCircle(r=2.6, center=LEFT * 2.8 + DOWN * 0.3)
-            t = 0.9
+        with self.beat("Angles in standard position") as b:
+            ax, _ = plot_axes([-3, 3, 1], [-3, 3, 1], w=5.6, h=5.6, coords=False)
+            ax.shift(LEFT * 2.6 + DOWN * 0.2)
+            O = ax.c2p(0, 0)
+            init = Line(O, ax.c2p(2.6, 0), color=INK, stroke_width=5)
+            self.play(FadeIn(ax), Create(init), FadeIn(T("initial side", 28).next_to(ax.c2p(2.0, 0), DOWN, buff=0.15)), run_time=0.9)
+            t = ValueTracker(0.001)
+            term = always_redraw(lambda: Line(O, O + 2.6 * ax.x_axis.get_unit_size() / 1.0 * np.array([np.cos(t.get_value()), np.sin(t.get_value()), 0]), color=FUNC, stroke_width=5))
+            arc = always_redraw(lambda: Arc(radius=0.7, angle=t.get_value(), arc_center=O, color=SECANT, stroke_width=4).add_tip(tip_length=0.15))
+            self.add(term, arc)
+            self.play(t.animate.set_value(2.2), run_time=1.6)
+            self.play(FadeIn(M(r"\theta > 0", 34, SECANT).move_to(O + 1.25 * np.array([np.cos(1.1), np.sin(1.1), 0]))),
+                      FadeIn(T("terminal side", 28, FUNC).next_to(O + 2.6 * ax.x_axis.get_unit_size() * np.array([np.cos(2.2), np.sin(2.2), 0]), UP, buff=0.1)), run_time=0.6)
+            b.line(1)
+            self.play(FadeIn(T("counterclockwise: positive", 34, SECANT).to_edge(RIGHT, buff=0.6).shift(UP * 1)), run_time=0.6)
+            neg = Arc(radius=1.0, angle=-1.0, arc_center=O, color=TANGENT, stroke_width=4).add_tip(tip_length=0.15)
+            self.play(Create(Line(O, O + 2.6 * ax.x_axis.get_unit_size() * np.array([np.cos(-1.0), np.sin(-1.0), 0]), color=TANGENT, stroke_width=5)), Create(neg), run_time=1)
+            self.play(FadeIn(T("clockwise: negative", 34, TANGENT).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.2)), run_time=0.6)
+        self.clear()
+
+        with self.beat("What a radian is") as b:
+            R, O = 2.0, LEFT * 3 + DOWN * 0.3
+            circ = Circle(radius=R, color=INK, stroke_width=3).move_to(O)
+            rad = Line(O, O + RIGHT * R, color=FUNC, stroke_width=6)
+            self.play(Create(circ), Create(rad), FadeIn(M("r", 34, FUNC).next_to(rad, DOWN, buff=0.1)), run_time=1)
+            b.line(1)
+            bent = Arc(radius=R, start_angle=0, angle=1, arc_center=O, color=FUNC, stroke_width=8)
+            self.play(Transform(rad.copy(), bent), run_time=1.4)
+            self.play(FadeIn(Sector(radius=R, angle=1, arc_center=O, fill_color=SECANT, fill_opacity=0.3, stroke_width=0)),
+                      Create(Line(O, O + R * np.array([np.cos(1), np.sin(1), 0]), color=INK, stroke_width=3)),
+                      FadeIn(M(r"1 \text{ radian} \approx 57.3^\circ", 34, SECANT).to_edge(RIGHT, buff=0.8).shift(UP * 2)), run_time=1)
+            b.line(2)
+            arcs = VGroup(*[Arc(radius=R + 0.12 * (k % 2), start_angle=k, angle=min(1, TAU - k), arc_center=O, color=[FUNC, DERIV][k % 2], stroke_width=8) for k in range(7)])
+            nums = VGroup(*[M(str(k + 1), 28, [FUNC, DERIV][k % 2]).move_to(O + (R + 0.5) * np.array([np.cos(k + 0.5), np.sin(k + 0.5), 0])) for k in range(6)])
+            for a, n in zip(arcs[:6], nums):
+                self.play(Create(a), FadeIn(n), run_time=0.45)
+            self.play(Create(arcs[6]), run_time=0.4)
+            self.play(FadeIn(M(r"\text{circumference} = 2\pi r", 38).to_edge(RIGHT, buff=0.8).shift(UP * 0.6)), run_time=0.8)
+            b.line(3)
+            box = formula_box(VGroup(M(r"\text{full turn} = 2\pi \approx 6.28 \text{ radians}", 40, ACCUM), M(r"\text{half turn} = \pi \text{ radians}", 40, ACCUM)).arrange(DOWN, buff=0.3), ACCUM)
+            self.play(FadeIn(box.to_edge(RIGHT, buff=0.6).shift(DOWN * 1.4)), run_time=0.8)
+        self.clear()
+
+        with self.beat("Converting") as b:
+            fact = formula_box(M(r"180^\circ = \pi \text{ radians}", 56, ACCUM), ACCUM).to_edge(UP, buff=0.8)
+            self.play(FadeIn(fact), run_time=0.8)
+            b.line(1)
+            r1 = M(r"\text{degrees} \to \text{radians:} \quad \times \frac{\pi}{180^\circ}", 46, FUNC)
+            r2 = M(r"\text{radians} \to \text{degrees:} \quad \times \frac{180^\circ}{\pi}", 46, DERIV)
+            VGroup(r1, r2).arrange(DOWN, buff=0.6).next_to(fact, DOWN, buff=0.8)
+            self.play(Write(r1), run_time=1)
+            self.play(Write(r2), run_time=1)
+            b.line(2)
+            self.play(FadeIn(M(r"60^\circ \cdot \frac{\pi}{180^\circ} = \frac{\pi}{3}", 42, DIM).next_to(r2, DOWN, buff=0.7)), run_time=0.8)
+        self.clear()
+
+        self.example("Converting 150 degrees", r"Convert $150^\circ$ to radians.",
+                     [r"150^\circ \cdot \frac{\pi}{180^\circ}", r"= \frac{150\pi}{180}", r"= \frac{150 \div 30}{180 \div 30}\,\pi = \frac{5\pi}{6}"], at=[1, 2, 3], follow=True)
+
+        with self.beat("Landmark angles") as b:
+            uc = TrigCircle(r=2.7, center=LEFT * 2.2 + DOWN * 0.2, ticks=False)
             self.play(Create(uc), run_time=0.8)
-            self.play(Create(uc.ray(t)), FadeIn(uc.angle_arc(t, label=r"\theta")), FadeIn(uc.dot(t)), FadeIn(M("P", 32, FUNC).next_to(uc.pt(t), UR, buff=0.1)), run_time=1)
+            names = {0: ("0", "0^\\circ"), 1: (r"\tfrac{\pi}{6}", "30^\\circ"), 2: (r"\tfrac{\pi}{4}", "45^\\circ"), 3: (r"\tfrac{\pi}{3}", "60^\\circ")}
+            quads = [(PI / 2, r"\tfrac{\pi}{2}", "90^\\circ"), (PI, r"\pi", "180^\\circ"), (3 * PI / 2, r"\tfrac{3\pi}{2}", "270^\\circ")]
+
+            def mark(t, lab, deg, col=FUNC):
+                d = np.array([np.cos(t), np.sin(t), 0])
+                return VGroup(uc.dot(t, col), M(lab, 30, col).move_to(uc.pt(t) + 0.55 * d), M(deg, 20, DIM).move_to(uc.pt(t) + 0.98 * d))
+            self.play(FadeIn(mark(0, "0", "0^\\circ")), *[FadeIn(mark(t, l, d)) for t, l, d in quads], run_time=1)
             b.line(1)
-            p = uc.pt(t)
-            hx = Line(uc.c, np.array([p[0], uc.c[1], 0]), color=DERIV, stroke_width=6)
-            vy = Line(np.array([p[0], uc.c[1], 0]), p, color=FUNC, stroke_width=6)
-            self.play(Create(hx), FadeIn(M(r"x = \cos\theta", 32, DERIV).next_to(hx, DOWN, buff=0.15)), run_time=0.8)
-            self.play(Create(vy), FadeIn(M(r"y = \sin\theta", 32, FUNC).next_to(vy, RIGHT, buff=0.15)), run_time=0.8)
-            big = M(r"P = (\cos\theta,\ \sin\theta)", 46).to_edge(RIGHT, buff=0.6).shift(UP * 1.8)
-            self.play(Write(big), run_time=0.8)
+            self.play(*[FadeIn(mark(t, l, d, SECANT)) for t, l, d in ((PI / 6, r"\tfrac{\pi}{6}", "30^\\circ"), (PI / 4, r"\tfrac{\pi}{4}", "45^\\circ"), (PI / 3, r"\tfrac{\pi}{3}", "60^\\circ"))], run_time=1)
             b.line(2)
-            words = VGroup(T("cosine: how far across", 34, DERIV), T("sine: how far up", 34, FUNC)).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(big, DOWN, buff=0.6)
-            self.play(FadeIn(words), run_time=0.8)
-            b.line(3)
-            pyth = formula_box(M(r"\cos^2\theta + \sin^2\theta = 1", 44, ACCUM), ACCUM).next_to(words, DOWN, buff=0.6)
-            self.play(FadeIn(M(r"x^2 + y^2 = 1", 38, DIM).next_to(words, DOWN, buff=0.3)), run_time=0.6)
-            self.play(FadeIn(pyth.next_to(words, DOWN, buff=1.0)), run_time=0.8)
+            rest = [(2 * PI / 3, r"\tfrac{2\pi}{3}"), (3 * PI / 4, r"\tfrac{3\pi}{4}"), (5 * PI / 6, r"\tfrac{5\pi}{6}"), (7 * PI / 6, r"\tfrac{7\pi}{6}"), (5 * PI / 4, r"\tfrac{5\pi}{4}"),
+                    (4 * PI / 3, r"\tfrac{4\pi}{3}"), (5 * PI / 3, r"\tfrac{5\pi}{3}"), (7 * PI / 4, r"\tfrac{7\pi}{4}"), (11 * PI / 6, r"\tfrac{11\pi}{6}")]
+            for q in range(3):
+                grp = [(t, l) for t, l in rest if q * PI / 2 + PI / 2 < t < (q + 2) * PI / 2]
+                self.play(*[FadeIn(mark(t, l, f"{round(np.degrees(t))}^\\circ", DERIV)) for t, l in grp], run_time=0.8)
+            steps = VGroup(*[Line(uc.c, uc.pt(k * PI / 6), color=DERIV, stroke_width=2) for k in range(1, 6)])
+            self.play(Create(steps), FadeIn(M(r"\tfrac{5\pi}{6} = 5 \times 30^\circ", 38, DERIV).to_edge(RIGHT, buff=0.6)), run_time=1)
         self.clear()
 
-        with self.beat("The quadrantal angles") as b:
-            uc = TrigCircle(r=2.4, center=LEFT * 3.2 + DOWN * 0.2)
-            self.play(Create(uc), run_time=0.6)
-            data = [(0, "(1, 0)", "0", "1", "0"), (PI / 2, "(0, 1)", r"\tfrac{\pi}{2}", "0", "1"), (PI, "(-1, 0)", r"\pi", "-1", "0"), (3 * PI / 2, "(0, -1)", r"\tfrac{3\pi}{2}", "0", "-1")]
-            tab = table([r"\theta", r"\cos\theta", r"\sin\theta"], [[d[2], d[3], d[4]] for d in data], size=34).to_edge(RIGHT, buff=0.8)
-            for k, (a, lab, _, _, _) in enumerate(data):
-                if k == 1:
-                    b.line(1)
-                if k == 2:
-                    b.line(2)
-                d = np.array([np.cos(a), np.sin(a), 0])
-                self.play(FadeIn(uc.dot(a, SECANT)), FadeIn(M(lab, 30, SECANT).move_to(uc.pt(a) + 0.6 * d + (UP * 0.3 if k in (0, 2) else RIGHT * 0.7))), run_time=0.6)
-            self.play(FadeIn(tab), run_time=0.8)
+        with self.beat("Coterminal angles") as b:
+            uc = TrigCircle(r=2.3, center=LEFT * 3 + DOWN * 0.3)
+            self.play(Create(uc), Create(uc.ray(PI / 3, FUNC)), FadeIn(uc.angle_arc(PI / 3, FUNC, label=r"\tfrac{\pi}{3}")), run_time=1)
+            t = ValueTracker(0.001)
+            spin = always_redraw(lambda: VGroup(uc.ray(t.get_value(), SECANT), ParametricFunction(lambda s: uc.c + (0.8 + 0.06 * s) * np.array([np.cos(s), np.sin(s), 0]), t_range=[0, t.get_value(), 0.02], color=SECANT, stroke_width=4)))
+            self.add(spin)
+            self.play(t.animate.set_value(PI / 3 + 2 * PI), run_time=2.2)
+            self.play(FadeIn(M(r"\tfrac{\pi}{3} + 2\pi = \tfrac{7\pi}{3}", 42, SECANT).to_edge(RIGHT, buff=0.7).shift(UP * 1.2)), run_time=0.6)
+            b.line(1)
+            t2 = ValueTracker(-0.001)
+            spin2 = always_redraw(lambda: ParametricFunction(lambda s: uc.c + (1.25 + 0.06 * abs(s)) * np.array([np.cos(s), np.sin(s), 0]), t_range=[t2.get_value(), 0, 0.02], color=TANGENT, stroke_width=4))
+            self.add(spin2)
+            self.play(t2.animate.set_value(PI / 3 - 2 * PI), run_time=1.6)
+            self.play(FadeIn(M(r"\tfrac{\pi}{3} - 2\pi = -\tfrac{5\pi}{3}", 42, TANGENT).to_edge(RIGHT, buff=0.7).shift(DOWN * 0.2)), run_time=0.6)
+            self.play(FadeIn(T("same terminal side", 34).to_edge(RIGHT, buff=0.9).shift(DOWN * 1.6)), run_time=0.6)
         self.clear()
 
-        with self.beat("The special triangles") as b:
-            t45 = right_triangle(2.4, 2.4, opp=r"a", adj=r"a", hyp="1", angle=r"45^\circ").move_to(LEFT * 3.6 + UP * 0.4)
-            self.play(Create(t45[0]), FadeIn(t45[1:]), run_time=1)
+        with self.beat("Arc length and sector area") as b:
+            R, O, th = 2.2, LEFT * 3.4 + DOWN * 0.8, 1.1
+            circ = Circle(radius=R, color=DIM, stroke_width=2).move_to(O)
+            sec = Sector(radius=R, angle=th, arc_center=O, fill_color=AREA, fill_opacity=0.4, stroke_width=0)
+            arc = Arc(radius=R, angle=th, arc_center=O, color=TANGENT, stroke_width=9)
+            edges = VGroup(Line(O, O + RIGHT * R, color=INK), Line(O, O + R * np.array([np.cos(th), np.sin(th), 0]), color=INK))
+            self.play(Create(circ), Create(edges), FadeIn(M("r", 30).next_to(edges[0], DOWN, buff=0.1)), FadeIn(M(r"\theta", 30, SECANT).move_to(O + 0.6 * np.array([np.cos(th / 2), np.sin(th / 2), 0]))), run_time=0.8)
+            self.play(Create(arc), FadeIn(M("s", 34, TANGENT).move_to(O + (R + 0.35) * np.array([np.cos(th / 2), np.sin(th / 2), 0]))), run_time=0.8)
+            f1 = M(r"s = r\theta", 52, TANGENT).to_edge(RIGHT, buff=1.6).shift(UP * 2)
+            self.play(Write(f1), run_time=0.8)
             b.line(1)
-            work = VGroup(M(r"a^2 + a^2 = 1", 38), M(r"a^2 = \tfrac12", 38), M(r"a = \frac{1}{\sqrt2} = \frac{\sqrt2}{2}", 38, FUNC)).arrange(DOWN, buff=0.25, aligned_edge=LEFT).next_to(t45, DOWN, buff=0.4)
-            for w in work:
-                self.play(Write(w), run_time=0.6)
+            self.play(FadeIn(sec), run_time=0.6)
+            f2 = M(r"A = \frac{\theta}{2\pi}\cdot \pi r^2 = \tfrac12 r^2\theta", 46, AREA).next_to(f1, DOWN, buff=0.6)
+            self.play(Write(f2), run_time=1)
+            self.play(FadeIn(pizza(0.9).next_to(f2, DOWN, buff=0.5)), run_time=0.6)
             b.line(2)
-            eq = Polygon(ORIGIN, RIGHT * 2.6, RIGHT * 1.3 + UP * 1.3 * np.sqrt(3), color=DIM, stroke_width=3).move_to(RIGHT * 2.2 + UP * 1.3)
-            self.play(Create(eq), FadeIn(M("1", 28, DIM).next_to(eq, DOWN, buff=0.1)), run_time=0.8)
-            half = Polygon(eq.get_vertices()[0], (eq.get_vertices()[0] + eq.get_vertices()[1]) / 2, eq.get_vertices()[2], color=INK, stroke_width=5)
-            self.play(Create(half), Create(DashedLine((eq.get_vertices()[0] + eq.get_vertices()[1]) / 2, eq.get_vertices()[2], color=INK)), run_time=0.8)
-            labs = VGroup(M(r"\tfrac12", 32, DERIV).next_to(Line(eq.get_vertices()[0], (eq.get_vertices()[0] + eq.get_vertices()[1]) / 2), DOWN, buff=0.45),
-                          M(r"\frac{\sqrt3}{2}", 32, FUNC).move_to((eq.get_vertices()[0] + eq.get_vertices()[1]) / 2 + UP * 1.1 + RIGHT * 0.45),
-                          M(r"30^\circ", 24, SECANT).move_to(eq.get_vertices()[2] + DOWN * 0.75 + LEFT * 0.12),
-                          M(r"60^\circ", 24, SECANT).move_to(eq.get_vertices()[0] + RIGHT * 0.5 + UP * 0.22))
-            self.play(FadeIn(labs[0]), FadeIn(labs[2:]), run_time=0.6)
-            self.play(FadeIn(M(r"\sqrt{1 - \tfrac14} = \frac{\sqrt3}{2}", 32, DIM).next_to(eq, DOWN, buff=0.6)), FadeIn(labs[1]), run_time=0.8)
-            b.line(3)
-            pts = VGroup(M(r"\tfrac{\pi}{6}: \ \left(\tfrac{\sqrt3}{2},\ \tfrac12\right)", 38, SECANT), M(r"\tfrac{\pi}{4}: \ \left(\tfrac{\sqrt2}{2},\ \tfrac{\sqrt2}{2}\right)", 38, SECANT),
-                         M(r"\tfrac{\pi}{3}: \ \left(\tfrac12,\ \tfrac{\sqrt3}{2}\right)", 38, SECANT)).arrange(DOWN, buff=0.3, aligned_edge=LEFT).to_edge(RIGHT, buff=0.8).shift(DOWN * 2.0)
-            self.play(FadeIn(pts[0]), FadeIn(pts[2]), run_time=0.8)
-            self.play(FadeIn(pts[1]), run_time=0.5)
-            b.line(4)
-            self.play(Indicate(pts[0]), run_time=1)
-        self.clear()
-
-        with self.beat("Reference angles") as b:
-            uc = TrigCircle(r=2.5, center=LEFT * 2.8 + DOWN * 0.3)
-            t = 5 * PI / 6
-            self.play(Create(uc), Create(uc.ray(t, FUNC)), FadeIn(uc.dot(t)), run_time=0.8)
-            ref = Sector(radius=0.9, start_angle=t, angle=PI - t, arc_center=uc.c, fill_color=SECANT, fill_opacity=0.5, stroke_width=0)
-            self.play(FadeIn(ref), FadeIn(T(r"reference angle $\frac{\pi}{6}$", 32, SECANT).to_edge(RIGHT, buff=0.8).shift(UP * 2)), run_time=0.8)
-            b.line(1)
-            self.play(TransformFromCopy(VGroup(uc.ray(t, FUNC), uc.dot(t)), VGroup(uc.ray(PI / 6, DIM), uc.dot(PI / 6, DIM))),
-                      Create(DashedLine(uc.pt(t), uc.pt(PI / 6), color=DIM)), run_time=1.2)
-            self.play(FadeIn(uc.coord(t, r"\left(-\tfrac{\sqrt3}{2},\ \tfrac12\right)", FUNC, 28)), FadeIn(uc.coord(PI / 6, r"\left(\tfrac{\sqrt3}{2},\ \tfrac12\right)", DIM, 28)), run_time=0.8)
-            b.line(2)
-            self.play(FadeIn(T("same numbers; the quadrant decides the signs", 32).to_edge(RIGHT, buff=0.5).shift(DOWN * 2.6)), run_time=0.8)
-        self.clear()
-
-        with self.beat("Signs by quadrant") as b:
-            uc = TrigCircle(r=2.8, center=LEFT * 2.4 + DOWN * 0.2, ticks=False)
-            self.play(Create(uc), run_time=0.6)
-            right = Sector(radius=2.8, start_angle=-PI / 2, angle=PI, arc_center=uc.c, fill_color=DERIV, fill_opacity=0.15, stroke_width=0)
-            self.play(FadeIn(right), FadeIn(T(r"$\cos\theta = x$: $+$ on the right, $-$ on the left", 30, DERIV).to_edge(RIGHT, buff=0.4).shift(UP * 2.2)), run_time=0.8)
-            b.line(1)
-            top = Sector(radius=2.8, start_angle=0, angle=PI, arc_center=uc.c, fill_color=FUNC, fill_opacity=0.15, stroke_width=0)
-            self.play(FadeOut(right), FadeIn(top), FadeIn(T(r"$\sin\theta = y$: $+$ on top, $-$ on the bottom", 30, FUNC).to_edge(RIGHT, buff=0.4).shift(UP * 1.5)), run_time=0.8)
-            b.line(2)
-            self.play(FadeOut(top), run_time=0.3)
-            signs = quadrant_signs(uc, [[(r"\cos +", DERIV), (r"\sin +", FUNC)], [(r"\cos -", DERIV), (r"\sin +", FUNC)],
-                                        [(r"\cos -", DERIV), (r"\sin -", FUNC)], [(r"\cos +", DERIV), (r"\sin -", FUNC)]], 34)
-            for s in signs:
-                self.play(FadeIn(s), run_time=0.6)
-            qs = VGroup(*[M(n, 30, DIM).move_to(uc.c + 0.92 * uc.r * np.array([np.cos(PI / 4 + q * PI / 2), np.sin(PI / 4 + q * PI / 2), 0])) for q, n in enumerate(["I", "II", "III", "IV"])])
-            self.play(FadeIn(qs), run_time=0.5)
-        self.clear()
-
-        fig = circle_figure(5 * PI / 6, PI / 6, r"\left(-\tfrac{\sqrt3}{2},\ \tfrac12\right)")
-        self.example("Sine and cosine of 5π/6", r"Find $\cos\frac{5\pi}{6}$ and $\sin\frac{5\pi}{6}$.",
-                     [r"\text{reference angle: } \pi - \frac{5\pi}{6} = \frac{\pi}{6}", r"\text{at } \tfrac{\pi}{6}: \ \left(\tfrac{\sqrt3}{2},\ \tfrac12\right)",
-                      r"\text{quadrant II: } \cos < 0, \ \sin > 0", r"\cos\frac{5\pi}{6} = -\frac{\sqrt3}{2}", r"\sin\frac{5\pi}{6} = \frac12"],
-                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=1, follow=True)
-
-        with self.beat("Tangent") as b:
-            uc = TrigCircle(r=2.5, center=LEFT * 2.8 + DOWN * 0.3)
-            t = ValueTracker(0.7)
-            ray = always_redraw(lambda: uc.ray(t.get_value(), FUNC))
-            dot = always_redraw(lambda: uc.dot(t.get_value()))
-            rise = always_redraw(lambda: Line(np.array([uc.pt(t.get_value())[0], uc.c[1], 0]), uc.pt(t.get_value()), color=FUNC, stroke_width=5))
-            run = always_redraw(lambda: Line(uc.c, np.array([uc.pt(t.get_value())[0], uc.c[1], 0]), color=DERIV, stroke_width=5))
-            self.play(Create(uc), FadeIn(ray), FadeIn(dot), FadeIn(rise), FadeIn(run), run_time=0.8)
-            f = M(r"\tan\theta = \frac{\sin\theta}{\cos\theta}", 50, TANGENT).to_edge(RIGHT, buff=1).shift(UP * 1.8)
-            self.play(Write(f), run_time=1)
-            b.line(1)
-            self.play(FadeIn(M(r"= \frac{\text{rise}}{\text{run}} = \text{slope of the ray}", 38, TANGENT).next_to(f, DOWN, buff=0.4)), run_time=0.8)
-            b.line(2)
-            self.play(t.animate.set_value(PI / 2), run_time=1.4)
-            self.play(FadeIn(M(r"\theta = \tfrac{\pi}{2}: \ \cos\theta = 0, \ \tan\theta \text{ undefined}", 36, SECANT).to_edge(RIGHT, buff=0.5).shift(DOWN * 1.4)), run_time=0.8)
+            self.play(FadeIn(T(r"$\theta$ in radians", 36, SECANT).next_to(circ, DOWN, buff=0.3)), run_time=0.6)
         self.clear()
 
         with self.beat("Close") as b:
-            card = VGroup(M(r"(\cos\theta,\ \sin\theta) \text{ is the point at angle } \theta", 42), M(r"\cos^2\theta + \sin^2\theta = 1", 44, ACCUM),
-                          M(r"\tfrac{\pi}{6}: \left(\tfrac{\sqrt3}{2}, \tfrac12\right) \quad \tfrac{\pi}{4}: \left(\tfrac{\sqrt2}{2}, \tfrac{\sqrt2}{2}\right) \quad \tfrac{\pi}{3}: \left(\tfrac12, \tfrac{\sqrt3}{2}\right)", 38, SECANT),
-                          T("Reference angle gives the numbers; the quadrant gives the signs.", 34), M(r"\tan\theta = \frac{\sin\theta}{\cos\theta}", 42, TANGENT)).arrange(DOWN, buff=0.4)
-            self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2.4)
+            card = VGroup(M(r"180^\circ = \pi \text{ radians}", 46, ACCUM), M(r"\text{full turn: } 2\pi", 42), M(r"\text{coterminal: add or subtract } 2\pi", 40),
+                          M(r"s = r\theta, \quad A = \tfrac12 r^2\theta \quad (\theta \text{ in radians})", 42, TANGENT)).arrange(DOWN, buff=0.45)
+            self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 
         self.examples_card()
-        self.example("Example 1: An angle in the third quadrant", r"Find $\cos\frac{4\pi}{3}$ and $\sin\frac{4\pi}{3}$.",
-                     [r"\frac{4\pi}{3} - \pi = \frac{\pi}{3}", r"\text{at } \tfrac{\pi}{3}: \ \left(\tfrac12,\ \tfrac{\sqrt3}{2}\right)", r"\text{quadrant III: both negative}",
-                      r"\cos\frac{4\pi}{3} = -\frac12, \quad \sin\frac{4\pi}{3} = -\frac{\sqrt3}{2}"], at=[1, 2, 3, 4],
-                     figure=circle_figure(4 * PI / 3, PI / 3, r"\left(-\tfrac12,\ -\tfrac{\sqrt3}{2}\right)"), figure_at=1)
-        self.example("Example 2: A negative angle", r"Find $\sin\left(-\frac{\pi}{4}\right)$ and $\cos\left(-\frac{\pi}{4}\right)$.",
-                     [r"\text{reference angle } \tfrac{\pi}{4}, \text{ quadrant IV}", r"\text{at } \tfrac{\pi}{4}: \ \left(\tfrac{\sqrt2}{2},\ \tfrac{\sqrt2}{2}\right)", r"\text{quadrant IV: } \cos > 0, \ \sin < 0",
-                      r"\sin\left(-\tfrac{\pi}{4}\right) = -\frac{\sqrt2}{2}, \quad \cos\left(-\tfrac{\pi}{4}\right) = \frac{\sqrt2}{2}"], at=[1, 2, 3, 4],
-                     figure=circle_figure(-PI / 4, PI / 4, r"\left(\tfrac{\sqrt2}{2},\ -\tfrac{\sqrt2}{2}\right)"), figure_at=1)
-        self.example("Example 3: Quadrantal angles", r"Find $\cos 3\pi$ and $\sin\frac{3\pi}{2}$.",
-                     [r"3\pi - 2\pi = \pi", r"\text{point at } \pi: (-1, 0), \text{ so } \cos 3\pi = -1", r"\text{point at } \tfrac{3\pi}{2}: (0, -1)", r"\sin\frac{3\pi}{2} = -1"], at=[1, 2, 3, 4])
-        self.example("Example 4: From sine to cosine", r"$\sin\theta = \frac35$ and $\theta$ is in quadrant II. Find $\cos\theta$ and $\tan\theta$.",
-                     [r"\cos^2\theta + \sin^2\theta = 1, \quad \sin^2\theta = \frac{9}{25}", r"\cos^2\theta = 1 - \frac{9}{25} = \frac{16}{25}", r"\cos\theta = \pm\frac45",
-                      r"\text{quadrant II: } \cos\theta < 0, \text{ so } \cos\theta = -\frac45", r"\tan\theta = \frac{3/5}{-4/5} = -\frac34"], at=[1, 2, 3, 3, 4])
+        self.example("Example 1: Radians to degrees", r"Convert $\frac{5\pi}{4}$ to degrees.",
+                     [r"\frac{5\pi}{4} \cdot \frac{180^\circ}{\pi}", r"= \frac{5 \cdot 180^\circ}{4}", r"= 5 \cdot 45^\circ = 225^\circ"], at=[1, 2, 3])
+        self.example("Example 2: Coterminal angles", r"Find the angle between $0$ and $2\pi$ that is coterminal with $\frac{17\pi}{6}$.",
+                     [r"2\pi = \frac{12\pi}{6}", r"\frac{17\pi}{6} - \frac{12\pi}{6} = \frac{5\pi}{6}", r"TEXT:$\frac{5\pi}{6}$ is between $0$ and $2\pi$."], at=[1, 2, 3])
+        pend = VGroup(Dot(ORIGIN, radius=0.08, color=INK), Line(ORIGIN, 3 * np.array([np.sin(-PI / 12), -np.cos(PI / 12), 0]), color=DIM, stroke_width=3),
+                      Line(ORIGIN, 3 * np.array([np.sin(PI / 12), -np.cos(PI / 12), 0]), color=INK, stroke_width=4),
+                      Arc(radius=3, start_angle=-PI / 2 - PI / 12, angle=PI / 6, color=TANGENT, stroke_width=8),
+                      Circle(radius=0.22, stroke_color=INK, fill_color="#C9A227", fill_opacity=1).move_to(3 * np.array([np.sin(PI / 12), -np.cos(PI / 12), 0])),
+                      M(r"80 \text{ cm}", 28).move_to(1.5 * np.array([np.sin(PI / 12), -np.cos(PI / 12), 0]) + RIGHT * 0.6),
+                      M(r"30^\circ", 28, SECANT).move_to(DOWN * 1.0))
+        self.example("Example 3: Arc length", r"A pendulum $80$ cm long swings through an angle of $30^\circ$. How far does its tip travel?",
+                     [r"30^\circ = \frac{\pi}{6}", r"s = r\theta = 80 \cdot \frac{\pi}{6}", r"= \frac{40\pi}{3} \approx 41.9 \text{ cm}"], at=[1, 2, 3], figure=pend)
+        self.example("Example 4: Sector area", r"A pizza has radius $8$ inches and is cut into $8$ equal slices. Find the area of one slice.",
+                     [r"\theta = \frac{2\pi}{8} = \frac{\pi}{4}", r"A = \tfrac12 r^2\theta = \tfrac12 \cdot 64 \cdot \frac{\pi}{4}", r"= 8\pi \approx 25.1 \text{ in}^2"], at=[1, 2, 3], figure=pizza(1.6))
         self.finish()

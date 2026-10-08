@@ -1,4 +1,4 @@
-"""Topic 0.7: Inverse trigonometric functions. Narration comes from transcripts/0_7.md."""
+"""Trig Review lesson 0.7 (T7): Solving trigonometric equations. Narration comes from transcripts/0_7.md."""
 import numpy as np
 from manim import *
 
@@ -6,138 +6,120 @@ from kit import *
 from style import *
 
 
-def ramp_scene():
-    """A wheelchair ramp (rise 1, run 12, drawn steeper so it reads) up to a door."""
-    g = -1.8
-    A, B = LEFT * 5 + UP * g, RIGHT * 1.5 + UP * g
-    C = B + UP * 1.1
-    ramp = Polygon(A, B, C, stroke_color=INK, stroke_width=3, fill_color="#B8B2A7", fill_opacity=1)
-    rail = VGroup(Line(A + UP * 0.55, C + UP * 0.55, color=DIM, stroke_width=4), *[Line(A + s * (C - A), A + s * (C - A) + UP * 0.55, color=DIM, stroke_width=3) for s in (0.05, 0.35, 0.65, 0.95)])
-    wall = Rectangle(width=2.6, height=3.6, stroke_color=INK, stroke_width=3, fill_color="#D9C7A7", fill_opacity=1).move_to(B + RIGHT * 1.3 + UP * 1.8)
-    door = Rectangle(width=0.9, height=1.7, stroke_color=INK, stroke_width=3, fill_color="#7A4E2D", fill_opacity=1).move_to(C + RIGHT * 0.65 + UP * 0.85)
-    ground = Line(LEFT * 6 + UP * g, RIGHT * 4.5 + UP * g, color=SAND, stroke_width=6)
-    labs = VGroup(M(r"12 \text{ ft}", 30).next_to(Line(A, B), DOWN, buff=0.2), M(r"1 \text{ ft}", 30, FUNC).next_to(Line(B, C), LEFT, buff=0.12),
-                  Arc(radius=1.2, angle=np.arctan2(1.1, 6.5), arc_center=A, color=SECANT, stroke_width=4), M(r"\theta", 30, SECANT).move_to(A + RIGHT * 1.55 + UP * 0.12))
-    return VGroup(ground, wall, door, ramp, rail, labs)
-
-
-def triangle_for(opp, adj, hyp, a, b):
-    return right_triangle(a, b, opp=opp, adj=adj, hyp=hyp, angle=r"\theta", size=30)
+def circle_cut(level, vertical=False, sols=(), labels=(), r=2.0):
+    """A unit circle cut by the line y = level (or x = level), with the solution points marked and labeled."""
+    uc = TrigCircle(r=r)
+    if vertical:
+        cut = DashedLine(uc.c + np.array([level * r, -(r + 0.3), 0]), uc.c + np.array([level * r, r + 0.3, 0]), color=SECANT)
+    else:
+        cut = DashedLine(uc.c + np.array([-(r + 0.3), level * r, 0]), uc.c + np.array([r + 0.3, level * r, 0]), color=SECANT)
+    g = VGroup(uc, cut, *[uc.ray(t, DIM) for t in sols], *[uc.dot(t, FUNC) for t in sols])
+    g.add(*[uc.coord(t, lab, FUNC, 28, out=0.45) for t, lab in zip(sols, labels)])
+    return g
 
 
 class Lesson(TranscriptScene):
     NUM = "0.7"
 
     def construct(self):
-        with self.beat("Working backward") as b:
-            sc = ramp_scene()
-            self.play(FadeIn(sc[:5]), run_time=1)
-            self.play(FadeIn(sc[5]), run_time=0.8)
+        with self.beat("When is the rider up high") as b:
+            W = ferris_wheel(1.5).move_to(LEFT * 5 + DOWN * 0.4)
+            ax, al = plot_axes([0, 8, 1], [0, 50, 10], w=7.2, h=4.4, xlabel="t", ylabel="h")
+            VGroup(ax, al).to_edge(RIGHT, buff=0.5).shift(DOWN * 0.2)
+            hf = lambda s: 25 - 20 * np.cos(PI * s / 2)
+            self.play(FadeIn(W), FadeIn(ax), FadeIn(al), run_time=0.8)
+            self.play(Create(ax.plot(hf, x_range=[0, 8], color=FUNC, stroke_width=4)), run_time=2)
             b.line(1)
-            self.play(Write(M(r"\tan\theta = \frac{1}{12}", 46, TANGENT).to_corner(UL, buff=0.7)), run_time=0.8)
-            self.play(FadeIn(M(r"\theta = \ ?", 46, SECANT).to_corner(UL, buff=0.7).shift(DOWN * 1.3)), run_time=0.6)
+            self.play(Create(DashedLine(ax.c2p(0, 35), ax.c2p(8, 35), color=SECANT)), FadeIn(M("35", 26, SECANT).next_to(ax.c2p(0, 35), LEFT, buff=0.1)), run_time=0.8)
+            for k, tv in enumerate((4 / 3, 8 / 3, 16 / 3, 20 / 3)):
+                self.play(FadeIn(Dot(ax.c2p(tv, 35), color=SECANT, radius=0.1)), FadeIn(T("up" if k % 2 == 0 else "down", 24, SECANT).next_to(ax.c2p(tv, 35), UP, buff=0.12)), run_time=0.5)
             b.line(2)
-            self.play(FadeIn(T("ratio $\\to$ angle: inverse trig", 36, ACCUM).to_edge(UP, buff=0.6).shift(RIGHT * 2)), run_time=0.8)
+            self.play(FadeIn(T("many solutions: find all of them in the interval", 32).to_edge(UP, buff=0.5)), run_time=0.8)
         self.clear()
         self.title()
 
-        with self.beat("Why the domain is restricted") as b:
-            ax, labs = pi_axes(-2, 2, [-1.5, 1.5, 1], w=11, h=3.6)
-            VGroup(ax, labs).shift(DOWN * 0.4)
-            full = ax.plot(np.sin, x_range=[-2 * PI, 2 * PI], color=FUNC, stroke_width=4)
-            self.play(FadeIn(ax), FadeIn(labs), Create(full), run_time=1.2)
-            self.play(Create(DashedLine(ax.c2p(-2 * PI, 0.5), ax.c2p(2 * PI, 0.5), color=SECANT)),
-                      *[FadeIn(Dot(ax.c2p(v, 0.5), color=SECANT)) for v in (-11 * PI / 6, -7 * PI / 6, PI / 6, 5 * PI / 6)], run_time=1)
+        with self.beat("Two angles for every value") as b:
+            uc = TrigCircle(r=2.0, center=LEFT * 4.4 + DOWN * 0.3)
+            self.play(Create(uc), run_time=0.6)
+            self.play(Create(DashedLine(uc.c + np.array([-2.3, 1.0, 0]), uc.c + np.array([2.3, 1.0, 0]), color=SECANT)), FadeIn(M(r"y = \tfrac12", 28, SECANT).next_to(uc.c + np.array([2.3, 1.0, 0]), RIGHT, buff=0.1)), run_time=0.8)
             b.line(1)
-            piece = ax.plot(np.sin, x_range=[-PI / 2, PI / 2], color=DERIV, stroke_width=8)
-            self.play(full.animate.set_opacity(0.2), Create(piece), run_time=1.2)
-            self.play(FadeIn(M(r"-\tfrac{\pi}{2} \le x \le \tfrac{\pi}{2}", 36, DERIV).to_edge(UP, buff=0.6)), run_time=0.6)
+            self.play(FadeIn(uc.dot(PI / 6)), FadeIn(uc.dot(5 * PI / 6)), Create(uc.ray(PI / 6, DIM)), Create(uc.ray(5 * PI / 6, DIM)),
+                      FadeIn(uc.coord(PI / 6, r"\tfrac{\pi}{6}", FUNC, 30, 0.4)), FadeIn(uc.coord(5 * PI / 6, r"\tfrac{5\pi}{6}", FUNC, 30, 0.4)), run_time=1)
+            ax, labs = pi_axes(0, 4, [-1.3, 1.3, 1], w=6.6, h=2.6, step=1)
+            VGroup(ax, labs).to_edge(RIGHT, buff=0.4).shift(UP * 1.2)
+            self.play(FadeIn(ax), FadeIn(labs), Create(ax.plot(np.sin, x_range=[0, 4 * PI], color=FUNC, stroke_width=4)), Create(DashedLine(ax.c2p(0, 0.5), ax.c2p(4 * PI, 0.5), color=SECANT)), run_time=1.2)
             b.line(2)
-            self.play(Indicate(Dot(ax.c2p(PI / 6, 0.5), color=SECANT, radius=0.13)), run_time=1)
+            self.play(*[FadeIn(Dot(ax.c2p(v, 0.5), color=SECANT)) for v in (PI / 6, 5 * PI / 6, 13 * PI / 6, 17 * PI / 6)], run_time=0.6)
+            self.play(FadeIn(M(r"x = \tfrac{\pi}{6} + 2k\pi \ \text{ or } \ x = \tfrac{5\pi}{6} + 2k\pi", 36).next_to(ax, DOWN, buff=0.6)), run_time=0.8)
+            b.line(3)
+            self.play(FadeIn(formula_box(M(r"0 \le x < 2\pi: \quad x = \tfrac{\pi}{6}, \ \tfrac{5\pi}{6}", 38, ACCUM), ACCUM).to_edge(RIGHT, buff=0.8).to_edge(DOWN, buff=0.6)), run_time=0.8)
         self.clear()
 
-        with self.beat("Arcsine") as b:
-            card = formula_box(VGroup(M(r"\arcsin x = \text{the angle } \theta \text{ in } \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right] \text{ with } \sin\theta = x", 38)), DERIV).to_edge(UP, buff=0.5)
-            self.play(FadeIn(card), run_time=1)
+        self.example("Solving 2cos x + 1 = 0", r"Solve $2\cos x + 1 = 0$ for $0 \le x < 2\pi$.",
+                     [r"2\cos x = -1", r"\cos x = -\frac12", r"\text{reference angle } \tfrac{\pi}{3}; \ \cos < 0 \text{ in II and III}", r"x = \pi - \frac{\pi}{3} = \frac{2\pi}{3}", r"x = \pi + \frac{\pi}{3} = \frac{4\pi}{3}"],
+                     at=[1, 2, 3, 4, 5], figure=circle_cut(-0.5, True, (2 * PI / 3, 4 * PI / 3), (r"\tfrac{2\pi}{3}", r"\tfrac{4\pi}{3}")), figure_at=3)
+
+        with self.beat("Factoring") as b:
+            head = M(r"\text{Solve } 2\sin^2 x = \sin x, \quad 0 \le x < 2\pi", 44).to_edge(UP, buff=0.5)
+            self.play(Write(head), run_time=0.8)
             b.line(1)
-            io = VGroup(M(r"\text{inputs: } -1 \le x \le 1", 36), M(r"\text{outputs: } -\tfrac{\pi}{2} \le \theta \le \tfrac{\pi}{2}", 36, DERIV)).arrange(DOWN, buff=0.25, aligned_edge=LEFT).to_edge(LEFT, buff=0.7).shift(DOWN * 0.3)
-            uc = TrigCircle(r=1.3, center=LEFT * 4.2 + DOWN * 2.3, ticks=False)
-            self.play(FadeIn(io), run_time=0.8)
-            self.play(Create(uc), Create(uc.arc(-PI / 2, PI / 2, DERIV)), run_time=0.8)
+            warn = callout(r"Don't divide by $\sin x$: it loses the solutions where $\sin x = 0$.", TANGENT, 32).next_to(head, DOWN, buff=0.4)
+            self.play(FadeIn(warn), run_time=0.8)
+            bd = Board()
+            bd.anchor = warn.get_bottom() + DOWN * 0.4
+            bd.write(self, r"2\sin^2 x - \sin x = 0")
             b.line(2)
-            ax, _ = plot_axes([-1.8, 1.8, 1], [-1.8, 1.8, 1], w=4.6, h=4.6, coords=False)
-            ax.to_edge(RIGHT, buff=0.8).shift(DOWN * 0.8)
-            self.play(FadeIn(ax), Create(DashedLine(ax.c2p(-1.8, -1.8), ax.c2p(1.8, 1.8), color=DIM)),
-                      Create(ax.plot(np.sin, x_range=[-PI / 2, PI / 2], color=FUNC, stroke_width=4)), run_time=1)
-            self.play(Create(ax.plot(np.arcsin, x_range=[-0.999, 0.999], color=DERIV, stroke_width=5)), FadeIn(M(r"y = \arcsin x", 30, DERIV).next_to(ax.c2p(1, PI / 2), LEFT, buff=0.2)), run_time=1.2)
+            bd.write(self, r"\sin x\,(2\sin x - 1) = 0")
+            b.line(3)
+            bd.write(self, r"\sin x = 0: \quad x = 0, \ \pi", FUNC)
+            bd.write(self, r"2\sin x - 1 = 0: \quad \sin x = \tfrac12, \quad x = \tfrac{\pi}{6}, \ \tfrac{5\pi}{6}", FUNC)
         self.clear()
 
-        with self.beat("Arccosine and arctangent") as b:
-            uc = TrigCircle(r=1.4, center=LEFT * 4.6 + UP * 1.2, ticks=False)
-            self.play(Create(uc), Create(uc.arc(0, PI, ACCUM)), FadeIn(M(r"\arccos x \in [0, \pi]", 36, ACCUM).next_to(uc, RIGHT, buff=0.5)), run_time=1)
+        with self.beat("Using an identity first") as b:
+            bd = Board()
+            bd.anchor = UP * 3.1
+            bd.write(self, r"\text{Solve } \sin 2x = \cos x, \quad 0 \le x < 2\pi")
+            bd.write(self, r"2\sin x\cos x = \cos x", ACCUM)
             b.line(1)
-            ax, _ = plot_axes([-4, 4, 1], [-2, 2, 1], w=6.6, h=3.2, coords=False)
-            ax.to_edge(DOWN, buff=0.5).to_edge(RIGHT, buff=0.6)
-            self.play(FadeIn(ax), Create(ax.plot(np.arctan, x_range=[-4, 4], color=TANGENT, stroke_width=5)), FadeIn(M(r"\arctan x \in \left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)", 36, TANGENT).to_edge(RIGHT, buff=0.6).shift(UP * 1.6)), run_time=1.2)
+            bd.write(self, r"2\sin x\cos x - \cos x = 0")
+            bd.write(self, r"\cos x\,(2\sin x - 1) = 0")
             b.line(2)
-            self.play(Create(DashedLine(ax.c2p(-4, PI / 2), ax.c2p(4, PI / 2), color=DIM)), Create(DashedLine(ax.c2p(-4, -PI / 2), ax.c2p(4, -PI / 2), color=DIM)),
-                      FadeIn(M(r"y = \tfrac{\pi}{2}", 26, DIM).next_to(ax.c2p(-4, PI / 2), UP, buff=0.08)), FadeIn(M(r"y = -\tfrac{\pi}{2}", 26, DIM).next_to(ax.c2p(4, -PI / 2), DOWN, buff=0.08)), run_time=1)
-            tab = table([r"\text{function}", r"\text{inputs}", r"\text{outputs}"], [[r"\arcsin", "[-1, 1]", r"\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]"], [r"\arccos", "[-1, 1]", r"[0, \pi]"],
-                                                                     [r"\arctan", r"\text{all reals}", r"\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)"]], size=30).to_edge(LEFT, buff=0.5).shift(DOWN * 1.9)
-            self.play(FadeIn(tab), run_time=0.8)
+            bd.write(self, r"\cos x = 0: \quad x = \tfrac{\pi}{2}, \ \tfrac{3\pi}{2}", FUNC)
+            bd.write(self, r"\sin x = \tfrac12: \quad x = \tfrac{\pi}{6}, \ \tfrac{5\pi}{6}", FUNC)
         self.clear()
 
-        uc = TrigCircle(r=1.9)
-        evfig = VGroup(uc, uc.ray(-PI / 6, DERIV), uc.dot(-PI / 6, DERIV), uc.coord(-PI / 6, r"-\tfrac{\pi}{6}", DERIV, 28, 0.4),
-                       uc.ray(2 * PI / 3, ACCUM), uc.dot(2 * PI / 3, ACCUM), uc.coord(2 * PI / 3, r"\tfrac{2\pi}{3}", ACCUM, 28, 0.4),
-                       uc.ray(PI / 3, TANGENT), uc.dot(PI / 3, TANGENT), uc.coord(PI / 3, r"\tfrac{\pi}{3}", TANGENT, 28, 0.4))
-        self.example("Evaluating inverse trig functions", r"Find $\arcsin\left(-\frac12\right)$, $\arccos\left(-\frac12\right)$, and $\arctan\sqrt3$.",
-                     [r"\arcsin\left(-\tfrac12\right): \ \theta \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right], \ \sin\theta = -\tfrac12", r"= -\frac{\pi}{6}",
-                      r"\arccos\left(-\tfrac12\right): \ \theta \in [0, \pi], \text{ reference angle } \tfrac{\pi}{3}, \text{ quadrant II}", r"= \pi - \frac{\pi}{3} = \frac{2\pi}{3}",
-                      r"\arctan\sqrt3 = \frac{\pi}{3}"], at=[1, 2, 3, 4, 5], figure=evfig, figure_at=2, follow=True)
-
-        with self.beat("Notation") as b:
-            big = M(r"\sin^{-1} x = \arcsin x", 64, DERIV).shift(UP * 1.4)
-            self.play(Write(big), run_time=1)
+        with self.beat("Multiple angles") as b:
+            head = M(r"\text{Solve } \sin 2x = 1, \quad 0 \le x < 2\pi", 44).to_edge(UP, buff=0.5)
+            self.play(Write(head), run_time=0.8)
+            ax, labs = pi_axes(0, 2, [-1.3, 1.3, 1], w=7, h=2.6, step=0.25)
+            VGroup(ax, labs).to_edge(DOWN, buff=0.6).to_edge(RIGHT, buff=0.5)
+            self.play(FadeIn(ax), FadeIn(labs), Create(ax.plot(lambda v: np.sin(2 * v), x_range=[0, 2 * PI], color=FUNC, stroke_width=4)), run_time=1.2)
             b.line(1)
-            wrong = M(r"\sin^{-1} x \ne \frac{1}{\sin x}", 52, TANGENT).next_to(big, DOWN, buff=0.7)
-            self.play(Write(wrong), run_time=0.8)
-            self.play(FadeIn(M(r"\frac{1}{\sin x} = \csc x = (\sin x)^{-1}", 44).next_to(wrong, DOWN, buff=0.6)), run_time=0.8)
-        self.clear()
-
-        with self.beat("Undoing, within limits") as b:
-            r1 = M(r"\sin(\arcsin x) = x \quad \text{for } -1 \le x \le 1", 44, DERIV).to_edge(UP, buff=0.6)
-            self.play(Write(r1), run_time=1)
-            b.line(1)
-            uc = TrigCircle(r=2.0, center=LEFT * 3.6 + DOWN * 1.0)
-            self.play(Create(uc), Create(uc.arc(-PI / 2, PI / 2, DERIV, 7)), run_time=0.8)
-            self.play(Create(uc.ray(5 * PI / 6, FUNC)), FadeIn(uc.dot(5 * PI / 6)), FadeIn(uc.coord(5 * PI / 6, r"\tfrac{5\pi}{6}", FUNC, 28, 0.4)), run_time=0.8)
-            self.play(Create(DashedLine(uc.pt(5 * PI / 6), uc.pt(PI / 6), color=SECANT)), FadeIn(uc.dot(PI / 6, DERIV)), FadeIn(uc.coord(PI / 6, r"\tfrac{\pi}{6}", DERIV, 28, 0.4)), run_time=0.8)
-            steps = VGroup(M(r"\sin\tfrac{5\pi}{6} = \tfrac12", 40), M(r"\arcsin\tfrac12 = \tfrac{\pi}{6}", 40, DERIV)).arrange(DOWN, buff=0.35, aligned_edge=LEFT).to_edge(RIGHT, buff=1).shift(UP * 0.4)
-            self.play(Write(steps), run_time=1)
+            steps = VGroup(M(r"0 \le x < 2\pi \ \text{ so } \ 0 \le 2x < 4\pi", 36), M(r"\sin u = 1 \text{ at } u = \tfrac{\pi}{2}, \ \tfrac{5\pi}{2}", 36)).arrange(DOWN, buff=0.3, aligned_edge=LEFT).next_to(head, DOWN, buff=0.4).to_edge(LEFT, buff=0.6)
+            self.play(Write(steps[0]), run_time=0.8)
+            self.play(Write(steps[1]), run_time=0.8)
             b.line(2)
-            self.play(FadeIn(formula_box(M(r"\arcsin\left(\sin\tfrac{5\pi}{6}\right) = \tfrac{\pi}{6}, \ \text{not } \tfrac{5\pi}{6}", 38, SECANT), SECANT).next_to(steps, DOWN, buff=0.6)), run_time=0.8)
+            fin = VGroup(M(r"2x = \tfrac{\pi}{2}, \ \tfrac{5\pi}{2}", 36), M(r"x = \tfrac{\pi}{4}, \ \tfrac{5\pi}{4}", 40, FUNC)).arrange(DOWN, buff=0.3, aligned_edge=LEFT).next_to(steps, DOWN, buff=0.3).align_to(steps, LEFT)
+            self.play(Write(fin), *[FadeIn(Dot(ax.c2p(v, 1), color=SECANT)) for v in (PI / 4, 5 * PI / 4)], run_time=1.2)
         self.clear()
 
         with self.beat("Close") as b:
-            tab = table([r"\text{function}", r"\text{inputs}", r"\text{outputs}"], [[r"\arcsin", "[-1, 1]", r"\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]"], [r"\arccos", "[-1, 1]", r"[0, \pi]"],
-                                                                     [r"\arctan", r"\text{all reals}", r"\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)"]], size=40).shift(UP * 0.6)
-            note = M(r"\sin^{-1} x \text{ means } \arcsin x, \text{ not } \frac{1}{\sin x}", 40, TANGENT).next_to(tab, DOWN, buff=0.8)
-            self.play(FadeIn(tab), run_time=1)
-            self.play(FadeIn(note), run_time=0.8)
+            card = VGroup(T("Isolate the trig function, or move everything to one side and factor.", 34), T("Never divide by a trig function.", 34, TANGENT),
+                          T("Reference angle, then every quadrant where the sign is right.", 34), T(r"For $kx$: solve on $k$ turns, then divide by $k$.", 34, ACCUM)).arrange(DOWN, buff=0.45)
+            self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 
         self.examples_card()
-        self.example("Example 1: Two more values", r"Find $\arctan(-1)$ and $\arccos\left(-\frac{\sqrt2}{2}\right)$.",
-                     [r"\tan\left(-\tfrac{\pi}{4}\right) = -1, \ \ -\tfrac{\pi}{4} \in \left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)", r"\arctan(-1) = -\frac{\pi}{4}",
-                      r"\text{reference angle } \tfrac{\pi}{4}, \text{ quadrant II}", r"\arccos\left(-\tfrac{\sqrt2}{2}\right) = \pi - \frac{\pi}{4} = \frac{3\pi}{4}"], at=[1, 2, 3, 4])
-        self.example("Example 2: A triangle for a composition", r"Find $\cos\left(\arcsin\frac23\right)$.",
-                     [r"\theta = \arcsin\tfrac23: \ \sin\theta = \tfrac23, \ \theta \text{ in quadrant I}", r"\text{adjacent} = \sqrt{9 - 4} = \sqrt5", r"\cos\theta > 0",
-                      r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{\sqrt5}{3}"], at=[1, 2, 3, 4], figure=triangle_for("2", r"\sqrt5", "3", 2.6, 2.33), figure_at=2)
-        self.example("Example 3: A composition in terms of x", r"Write $\tan(\arccos x)$ as an algebraic expression, for $0 < x \le 1$.",
-                     [r"\theta = \arccos x: \ \cos\theta = \frac{x}{1}", r"\text{opposite} = \sqrt{1 - x^2}", r"\tan\theta = \frac{\text{opp}}{\text{adj}}", r"\tan(\arccos x) = \frac{\sqrt{1 - x^2}}{x}"],
-                     at=[1, 2, 3, 4], figure=triangle_for(r"\sqrt{1 - x^2}", "x", "1", 2.0, 2.6), figure_at=1)
-        self.example("Example 4: Solving with a calculator", r"Solve $3\sin x = 1$ for $0 \le x < 2\pi$, to three decimal places.",
-                     [r"\sin x = \frac13", r"\arcsin\tfrac13 \approx 0.340 \quad \text{(radian mode)}", r"\sin > 0 \text{ in quadrants I and II}", r"x \approx \pi - 0.340",
-                      r"x \approx 0.340 \ \text{ or } \ x \approx 2.802"], at=[1, 1, 2, 3, 4])
+        self.example("Example 1: A tangent equation", r"Solve $\tan x = -1$ for $0 \le x < 2\pi$.",
+                     [r"\tan\tfrac{\pi}{4} = 1: \ \text{reference angle } \tfrac{\pi}{4}", r"\tan < 0 \text{ in quadrants II and IV}", r"x = \pi - \frac{\pi}{4} = \frac{3\pi}{4}", r"x = 2\pi - \frac{\pi}{4} = \frac{7\pi}{4}"],
+                     at=[1, 2, 3, 4])
+        self.example("Example 2: A quadratic in sine", r"Solve $2\sin^2 x - \sin x - 1 = 0$ for $0 \le x < 2\pi$.",
+                     [r"u = \sin x: \quad 2u^2 - u - 1 = 0", r"(2u + 1)(u - 1) = 0", r"u = -\tfrac12 \ \text{ or } \ u = 1", r"\sin x = -\tfrac12: \quad x = \frac{7\pi}{6}, \ \frac{11\pi}{6}", r"\sin x = 1: \quad x = \frac{\pi}{2}"],
+                     at=[1, 2, 2, 3, 4])
+        self.example("Example 3: An identity and a quadratic", r"Solve $\cos 2x = \cos x$ for $0 \le x < 2\pi$.",
+                     [r"2\cos^2 x - 1 = \cos x", r"2\cos^2 x - \cos x - 1 = 0", r"(2\cos x + 1)(\cos x - 1) = 0", r"\cos x = -\tfrac12: \quad x = \frac{2\pi}{3}, \ \frac{4\pi}{3}", r"\cos x = 1: \quad x = 0"],
+                     at=[1, 2, 2, 3, 4])
+        self.example("Example 4: A double angle", r"Solve $\sin 2x = \frac{\sqrt3}{2}$ for $0 \le x < 2\pi$.",
+                     [r"0 \le 2x < 4\pi", r"\text{first turn: } 2x = \tfrac{\pi}{3}, \ \tfrac{2\pi}{3}", r"\text{second turn: } 2x = \tfrac{7\pi}{3}, \ \tfrac{8\pi}{3}", r"x = \frac{\pi}{6}, \ \frac{\pi}{3}, \ \frac{7\pi}{6}, \ \frac{4\pi}{3}"],
+                     at=[1, 2, 2, 4])
         self.finish()

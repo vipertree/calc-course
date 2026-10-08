@@ -41,7 +41,7 @@ exports, so a new topic needs no registration beyond its files.
 7. **Commit and push per topic**, with a message saying what's in it and that it isn't rendered.
 
 Solution sets of trig equations: check every keyed angle exactly and the count with a numeric root scan
-(`roots()` in `content/topic_0_6.py`); `sympy.solveset` silently drops roots of some trig quadratics.
+(`roots()` in `content/topic_0_7.py`); `sympy.solveset` silently drops roots of some trig quadratics.
 
 ## The unit test
 

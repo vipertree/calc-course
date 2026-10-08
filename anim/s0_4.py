@@ -1,4 +1,4 @@
-"""Topic 0.4: Graphs of sine, cosine, and tangent. Narration comes from transcripts/0_4.md."""
+"""Trig Review lesson 0.4 (T4): The six trigonometric functions. Narration comes from transcripts/0_4.md."""
 import numpy as np
 from manim import *
 
@@ -6,175 +6,145 @@ from kit import *
 from style import *
 
 
-def level(ax, y, x0, x1, color=DIM, tex=None, size=26):
-    """A dashed horizontal level line with an optional label at its right end."""
-    g = VGroup(DashedLine(ax.c2p(x0, y), ax.c2p(x1, y), color=color))
-    if tex:
-        g.add(M(tex, size, color).next_to(ax.c2p(x1, y), RIGHT, buff=0.12))
-    return g
+def tree(height=3.2):
+    """A leafy tree (vector art); the base of the trunk is at the group's bottom center."""
+    trunk = Polygon([-0.14, 0, 0], [0.14, 0, 0], [0.09, height * 0.55, 0], [-0.09, height * 0.55, 0], stroke_width=0, fill_color="#8B5A2B", fill_opacity=1)
+    greens = ["#3E7C3A", "#4E9A45", "#5DAF52"]
+    crown = VGroup(*[Circle(radius=r, stroke_width=0, fill_color=greens[k % 3], fill_opacity=1).move_to([dx, height * 0.55 + dy, 0])
+                     for k, (r, dx, dy) in enumerate(((0.75, 0, 0.55), (0.6, -0.55, 0.3), (0.6, 0.55, 0.3), (0.55, 0, 0.95), (0.45, -0.35, 0.85), (0.45, 0.35, 0.85)))])
+    return VGroup(trunk, crown)
 
 
-def asymptotes(ax, xs, ymax, color=DIM):
-    return VGroup(*[DashedLine(ax.c2p(v, -ymax), ax.c2p(v, ymax), color=color) for v in xs])
+def surveyor_scene(d=6.0, ang=35):
+    """Ground, a tree, a sighting tripod d units away, the right triangle with the 35 degree angle."""
+    g = -2.6
+    T0 = np.array([3.0, g, 0])
+    tr = tree(3.4).move_to(T0, aligned_edge=DOWN)
+    top = np.array([T0[0], g + d * np.tan(np.radians(ang)), 0])
+    S = T0 + LEFT * d
+    ground = Line(LEFT * 6.3 + UP * g, RIGHT * 5.5 + UP * g, color=SAND, stroke_width=6)
+    tripod = Line(S, S + 0.45 * np.array([np.cos(np.radians(ang)), np.sin(np.radians(ang)), 0]), color=INK, stroke_width=8)   # the sighting tube
+    tri = Polygon(S, T0, top, stroke_color=SECANT, stroke_width=3)
+    sight = DashedLine(S, top, color=SECANT)
+    arc = Arc(radius=0.8, angle=np.radians(ang), arc_center=S, color=SECANT, stroke_width=4)
+    labs = VGroup(M(r"20 \text{ m}", 30).next_to(Line(S, T0), DOWN, buff=0.2), M(f"{ang}^\\circ", 30, SECANT).move_to(S + 1.2 * np.array([np.cos(np.radians(ang / 2)), np.sin(np.radians(ang / 2)), 0])),
+                  M("h", 34, FUNC).next_to(Line(T0, top), RIGHT, buff=0.15))
+    return VGroup(ground, tr, tripod, tri, sight, arc, labs)
+
+
+def ladder_scene():
+    """A ladder at 70 degrees against a brick wall."""
+    g, L, a = -2.4, 4.6, np.radians(70)
+    W = np.array([1.6, g, 0])
+    foot = W + LEFT * L * np.cos(a)
+    topp = W + UP * L * np.sin(a)
+    bricks = VGroup(*[Rectangle(width=0.7, height=0.3, stroke_color="#7A3B2E", stroke_width=1.5, fill_color="#B5543C", fill_opacity=1)
+                      .move_to(W + RIGHT * (0.35 + 0.7 * c + 0.35 * (r % 2)) + UP * (0.15 + 0.3 * r)) for r in range(16) for c in range(2)])
+    rails = VGroup(Line(foot, topp, color="#C9A227", stroke_width=6), Line(foot + LEFT * 0.25, topp + LEFT * 0.25, color="#C9A227", stroke_width=6))
+    rungs = VGroup(*[Line(foot + s * (topp - foot), foot + s * (topp - foot) + LEFT * 0.25, color="#C9A227", stroke_width=4) for s in np.linspace(0.08, 0.95, 10)])
+    ground = Line(W + LEFT * 3.2, W + RIGHT * 1.8, color=SAND, stroke_width=6)
+    labs = VGroup(M(r"6 \text{ m}", 28).move_to((foot + topp) / 2 + LEFT * 0.6), M(r"70^\circ", 28, SECANT).move_to(foot + RIGHT * 0.65 + UP * 0.35),
+                  DashedLine(W + LEFT * 0.05, topp + LEFT * 0.05, color=FUNC), M("h", 32, FUNC).move_to(W + UP * L * np.sin(a) / 2 + LEFT * 0.35))
+    return VGroup(bricks, ground, rails, rungs, labs)
 
 
 class Lesson(TranscriptScene):
     NUM = "0.4"
 
     def construct(self):
-        with self.beat("Unrolling the circle") as b:
-            uc = TrigCircle(r=1.4, center=LEFT * 5 + UP * 0.2, ticks=False)
-            ax, labs = pi_axes(0, 2.2, [-1.4, 1.4, 1], w=8.6, h=2.8, ylabel=r"\sin\theta")
-            VGroup(ax, labs).next_to(uc, RIGHT, buff=0.8).align_to(uc, DOWN).shift(UP * (uc.c[1] - ax.c2p(0, 0)[1]))
-            self.play(Create(uc), FadeIn(ax), FadeIn(labs), run_time=1)
-            th = ValueTracker(0)
-            p = always_redraw(lambda: uc.dot(th.get_value(), FUNC))
-            q = always_redraw(lambda: Dot(ax.c2p(th.get_value(), np.sin(th.get_value())), radius=0.09, color=FUNC))
-            link = always_redraw(lambda: DashedLine(uc.pt(th.get_value()), ax.c2p(th.get_value(), np.sin(th.get_value())), color=DIM))
-            trace = TracedPath(q.get_center, stroke_color=FUNC, stroke_width=4)
-            self.add(p, q, link, trace)
-            self.play(th.animate.set_value(2 * PI), run_time=5, rate_func=linear)
+        with self.beat("How tall is the tree") as b:
+            sc = surveyor_scene()
+            self.play(FadeIn(sc[0]), FadeIn(sc[1]), FadeIn(sc[2]), run_time=1)
+            self.play(Create(sc[4]), Create(sc[5]), FadeIn(sc[6][1]), run_time=1)
+            self.play(FadeIn(sc[6][0]), run_time=0.5)
             b.line(1)
-            self.play(th.animate.set_value(2.2 * PI), run_time=0.8, rate_func=linear)
-            self.play(FadeIn(T("one trip around = one wave", 32, FUNC).next_to(ax, DOWN, buff=0.6)), run_time=0.6)
+            self.play(Create(sc[3]), FadeIn(sc[6][2]), run_time=1)
             b.line(2)
-            props = VGroup(T("tides", 30, DIM), T("sound", 30, DIM), T("seasons", 30, DIM)).arrange(RIGHT, buff=0.8).to_edge(DOWN, buff=0.5)
-            self.play(LaggedStart(*[FadeIn(m) for m in props], lag_ratio=0.3), run_time=1.2)
+            self.play(FadeIn(M(r"\frac{h}{20} = \ ?", 44, FUNC).to_corner(UL, buff=0.7)), run_time=0.8)
         self.clear()
         self.title()
 
-        with self.beat("The graph of sine") as b:
-            ax, labs = pi_axes(-2, 2, [-1.6, 1.6, 1], w=11, h=3.6)
-            VGroup(ax, labs).shift(DOWN * 0.4)
-            self.play(FadeIn(ax), FadeIn(labs), run_time=0.6)
-            self.play(Create(ax.plot(np.sin, x_range=[0, 2 * PI], color=FUNC, stroke_width=5)), run_time=2.4)
-            self.play(FadeIn(Dot(ax.c2p(PI / 2, 1), color=SECANT)), FadeIn(M(r"\left(\tfrac{\pi}{2}, 1\right)", 26, SECANT).next_to(ax.c2p(PI / 2, 1), UP, buff=0.12)),
-                      FadeIn(Dot(ax.c2p(3 * PI / 2, -1), color=SECANT)), FadeIn(M(r"\left(\tfrac{3\pi}{2}, -1\right)", 26, SECANT).next_to(ax.c2p(3 * PI / 2, -1), DOWN, buff=0.12)), run_time=0.8)
+        with self.beat("From the circle to any triangle") as b:
+            th = 0.6
+            tri1 = right_triangle(np.cos(th) * 2, np.sin(th) * 2, opp=r"\sin\theta", adj=r"\cos\theta", hyp="1", angle=r"\theta", size=30).move_to(LEFT * 4 + DOWN * 0.8)
+            self.play(Create(tri1[0]), FadeIn(tri1[1:]), run_time=1)
             b.line(1)
-            self.play(Create(ax.plot(np.sin, x_range=[-2 * PI, 0], color=FUNC, stroke_width=5)), run_time=1.4)
-            br = BraceBetweenPoints(ax.c2p(0, 1.45), ax.c2p(2 * PI, 1.45), UP, color=TANGENT)
-            self.play(FadeIn(br), FadeIn(M(r"\text{period } 2\pi", 34, TANGENT).next_to(br, UP, buff=0.1)), run_time=0.8)
+            tri2 = right_triangle(np.cos(th) * 4.2, np.sin(th) * 4.2, opp=r"r\sin\theta", adj=r"r\cos\theta", hyp="r", angle=r"\theta", size=32)
+            tri2.move_to(tri1, aligned_edge=DL)
+            self.play(ReplacementTransform(tri1, tri2), run_time=1.6)
             b.line(2)
-            self.play(FadeIn(level(ax, 1, -2 * PI, 2 * PI)), FadeIn(level(ax, -1, -2 * PI, 2 * PI)), FadeIn(M(r"-1 \le \sin x \le 1", 34).to_corner(UL, buff=0.6)), run_time=0.8)
-            self.play(*[FadeIn(Dot(ax.c2p(k * PI, 0), color=DERIV)) for k in range(-2, 3)], FadeIn(M(r"\sin x = 0 \text{ at } x = k\pi", 32, DERIV).to_corner(UR, buff=0.6)), run_time=0.8)
+            rat = VGroup(M(r"\sin\theta = \frac{\text{opposite}}{\text{hypotenuse}}", 38, FUNC), M(r"\cos\theta = \frac{\text{adjacent}}{\text{hypotenuse}}", 38, DERIV),
+                         M(r"\tan\theta = \frac{\text{opposite}}{\text{adjacent}}", 38, TANGENT)).arrange(DOWN, buff=0.35, aligned_edge=LEFT).to_edge(RIGHT, buff=0.5).shift(UP * 0.8)
+            for r_ in rat:
+                self.play(Write(r_), run_time=0.8)
+            b.line(3)
+            self.play(FadeIn(formula_box(T("SOH \\ CAH \\ TOA", 48, ACCUM), ACCUM).next_to(rat, DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
-        with self.beat("The graph of cosine") as b:
-            ax, labs = pi_axes(-2, 2, [-1.6, 1.6, 1], w=11, h=3.6)
-            VGroup(ax, labs).shift(DOWN * 0.4)
-            sin_g = ax.plot(np.sin, x_range=[-2 * PI, 2 * PI], color=FUNC, stroke_width=3).set_opacity(0.5)
-            self.play(FadeIn(ax), FadeIn(labs), FadeIn(sin_g), run_time=0.6)
-            cos_g = ax.plot(np.cos, x_range=[-2 * PI, 2 * PI], color=DERIV, stroke_width=5)
-            self.play(Create(cos_g), FadeIn(Dot(ax.c2p(0, 1), color=DERIV)), FadeIn(M(r"(0, 1)", 26, DERIV).next_to(ax.c2p(0, 1), UR, buff=0.1)), run_time=2)
+        tri = right_triangle(3.6, 1.92, opp="8", adj="15", hyp="?", angle=r"\theta", size=32)
+        self.example("Ratios from sides", r"A right triangle has legs $8$ and $15$. $\theta$ is the angle opposite the side of length $8$. Find $\sin\theta$, $\cos\theta$, and $\tan\theta$.",
+                     [r"\text{hyp}^2 = 8^2 + 15^2 = 64 + 225 = 289", r"\text{hyp} = 17", r"\sin\theta = \frac{\text{opp}}{\text{hyp}} = \frac{8}{17}", r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{15}{17}",
+                      r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{8}{15}"], at=[1, 2, 3, 4, 5], figure=tri, follow=True)
+
+        with self.beat("Any angle, any point") as b:
+            ax, al = plot_axes([-5, 5, 1], [-5, 5, 1], w=5.6, h=5.6, coords=False)
+            ax.shift(LEFT * 3 + DOWN * 0.2)
+            P = ax.c2p(-3, 4)
+            O = ax.c2p(0, 0)
+            self.play(FadeIn(ax), FadeIn(al), run_time=0.6)
+            self.play(Create(Line(O, P, color=INK, stroke_width=4)), FadeIn(Dot(P, color=FUNC)), FadeIn(M("(x, y)", 32, FUNC).next_to(P, UL, buff=0.1)),
+                      FadeIn(M("r", 32).move_to((O + P) / 2 + RIGHT * 0.3 + UP * 0.15)), Create(Arc(radius=0.5, angle=np.arctan2(4, -3), arc_center=O, color=SECANT)), run_time=1)
+            self.play(FadeIn(M(r"r = \sqrt{x^2 + y^2}", 36).to_edge(RIGHT, buff=0.8).shift(UP * 2.6)), run_time=0.6)
             b.line(1)
-            slide = ax.plot(np.sin, x_range=[-1.5 * PI, 2 * PI], color=FUNC, stroke_width=5)
-            self.play(slide.animate.shift(ax.c2p(-PI / 2, 0) - ax.c2p(0, 0)), run_time=1.6)
-            self.play(FadeIn(M(r"\cos x = \sin\left(x + \tfrac{\pi}{2}\right)", 38, DERIV).to_edge(UP, buff=0.6)), run_time=0.8)
+            defs = VGroup(M(r"\sin\theta = \frac{y}{r}", 42, FUNC), M(r"\cos\theta = \frac{x}{r}", 42, DERIV), M(r"\tan\theta = \frac{y}{x}", 42, TANGENT)).arrange(RIGHT, buff=0.5).to_edge(RIGHT, buff=0.4).shift(UP * 1.2)
+            self.play(Write(defs), run_time=1.2)
+            b.line(2)
+            ex = VGroup(M(r"(-3, 4): \ r = 5", 38), M(r"\sin\theta = \tfrac45, \quad \cos\theta = -\tfrac35", 38, SECANT)).arrange(DOWN, buff=0.3).to_edge(RIGHT, buff=0.8).shift(DOWN * 0.9)
+            self.play(FadeIn(M("(-3, 4)", 28, DIM).next_to(P, DOWN + LEFT * 0.2, buff=0.25)), FadeIn(ex), run_time=1)
         self.clear()
 
-        with self.beat("Amplitude and period") as b:
-            ax, labs = pi_axes(0, 2, [-3.4, 3.4, 1], w=8.4, h=4.6, yticks=(3, 1, -1, -3))
-            VGroup(ax, labs).to_edge(LEFT, buff=0.6).shift(DOWN * 0.3)
-            self.play(FadeIn(ax), FadeIn(labs), Create(ax.plot(np.sin, x_range=[0, 2 * PI], color=DIM, stroke_width=3)), run_time=0.8)
-            g3 = ax.plot(lambda v: 3 * np.sin(v), x_range=[0, 2 * PI], color=FUNC, stroke_width=5)
-            self.play(Create(g3), FadeIn(M(r"y = 3\sin x", 34, FUNC).to_edge(RIGHT, buff=0.6).shift(UP * 2.4)), run_time=1.2)
-            self.play(FadeIn(DoubleArrow(ax.c2p(PI / 2, 0), ax.c2p(PI / 2, 3), buff=0, color=FUNC, stroke_width=3)), FadeIn(T("amplitude 3", 30, FUNC).to_edge(RIGHT, buff=0.6).shift(UP * 1.8)), run_time=0.8)
+        with self.beat("The reciprocal functions") as b:
+            cols = VGroup(*[VGroup(M(top, 46, c), M(bot, 40, c), T(name, 28, DIM)).arrange(DOWN, buff=0.3) for top, bot, name, c in
+                            ((r"\sin\theta", r"\csc\theta = \frac{1}{\sin\theta}", "cosecant", FUNC), (r"\cos\theta", r"\sec\theta = \frac{1}{\cos\theta}", "secant", DERIV),
+                             (r"\tan\theta", r"\cot\theta = \frac{1}{\tan\theta} = \frac{\cos\theta}{\sin\theta}", "cotangent", TANGENT))]).arrange(RIGHT, buff=0.9).shift(UP * 1)
+            self.play(FadeIn(VGroup(*[c[0] for c in cols])), run_time=0.6)
+            for c in cols:
+                self.play(Write(c[1]), FadeIn(c[2]), run_time=0.8)
             b.line(1)
-            g2 = ax.plot(lambda v: np.sin(2 * v), x_range=[0, 2 * PI], color=TANGENT, stroke_width=5)
-            self.play(Create(g2), FadeIn(M(r"y = \sin 2x", 34, TANGENT).to_edge(RIGHT, buff=0.6).shift(UP * 0.8)), run_time=1.2)
-            br = BraceBetweenPoints(ax.c2p(0, -1.2), ax.c2p(PI, -1.2), DOWN, color=TANGENT)
-            self.play(FadeIn(br), FadeIn(T(r"period $\pi$", 30, TANGENT).to_edge(RIGHT, buff=0.6).shift(UP * 0.2)), run_time=0.8)
+            tip = formula_box(T(r"one ``co'' per pair: sine with \textbf{co}secant, \textbf{co}sine with secant", 32, ACCUM), ACCUM).shift(DOWN * 1.4)
+            self.play(FadeIn(tip), run_time=0.8)
             b.line(2)
-            box = formula_box(VGroup(M(r"y = A\sin(Bx)", 40), M(r"\text{amplitude } |A|", 36, FUNC), M(r"\text{period } \frac{2\pi}{|B|}", 36, TANGENT)).arrange(DOWN, buff=0.25), ACCUM)
-            self.play(FadeIn(box.to_edge(RIGHT, buff=0.5).shift(DOWN * 1.8)), run_time=0.8)
+            self.play(FadeIn(M(r"\csc\theta = \frac{\text{hyp}}{\text{opp}}, \quad \sec\theta = \frac{\text{hyp}}{\text{adj}}, \quad \cot\theta = \frac{\text{adj}}{\text{opp}}", 36).next_to(tip, DOWN, buff=0.5)), run_time=1)
         self.clear()
 
-        with self.beat("Shifts") as b:
-            ax, labs = pi_axes(-0.5, 2.5, [-1.4, 3.4, 1], w=9.6, h=4.6, yticks=(1, 2, 3, -1))
-            VGroup(ax, labs).shift(DOWN * 0.6 + LEFT * 0.8)
-            base = ax.plot(np.sin, x_range=[-0.5 * PI, 2.5 * PI], color=DIM, stroke_width=3)
-            self.play(FadeIn(ax), FadeIn(labs), Create(base), run_time=0.8)
-            moved = ax.plot(np.sin, x_range=[-0.5 * PI, 2.5 * PI], color=FUNC, stroke_width=5)
-            self.play(FadeIn(moved), run_time=0.3)
-            self.play(moved.animate.shift(ax.c2p(0, 2) - ax.c2p(0, 0)), run_time=1.2)
-            self.play(FadeIn(level(ax, 2, -0.5 * PI, 2.5 * PI, ACCUM, r"\text{midline } y = D")), run_time=0.6)
+        with self.beat("Where they are undefined") as b:
+            uc = TrigCircle(r=2.4, center=LEFT * 3 + DOWN * 0.2)
+            self.play(Create(uc), run_time=0.6)
+            self.play(FadeIn(uc.dot(PI / 2, TANGENT)), FadeIn(uc.dot(3 * PI / 2, TANGENT)), FadeIn(M(r"\cos\theta = 0", 32, TANGENT).next_to(uc.pt(PI / 2), UR, buff=0.15)),
+                      FadeIn(M(r"\tan\theta, \ \sec\theta \text{ undefined at } \tfrac{\pi}{2}, \tfrac{3\pi}{2}, \dots", 36, TANGENT).to_edge(RIGHT, buff=0.4).shift(UP * 1)), run_time=1)
             b.line(1)
-            self.play(moved.animate.shift(ax.c2p(PI / 4, 0) - ax.c2p(0, 0)), run_time=1.2)
-            self.play(FadeIn(T(r"$x - C$: slides right $C$", 32, SECANT).to_edge(UP, buff=0.5).shift(LEFT * 2.4)), run_time=0.6)
-            b.line(2)
-            self.play(FadeIn(formula_box(M(r"y = A\sin\big(B(x - C)\big) + D", 44, ACCUM), ACCUM).to_edge(UP, buff=0.4).shift(RIGHT * 3)), run_time=0.8)
-        self.clear()
-
-        ax, labs = pi_axes(0, 2, [-2.6, 4.6, 1], w=6, h=4.2, yticks=(4, 1, -2))
-        fig = VGroup(ax, labs, ax.plot(lambda v: 3 * np.cos(2 * v) + 1, x_range=[0, 2 * PI], color=FUNC, stroke_width=4),
-                     level(ax, 1, 0, 2 * PI, ACCUM), level(ax, 4, 0, 2 * PI, SECANT), level(ax, -2, 0, 2 * PI, SECANT))
-        self.example("Describing a cosine graph", r"For $y = 3\cos(2x) + 1$, find the amplitude, period, midline, maximum, and minimum.",
-                     [r"\text{amplitude } |3| = 3", r"\text{period } \frac{2\pi}{2} = \pi", r"\text{midline } y = 1", r"\text{maximum } 1 + 3 = 4", r"\text{minimum } 1 - 3 = -2"],
-                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=3, follow=True)
-
-        with self.beat("The graph of tangent") as b:
-            ax, labs = pi_axes(-1.5, 1.5, [-4, 4, 1], w=10, h=5.2, yticks=(2, -2))
-            VGroup(ax, labs).shift(DOWN * 0.3)
-            self.play(FadeIn(ax), FadeIn(labs), run_time=0.6)
-            self.play(*[FadeIn(Dot(ax.c2p(k * PI, 0), color=DERIV)) for k in (-1, 0, 1)], FadeIn(T(r"zeros where $\sin x = 0$", 30, DERIV).to_corner(UL, buff=0.5)), run_time=0.8)
-            b.line(1)
-            asy = asymptotes(ax, [-1.5 * PI, -PI / 2, PI / 2, 1.5 * PI], 4)
-            mid = clipped_plot(ax, np.tan, -PI / 2 + 0.01, PI / 2 - 0.01, 4, TANGENT, 5)
-            self.play(Create(mid), run_time=1.4)
-            self.play(Create(asy[1:3]), FadeIn(T(r"asymptotes where $\cos x = 0$", 30, DIM).to_corner(UR, buff=0.5)), run_time=0.8)
-            b.line(2)
-            self.play(Create(clipped_plot(ax, np.tan, -1.5 * PI + 0.01, -PI / 2 - 0.01, 4, TANGENT, 5)), Create(clipped_plot(ax, np.tan, PI / 2 + 0.01, 1.5 * PI - 0.01, 4, TANGENT, 5)),
-                      Create(asy[0]), Create(asy[3]), run_time=1.4)
-            br = BraceBetweenPoints(ax.c2p(-PI / 2, -3.6), ax.c2p(PI / 2, -3.6), DOWN, color=SECANT)
-            self.play(FadeIn(br), FadeIn(T(r"period $\pi$", 30, SECANT).next_to(br, DOWN, buff=0.08)), run_time=0.6)
-        self.clear()
-
-        with self.beat("Secant, cosecant, cotangent") as b:
-            ax, labs = pi_axes(-1.5, 1.5, [-3.5, 3.5, 1], w=10, h=4.6, yticks=(1, -1))
-            VGroup(ax, labs).shift(DOWN * 0.4)
-            self.play(FadeIn(ax), FadeIn(labs), Create(DashedVMobject(ax.plot(np.cos, x_range=[-1.5 * PI, 1.5 * PI], color=DERIV, stroke_width=3), num_dashes=60)), run_time=0.8)
-            sec = clipped_plot(ax, lambda v: 1 / np.cos(v), -1.5 * PI, 1.5 * PI, 3.5, ACCUM, 5)
-            self.play(Create(sec), FadeIn(M(r"y = \sec x = \frac{1}{\cos x}", 36, ACCUM).to_corner(UL, buff=0.5)), run_time=1.6)
-            b.line(1)
-            self.play(Create(asymptotes(ax, [-PI / 2, PI / 2], 3.5)), run_time=0.6)
-            self.play(FadeOut(sec), run_time=0.4)
-            self.play(Create(DashedVMobject(ax.plot(np.sin, x_range=[-1.5 * PI, 1.5 * PI], color=FUNC, stroke_width=3), num_dashes=60)),
-                      Create(clipped_plot(ax, lambda v: 1 / np.sin(v), -1.5 * PI, 1.5 * PI, 3.5, SECANT, 5)), FadeIn(M(r"y = \csc x = \frac{1}{\sin x}", 36, SECANT).to_corner(UR, buff=0.5)), run_time=1.6)
-            b.line(2)
-            self.play(FadeIn(T(r"$\cot x = \frac{\cos x}{\sin x}$: falling branches, asymptotes at $k\pi$", 30, DIM).to_edge(DOWN, buff=0.3)), run_time=0.8)
+            self.play(FadeIn(uc.dot(0, FUNC)), FadeIn(uc.dot(PI, FUNC)), FadeIn(M(r"\sin\theta = 0", 32, FUNC).next_to(uc.pt(PI), UP, buff=0.3)),
+                      FadeIn(M(r"\cot\theta, \ \csc\theta \text{ undefined at } 0, \pi, 2\pi, \dots", 36, FUNC).to_edge(RIGHT, buff=0.4).shift(DOWN * 0.6)), run_time=1)
         self.clear()
 
         with self.beat("Close") as b:
-            card = VGroup(M(r"\sin, \ \cos: \ \text{period } 2\pi, \ \ -1 \le y \le 1", 42),
-                          M(r"y = A\sin\big(B(x - C)\big) + D", 46, ACCUM),
-                          M(r"\text{amplitude } |A|, \ \ \text{period } \frac{2\pi}{|B|}, \ \ \text{shift } C, \ \ \text{midline } y = D", 38),
-                          M(r"\tan: \ \text{period } \pi, \ \text{asymptotes where } \cos x = 0", 40, TANGENT)).arrange(DOWN, buff=0.45)
+            card = VGroup(T("SOH \\ CAH \\ TOA", 44, ACCUM), M(r"\csc\theta = \frac{1}{\sin\theta}, \quad \sec\theta = \frac{1}{\cos\theta}, \quad \cot\theta = \frac{1}{\tan\theta}", 40),
+                          M(r"\text{point } (x, y), \text{ distance } r: \ \sin\theta = \frac{y}{r}, \ \cos\theta = \frac{x}{r}, \ \tan\theta = \frac{y}{x}", 38),
+                          T(r"$\tan$, $\sec$ undefined where $\cos\theta = 0$; $\cot$, $\csc$ where $\sin\theta = 0$", 32, DIM)).arrange(DOWN, buff=0.45)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 
         self.examples_card()
-        ax, labs = plot_axes([0, 12, 3], [0, 8, 1], w=6, h=4, coords=False)
-        f1 = VGroup(ax, labs, ax.plot(lambda v: -2 * np.sin(PI * v / 3) + 5, x_range=[0, 12], color=FUNC, stroke_width=4), level(ax, 5, 0, 12, ACCUM, "5"), level(ax, 7, 0, 12, SECANT, "7"),
-                    level(ax, 3, 0, 12, SECANT, "3"), *[M(str(v), 22, DIM).next_to(ax.c2p(v, 0), DOWN, buff=0.1) for v in (3, 6, 9, 12)])
-        self.example("Example 1: A reflected sine", r"For $y = -2\sin\left(\frac{\pi x}{3}\right) + 5$, find the amplitude, period, midline, maximum, and minimum.",
-                     [r"\text{amplitude } |-2| = 2", r"\text{period } \frac{2\pi}{\pi/3} = 2\pi \cdot \frac{3}{\pi} = 6", r"\text{midline } y = 5", r"\text{maximum } 5 + 2 = 7, \ \ \text{minimum } 5 - 2 = 3",
-                      r"TEXT:The negative $A$ flips the wave: it starts at the midline going down."], at=[1, 2, 3, 3, 4], figure=f1, figure_at=4)
-        ax, labs = plot_axes([0, 8, 1], [-2, 6, 1], w=6, h=4)
-        f2 = VGroup(ax, labs, ax.plot(lambda v: 3 * np.cos(PI * v / 2) + 2, x_range=[0, 8], color=FUNC, stroke_width=4),
-                    Dot(ax.c2p(0, 5), color=SECANT), Dot(ax.c2p(2, -1), color=SECANT), Dot(ax.c2p(4, 5), color=SECANT))
-        self.example("Example 2: An equation from a graph", VGroup(T("Write an equation for this graph.", 42)),
-                     [r"D = \frac{5 + (-1)}{2} = 2", r"A = \frac{5 - (-1)}{2} = 3", r"\text{period } 4: \ \frac{2\pi}{B} = 4, \ \ B = \frac{\pi}{2}", r"\text{starts at a maximum: cosine}",
-                      r"y = 3\cos\left(\frac{\pi x}{2}\right) + 2"], at=[1, 2, 3, 4, 4], figure=f2,
-                     text=r"Write an equation for the graph: a maximum of $5$ at $x = 0$, a minimum of $-1$ at $x = 2$, the next maximum at $x = 4$.",
-                     notes_graph=dict(fns=[("3*cos(deg(pi*x/2))+2", 0, 8)], xr=(-0.3, 8.3), yr=(-2, 6), closed=[(0, 5), (2, -1), (4, 5)]))
-        self.example("Example 3: A Ferris wheel", r"A Ferris wheel has radius $20$ m, its center is $25$ m above the ground, and it turns once every $4$ minutes. A rider starts at the bottom. Write the rider's height $h(t)$ after $t$ minutes, and find $h(1)$ and $h(2)$.",
-                     [r"\text{midline } 25, \ \ \text{amplitude } 20", r"\text{period } 4: \ B = \frac{2\pi}{4} = \frac{\pi}{2}", r"\text{starts at a minimum: } -\cos",
-                      r"h(t) = 25 - 20\cos\left(\frac{\pi t}{2}\right)", r"h(1) = 25 - 20\cos\tfrac{\pi}{2} = 25 \text{ m}", r"h(2) = 25 - 20\cos\pi = 45 \text{ m}"],
-                     at=[1, 2, 3, 3, 4, 4], figure=ferris_wheel(1.6))
-        ax, labs = pi_axes(0, 1, [-4, 4, 1], w=5, h=4, step=0.25, yticks=())
-        f4 = VGroup(ax, labs, *[clipped_plot(ax, lambda v: np.tan(2 * v), a, c, 4, TANGENT, 4) for a, c in ((0, PI / 4 - 0.01), (PI / 4 + 0.01, 3 * PI / 4 - 0.01), (3 * PI / 4 + 0.01, PI))],
-                    asymptotes(ax, [PI / 4, 3 * PI / 4], 4))
-        self.example("Example 4: Asymptotes of a tangent", r"Find the vertical asymptotes of $y = \tan(2x)$ for $0 \le x \le \pi$, and its period.",
-                     [r"\tan u \text{ undefined at } u = \tfrac{\pi}{2} + k\pi", r"2x = \frac{\pi}{2} + k\pi", r"x = \frac{\pi}{4} + \frac{k\pi}{2}", r"x = \frac{\pi}{4}, \ \frac{3\pi}{4}",
-                      r"\text{period } \frac{\pi}{2}"], at=[1, 2, 2, 3, 4], figure=f4, figure_at=3)
+        self.example("Example 1: Reciprocals at landmark angles", r"Find $\sec\frac{5\pi}{4}$ and $\csc\frac{5\pi}{6}$.",
+                     [r"\cos\frac{5\pi}{4} = -\frac{\sqrt2}{2}", r"\sec\frac{5\pi}{4} = \frac{1}{-\sqrt2/2} = -\frac{2}{\sqrt2} = -\sqrt2", r"\sin\frac{5\pi}{6} = \frac12", r"\csc\frac{5\pi}{6} = 2"], at=[1, 2, 3, 4])
+        self.example("Example 2: The tree", r"From $20$ m away, the angle up to the top of a tree is $35^\circ$. How tall is the tree?",
+                     [r"\tan 35^\circ = \frac{h}{20}", r"h = 20\tan 35^\circ", r"\approx 20(0.7002) \quad \text{(degree mode)}", r"\approx 14.0 \text{ m}"], at=[1, 2, 3, 4], figure=surveyor_scene())
+        self.example("Example 3: The ladder", r"A $6$ m ladder leans against a wall, making a $70^\circ$ angle with the ground. How high up the wall does it reach?",
+                     [r"\sin 70^\circ = \frac{h}{6}", r"h = 6\sin 70^\circ", r"\approx 6(0.9397)", r"\approx 5.64 \text{ m}"], at=[1, 2, 3, 4], figure=ladder_scene())
+        ax, al = plot_axes([-3, 1, 1], [-3, 1, 1], w=3.6, h=3.6, coords=False)
+        q3 = VGroup(ax, al, Line(ax.c2p(0, 0), ax.c2p(-1, -2), color=INK, stroke_width=4), Dot(ax.c2p(-1, -2), color=FUNC), M("(-1, -2)", 26, FUNC).next_to(ax.c2p(-1, -2), LEFT, buff=0.1),
+                    M(r"\sqrt5", 26).move_to(ax.c2p(-0.2, -1.2)))
+        self.example("Example 4: From tangent to the rest", r"$\tan\theta = 2$ and $\theta$ is in quadrant III. Find $\sin\theta$ and $\sec\theta$.",
+                     [r"\tan\theta = \frac{y}{x} = \frac{-2}{-1}", r"\text{point } (-1, -2)", r"r = \sqrt{1 + 4} = \sqrt5", r"\sin\theta = \frac{y}{r} = -\frac{2}{\sqrt5} = -\frac{2\sqrt5}{5}",
+                      r"\sec\theta = \frac{r}{x} = \frac{\sqrt5}{-1} = -\sqrt5"], at=[1, 1, 2, 3, 4], figure=q3, figure_at=1)
         self.finish()

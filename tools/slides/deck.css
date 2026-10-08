@@ -46,11 +46,11 @@ table.data th { font: 600 30px var(--font-ui); color: var(--ink-2); border-botto
 table.data.vbar td:first-child { border-right: 2px solid var(--ink-2); font-weight: 600; }
 table.data tr.rule td { border-top: 2px solid var(--ink-2); }
 figure { margin: 10px 0; text-align: center; }
-figure .svg svg { width: auto; height: auto; max-width: 100%; max-height: 520px; color: var(--ink); }
+figure .svg svg { width: 100%; max-width: 860px; height: auto; max-height: 540px; color: var(--ink); }
 figure figcaption { font: 26px/1.35 var(--font-ui); color: var(--ink-2); margin-top: 6px; }
 .figrow { display: flex; gap: 30px; justify-content: center; }
 .figrow figure { flex: 1; margin: 0; }
-.figrow figure .svg svg { max-height: 420px; }
+.figrow figure .svg svg { max-height: 440px; }
 .dline { display: block; text-align: center; margin: .5em 0; line-height: 2.2; }
 .dline .dpiece { display: inline-block; margin: 0 .8em; line-height: normal; vertical-align: middle; }
 .nobr { white-space: nowrap; }
@@ -73,7 +73,7 @@ figure figcaption { font: 26px/1.35 var(--font-ui); color: var(--ink-2); margin-
 .problem.small { font-size: 36px; padding-bottom: 20px; border-bottom: 2px solid var(--rule); margin-bottom: 20px; }
 .with-fig { display: flex; gap: 40px; align-items: flex-start; }
 .with-fig > .problem, .with-fig > .steps { flex: 1; min-width: 0; }
-.with-fig > figure { flex: none; width: 640px; margin: 0; }
+.with-fig > figure { flex: none; width: 700px; margin: 0; }
 .steps { display: flex; flex-direction: column; gap: 6px; }
 .st.math { text-align: left; }
 .st.math .katex-display { text-align: left; margin: .2em 0; }
@@ -89,11 +89,11 @@ figure figcaption { font: 26px/1.35 var(--font-ui); color: var(--ink-2); margin-
 
 /* title and close slides */
 .k-title { justify-content: center; padding-left: 160px; }
-.k-title .chip { display: inline-block; font: 700 44px var(--font-ui); background: var(--ink); color: var(--bg); padding: 10px 24px; border-radius: 10px; }
+.k-title .chip { align-self: flex-start; font: 700 44px var(--font-ui); background: var(--ink); color: var(--bg); padding: 10px 24px; border-radius: 10px; }
 .k-title .unit { font: 600 32px var(--font-ui); color: var(--dim); margin: 34px 0 8px; }
 .k-title h1 { font: 600 96px/1.1 var(--font-head); margin: 0 0 30px; max-width: 1500px; }
 .k-title .goals { font-size: 40px; color: var(--ink-2); max-width: 1450px; }
-.k-title .ver { margin-top: 60px; font: 600 28px var(--font-ui); color: var(--dim); border-top: 3px solid var(--func); padding-top: 20px; width: 900px; }
+.k-title .ver { align-self: flex-start; margin-top: 60px; font: 600 28px var(--font-ui); color: var(--dim); border-top: 3px solid var(--func); padding-top: 20px; width: 900px; }
 .k-title .for { font-weight: 400; margin-top: 6px; }
 .recap { margin: 0; padding-left: 1.1em; }
 .recap li { margin: 0 0 .35em; }

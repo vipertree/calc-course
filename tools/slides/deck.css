@@ -1,0 +1,124 @@
+/* Teacher slide deck. The color tokens above this line are copied from web/static/css/app.css when the deck is
+   built, so a deck matches the site's light (paper) and dark (slate) looks. Everything here is laid out on a fixed
+   1920 x 1080 stage that is scaled to the window, so a slide looks the same on a laptop and on a projector. */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); overflow: hidden; }
+body { font: 40px/1.45 var(--font-body); }
+a { color: var(--accent); }
+[hidden] { display: none !important; }
+
+.viewport { position: fixed; inset: 0; display: grid; place-items: center; background: var(--bg); }
+.stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 96px 34px; background: var(--bg); }
+.slide.on { display: flex; }
+
+/* header: a small kicker over the title */
+.sh { flex: none; margin-bottom: 26px; }
+.kicker { font: 600 26px/1.2 var(--font-ui); color: var(--dim); letter-spacing: .02em; }
+.title { font: 600 62px/1.15 var(--font-head); margin: 6px 0 0; }
+.sh::after { content: ""; display: block; width: 140px; height: 4px; margin-top: 18px; background: var(--func); }
+
+/* body: the main column (scaled to fit) and an optional clip column */
+.sb { flex: 1; min-height: 0; display: flex; gap: 56px; }
+.main { flex: 1; min-width: 0; position: relative; overflow: hidden; }
+.fit { transform-origin: 0 0; width: 100%; }
+.clip { flex: none; width: 800px; display: flex; flex-direction: column; gap: 12px; }
+.clip video { width: 800px; height: 450px; background: var(--panel-2); border: 2px solid var(--rule); border-radius: 8px; display: block; }
+.clip .cap { font: 24px/1.35 var(--font-ui); color: var(--dim); margin: 0; }
+.sf { flex: none; display: flex; justify-content: space-between; font: 22px var(--font-ui); color: var(--dim); padding-top: 14px; }
+
+/* content blocks, after the site's notes styles at slide size */
+.prose p, .prose { margin: 0; }
+.prose .pb { display: block; height: .5em; }
+.center { text-align: center; margin: .5em 0; }
+.attrib { display: block; text-align: right; font-size: .85em; color: var(--ink-2); }
+.block + .block { margin-top: 30px; }
+.formula { border: 3px solid var(--ink); background: var(--panel-2); border-radius: 10px; padding: 34px 32px 20px; position: relative; margin-top: 22px; }
+.formula > .tag { position: absolute; top: -22px; left: 24px; background: var(--ink); color: var(--bg); font: 600 26px/1 var(--font-ui);
+  padding: 9px 14px; border-radius: 6px; }
+.definition { border-left: 8px solid var(--ink); background: var(--panel); padding: 22px 30px; border-radius: 0 10px 10px 0; }
+.definition > .tag { font: 700 30px var(--font-ui); margin-bottom: 8px; }
+.bigidea { border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); padding: 26px 8px; font-style: italic; font-size: 46px; }
+.bigidea .tag { display: block; font: 700 26px var(--font-ui); font-style: normal; color: var(--dim); margin-bottom: 8px; letter-spacing: .04em; }
+table.data { border-collapse: collapse; margin: 14px auto; font-variant-numeric: tabular-nums; }
+table.data th, table.data td { padding: 8px 22px; text-align: center; border-bottom: 1.5px solid var(--rule); }
+table.data th { font: 600 30px var(--font-ui); color: var(--ink-2); border-bottom: 3px solid var(--ink-2); }
+table.data.vbar td:first-child { border-right: 2px solid var(--ink-2); font-weight: 600; }
+table.data tr.rule td { border-top: 2px solid var(--ink-2); }
+figure { margin: 10px 0; text-align: center; }
+figure .svg svg { width: auto; height: auto; max-width: 100%; max-height: 520px; color: var(--ink); }
+figure figcaption { font: 26px/1.35 var(--font-ui); color: var(--ink-2); margin-top: 6px; }
+.figrow { display: flex; gap: 30px; justify-content: center; }
+.figrow figure { flex: 1; margin: 0; }
+.figrow figure .svg svg { max-height: 420px; }
+.dline { display: block; text-align: center; margin: .5em 0; line-height: 2.2; }
+.dline .dpiece { display: inline-block; margin: 0 .8em; line-height: normal; vertical-align: middle; }
+.nobr { white-space: nowrap; }
+.usd { font-family: inherit; }
+.katex { font-size: 1.05em; }
+.katex-display { margin: .45em 0; }
+
+/* blanks: filled in (bold, underlined, so they read in grayscale) or left open to fill in live */
+.fill { font-weight: 700; color: var(--good); border-bottom: 3px solid currentColor; padding: 0 6px; }
+.gap { display: inline-block; vertical-align: baseline; width: calc(var(--w, 6ch) * 1.1); min-width: 3.2em; height: 1.1em;
+  border-bottom: 3px solid var(--ink-2); margin: 0 6px; }
+.pick { display: inline-flex; gap: 12px 30px; flex-wrap: wrap; font-family: var(--font-ui); }
+.pick .box { display: inline-block; width: .8em; height: .8em; border: 3px solid var(--ink-2); border-radius: 4px; margin-right: 8px;
+  vertical-align: -.05em; }
+.pick .yes .box { background: var(--ink); border-color: var(--ink); }
+.pick .yes { font-weight: 700; text-decoration: underline; text-decoration-thickness: 3px; }
+
+/* worked examples */
+.problem { font-size: 44px; }
+.problem.small { font-size: 36px; padding-bottom: 20px; border-bottom: 2px solid var(--rule); margin-bottom: 20px; }
+.with-fig { display: flex; gap: 40px; align-items: flex-start; }
+.with-fig > .problem, .with-fig > .steps { flex: 1; min-width: 0; }
+.with-fig > figure { flex: none; width: 640px; margin: 0; }
+.steps { display: flex; flex-direction: column; gap: 6px; }
+.st.math { text-align: left; }
+.st.math .katex-display { text-align: left; margin: .2em 0; }
+.st.math .katex-display > .katex { text-align: left; }
+.st.text { font-size: 38px; margin: .2em 0; }
+.st.part { font: 700 36px var(--font-ui); color: var(--ink-2); margin-top: .5em; }
+.st.later { visibility: hidden; }
+.st.now { border-left: 6px solid var(--func); padding-left: 18px; margin-left: -24px; }
+.workroom { flex: 1; min-height: 300px; border: 3px dashed var(--rule); border-radius: 12px; display: grid; place-items: center;
+  color: var(--dim); font: 28px var(--font-ui); margin-top: 18px; }
+.answer { margin-top: 26px; padding: 22px 28px; background: var(--panel); border-left: 8px solid var(--good); border-radius: 0 10px 10px 0; }
+.answer .tag { font: 700 26px var(--font-ui); color: var(--dim); letter-spacing: .04em; margin-bottom: 6px; }
+
+/* title and close slides */
+.k-title { justify-content: center; padding-left: 160px; }
+.k-title .chip { display: inline-block; font: 700 44px var(--font-ui); background: var(--ink); color: var(--bg); padding: 10px 24px; border-radius: 10px; }
+.k-title .unit { font: 600 32px var(--font-ui); color: var(--dim); margin: 34px 0 8px; }
+.k-title h1 { font: 600 96px/1.1 var(--font-head); margin: 0 0 30px; max-width: 1500px; }
+.k-title .goals { font-size: 40px; color: var(--ink-2); max-width: 1450px; }
+.k-title .ver { margin-top: 60px; font: 600 28px var(--font-ui); color: var(--dim); border-top: 3px solid var(--func); padding-top: 20px; width: 900px; }
+.k-title .for { font-weight: 400; margin-top: 6px; }
+.recap { margin: 0; padding-left: 1.1em; }
+.recap li { margin: 0 0 .35em; }
+.upnext { margin-top: 40px; font: 600 34px var(--font-ui); color: var(--ink-2); }
+
+/* presenter controls: hidden until the mouse moves, never in fullscreen idle or in screenshots */
+.chrome { position: fixed; right: 16px; bottom: 14px; z-index: 10; display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+  background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; font: 15px var(--font-ui); color: var(--ink-2);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18); transition: opacity .25s; }
+.chrome.idle { opacity: 0; pointer-events: none; }
+.chrome button, .chrome a { font: inherit; color: var(--ink); background: var(--panel-2); border: 1px solid var(--rule); border-radius: 7px;
+  padding: 5px 10px; cursor: pointer; text-decoration: none; }
+.chrome button:hover, .chrome a:hover { border-color: var(--ink-2); }
+.chrome .count { min-width: 70px; text-align: center; font-variant-numeric: tabular-nums; }
+.keys { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(0,0,0,.45); }
+.keys .card { background: var(--panel); color: var(--ink); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 28px;
+  font: 17px/1.6 var(--font-ui); min-width: 360px; }
+.keys h2 { font: 700 20px var(--font-ui); margin: 0 0 10px; }
+.keys table { border-collapse: collapse; }
+.keys td { padding: 2px 14px 2px 0; }
+.keys kbd { font: 600 14px var(--font-ui); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 5px; padding: 1px 7px; background: var(--panel-2); }
+.blackout { position: fixed; inset: 0; z-index: 15; background: #000; }
+
+/* screenshot mode for the PowerPoint export: transparent page, no controls, no video (PowerPoint gets the real clip) */
+body.shot, body.shot .viewport, body.shot .slide { background: transparent; }
+body.shot .chrome { display: none; }
+body.shot .clip video { visibility: hidden; }
+body.shot .title.plain { visibility: hidden; }

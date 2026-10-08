@@ -2,7 +2,7 @@
 {% block title %}Teacher dashboard · AP Calculus{% endblock %}
 {% block main %}
 <h1>Your classes</h1>
-<p><a href="{% url 'handouts' %}"><strong>Printable handouts (PDF)</strong></a> · <a href="{% url 'transcripts' %}">Review video transcripts</a> · <a href="{% url 'map' %}">Course map</a></p>
+<p><a href="{% url 'handouts' %}"><strong>Printable handouts and slides</strong></a> · <a href="{% url 'transcripts' %}">Review video transcripts</a> · <a href="{% url 'map' %}">Course map</a></p>
 <form method="post" action="{% url 'new_class' %}" class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:24px">{% csrf_token %}
   <label style="flex:1;min-width:200px">New class name<input type="text" name="name" placeholder="Period 3" required></label>
   <label>Course<select name="course"><option>AB</option><option>BC</option></select></label>

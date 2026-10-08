@@ -22,7 +22,7 @@ def surveyor_scene(d=6.0, ang=35):
     """Ground, a tree, a sighting tube d units away, the right triangle with the 35 degree angle."""
     g = -2.6
     T0 = np.array([3.0, g, 0])
-    tr = tree(3.4).move_to(T0, aligned_edge=DOWN)
+    tr = tree((d * np.tan(np.radians(ang)) - 1.5) / 0.55).move_to(T0, aligned_edge=DOWN)
     top = np.array([T0[0], g + d * np.tan(np.radians(ang)), 0])
     S = T0 + LEFT * d
     grd = Line(LEFT * 6.3 + UP * g, RIGHT * 5.5 + UP * g, color=SAND, stroke_width=6)
@@ -31,8 +31,8 @@ def surveyor_scene(d=6.0, ang=35):
     tri = Polygon(S, T0, top, stroke_color=SECANT, stroke_width=3)
     sight = DashedLine(S, top, color=SECANT)
     arc = Arc(radius=0.8, angle=np.radians(ang), arc_center=S, color=SECANT, stroke_width=4)
-    labs = VGroup(M(r"20 \text{ m}", 30).next_to(Line(S, T0), DOWN, buff=0.2), M(f"{ang}^\\circ", 30, SECANT).move_to(S + 1.2 * np.array([np.cos(np.radians(ang / 2)), np.sin(np.radians(ang / 2)), 0])),
-                  M("h", 34, FUNC).next_to(Line(T0, top), RIGHT, buff=0.15))
+    labs = VGroup(M(r"20 \text{ m}", 40).next_to(Line(S, T0), DOWN, buff=0.2), M(f"{ang}^\\circ", 38, SECANT).move_to(S + 1.2 * np.array([np.cos(np.radians(ang / 2)), np.sin(np.radians(ang / 2)), 0])),
+                  M("h", 46, FUNC).next_to(Line(T0, top), RIGHT, buff=1.0))
     return VGroup(grd, tr, tube, tri, sight, arc, labs)
 
 
@@ -45,9 +45,9 @@ def ladder_scene():
     wall = brick_wall(height=4.8, width=0.6).move_to(W + RIGHT * 0.3 + UP * 2.4)
     grd = ground(5.2).move_to(W + LEFT * 1.2, aligned_edge=UP)
     lad = ladder(foot, topp, width=0.45)
-    labs = VGroup(M(r"6 \text{ m}", 30).move_to((foot + topp) / 2 + LEFT * 0.65), Arc(radius=0.6, angle=a, arc_center=foot, color=SECANT, stroke_width=4),
-                  M(r"70^\circ", 28, SECANT).move_to(foot + RIGHT * 0.95 + UP * 0.4),
-                  DashedLine(W + LEFT * 0.06, topp + LEFT * 0.06, color=FUNC), M("h", 32, FUNC).move_to(W + UP * L * np.sin(a) / 2 + LEFT * 0.3))
+    labs = VGroup(M(r"6 \text{ m}", 40).move_to((foot + topp) / 2 + LEFT * 0.65), Arc(radius=0.6, angle=a, arc_center=foot, color=SECANT, stroke_width=4),
+                  M(r"70^\circ", 40, SECANT).move_to(foot + RIGHT * 0.95 + UP * 0.4),
+                  DashedLine(W + LEFT * 0.06, topp + LEFT * 0.06, color=FUNC), M("h", 40, FUNC).move_to(W + UP * L * np.sin(a) / 2 + LEFT * 0.3))
     return Group(grd, wall, lad, labs)
 
 
@@ -79,9 +79,9 @@ def kite_scene():
     spool = VGroup(Circle(radius=0.16, stroke_color=INK, stroke_width=2, fill_color=WOOD, fill_opacity=1), Dot(radius=0.04, color=INK)).move_to(S)
     string = Line(S, K, color=INK, stroke_width=3)
     kt = kite(0.75).move_to(K + DOWN * 0.15 + RIGHT * 0.02)
-    labs = VGroup(DashedLine(foot, K, color=FUNC), M(r"30 \text{ m}", 30, FUNC).next_to(Line(foot, K), RIGHT, buff=0.3),
-                  Arc(radius=0.8, angle=a, arc_center=S, color=SECANT, stroke_width=4), M(r"40^\circ", 28, SECANT).move_to(S + 1.2 * np.array([np.cos(a / 2), np.sin(a / 2), 0])),
-                  M("L", 34).move_to((S + K) / 2 + 0.4 * np.array([-np.sin(a), np.cos(a), 0])))
+    labs = VGroup(DashedLine(foot, K, color=FUNC), M(r"30 \text{ m}", 40, FUNC).next_to(Line(foot, K), RIGHT, buff=0.3),
+                  Arc(radius=0.8, angle=a, arc_center=S, color=SECANT, stroke_width=4), M(r"40^\circ", 40, SECANT).move_to(S + 1.2 * np.array([np.cos(a / 2), np.sin(a / 2), 0])),
+                  M("L", 40).move_to((S + K) / 2 + 0.4 * np.array([-np.sin(a), np.cos(a), 0])))
     return VGroup(grd, labs, string, spool, kt)
 
 
@@ -108,8 +108,8 @@ def rooftop_scene(labels=True):
     th = np.arctan2(30, 50)
     g = Group(grd, blg, priya, Polygon(S, B, top, stroke_color=SECANT, stroke_width=3))
     if labels:
-        g.add(M(r"50 \text{ m}", 30).next_to(Line(S, B), DOWN, buff=0.35), M(r"30 \text{ m}", 30, FUNC).next_to(blg, RIGHT, buff=0.15),
-              Arc(radius=0.8, angle=th, arc_center=S, color=SECANT, stroke_width=4), M(r"\theta", 30, SECANT).move_to(S + 1.15 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+        g.add(M(r"50 \text{ m}", 40).next_to(Line(S, B), DOWN, buff=0.35), M(r"30 \text{ m}", 40, FUNC).next_to(blg, RIGHT, buff=0.15),
+              Arc(radius=0.8, angle=th, arc_center=S, color=SECANT, stroke_width=4), M(r"\theta", 40, SECANT).move_to(S + 1.15 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
     return g
 
 
@@ -129,8 +129,8 @@ def ramp_scene():
                    Dot(LEFT * 0.33 + DOWN * 0.1, radius=0.065, color="#E8C547"), Dot(RIGHT * 0.33 + DOWN * 0.1, radius=0.065, color="#E8C547"))
     board.rotate(th).move_to(mid + n * 0.17)
     grd = ground(run + 2.2).move_to((A + B) / 2, aligned_edge=UP)
-    labs = VGroup(M(r"4 \text{ m}", 30).move_to((A + C) / 2 + n * 0.75 + LEFT * 0.3), M(r"1.2 \text{ m}", 30, FUNC).next_to(Line(B, C), RIGHT, buff=0.15),
-                  Arc(radius=0.9, angle=th, arc_center=A, color=SECANT, stroke_width=4), M(r"\theta", 30, SECANT).move_to(A + 1.25 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+    labs = VGroup(M(r"4 \text{ m}", 40).move_to((A + C) / 2 + n * 0.75 + LEFT * 0.3), M(r"1.2 \text{ m}", 40, FUNC).next_to(Line(B, C), RIGHT, buff=0.15),
+                  Arc(radius=0.9, angle=th, arc_center=A, color=SECANT, stroke_width=4), M(r"\theta", 40, SECANT).move_to(A + 1.25 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
     return VGroup(grd, wedge, slats, board, labs)
 
 
@@ -176,7 +176,7 @@ class Lesson(TranscriptScene):
             opp2, adj2 = Line(A, B, color=FUNC, stroke_width=8), Line(B, C, color=DERIV, stroke_width=8)
             self.play(Transform(opp, opp2), Transform(adj, adj2), Transform(opp_lab, T("opposite", 32, FUNC).next_to(adj, DOWN, buff=0.2)),
                       Transform(adj_lab, T("adjacent", 32, DERIV).next_to(opp, RIGHT, buff=0.2)), run_time=1.2)
-            self.play(FadeIn(T("the hypotenuse never changes", 34, ACCUM).to_edge(RIGHT, buff=0.6).shift(UP * 2.4)), run_time=0.6)
+            self.play(FadeIn(T("the hypotenuse never changes", 40, ACCUM).to_edge(RIGHT, buff=0.6).shift(UP * 0.4)), run_time=0.6)
         self.clear()
 
         with self.beat("Same angle, same ratios") as b:
@@ -195,7 +195,9 @@ class Lesson(TranscriptScene):
                         [["2", "1.4", r"\phantom{0.7}"], ["3", "2.1", r"\phantom{0.7}"], ["4", "2.8", r"\phantom{0.7}"]], size=32, gap=0.3).to_edge(RIGHT, buff=0.6).shift(UP * 1.2)
             self.play(FadeIn(tab), run_time=0.8)
             for r in (1, 2, 3):
-                self.play(FadeIn(M(r"\approx 0.7", 32, SECANT).move_to(tab.cells[r][2])), run_time=0.5)
+                # column 2's x from its header, row r's y from its first cell (the placeholder cells are empty)
+                spot = np.array([tab.cells[0][2].get_center()[0], tab.cells[r][0].get_center()[1], 0])
+                self.play(FadeIn(M(r"\approx 0.7", 32, SECANT).move_to(spot)), run_time=0.5)
             b.line(2)
             self.play(FadeIn(formula_box(T("the ratio depends only on the angle", 34, ACCUM), ACCUM).next_to(tab, DOWN, buff=0.6)), run_time=0.8)
         self.clear()

@@ -29,6 +29,9 @@ NOTES = [
          r"Both repeat every $2\pi$ (their \textbf{period}) and stay between $-1$ and $1$. Cosine is sine slid $\frac{\pi}{2}$ to the left."),
     FIG_SINCOS,
     Text(r"$\sin x = 0$ at $x = k\pi$; $\cos x = 0$ at $x = \frac{\pi}{2} + k\pi$ ($k$ any integer)."),
+    Text(r"\textbf{Two different $x$'s.} In $y = \sin x$, $x$ is the \textbf{input}: an angle, in radians. On the unit circle, $x$ and $y$ are the "
+         r"coordinates of the point, which are the \textbf{outputs} $\cos\theta$ and $\sin\theta$. That is why the input is often written $\theta$; "
+         r"in calculus it is usually $x$. Either way, the input is the angle."),
 
     Section("Transformations"),
     Formula("Sinusoids", (r"\[ y = A\sin\big(B(x - C)\big) + D \qquad \text{or} \qquad y = A\cos\big(B(x - C)\big) + D \] "

@@ -59,6 +59,27 @@ class Lesson(TranscriptScene):
             self.play(*[FadeIn(Dot(ax.c2p(k * PI, 0), color=DERIV)) for k in range(-2, 3)], FadeIn(M(r"\sin x = 0 \text{ at } x = k\pi", 32, DERIV).to_corner(UR, buff=0.6)), run_time=0.8)
         self.clear()
 
+        with self.beat("Two different x's") as b:
+            # left: the unit circle, where x and y are the point's coordinates (outputs); right: the graph, where x is the angle (input)
+            uc = TrigCircle(r=1.8, center=LEFT * 4.3 + DOWN * 0.4)
+            t = 2.2
+            p = uc.pt(t)
+            self.play(Create(uc), Create(uc.ray(t)), FadeIn(uc.angle_arc(t, label=r"\theta")), FadeIn(uc.dot(t)), run_time=1)
+            self.play(FadeIn(M(r"(x, y) = (\cos\theta, \sin\theta)", 30, FUNC).next_to(uc, UP, buff=0.3)), run_time=0.6)
+            outs = T(r"$x$ and $y$: \textbf{outputs}", 32, DERIV).next_to(uc, DOWN, buff=0.35)
+            self.play(FadeIn(outs), run_time=0.8)
+            b.line(1)
+            ax, labs = pi_axes(0, 2, [-1.4, 1.4, 1], w=6.2, h=2.8, ylabel="y")
+            VGroup(ax, labs).to_edge(RIGHT, buff=0.5).shift(DOWN * 0.2)
+            self.play(FadeIn(ax), FadeIn(labs), Create(ax.plot(np.sin, x_range=[0, 2 * PI], color=FUNC, stroke_width=5)), run_time=1.2)
+            self.play(FadeIn(M(r"y = \sin x", 40, FUNC).next_to(ax, UP, buff=0.3)), run_time=0.6)
+            arr = Arrow(ax.c2p(1.2, -1.15) + DOWN * 0.1, ax.c2p(2.2, -1.15) + DOWN * 0.1, buff=0, color=SECANT, stroke_width=4)
+            self.play(Create(arr), FadeIn(T(r"$x$: the \textbf{input}, an angle", 32, SECANT).next_to(ax, DOWN, buff=0.55)), run_time=0.8)
+            b.line(2)
+            box = formula_box(M(r"y = \sin\theta \quad \text{or} \quad y = \sin x: \ \text{the input is the angle}", 34, ACCUM), ACCUM).to_edge(UP, buff=0.4)
+            self.play(FadeIn(box), run_time=0.8)
+        self.clear()
+
         with self.beat("The graph of cosine") as b:
             ax, labs = pi_axes(-2, 2, [-1.6, 1.6, 1], w=11, h=3.6)
             VGroup(ax, labs).shift(DOWN * 0.4)

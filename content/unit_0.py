@@ -42,6 +42,7 @@ same("A1", [225 * pi / 180, sp.Rational(7, 6) * 180], [5 * pi / 4, 210])
 same("A2", [9 * 2 * pi / 3, sp.Rational(1, 2) * 36 * 5 * pi / 6], [6 * pi, 15 * pi])
 same("A3", [sp.cos(7 * pi / 6), sp.sin(7 * pi / 4)], [-r3 / 2, -r2 / 2])
 same("A4", [sp.tan(5 * pi / 3), 1 / sp.cos(5 * pi / 4)], [-r3, -r2])
+same("A5", [sp.sqrt(625 - 49), sp.sqrt(81 + 1600)], [24, 41])
 same("A6", [-sp.sqrt(1 - sp.Rational(25, 169)), -sp.Rational(4, 5) / sp.Rational(3, 5)], [-sp.Rational(12, 13), -sp.Rational(4, 3)])
 same("A7", [2 * pi / (pi / 3), 2 + 5], [6, 7])
 same("A8", [sp.simplify((sp.sec(x)**2 - 1) * sp.cos(x)**2 - sp.sin(x)**2), sp.simplify(sp.sin(x) / sp.csc(x) + sp.cos(x) / sp.sec(x))], [0, 1])
@@ -67,10 +68,12 @@ A = [
              {r"$-\frac{\sqrt3}{3}$": r"that is $\cot\frac{5\pi}{3}$", r"$-\frac{\sqrt3}{2}$": r"that is $\sin\frac{5\pi}{3}$"}),
          (r"$\sec\frac{5\pi}{4} = $", r"$-\sqrt2$", [r"$\sqrt2$", r"$-\frac{\sqrt2}{2}$", r"$-1$"], r"$\frac{1}{-\sqrt2/2} = -\sqrt2$.",
              {r"$-\frac{\sqrt2}{2}$": r"that is $\cos\frac{5\pi}{4}$"})),
-    slot(4, (r"If $\sin\theta < 0$ and $\tan\theta < 0$, the terminal side of $\theta$ is in quadrant", "IV", ["I", "II", "III"], r"Sine negative: III or IV. Tangent negative needs cosine positive: IV.",
-             {"III": r"in quadrant III, $\tan\theta > 0$"}),
-         (r"If $\cos\theta < 0$ and $\cot\theta > 0$, the terminal side of $\theta$ is in quadrant", "III", ["I", "II", "IV"], r"Cosine negative: II or III. Cotangent positive needs sine negative too: III.",
-             {"II": r"in quadrant II, $\cot\theta < 0$"})),
+    slot(4, (r"In a right triangle, the side opposite the acute angle $\theta$ is $7$ and the hypotenuse is $25$. Then $\cos\theta = $", r"$\frac{24}{25}$", [r"$\frac{7}{25}$", r"$\frac{7}{24}$", r"$\frac{25}{24}$"],
+             r"The adjacent side is $\sqrt{625 - 49} = 24$, so $\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{24}{25}$.",
+             {r"$\frac{7}{25}$": r"that is $\sin\theta$", r"$\frac{7}{24}$": r"that is $\tan\theta$", r"$\frac{25}{24}$": r"that is $\sec\theta$"}),
+         (r"A right triangle has legs $9$ and $40$, and $\theta$ is the angle opposite the leg of length $9$. Then $\sec\theta = $", r"$\frac{41}{40}$", [r"$\frac{40}{41}$", r"$\frac{41}{9}$", r"$\frac{9}{40}$"],
+             r"The hypotenuse is $\sqrt{81 + 1600} = 41$, so $\sec\theta = \frac{\text{hyp}}{\text{adj}} = \frac{41}{40}$.",
+             {r"$\frac{40}{41}$": r"that is $\cos\theta$", r"$\frac{41}{9}$": r"that is $\csc\theta$", r"$\frac{9}{40}$": r"that is $\tan\theta$"})),
     slot(5, (r"$\sin\theta = -\frac{5}{13}$ and $\theta$ is in quadrant III. Then $\cos\theta = $", r"$-\frac{12}{13}$", [r"$\frac{12}{13}$", r"$-\frac{8}{13}$", r"$\frac{5}{12}$"],
              r"$\cos^2\theta = 1 - \frac{25}{169} = \frac{144}{169}$; negative in quadrant III.", {r"$\frac{12}{13}$": "cosine is negative in quadrant III", r"$\frac{5}{12}$": r"that is $\tan\theta$"}),
          (r"$\cos\theta = \frac35$ and $\theta$ is in quadrant IV. Then $\tan\theta = $", r"$-\frac43$", [r"$\frac43$", r"$-\frac34$", r"$-\frac45$"],

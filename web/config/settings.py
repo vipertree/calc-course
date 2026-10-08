@@ -159,3 +159,9 @@ VIDEO_DIR = Path(os.environ.get("VIDEO_DIR") or BASE_DIR / "static" / "video")
 # Printable PDFs compiled by ../build.py (packets, handouts, paper tests). Never public: views stamp and serve them.
 PDF_DIR = Path(os.environ.get("PDF_DIR") or REPO / "build" / "pdf")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Teacher slide decks (tools/build_slides.py). Kept outside static/ so nginx never serves them to just anyone; Django
+# checks the account first. With SLIDES_ACCEL set (e.g. "/protected-slides/"), Django answers with X-Accel-Redirect
+# to that internal nginx location instead of streaming the file itself (docs/teacher-slides.md).
+SLIDES_DIR = Path(os.environ.get("SLIDES_DIR") or REPO / "build" / "slides")
+SLIDES_ACCEL = os.environ.get("SLIDES_ACCEL", "")

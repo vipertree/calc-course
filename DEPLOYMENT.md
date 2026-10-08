@@ -181,6 +181,13 @@ traffic in EU locations (less in US ones), so traffic is not the limit; disk is.
 before the first rsync. Videos are served by nginx with Range support (seeking works), `sendfile`, and a one-day
 cache. If traffic ever matters, a CDN or object storage in front of `/calc/video/` is the next step.
 
+## Teacher slide decks
+
+Decks are built by `tools/build_slides.py` into `build/slides/` (not in git, rsync it like the PDFs) and served
+to teachers only. See `docs/teacher-slides.md` for the optional `SLIDES_ACCEL` setting and its `internal`
+nginx location, which lets nginx stream the files after Django has checked the account. Decks get the site's
+CSP nonce added when served, so decks built before the policy work unchanged.
+
 ## Things that bite
 
 - **Source `.env` before any `manage.py` command.** Without `CALC_ENV=production` you get development settings:

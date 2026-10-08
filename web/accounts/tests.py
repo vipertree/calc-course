@@ -453,6 +453,18 @@ class Headers(TestCase):
                 self.assertIn(f'nonce="{nonce}"', tag, url)
         self.assertEqual(len(nonces), 4)
 
+    def test_slide_decks_are_made_csp_ready_when_served(self):
+        from course.views import _csp_ready
+        deck = ('<html lang="en"><body><script>\nwindow.deckTypeset = () => 1;\n</script>\n'
+                '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" '
+                'onload="window.deckTypeset()"></script>\n</body></html>')
+        out = _csp_ready(deck, "N0NCE")
+        self.assertNotIn("onload=", out)
+        inline = [t for t in re.findall(r"<script\b[^>]*>", out) if "src=" not in t]
+        self.assertEqual(len(inline), 2)
+        self.assertTrue(all('nonce="N0NCE"' in t for t in inline))
+        self.assertIn("DOMContentLoaded", out)
+
     def test_templates_have_no_inline_handlers_or_browser_dialogs(self):
         handler = re.compile(r"<[^>]+\son(click|load|error|submit|change|input)=", re.I)
         for p in list((WEB / "templates").rglob("*.html")):

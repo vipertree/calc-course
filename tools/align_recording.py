@@ -57,6 +57,8 @@ def similar(a, b):
 
 
 SPEECH_PAD = (0.10, 0.18)   # kept before / after each word Whisper heard
+TAIL_MAX = 0.8             # how far past Whisper's end a word may run on (long numbers, trailing syllables)
+TAIL_DB = -40              # speech level for that check
 SPEECH_JOIN = 0.35          # gaps shorter than this are natural pauses and stay as recorded
 GATE_REPORT_DB = -35        # muted stretches louder than this are listed in the review for a listen
 
@@ -71,9 +73,34 @@ def merge(spans):
     return out
 
 
-def speech_spans(spoken, duration):
-    """Where he is actually talking: each word padded a little, short gaps joined. The renderer mutes the rest."""
-    spans = merge([[max(0.0, w["s"] - SPEECH_PAD[0]), min(duration, w["e"] + SPEECH_PAD[1])] for w in spoken])
+def speech_spans(spoken, duration, wav=None):
+    """Where he is actually talking: each word padded a little, short gaps joined. The renderer mutes the rest.
+
+    Whisper often ends the last word before a pause early, and on a long number ("1.999", said "one point nine nine
+    nine") the real speech runs half a second past it; Adder heard those endings clipped. So each word's end is
+    pushed forward while the audio stays at speech level (up to TAIL_MAX). Starts are not pushed back: a breath or a
+    sigh right before a word is exactly what the gate should remove."""
+    ends = [w["e"] for w in spoken]
+    if wav is not None:
+        import numpy as np
+        import soundfile as sf
+        a, sr = sf.read(str(wav), dtype="float32")
+        a = a if a.ndim == 1 else a.mean(axis=1)
+        win = int(0.05 * sr)
+        for i, e in enumerate(ends):
+            t, quiet = e, 0
+            while t - e < TAIL_MAX:
+                seg = a[int(t * sr):int(t * sr) + win]
+                if len(seg) == 0:
+                    break
+                level = 20 * np.log10(np.sqrt(np.mean(seg ** 2)) + 1e-9)
+                quiet = quiet + 1 if level < TAIL_DB else 0
+                if quiet >= 2:              # 100 ms below speech level: the word is over
+                    t -= 0.05
+                    break
+                t += 0.05
+            ends[i] = max(e, t)
+    spans = merge([[max(0.0, w["s"] - SPEECH_PAD[0]), min(duration, end + SPEECH_PAD[1])] for w, end in zip(spoken, ends)])
     joined = []
     for a, b in spans:
         if joined and a - joined[-1][1] < SPEECH_JOIN:
@@ -221,9 +248,22 @@ def main(slug):
     # overrides last
     ov_path = ROOT / "voice" / "aligned" / f"{slug}.overrides.json"
     if ov_path.exists():
+        def at(phrase):
+            # an override can name the words a line starts with instead of a time, so it survives re-editing
+            toks = [norm(t) for t in phrase.split()]
+            for i in range(len(W) - len(toks) + 1):
+                if W[i:i + len(toks)] == toks:
+                    return round(max(0.0, spoken[i]["s"] - 0.15), 3)
+            raise SystemExit(f"{slug}: override phrase not found in the recording: {phrase!r}")
         for name, ov in json.load(open(ov_path)).items():
             if name.startswith("_"):
                 continue
+            ov = dict(ov)
+            if "start_at" in ov:
+                ov["start"] = at(ov.pop("start_at"))
+            if "lines_at" in ov:
+                ov["lines"] = [at(p) for p in ov.pop("lines_at")]
+                ov.setdefault("start", ov["lines"][0])
             out[name].update(ov)
             if "start" in ov and "lines" not in ov:
                 out[name]["lines"][0] = ov["start"]
@@ -233,7 +273,7 @@ def main(slug):
         s, e = out[name]["start"], out[name]["end"]
         out[name]["heard"] = " ".join(w["w"] for w in spoken if s <= w["s"] < e)
     src = f"voice/aligned/{slug}.edited.wav" if edited else f"voice/adder-lesson-recordings/cleaned/{slug}.wav"
-    speech = speech_spans(spoken, rec["duration"])
+    speech = speech_spans(spoken, rec["duration"], ROOT / src)
     for s0, s1 in json.load(open(ov_path)).get("_keep", []) if ov_path.exists() else []:
         speech = merge(speech + [[s0, s1]])
     gated = loud_gaps(ROOT / src, speech, rec["duration"])

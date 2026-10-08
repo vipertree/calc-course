@@ -350,7 +350,7 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 .free-tag { font: 700 .66rem var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--good); border: 1px solid var(--good);
   border-radius: 99px; padding: 0 7px; vertical-align: 2px; }
 .exam-outline { width: 100%; margin: 14px 0 20px; font-family: var(--font-ui); font-size: .92rem; }
-.exam-outline td, .exam-outline th { text-align: left; }
+table.data.exam-outline td, table.data.exam-outline th { text-align: left; padding-left: 0; }
 .exam-outline tr.done td { color: var(--dim); }
 .exam-outline tr.cur td { font-weight: 700; }
 .exam-start ul { padding-left: 1.2em; }
@@ -361,7 +361,7 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 .discard[open] { flex-basis: 100%; }
 .discard form { margin-top: 10px; padding: 10px 12px; background: var(--panel-2); border-radius: 8px; }
 .exam-past { width: 100%; font-family: var(--font-ui); font-size: .92rem; }
-.exam-past th, .exam-past td { text-align: left; }
+table.data.exam-past th, table.data.exam-past td { text-align: left; padding-left: 0; }
 
 /* the testing environment: a part bar under the site header, one question at a time, a navigator bar at the bottom */
 body.in-exam .wrap { padding-bottom: 120px; }
@@ -449,5 +449,16 @@ body.in-exam .desmos-dock .row strong { cursor: pointer; }
 .exam-mc .tagline { margin-left: auto; font: 600 .75rem var(--font-ui); color: var(--dim); white-space: nowrap; }
 .exam-only { display: inline-flex; gap: 6px; align-items: center; font: .92rem var(--font-ui); margin-bottom: 6px; cursor: pointer; }
 .exam-units td:last-child { white-space: normal; text-align: left; }
-.exam-units th, .exam-units td { text-align: left; }
+table.data.exam-units th, table.data.exam-units td { text-align: left; }
 .exam-promo { margin: 0 0 22px; max-width: 640px; }
+.exam-grid + .exam-legend { margin-top: 10px; }
+.exam-part-row { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); align-items: baseline; }
+.exam-part-row .prose { margin: 0; }
+.rubric-line input { flex: none; }
+.rubric-line .pts { flex: none; }
+table.data.exam-units td { vertical-align: top; font-family: var(--font-ui); font-size: .92rem; }
+table.data.exam-units td:first-child { min-width: 9em; }
+.exam-review-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; line-height: 1.35; }
+.exam-review-list .chip-sm { font-family: var(--font-ui); font-size: .78rem; padding: 1px 6px; border-radius: 4px; background: var(--panel-2); margin-right: 2px; }
+.exam-stage.time-up { opacity: .6; }
+.exam-start { margin-bottom: 28px; }

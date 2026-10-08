@@ -372,7 +372,7 @@ FRQ1 = FRQ("Irrigation tank", (
     Part("d", r"How many gallons of water are in the tank at time $t = 10$?",
          num(round(q1d, 3), tol=0.0015), rf"$A(10) = 200 + \int_0^{{10}} \left(E(t) - U(t)\right) dt \approx {q1d:.3f}$ gallons.",
          [(1, r"Writes $200 + \int_0^{10} \left(E(t) - U(t)\right) dt$."), (1, rf"Gives the answer, ${q1d:.3f}$ gallons.")], work="2.4cm", topic="8.3"),
-], calc=True, frq_type="Rates in and out")
+], calc=True, frq_type="Rate in context")
 
 # ---- Question 2: area and volume
 F2, G2 = 6 / (1 + x**2), x
@@ -419,14 +419,14 @@ TABLE3 = (r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (minutes) & "
           + r" \\ \hline $v(t)$ (meters per minute) & " + " & ".join(f"${v}$" for v in V3) + r"\end{tabular}}")
 FRQ3 = FRQ("Two runners", (
     r"Amara runs along a straight path. Her velocity is given by a differentiable function $v$, where $v(t)$ is measured in meters per minute and $t$ is measured in minutes. "
-    r"Selected values of $v(t)$ for $0 \le t \le 15$ are shown in the table." + TABLE3), [
+    r"Amara runs in one direction only, so $v(t) > 0$. Selected values of $v(t)$ for $0 \le t \le 15$ are shown in the table." + TABLE3), [
     Part("a", r"Use the data in the table to estimate the value of $v'(9)$. Show the computations that lead to your answer.",
          num(-10, display=r"-10\ \text{meters per minute per minute}"),
          r"$v'(9) \approx \frac{v(10) - v(8)}{10 - 8} = \frac{170 - 190}{2} = -10$ meters per minute per minute.",
          [(1, r"Gives $\frac{170 - 190}{10 - 8} = -10$.")], work="2cm", topic="2.3"),
     Part("b", r"Using correct units, explain the meaning of $\displaystyle\int_0^{15} v(t)\,dt$ in the context of the problem. Approximate the value of $\displaystyle\int_0^{15} v(t)\,dt$ using a right Riemann sum with the four subintervals indicated in the table.",
          num(2440, display=r"2440\ \text{meters}"),
-         r"$\int_0^{15} v(t)\,dt$ is the total distance, in meters, that Amara runs from $t = 0$ to $t = 15$ minutes (her velocity is positive, so it is also how far she ends up from where she started). "
+         r"$\int_0^{15} v(t)\,dt$ is the total distance, in meters, that Amara runs from $t = 0$ to $t = 15$ minutes. Since $v(t) > 0$, this is also how far she ends up from where she started. "
          r"Right Riemann sum: $3(150) + 5(190) + 2(170) + 5(140) = 450 + 950 + 340 + 700 = 2440$ meters.",
          [(1, r"Explains the meaning: the distance Amara runs, in meters, from $t = 0$ to $t = 15$."), (1, r"Sets up the right Riemann sum with the widths $3, 5, 2, 5$."),
           (1, r"Gives the approximation, $2440$ meters.")], work="3cm", topic="6.2"),
@@ -434,14 +434,15 @@ FRQ3 = FRQ("Two runners", (
          selfcheck(r"\text{Yes, by the Mean Value Theorem}"),
          r"$v$ is differentiable, so it is continuous on $[3, 8]$ and differentiable on $(3, 8)$. $\frac{v(8) - v(3)}{8 - 3} = \frac{190 - 150}{5} = 8$. "
          r"Therefore, by the Mean Value Theorem, there is a time $t$ with $3 < t < 8$ at which $v'(t) = 8$.",
-         [(1, r"Computes $\frac{v(8) - v(3)}{8 - 3} = 8$."), (1, r"Answers yes, citing the Mean Value Theorem, with the reason it applies: $v$ is differentiable, and so continuous.")], work="2.4cm", topic="5.1"),
+         [(1, r"States the hypothesis: $v$ is differentiable, so $v$ is continuous on $[3, 8]$. (\"$v$ is continuous\" alone, without the reason, does not earn this point.)"),
+          (1, r"Computes $\frac{v(8) - v(3)}{8 - 3} = 8$ and concludes yes, by the Mean Value Theorem.")], work="2.4cm", topic="5.1"),
     Part("d", r"Diego skates back and forth along the same path. His velocity, in meters per minute, is $w(t) = 3t^2 - 24t + 36$ for $0 \le t \le 8$. Find the total distance Diego travels during the time interval $0 \le t \le 8$.",
          num(96, display=r"96\ \text{meters}"),
          r"$w(t) = 3(t - 2)(t - 6)$ changes sign at $t = 2$ and $t = 6$. An antiderivative is $W(t) = t^3 - 12t^2 + 36t$, with $W(0) = 0$, $W(2) = 32$, $W(6) = 0$, and $W(8) = 32$. "
          r"Total distance $= \int_0^8 |w(t)|\,dt = |32 - 0| + |0 - 32| + |32 - 0| = 96$ meters.",
          [(1, r"Writes $\int_0^8 |w(t)|\,dt$, or splits the interval at $t = 2$ and $t = 6$."), (1, r"Finds an antiderivative of $w$."), (1, r"Gives the answer, $96$ meters.")],
          work="3.2cm", topic="8.2"),
-], frq_type="Table, Riemann sum, Mean Value Theorem")
+], frq_type="Table")
 
 # ---- Question 4: the graph of f' and accumulation
 u4 = sp.symbols("u", real=True)
@@ -477,7 +478,7 @@ FRQ4 = FRQ("The graph of a derivative", (
          r"Since $\pi > 3$, $5 + 2\pi > 11 > 9$. Therefore the absolute maximum value of $f$ is $5 + 2\pi$, at $x = -4$.",
          [(1, r"Considers the endpoints and the critical points."), (1, r"Finds $f(5) = \frac{17}{2}$ and uses the values from part (a)."), (1, r"Gives the answer, $5 + 2\pi$, with the comparison.")],
          work="2.8cm", topic="5.5"),
-], frq_type="Graph of f', accumulation", figure=FIG4)
+], frq_type="Graph of f'", figure=FIG4)
 
 # ---- Question 5: differential equation with a slope field
 dy5 = lambda X, Y: X**2 * (Y - 2)
@@ -510,7 +511,7 @@ FRQ5 = FRQ("A differential equation", (
          r"Therefore $y = 2 + e^{(x^3 - 1)/3}$.",
          [(1, r"Separates the variables."), (1, r"Antiderivatives: $\ln|y - 2|$ and $\frac{x^3}{3}$."), (1, r"Includes a constant of integration."),
           (1, r"Uses the initial condition $f(1) = 3$."), (1, r"Solves for $y$: $y = 2 + e^{(x^3 - 1)/3}$.")], work="3.6cm", topic="7.7"),
-], frq_type="Differential equation, slope field", figure=FIG5)
+], frq_type="Differential equation", figure=FIG5)
 
 # ---- Question 6: implicit differentiation
 C6 = x**2 - x * yx + yx**2 - 7

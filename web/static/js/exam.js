@@ -43,6 +43,7 @@
     return el;
   };
   const LETTERS = "ABCD";
+  const partRow = (p) => h("div", { class: "exam-part-row" }, h("strong", {}, `(${p.label})`), h("div", { html: p.html }));
   const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
   const partName = (p) => `${p.section}, ${p.name}`;
   const partWhat = (p) => `${p.count} ${p.kind === "mcq" ? "multiple-choice" : "free-response"} question${p.count === 1 ? "" : "s"}, ${p.minutes} minutes, ${p.calc ? "graphing calculator" : "no calculator"}`;
@@ -135,7 +136,7 @@
     const saved = h("span", { class: "exam-saved muted" });
     const calcBtn = part.calc ? h("button", { class: "btn small", type: "button", onclick: () => calculator() }, "Calculator") : null;
     const bar = h("div", { class: "exam-bar" },
-      h("div", { class: "exam-bar-l" }, h("strong", {}, partName(part)), h("span", { class: "muted" }, part.calc ? "Calculator" : "No calculator")),
+      h("div", { class: "exam-bar-l" }, h("strong", {}, partName(part)), h("span", { class: "muted" }, part.calc ? "Graphing calculator allowed" : "No calculator")),
       h("div", { class: "exam-bar-c" }, clock, clockBtn),
       h("div", { class: "exam-bar-r" }, saved, calcBtn));
     const stage = h("div", { class: "exam-stage" });
@@ -210,7 +211,7 @@
       return h("div", { class: "card exam-q" }, head,
         h("p", { class: "muted small" }, `${it.points} points. Write your solution on paper. Show your work and justify answers where a part asks you to.`),
         h("div", { html: it.html }), figureEl(it.figure),
-        ...it.parts.map((p) => h("div", { class: "exam-frq-part" }, h("strong", {}, `(${p.label}) `), h("span", { html: p.html }))));
+        ...it.parts.map((p) => h("div", { class: "exam-frq-part" }, partRow(p))));
     }
 
     function grid(onPick) {
@@ -244,6 +245,12 @@
           `There's still time left: ${fmt(Math.max(0, deadline - performance.now()) / 1000)}.`].filter(Boolean), "Submit part");
         if (!ok) return;
       }
+      if (timeUp && !stage.classList.contains("time-up")) {      // no more picking while the server closes the part
+        stage.classList.add("time-up");
+        stage.querySelectorAll("input, button").forEach((el) => { el.disabled = true; });
+        nav.querySelectorAll("button").forEach((el) => { el.disabled = true; });
+        toast(`Time is up for ${partName(part)}. Saving your answers.`);
+      }
       await flush();
       try {
         const r = await post(timeUp ? "state" : "submit", { part: part.key });
@@ -255,7 +262,6 @@
           if (timeUp) setTimeout(() => submitPart(true), 1500);
           return;
         }
-        if (timeUp) toast(`Time is up for ${partName(part)}.`);
         live();
       } catch (e) { setTimeout(() => submitPart(timeUp), 3000); }
     }
@@ -270,7 +276,7 @@
         h("button", { class: "btn small", type: "button", onclick: () => { panel.hidden = true; show(items.length); } }, "Go to the review page"));
       const opener = h("button", { class: "btn exam-nav-open", type: "button", "aria-expanded": "false",
         onclick: () => { panel.hidden = !panel.hidden; opener.setAttribute("aria-expanded", panel.hidden ? "false" : "true"); } },
-        atReview ? "Review" : `${label(pos)} of ${items.length}`);
+        atReview ? "Review" : `${label(pos)} of ${items[items.length - 1].n}`);
       nav.replaceChildren(h("div", { class: "exam-nav-in" }, prev, h("div", { class: "exam-nav-mid" }, opener, panel), next));
     }
 
@@ -334,7 +340,7 @@
     const jump = h("nav", { class: "exam-jump" }, h("a", { href: "#frq" }, "Score your free response"), h("a", { href: "#mc" }, "Multiple-choice review"), h("a", { href: "#units" }, "By unit"));
     const frq = h("section", { id: "frq" }, h("h2", {}, "Score your free response"),
       h("p", { class: "muted" }, "For each part, compare your written solution with the sample solution, then check each scoring point you earned. "
-        + "A point needs what the scoring guide asks for: a setup, a reason, or an answer with units, not just a matching number. Your scores save as you check them."),
+        + "A point needs what the scoring guide asks for: a setup, a reason, or an answer with units. A matching number alone doesn't earn it. Your scores save as you check them."),
       ...S.frq.map((q) => frqCard(q, () => { drawSummary(); drawUnits(); })));
     const mc = mcReview();
     root.replaceChildren(h("div", { class: "narrow" }, head, sum, jump, frq, mc, h("section", { id: "units" }, h("h2", {}, "By unit"), units),
@@ -399,7 +405,7 @@
         typeset(box);
       };
       btn.addEventListener("click", open);
-      card.append(h("div", { class: "exam-frq-part" }, h("p", {}, h("strong", {}, `(${p.label}) `), h("span", { html: p.html })), h("div", { class: "row" }, btn), box));
+      card.append(h("div", { class: "exam-frq-part" }, partRow(p), h("div", { class: "row" }, btn), box));
       if (p.marks) open();
     });
     upd();
@@ -438,9 +444,10 @@
     return h("div", { class: "table-wrap" }, h("table", { class: "data exam-units" },
       h("tr", {}, h("th", {}, "Unit"), h("th", {}, "Multiple choice"), h("th", {}, "Free response"), h("th", {}, "Lessons to review")),
       ...us.map((u) => h("tr", {}, h("td", {}, `${u.n}. ${u.title}`), h("td", {}, `${u.mc} / ${u.mc_total}`),
-        h("td", {}, u.frq_total ? `${u.frq} / ${u.frq_total}` : "none scored"),
-        h("td", {}, u.review.length ? h("span", {}, ...u.review.flatMap((r, i) => [i ? ", " : null,
-          r.ready ? h("a", { href: root.dataset.topic.replace("0.0", r.n) }, `${r.n} ${r.title}`) : h("span", {}, `${r.n} ${r.title}`)])) : h("span", { class: "muted" }, "Nothing missed"))))));
+        h("td", {}, u.frq_total ? `${u.frq} / ${u.frq_total}` : h("span", { class: "muted" }, "not scored yet")),
+        h("td", {}, u.review.length ? h("ul", { class: "exam-review-list" }, ...u.review.map((r) => h("li", {},
+          h("span", { class: "chip-sm" }, r.n), " ", r.ready ? h("a", { href: root.dataset.topic.replace("0.0", r.n) }, r.title) : h("span", {}, r.title))))
+          : h("span", { class: "muted" }, "Nothing missed"))))));
   }
 
   // ------------------------------------------------------------ start (KaTeX loads with defer)

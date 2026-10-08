@@ -103,10 +103,11 @@ def _close(att, pub, now, timed_out):
 
 
 def sync(att, pub, now=None):
-    """Close the running part if its time is up. Saves when anything changed. Returns the attempt."""
+    """Close the running part once its time (and the few seconds of network grace) is up. The part is recorded as ending
+    at its deadline. Saves when anything changed. Returns the attempt."""
     now = now or timezone.now()
     d = deadline(att, pub)
-    if d is not None and now > d:
+    if d is not None and now > d + GRACE:        # an answer sent in the last second may still be in flight
         att.timing.setdefault(parts(pub)[att.part]["key"], {})
         _close(att, pub, d, True)       # the part ended at its deadline, not when we noticed
         att.save()

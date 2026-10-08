@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Terms · AP Calculus{% endblock %}
+{% block main %}
+{# ADDER: plain-language DRAFT, not legal advice. Set LEGAL_PAGES_REVIEWED=true once reviewed. Payment terms belong here when Stripe goes in. #}
+<article class="narrow prose">
+{% include "accounts/_draft_notice.html" %}
+<h1>Terms of use</h1>
+<p>By using this site you agree to these terms. They are short on purpose.</p>
+
+<h2>Accounts</h2>
+<ul>
+  <li>Sign up on your own only if you are 13 or older. Younger students join through their teacher's class.</li>
+  <li>Keep your password to yourself. You are responsible for what happens under your account.</li>
+  <li>Teacher accounts are for teachers. We check each request by hand, and may turn one down.</li>
+</ul>
+
+<h2>Using the course</h2>
+<ul>
+  <li>The lessons, videos, problems and printouts are for your own study, or for teaching your own classes.</li>
+  <li>Please don't post answer keys, tests or packets publicly, sell them, or copy the site's content in bulk. Printed packets carry an ID so a shared copy can be traced to the account that printed it.</li>
+  <li>Don't try to break the site, get into other people's accounts, or overload it with automated requests.</li>
+</ul>
+
+<h2>No guarantees</h2>
+<p>We work hard to get the math right and keep the site up, but it is provided as it is, without guarantees about scores, results or uptime. If you find a mistake, please tell us.</p>
+
+<h2>Ending an account</h2>
+<p>You can delete your account at any time in Account settings. We may close accounts that break these terms.</p>
+
+<h2>Changes</h2>
+<p>If these terms change in a way that matters, we'll say so on the site.</p>
+
+<h2>About AP</h2>
+<p>AP and Advanced Placement are registered trademarks of the College Board, which was not involved in making this site and does not endorse it.</p>
+
+<p>{% if CONTACT_EMAIL %}Questions: <a href="mailto:{{ CONTACT_EMAIL }}">{{ CONTACT_EMAIL }}</a>.{% endif %}</p>
+<p class="muted small">Last updated: draft, October 2026.</p>
+</article>
+{% endblock %}

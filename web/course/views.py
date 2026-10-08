@@ -558,7 +558,7 @@ def video(request, name):
 
 
 # ------------------------------------------------------------------ printable unit tests (solo students)
-PDF_DIR = settings.BASE_DIR.parent / "build" / "pdf"
+PDF_DIR = settings.PDF_DIR
 
 
 def _paper_forms(num):

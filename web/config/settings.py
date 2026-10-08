@@ -132,6 +132,7 @@ HUMAN_MAX_SECONDS = 60 * 60 * 24
 # Where the client address comes from. Behind nginx it is a header nginx sets (production.py).
 CLIENT_IP_HEADER = "REMOTE_ADDR"
 RATELIMIT_ENABLED = True
+TEST_RUNNER = "config.test_runner.Runner"
 
 # The legal pages are drafts until Adder (and ideally a lawyer) has read them. While False they say so.
 LEGAL_PAGES_REVIEWED = env_bool("LEGAL_PAGES_REVIEWED", False)
@@ -155,4 +156,6 @@ STORAGES = {
 }
 # Lesson videos are big and never collected: nginx serves them straight from this folder in production.
 VIDEO_DIR = Path(os.environ.get("VIDEO_DIR") or BASE_DIR / "static" / "video")
+# Printable PDFs compiled by ../build.py (packets, handouts, paper tests). Never public: views stamp and serve them.
+PDF_DIR = Path(os.environ.get("PDF_DIR") or REPO / "build" / "pdf")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

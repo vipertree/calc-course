@@ -40,4 +40,4 @@ def site(request):
             "FULL_ACCESS": has_full_access(request.user),
             "CSP_NONCE": getattr(request, "csp_nonce", ""),
             "LEGAL_REVIEWED": settings.LEGAL_PAGES_REVIEWED, "CONTACT_EMAIL": settings.CONTACT_EMAIL,
-            "BACKUP_DAYS": settings.BACKUP_DAYS}
+            "BACKUP_DAYS": settings.BACKUP_DAYS, "UNVERIFIED_DAYS": settings.UNVERIFIED_ACCOUNT_DAYS}

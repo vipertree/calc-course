@@ -5,6 +5,7 @@ import re
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
+from accounts.antibot import stamp
 from accounts.models import Classroom, Enrollment, Profile
 from . import content, grading, packets
 from .models import FRQScore, QuizAttempt, Response
@@ -123,7 +124,7 @@ class Flow(TestCase):
 
     def join(self, name="ana"):
         return self.client.post("/join/", {"code": self.c.code.lower(), "display_name": "Ana Ruiz", "username": name,
-                                           "password": "pw123456"})
+                                           "password": "slope-field-42", "started": stamp(10)})
 
     def test_join_with_code_and_see_lesson(self):
         r = self.join()

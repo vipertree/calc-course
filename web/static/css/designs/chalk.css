@@ -55,7 +55,7 @@
 [data-design="chalk"] .btn:hover { border-color: var(--accent); }
 [data-design="chalk"] .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 [data-design="chalk"] .btn.primary:hover { filter: brightness(1.08); }
-[data-design="chalk"] input[type=text], [data-design="chalk"] input[type=password], [data-design="chalk"] select,
+[data-design="chalk"] input[type=text], [data-design="chalk"] input[type=password], [data-design="chalk"] input[type=email], [data-design="chalk"] select,
 [data-design="chalk"] math-field { background: var(--field); border: 1.5px solid var(--rule); border-bottom: 2.5px solid var(--ink-2); border-radius: var(--hand-sm); color: var(--ink); }
 [data-design="chalk"] .kbd-btn { border-radius: var(--hand-sm); border: 2px solid var(--ink-2); box-shadow: none; }
 [data-design="chalk"] .lock, [data-design="chalk"] .calc, [data-design="chalk"] .unit h2 .bc, [data-design="chalk"] .bc-tag {

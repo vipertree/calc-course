@@ -2,6 +2,11 @@
 {% block title %}Teacher dashboard · AP Calculus{% endblock %}
 {% block main %}
 <h1>Your classes</h1>
+{% if temp_password %}<div class="card temp-pw" role="status">
+  <h2>New password for {{ temp_password.name }}</h2>
+  <p>Username <strong>{{ temp_password.username }}</strong>, password <span class="code">{{ temp_password.password }}</span></p>
+  <p class="muted">This is shown only once. {{ temp_password.name }} can change it in Account settings after signing in.</p>
+</div>{% endif %}
 <p><a href="{% url 'handouts' %}"><strong>Printable handouts (PDF)</strong></a> · <a href="{% url 'transcripts' %}">Review video transcripts</a> · <a href="{% url 'map' %}">Course map</a></p>
 <form method="post" action="{% url 'new_class' %}" class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:24px">{% csrf_token %}
   <label style="flex:1;min-width:200px">New class name<input type="text" name="name" placeholder="Period 3" required></label>
@@ -43,6 +48,22 @@
         <td>{% if c.frq %}{{ c.frq.0 }}/{{ c.frq.1 }}{% else %}<span class="muted">not yet</span>{% endif %}</td>
       {% endfor %}</tr>{% endfor %}</tbody>
   </table></div>
+  <details class="manage">
+    <summary>Manage students: reset a password, remove from class</summary>
+    <ul class="plain manage-list">{% for s in r.rows %}<li>
+      <span><strong>{{ s.name }}</strong> <span class="muted">{{ s.username }}</span></span>
+      <details class="pop inline"><summary class="btn small">Reset password</summary>
+        <form method="post" action="{% url 'reset_student_password' r.c.pk s.id %}" class="stack">{% csrf_token %}
+          <p>Give {{ s.name }} a new temporary password? Their old one stops working. You'll see the new one once, to pass on.</p>
+          <p><button class="btn primary small">Reset password</button></p>
+        </form></details>
+      <details class="pop inline"><summary class="btn small">Remove</summary>
+        <form method="post" action="{% url 'remove_student' r.c.pk s.id %}" class="stack">{% csrf_token %}
+          <p>Remove {{ s.name }} from {{ r.c.name }}? Their account and their own work stay with them. They can rejoin with the code while joining is open.</p>
+          <p><button class="btn primary small">Remove from class</button></p>
+        </form></details>
+    </li>{% endfor %}</ul>
+  </details>
   {% else %}<p class="muted">No students yet. They join at <strong>{{ request.scheme }}://{{ request.get_host }}{% url 'join' %}</strong> with code <strong>{{ r.c.code }}</strong>.</p>{% endif %}
 </section>
 {% empty %}<p class="muted">Create a class to get a join code.</p>{% endfor %}

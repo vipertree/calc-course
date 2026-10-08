@@ -15,7 +15,7 @@ from django.conf import settings
 
 from .models import IssuedPacket
 
-PDF_DIR = settings.BASE_DIR.parent / "build" / "pdf"
+PDF_DIR = settings.PDF_DIR
 FONT = PDF_DIR / "fonts" / "LibertinusSans-Regular.otf"     # copied there by build.py; Helvetica if missing
 CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"            # no 0/O/1/I/L: easy to read off paper
 

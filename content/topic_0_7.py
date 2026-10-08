@@ -112,6 +112,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.7", title="Inverse Trigonometric Functions",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: inverse trigonometric functions"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: inverse trigonometric functions"],
     goals=r"Evaluate $\arcsin$, $\arccos$ and $\arctan$ from their ranges, simplify compositions with a triangle, and solve trig equations with a calculator.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

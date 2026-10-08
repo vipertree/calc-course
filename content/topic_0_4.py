@@ -114,6 +114,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.4", title="Graphs of Sine, Cosine, and Tangent",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: graphs of trigonometric functions"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: graphs of trigonometric functions"],
     goals=r"Graph sine, cosine and tangent, and read amplitude, period, shift and midline from $y = A\sin\big(B(x - C)\big) + D$.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

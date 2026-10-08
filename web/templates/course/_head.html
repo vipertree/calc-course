@@ -1,6 +1,6 @@
 <div class="lesson-head mathy" data-unit="{{ unit.n }}">
-  <span class="chip">{{ L.number }}</span>
-  <span class="unit">Unit {{ unit.n }} · {{ unit.title }}{% if L.bc_only %} · <span class="bc-tag">BC ONLY</span>{% endif %}</span>
+  <span class="chip">{{ L.label|default:L.number }}</span>
+  <span class="unit">{{ unit.line }}{% if L.bc_only %} · <span class="bc-tag">BC ONLY</span>{% endif %}</span>
   <h1>{{ L.title }}</h1>
 </div>
 <nav class="tabs">
@@ -10,9 +10,9 @@
   <a href="{% url 'lesson_area' num 'quiz' %}" class="{% if area == 'quiz' %}on{% endif %}">Quiz{% if not FULL_ACCESS %} <span class="lock">members</span>{% endif %}</a>
 </nav>
 <nav class="lesson-nav mathy" aria-label="Lessons">
-  {% if prev %}<a class="prev" href="{% url 'lesson' prev.n %}"><span class="dir">← Previous</span> <span class="mathy">{{ prev.n }}</span> {{ prev.title }}</a>{% else %}<span></span>{% endif %}
-  <a class="up" href="{% url 'map' %}#unit-{{ unit.n }}">Unit {{ unit.n }}</a>
-  {% if next %}<a class="next" href="{% url 'lesson' next.n %}"><span class="dir">Next →</span> <span class="mathy">{{ next.n }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
+  {% if prev %}<a class="prev" href="{% url 'lesson' prev.n %}"><span class="dir">← Previous</span> <span class="mathy">{{ prev.label }}</span> {{ prev.title }}</a>{% else %}<span></span>{% endif %}
+  <a class="up" href="{% url 'map' %}#unit-{{ unit.n }}">{{ unit.short }}</a>
+  {% if next %}<a class="next" href="{% url 'lesson' next.n %}"><span class="dir">Next →</span> <span class="mathy">{{ next.label }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
 </nav>
 {% if packet %}<form class="packet-dl" method="post" action="{% url 'packet' num %}">{% csrf_token %}
   <button class="btn small" type="submit">Download printable packet (PDF)</button>

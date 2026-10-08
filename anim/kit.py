@@ -115,8 +115,13 @@ class TranscriptScene(LessonScene):
 
     def _write_audit(self):
         import json
+        # where each beat sits in the video: the caption builder (Adder's voice) and the teacher slide clips
+        # (tools/build_slides.py) both read it, so it is written for every voice
         if getattr(self, "_voice_beats", None):
             vm = [dict(m, **self._voice_beats[m["beat"]]) for m in self._voice_map if m["beat"] in self._voice_beats]
+        else:
+            vm = getattr(self, "_voice_map", [])
+        if vm:
             with open(os.path.join(config.media_dir, f"voicemap_{self.NUM.replace('.', '_')}.json"), "w") as f:
                 json.dump(vm, f, indent=1)
         out = os.path.join(config.media_dir, f"layout_{self.NUM.replace('.', '_')}.json")
@@ -154,8 +159,10 @@ class TranscriptScene(LessonScene):
         self._beat_now = name
         with self.voiceover(text=self._text(lines, think)) as tr:
             # where this beat's narration starts in the video (the caption builder maps Adder's words with it)
-            self._voice_map.append({"beat": name, "video_start": round(self.renderer.time, 3)})
+            entry = {"beat": name, "video_start": round(self.renderer.time, 3)}
+            self._voice_map.append(entry)
             yield Beat(self, tr, len(lines))
+        entry["video_end"] = round(self.renderer.time, 3)          # its narration is over
         self.used.append(name)
 
     def finish(self):
@@ -253,6 +260,7 @@ class TranscriptScene(LessonScene):
                 cue = T(r"Pause and try it.", 32, DIM).next_to(head, DOWN, buff=0.6)
                 if figure is not None:
                     cue.to_edge(LEFT, buff=0.8)
+                self._voice_map[-1]["think_at"] = round(self.renderer.time, 3)     # the think pause cue goes up
                 self.play(FadeIn(cue), run_time=0.5)
             board = Board(left=figure is None).next_to(head, DOWN, buff=0.5)
             at = at or list(range(1, len(steps) + 1))
@@ -261,6 +269,8 @@ class TranscriptScene(LessonScene):
                     b.line(figure_at)
                     self.play(FadeIn(figure), run_time=0.8)
                 b.line(i)
+                # the solving starts: a blank teacher slide's clip stops here (tools/build_slides.py)
+                self._voice_map[-1].setdefault("solve_at", round(self.renderer.time, 3))
                 if cue is not None:
                     self.play(FadeOut(cue), run_time=0.3)
                     cue = None

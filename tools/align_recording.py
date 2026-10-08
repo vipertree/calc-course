@@ -56,14 +56,15 @@ def similar(a, b):
     return -1.0
 
 
-def sentence_start(spoken, j, reach=3):
+def sentence_start(spoken, j, reach=6):
     """A line whose first matched word is a few words into a spoken sentence ("Now, that's an | average")
-    should start where that sentence starts. Walk back at most `reach` words to a sentence end or a pause."""
+    should start where that sentence starts. Walk back at most `reach` words to a sentence end or a long
+    silence (he often pauses a second mid-sentence: "Let's ... take a look at a basic function")."""
     for k in range(j, max(0, j - reach) - 1, -1):
         if k == 0:
             return 0
         prev = spoken[k - 1]
-        if prev["w"].endswith((".", "?", "!")) or spoken[k]["s"] - prev["e"] > 0.35:
+        if prev["w"].endswith((".", "?", "!")) or spoken[k]["s"] - prev["e"] > 1.5:
             return k
     return j
 

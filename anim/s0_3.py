@@ -44,30 +44,113 @@ class Lesson(TranscriptScene):
             b.line(1)
             self.play(th.animate.set_value(-PI / 2 + 2 * PI), run_time=4, rate_func=linear)
             b.line(2)
-            self.play(FadeIn(M(r"\text{across} = \cos\theta, \quad \text{up} = \sin\theta", 40).to_corner(UR, buff=0.6)), run_time=0.8)
+            self.play(FadeIn(T("how far across? \\quad how far up?", 38).to_corner(UR, buff=0.6)), run_time=0.8)
         self.clear()
         self.title()
 
-        with self.beat("Sine and cosine on the unit circle") as b:
-            uc = TrigCircle(r=2.6, center=LEFT * 2.8 + DOWN * 0.3)
-            t = 0.9
-            self.play(Create(uc), run_time=0.8)
-            self.play(Create(uc.ray(t)), FadeIn(uc.angle_arc(t, label=r"\theta")), FadeIn(uc.dot(t)), FadeIn(M("P", 32, FUNC).next_to(uc.pt(t), UR, buff=0.1)), run_time=1)
+        with self.beat("Triangles on the coordinate plane") as b:
+            r, c = 2.2, LEFT * 3.0 + DOWN * 0.3
+            axes = VGroup(Line(c + LEFT * (r + 0.8), c + RIGHT * (r + 0.8), color=DIM, stroke_width=2), Line(c + DOWN * (r + 0.8), c + UP * (r + 0.8), color=DIM, stroke_width=2),
+                          M("x", 26, DIM).next_to(c + RIGHT * (r + 0.8), RIGHT, buff=0.1), M("y", 26, DIM).next_to(c + UP * (r + 0.8), UP, buff=0.1))
+            circ = Circle(radius=r, color=INK, stroke_width=4).move_to(c)
+            self.play(FadeIn(axes), run_time=0.5)
+            self.play(Create(circ), FadeIn(T("unit circle: radius 1", 32).to_edge(RIGHT, buff=0.8).shift(UP * 2.6)), run_time=1)
             b.line(1)
+            for d, lab, off in ((RIGHT, "(1, 0)", UR * 0.3 + RIGHT * 0.35), (UP, "(0, 1)", UR * 0.3 + RIGHT * 0.3), (LEFT, "(-1, 0)", UL * 0.3 + LEFT * 0.45), (DOWN, "(0, -1)", DR * 0.3 + RIGHT * 0.4)):
+                self.play(FadeIn(Dot(c + r * d, color=FUNC)), FadeIn(M(lab, 28, FUNC).move_to(c + r * d + off)), run_time=0.5)
+            b.line(2)
+            corners = [(1, 1), (-1, 1), (-1, -1), (1, -1)]
+            for (x, y) in corners:
+                p = c + r * np.array([x, y, 0])
+                self.play(FadeIn(Dot(p, color=SECANT)), FadeIn(M(f"({x}, {y})", 28, SECANT).next_to(p, np.array([x, y, 0]), buff=0.1)), run_time=0.45)
+            sq = DashedVMobject(Square(side_length=2 * r, color=SECANT, stroke_width=3).move_to(c), num_dashes=48)
+            self.play(Create(sq), run_time=1)
+            qs = VGroup(*[M(n, 34, DIM).move_to(c + 0.82 * r * np.array([sx, sy, 0])) for n, sx, sy in (("I", 1, 1), ("II", -1, 1), ("III", -1, -1), ("IV", 1, -1))])
+            self.play(FadeIn(qs), FadeIn(T("four unit squares,\\\\one per quadrant", 32, SECANT).to_edge(RIGHT, buff=0.8).shift(UP * 0.6)), run_time=0.8)
+            b.line(3)
+            self.play(Indicate(circ, color=ACCUM, scale_factor=1.03), run_time=1.2)
+            self.play(FadeIn(T("every point on the circle is 1 from the origin", 30, ACCUM).to_edge(RIGHT, buff=0.4).shift(DOWN * 1.4)), run_time=0.6)
+        self.clear()
+
+        with self.beat("A triangle inside the circle") as b:
+            uc = TrigCircle(r=2.9, center=LEFT * 4.1 + DOWN * 1.6)
+            t = np.arctan2(0.8, 0.6)
+            p = uc.pt(t)
+            foot = np.array([p[0], uc.c[1], 0])
+            self.play(Create(uc), run_time=0.8)
+            self.play(FadeIn(uc.dot(t)), FadeIn(M("(0.6,\\ 0.8)", 30, FUNC).next_to(p, UR, buff=0.1)), run_time=0.6)
+            self.play(Create(uc.ray(t, INK)), run_time=0.6)
+            tri = Polygon(uc.c, foot, p, stroke_width=0, fill_color=SECANT, fill_opacity=0.18)
+            self.play(Create(DashedLine(p, foot, color=INK)), FadeIn(tri), FadeIn(uc.angle_arc(t, SECANT, radius=0.55, label=r"\theta")),
+                      FadeIn(Square(0.2, color=DIM, stroke_width=2).move_to(foot + LEFT * 0.1 + UP * 0.1)), run_time=1)
+            b.line(1)
+            hyp = M(r"1", 32, ACCUM).move_to((uc.c + p) / 2 + 0.3 * np.array([-np.sin(t), np.cos(t), 0]))
+            adj = M(r"0.6", 30, DERIV).next_to(Line(uc.c, foot), DOWN, buff=0.12)
+            opp = M(r"0.8", 30, FUNC).next_to(Line(foot, p), RIGHT, buff=0.12)
+            self.play(FadeIn(hyp), Create(Line(uc.c, p, color=ACCUM, stroke_width=6)), run_time=0.7)
+            self.play(FadeIn(adj), Create(Line(uc.c, foot, color=DERIV, stroke_width=6)), run_time=0.7)
+            self.play(FadeIn(opp), Create(Line(foot, p, color=FUNC, stroke_width=6)), run_time=0.7)
+            board = VGroup(M(r"\sin\theta = \frac{\text{opp}}{\text{hyp}} = \frac{0.8}{1} = 0.8", 38, FUNC),
+                           M(r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{0.6}{1} = 0.6", 38, DERIV),
+                           M(r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{0.8}{0.6} = \frac43", 38, TANGENT),
+                           M(r"\csc\theta = \frac{1}{0.8} = \frac54, \quad \sec\theta = \frac{1}{0.6} = \frac53, \quad \cot\theta = \frac{0.6}{0.8} = \frac34", 34))
+            board.arrange(DOWN, aligned_edge=LEFT, buff=0.35).to_edge(RIGHT, buff=0.4).to_edge(UP, buff=0.6)
+            b.line(2)
+            self.play(Write(board[0]), run_time=1)
+            b.line(3)
+            self.play(Write(board[1]), run_time=1)
+            self.play(Write(board[2]), run_time=1)
+            b.line(4)
+            self.play(Write(board[3]), run_time=1.2)
+        self.clear()
+
+        with self.beat("Sine is the y-coordinate") as b:
+            l1 = M(r"\sin\theta = \frac{0.8}{1} = 0.8 = y", 44, FUNC)
+            l2 = M(r"\cos\theta = \frac{0.6}{1} = 0.6 = x", 44, DERIV)
+            top = VGroup(l1, l2).arrange(DOWN, aligned_edge=LEFT, buff=0.35).to_edge(UP, buff=0.6).to_edge(RIGHT, buff=0.8)
+            self.play(Write(l1), run_time=1)
+            self.play(Write(l2), run_time=1)
+            b.line(1)
+            uc = TrigCircle(r=2.6, center=LEFT * 3.2 + DOWN * 0.3)
+            t = 0.9
             p = uc.pt(t)
             hx = Line(uc.c, np.array([p[0], uc.c[1], 0]), color=DERIV, stroke_width=6)
             vy = Line(np.array([p[0], uc.c[1], 0]), p, color=FUNC, stroke_width=6)
-            self.play(Create(hx), FadeIn(M(r"x = \cos\theta", 32, DERIV).next_to(hx, DOWN, buff=0.15)), run_time=0.8)
-            self.play(Create(vy), FadeIn(M(r"y = \sin\theta", 32, FUNC).next_to(vy, RIGHT, buff=0.15)), run_time=0.8)
-            big = M(r"P = (\cos\theta,\ \sin\theta)", 46).to_edge(RIGHT, buff=0.6).shift(UP * 1.8)
-            self.play(Write(big), run_time=0.8)
+            self.play(Create(uc), Create(uc.ray(t)), FadeIn(uc.angle_arc(t, label=r"\theta")), FadeIn(uc.dot(t)), run_time=1)
+            self.play(Create(hx), FadeIn(M(r"x = \cos\theta", 30, DERIV).next_to(hx, DOWN, buff=0.15)), Create(vy), FadeIn(M(r"y = \sin\theta", 30, FUNC).next_to(vy, RIGHT, buff=0.15)), run_time=1)
+            big = M(r"P = (\cos\theta,\ \sin\theta)", 46).next_to(top, DOWN, buff=0.6).to_edge(RIGHT, buff=0.8)
+            self.play(Write(big), FadeIn(M("P", 30, FUNC).next_to(p, UR, buff=0.1)), run_time=0.8)
             b.line(2)
-            words = VGroup(T("cosine: how far across", 34, DERIV), T("sine: how far up", 34, FUNC)).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(big, DOWN, buff=0.6)
-            self.play(FadeIn(words), run_time=0.8)
+            tn = M(r"\tan\theta = \frac{y}{x} = \frac{\sin\theta}{\cos\theta}", 42, TANGENT).next_to(big, DOWN, buff=0.5)
+            self.play(Write(tn), run_time=1)
             b.line(3)
-            pyth = formula_box(M(r"\cos^2\theta + \sin^2\theta = 1", 44, ACCUM), ACCUM).next_to(words, DOWN, buff=0.6)
-            self.play(FadeIn(M(r"x^2 + y^2 = 1", 38, DIM).next_to(words, DOWN, buff=0.3)), run_time=0.6)
-            self.play(FadeIn(pyth.next_to(words, DOWN, buff=1.0)), run_time=0.8)
+            xy = M(r"x^2 + y^2 = 1", 38, DIM).next_to(tn, DOWN, buff=0.45)
+            self.play(FadeIn(xy), run_time=0.6)
+            pyth = VGroup(formula_box(M(r"\cos^2\theta + \sin^2\theta = 1", 42, ACCUM), ACCUM), T("the Pythagorean identity", 28, ACCUM))
+            pyth[1].next_to(pyth[0], DOWN, buff=0.15)
+            self.play(FadeIn(pyth.next_to(xy, DOWN, buff=0.35)), run_time=0.8)
+        self.clear()
+
+        with self.beat("Beyond triangles") as b:
+            uc = TrigCircle(r=2.6, center=LEFT * 3.2 + DOWN * 0.3)
+            t = ValueTracker(np.arctan2(0.8, 0.6))
+            tri = always_redraw(lambda: uc.drop(t.get_value(), SECANT))
+            ray = always_redraw(lambda: uc.ray(t.get_value(), INK))
+            dot = always_redraw(lambda: uc.dot(t.get_value(), FUNC))
+            self.play(Create(uc), FadeIn(tri), FadeIn(ray), FadeIn(dot), run_time=1)
+            self.play(FadeIn(T("first quadrant: $x > 0$, $y > 0$", 32).to_edge(RIGHT, buff=0.8).shift(UP * 2.7)), run_time=0.6)
+            b.line(1)
+            dfn = formula_box(M(r"\text{every angle } \theta: \quad \cos\theta = x, \quad \sin\theta = y", 38, ACCUM), ACCUM).to_edge(RIGHT, buff=0.4).shift(UP * 1.7)
+            self.play(FadeIn(dfn), run_time=0.8)
+            b.line(2)
+            self.play(t.animate.set_value(PI / 2), run_time=1.6)
+            self.play(FadeIn(M(r"(0, 1): \ \sin\tfrac{\pi}{2} = 1, \ \cos\tfrac{\pi}{2} = 0", 36, FUNC).next_to(dfn, DOWN, buff=0.5)), run_time=0.8)
+            b.line(3)
+            self.play(t.animate.set_value(2 * PI / 3), run_time=1.4)
+            q2 = VGroup(M(r"\left(-\tfrac12,\ \tfrac{\sqrt3}{2}\right): \ \cos\tfrac{2\pi}{3} = -\tfrac12", 36, DERIV), T("no triangle has a negative side", 30, DIM)).arrange(DOWN, buff=0.25)
+            self.play(FadeIn(q2.next_to(dfn, DOWN, buff=1.4)), FadeIn(M(r"x < 0", 30, DERIV).next_to(uc.pt(2 * PI / 3), UL, buff=0.1)), run_time=0.8)
+            b.line(4)
+            self.play(Indicate(dfn, color=ACCUM, scale_factor=1.05), run_time=1.2)
         self.clear()
 
         with self.beat("The quadrantal angles") as b:
@@ -168,7 +251,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("Close") as b:
-            card = VGroup(M(r"(\cos\theta,\ \sin\theta) \text{ is the point at angle } \theta", 42), M(r"\cos^2\theta + \sin^2\theta = 1", 44, ACCUM),
+            card = VGroup(M(r"\text{every angle } \theta: \ \cos\theta = x, \ \sin\theta = y \text{ on the unit circle}", 40), M(r"\cos^2\theta + \sin^2\theta = 1", 44, ACCUM),
                           M(r"\tfrac{\pi}{6}: \left(\tfrac{\sqrt3}{2}, \tfrac12\right) \quad \tfrac{\pi}{4}: \left(\tfrac{\sqrt2}{2}, \tfrac{\sqrt2}{2}\right) \quad \tfrac{\pi}{3}: \left(\tfrac12, \tfrac{\sqrt3}{2}\right)", 38, SECANT),
                           T("Reference angle gives the numbers; the quadrant gives the signs.", 34), M(r"\tan\theta = \frac{\sin\theta}{\cos\theta}", 42, TANGENT)).arrange(DOWN, buff=0.4)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2.4)

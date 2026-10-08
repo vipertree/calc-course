@@ -1,6 +1,8 @@
 """Trig Review lesson 0.3 (T3): The unit circle (trig review; not a CED topic).
 
-cos and sin as the coordinates of the point at angle theta on the unit circle; cos^2 + sin^2 = 1; the quadrantal angles;
+Right-triangle trig on the coordinate plane: the unit circle inside the square of unit quadrants; the triangle at (0.6, 0.8)
+with hypotenuse 1 gives all six ratios, and sine and cosine turn out to be the coordinates, which then defines them for
+every angle (Adder, 2026-10-08: slow down, connect to triangle trig, then extend beyond triangles); cos^2 + sin^2 = 1; the quadrantal angles;
 the 45-45-90 and 30-60-90 triangles give the first-quadrant values; reference angles; signs by quadrant; tan = sin/cos as
 the slope of the terminal side. Lesson example: cos and sin of 5pi/6. Worked examples: 4pi/3, -pi/4, 3pi and 3pi/2,
 cos from sin = 3/5 in quadrant II.
@@ -14,19 +16,36 @@ pi, r2, r3 = sp.pi, sp.sqrt(2), sp.sqrt(3)
 same("lesson", [sp.cos(5 * pi / 6), sp.sin(5 * pi / 6)], [-r3 / 2, sp.Rational(1, 2)])
 same("ex", [sp.cos(4 * pi / 3), sp.sin(4 * pi / 3), sp.sin(-pi / 4), sp.cos(-pi / 4), sp.cos(3 * pi), sp.sin(3 * pi / 2)],
      [-sp.Rational(1, 2), -r3 / 2, -r2 / 2, r2 / 2, -1, -1])
+same("tri", [sp.Rational(6, 10)**2 + sp.Rational(8, 10)**2, sp.Rational(28, 100)**2 + sp.Rational(96, 100)**2, sp.Rational(96, 28), 1 / sp.Rational(-8, 10)], [1, 1, sp.Rational(24, 7), -sp.Rational(5, 4)])
 same("ex4", [-sp.sqrt(1 - sp.Rational(9, 25)), sp.Rational(3, 5) / (-sp.Rational(4, 5))], [-sp.Rational(4, 5), -sp.Rational(3, 4)])
 
 FIG_DEF = unit_circle("t0_3_def", [(0.9, r"$(\cos\theta, \sin\theta)$")], triangle=0.9, caption="The point at angle $\\theta$ is $(\\cos\\theta, \\sin\\theta)$.")
+FIG_TRI = unit_circle("t0_3_tri", [(float(sp.atan2(4, 3)), r"$(0.6, 0.8)$")], triangle=float(sp.atan2(4, 3)),
+                      caption=r"Hypotenuse $1$, adjacent $0.6$, opposite $0.8$: $\sin\theta = 0.8$ and $\cos\theta = 0.6$ are the coordinates.")
 FIG_REF = unit_circle("t0_3_ref", [(5 * float(pi) / 6, r"$\left(-\frac{\sqrt3}{2}, \frac12\right)$"), (float(pi) / 6, r"$\left(\frac{\sqrt3}{2}, \frac12\right)$")],
                       triangle=5 * float(pi) / 6, caption="$\\frac{5\\pi}{6}$ has reference angle $\\frac{\\pi}{6}$: same numbers, the quadrant sets the signs.")
 
 NOTES = [
-    Video("s0_3.py::Lesson", "The unit circle", 8),
+    Video("s0_3.py::Lesson", "The unit circle", 12),
 
-    Section("Sine and cosine"),
-    Formula("Definition", (r"The \textbf{unit circle} is $x^2 + y^2 = 1$. The point at angle $\theta$ on it is \[ (\cos\theta,\ \sin\theta). \] "
-                           r"Cosine is the $\blank{x}$-coordinate (how far across); sine is the $\blank{y}$-coordinate (how far up).")),
+    Section("Triangles on the coordinate plane"),
+    Text(r"The \textbf{unit circle} is the circle of radius $1$ centered at the origin, $x^2 + y^2 = 1$. It crosses the axes at $(1, 0)$, $(0, 1)$, $(-1, 0)$ and $(0, -1)$, "
+         r"and it sits inside the square with corners $(1, 1)$, $(-1, 1)$, $(-1, -1)$, $(1, -1)$: four unit squares, one per quadrant."),
+
+    Section("A triangle inside the circle"),
+    Text(r"The point $(0.6, 0.8)$ is on the unit circle ($0.6^2 + 0.8^2 = 1$). The radius to it and a line dropped to the $x$-axis make a right triangle with "
+         r"hypotenuse $1$, adjacent side $0.6$ (the $x$-coordinate) and opposite side $0.8$ (the $y$-coordinate). By SOH CAH TOA, "
+         r"$\sin\theta = \frac{0.8}{1} = 0.8$, $\cos\theta = \frac{0.6}{1} = 0.6$, $\tan\theta = \frac{0.8}{0.6} = \frac43$, and "
+         r"$\csc\theta = \frac54$, $\sec\theta = \frac53$, $\cot\theta = \frac34$."),
+    FIG_TRI,
+    Text(r"Dividing by a hypotenuse of $1$ changes nothing: sine is the $y$-coordinate and cosine is the $x$-coordinate."),
+
+    Section("Sine and cosine for every angle"),
+    Formula("Definition", (r"For \textbf{every} angle $\theta$, the point at angle $\theta$ on the unit circle is \[ (\cos\theta,\ \sin\theta). \] "
+                           r"Cosine is the $\blank{x}$-coordinate and sine is the $\blank{y}$-coordinate, and $\tan\theta = \frac{y}{x} = \frac{\sin\theta}{\cos\theta}$.")),
     FIG_DEF,
+    Text(r"The triangle only works in the first quadrant, but the coordinates work everywhere. At $\frac{\pi}{2}$ the point is $(0, 1)$, so $\sin\frac{\pi}{2} = 1$ and "
+         r"$\cos\frac{\pi}{2} = 0$; at $\frac{2\pi}{3}$ the point is $\left(-\frac12, \frac{\sqrt3}{2}\right)$, so $\cos\frac{2\pi}{3} = -\frac12$. No ratio of two lengths could be $0$ or negative."),
     Formula("The Pythagorean identity", r"\[ \cos^2\theta + \sin^2\theta = 1 \] for every angle $\theta$, because every point of the unit circle is $1$ from the center."),
 
     Section("The values to know"),
@@ -45,12 +64,16 @@ NOTES = [
 
     Section("Tangent"),
     Formula("Tangent", r"\[ \tan\theta = \frac{\sin\theta}{\cos\theta}, \] the slope of the terminal side. It is undefined where $\cos\theta = 0$ ($\theta = \frac{\pi}{2}, \frac{3\pi}{2}, \dots$)."),
-    BigIdea(r"On the unit circle, $\cos\theta$ is how far across and $\sin\theta$ is how far up. Know the first quadrant; everything else is a reflection with signs."),
+    BigIdea(r"For every angle, $\cos\theta$ is the $x$-coordinate and $\sin\theta$ is the $y$-coordinate of the point on the unit circle. Know the first quadrant; everything else is a reflection with signs."),
     Check(r"Find $\cos\frac{7\pi}{4}$.", selfcheck(r"\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant IV, where cosine is positive."),
 ]
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
+    Item(r"The point $(0.28, 0.96)$ is on the unit circle at angle $\theta$. Find $\sin\theta$, $\cos\theta$, and $\tan\theta$.", selfcheck(r"\sin\theta = 0.96, \ \cos\theta = 0.28, \ \tan\theta = \frac{24}{7}"),
+         r"Hypotenuse $1$: $\sin\theta = \frac{0.96}{1} = 0.96$, $\cos\theta = 0.28$, $\tan\theta = \frac{0.96}{0.28} = \frac{24}{7}$.", work="1.4cm"),
+    Item(r"The point $(-0.8, 0.6)$ is on the unit circle at angle $\theta$. Find $\cos\theta$ and $\sec\theta$.", selfcheck(r"\cos\theta = -0.8, \ \sec\theta = -\frac54"),
+         r"$\cos\theta$ is the $x$-coordinate, $-0.8$, and $\sec\theta = \frac{1}{-0.8} = -\frac54$.", work="1.2cm"),
     Item(r"Find $\sin\frac{\pi}{3}$.", num(r3 / 2, display=r"\frac{\sqrt3}{2}"), r"The point at $\frac{\pi}{3}$ is $\left(\frac12, \frac{\sqrt3}{2}\right)$.", work="0.8cm"),
     Item(r"Find $\cos\frac{3\pi}{4}$.", num(-r2 / 2, display=r"-\frac{\sqrt2}{2}"), r"Reference angle $\frac{\pi}{4}$, quadrant II: cosine negative.", work="1cm"),
     Item(r"Find $\sin\frac{7\pi}{6}$.", num(-sp.Rational(1, 2), display=r"-\frac12"), r"Reference angle $\frac{\pi}{6}$, quadrant III: sine negative.", work="1cm"),

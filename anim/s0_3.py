@@ -90,11 +90,15 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(hyp), Create(Line(uc.c, p, color=ACCUM, stroke_width=6)), run_time=0.7)
             self.play(FadeIn(adj), Create(Line(uc.c, foot, color=DERIV, stroke_width=6)), run_time=0.7)
             self.play(FadeIn(opp), Create(Line(foot, p, color=FUNC, stroke_width=6)), run_time=0.7)
-            board = VGroup(M(r"\sin\theta = \frac{\text{opp}}{\text{hyp}} = \frac{0.8}{1} = 0.8", 38, FUNC),
-                           M(r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{0.6}{1} = 0.6", 38, DERIV),
-                           M(r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{0.8}{0.6} = \frac43", 38, TANGENT),
-                           M(r"\csc\theta = \frac{1}{0.8} = \frac54, \quad \sec\theta = \frac{1}{0.6} = \frac53, \quad \cot\theta = \frac{0.6}{0.8} = \frac34", 34))
-            board.arrange(DOWN, aligned_edge=LEFT, buff=0.35).to_edge(RIGHT, buff=0.4).to_edge(UP, buff=0.6)
+            # the three ratios in one column, their flips in a second column beside them, clear of the circle
+            main = VGroup(M(r"\sin\theta = \frac{\text{opp}}{\text{hyp}} = \frac{0.8}{1} = 0.8", 36, FUNC),
+                          M(r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{0.6}{1} = 0.6", 36, DERIV),
+                          M(r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{0.8}{0.6} = \frac43", 36, TANGENT)).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
+            flips = VGroup(M(r"\csc\theta = \frac{1}{0.8} = \frac54", 36), M(r"\sec\theta = \frac{1}{0.6} = \frac53", 36),
+                           M(r"\cot\theta = \frac{0.6}{0.8} = \frac34", 36)).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
+            VGroup(main, flips).arrange(RIGHT, buff=0.6, aligned_edge=UP).set_max_width(6.8 - (uc.c[0] + uc.r + 0.5))
+            VGroup(main, flips).to_edge(RIGHT, buff=0.3).to_edge(UP, buff=0.6)
+            board = VGroup(main[0], main[1], main[2], flips)
             b.line(2)
             self.play(Write(board[0]), run_time=1)
             b.line(3)
@@ -177,15 +181,15 @@ class Lesson(TranscriptScene):
                 self.play(Write(w), run_time=0.6)
             b.line(2)
             eq = Polygon(ORIGIN, RIGHT * 2.6, RIGHT * 1.3 + UP * 1.3 * np.sqrt(3), color=DIM, stroke_width=3).move_to(RIGHT * 2.2 + UP * 1.3)
-            self.play(Create(eq), FadeIn(M("1", 28, DIM).next_to(eq, DOWN, buff=0.1)), run_time=0.8)
+            self.play(Create(eq), FadeIn(M("1", 28, DIM).move_to((eq.get_vertices()[0] + eq.get_vertices()[2]) / 2 + LEFT * 0.35 + UP * 0.1)), run_time=0.8)
             half = Polygon(eq.get_vertices()[0], (eq.get_vertices()[0] + eq.get_vertices()[1]) / 2, eq.get_vertices()[2], color=INK, stroke_width=5)
             self.play(Create(half), Create(DashedLine((eq.get_vertices()[0] + eq.get_vertices()[1]) / 2, eq.get_vertices()[2], color=INK)), run_time=0.8)
-            labs = VGroup(M(r"\tfrac12", 32, DERIV).next_to(Line(eq.get_vertices()[0], (eq.get_vertices()[0] + eq.get_vertices()[1]) / 2), DOWN, buff=0.45),
-                          M(r"\frac{\sqrt3}{2}", 32, FUNC).move_to((eq.get_vertices()[0] + eq.get_vertices()[1]) / 2 + UP * 1.1 + RIGHT * 0.45),
-                          M(r"30^\circ", 24, SECANT).move_to(eq.get_vertices()[2] + DOWN * 0.75 + LEFT * 0.12),
+            labs = VGroup(M(r"\tfrac12", 32, DERIV).next_to(Line(eq.get_vertices()[0], (eq.get_vertices()[0] + eq.get_vertices()[1]) / 2), DOWN, buff=0.15),
+                          M(r"\frac{\sqrt3}{2}", 28, FUNC).move_to((eq.get_vertices()[0] + eq.get_vertices()[1]) / 2 + UP * 0.75 + RIGHT * 0.36),
+                          M(r"30^\circ", 24, SECANT).move_to(eq.get_vertices()[2] + DOWN * 0.7 + LEFT * 0.32),
                           M(r"60^\circ", 24, SECANT).move_to(eq.get_vertices()[0] + RIGHT * 0.5 + UP * 0.22))
             self.play(FadeIn(labs[0]), FadeIn(labs[2:]), run_time=0.6)
-            self.play(FadeIn(M(r"\sqrt{1 - \tfrac14} = \frac{\sqrt3}{2}", 32, DIM).next_to(eq, DOWN, buff=0.6)), FadeIn(labs[1]), run_time=0.8)
+            self.play(FadeIn(M(r"\sqrt{1 - \tfrac14} = \frac{\sqrt3}{2}", 32, DIM).next_to(eq, DOWN, buff=0.85)), FadeIn(labs[1]), run_time=0.8)
             b.line(3)
             pts = VGroup(M(r"\tfrac{\pi}{6}: \ \left(\tfrac{\sqrt3}{2},\ \tfrac12\right)", 38, SECANT), M(r"\tfrac{\pi}{4}: \ \left(\tfrac{\sqrt2}{2},\ \tfrac{\sqrt2}{2}\right)", 38, SECANT),
                          M(r"\tfrac{\pi}{3}: \ \left(\tfrac12,\ \tfrac{\sqrt3}{2}\right)", 38, SECANT)).arrange(DOWN, buff=0.3, aligned_edge=LEFT).to_edge(RIGHT, buff=0.8).shift(DOWN * 2.0)

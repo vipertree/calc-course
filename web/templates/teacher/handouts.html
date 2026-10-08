@@ -1,14 +1,16 @@
 {% extends "base.html" %}{% load course_text %}
-{% block title %}Printable handouts · AP Calculus{% endblock %}
+{% block title %}Handouts and slides · AP Calculus{% endblock %}
 {% block crumbs %}<a class="muted crumb" href="{% url 'teacher' %}" style="font-family:var(--font-ui);font-size:.9rem">Teacher dashboard</a>{% endblock %}
 {% block main %}
 <div class="mathy">
-<h1>Printable handouts</h1>
+<h1>Handouts and slides</h1>
 <p class="muted">Every lesson's PDFs, ready to print. Each document has a student copy and a teacher key with answers and worked solutions.
   The quiz and unit test forms are parallel versions of the same assessment.
   The packet is the lesson, practice and AP test prep in one PDF; the compact packet is a trial layout that sets
   practice and multiple choice in two columns to save paper. Everything you print here says it was printed for you, with an ID,
   and student copies keep the Name line. A student who downloads a packet from the lesson page gets their own name and ID on every page.</p>
+<p class="muted">A topic's <strong>Slides</strong> link opens its teacher slide decks: one with the solutions shown and one blank to
+  work live, to present in the browser or download for PowerPoint. Only teacher accounts can open them.</p>
 <form method="get" class="card packet-lookup" style="margin-bottom:18px">
   <label for="packet-id"><strong>Find who printed a packet</strong></label>
   <div class="row" style="margin-top:6px"><input id="packet-id" name="packet" placeholder="Packet ID, e.g. 7KQ2-MX4P" value="{{ lookup.code|default:'' }}" autocomplete="off">
@@ -25,7 +27,7 @@
     {% for r in u.rows %}
     <tr>
       <th><span class="chip-sm">{{ r.num|lesson_label }}</span> {{ r.title }}</th>
-      <td>{% for d in r.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
+      <td>{% if r.slides %}<span class="doc"><a href="{{ r.slides }}"><strong>Slides</strong></a></span>{% endif %}{% for d in r.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
     </tr>
     {% endfor %}
     {% if u.test %}

@@ -434,6 +434,7 @@ class ApiHardening(TestCase):
 
 
 class Headers(TestCase):
+    @override_settings(DESMOS_API_KEY="test-key")
     def test_csp_has_a_fresh_nonce_that_every_inline_script_carries(self):
         nonces = set()
         for url in ("/course/", "/topic/2.1/", "/formulas/", "/login/"):
@@ -442,7 +443,10 @@ class Headers(TestCase):
             nonce = re.search(r"'nonce-([^']+)'", csp).group(1)
             nonces.add(nonce)
             self.assertIn("frame-ancestors 'none'", csp)
-            self.assertNotIn("'unsafe-inline'", csp.split("script-src")[1].split(";")[0])
+            script_src = csp.split("script-src")[1].split(";")[0]
+            self.assertNotIn("'unsafe-inline'", script_src)
+            # only pages that load the Desmos API (which evals) may eval
+            self.assertEqual("'unsafe-eval'" in script_src, "www.desmos.com/api/" in r.content.decode(), url)
             for tag in re.findall(r"<script\b[^>]*>", r.content.decode()):
                 if "src=" in tag or 'type="application/json"' in tag:
                     continue

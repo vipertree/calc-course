@@ -15,10 +15,16 @@ JSDELIVR = "https://cdn.jsdelivr.net"
 DESMOS = "https://www.desmos.com https://*.desmos.com"
 
 
-def policy(nonce):
+DESMOS_SCRIPT = b"www.desmos.com/api/"
+
+
+def policy(nonce, eval_ok=False):
+    """eval_ok: the Desmos API compiles expressions with eval, so pages that load it need 'unsafe-eval'.
+    Only those pages get it (the middleware looks for the Desmos script tag in the response)."""
+    script = f"'self' 'nonce-{nonce}'" + (" 'unsafe-eval'" if eval_ok else "")
     return "; ".join([
         "default-src 'self'",
-        f"script-src 'self' 'nonce-{nonce}' {JSDELIVR} {DESMOS}",
+        f"script-src {script} {JSDELIVR} {DESMOS}",
         f"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com {JSDELIVR} {DESMOS}",
         f"font-src 'self' data: https://fonts.gstatic.com {JSDELIVR} {DESMOS}",
         f"img-src 'self' data: blob: {DESMOS}",
@@ -42,7 +48,8 @@ class ContentSecurityPolicyMiddleware:
         response = self.get_response(request)
         if getattr(settings, "CSP_ENABLED", True) and "Content-Security-Policy" not in response:
             name = "Content-Security-Policy-Report-Only" if settings.CSP_REPORT_ONLY else "Content-Security-Policy"
-            response[name] = policy(request.csp_nonce)
+            html = response.get("Content-Type", "").startswith("text/html") and not response.streaming
+            response[name] = policy(request.csp_nonce, eval_ok=html and DESMOS_SCRIPT in response.content)
         response.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
         return response
 

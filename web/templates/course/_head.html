@@ -14,6 +14,7 @@
   <a class="up" href="{% url 'map' %}#unit-{{ unit.n }}">{{ unit.short }}</a>
   {% if next %}<a class="next" href="{% url 'lesson' next.n %}"><span class="dir">Next →</span> <span class="mathy">{{ next.label }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
 </nav>
+{% if slides %}<p class="packet-dl"><a class="btn small" href="{% url 'slides' num %}">Teacher slides for this topic</a></p>{% endif %}
 {% if packet %}<form class="packet-dl" method="post" action="{% url 'packet' num %}">{% csrf_token %}
   <button class="btn small" type="submit">Download printable packet (PDF)</button>
 </form>{% endif %}

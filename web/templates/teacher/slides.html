@@ -1,0 +1,34 @@
+{% extends "base.html" %}{% load course_text %}
+{% block title %}Slides {{ num|lesson_label }} · AP Calculus{% endblock %}
+{% block crumbs %}<a class="muted crumb" href="{% url 'handouts' %}" style="font-family:var(--font-ui);font-size:.9rem">Handouts and slides</a>{% endblock %}
+{% block main %}
+<div class="mathy narrow">
+<h1><span class="chip-sm">{{ num|lesson_label }}</span> {{ title }}: slides</h1>
+<p class="muted">The same deck in two versions. <strong>Solutions shown</strong> fills in the notes blanks and reveals each
+  worked example one step at a time. <strong>Blank</strong> leaves the blanks open and gives each problem a slide with room to work
+  it live with the class.{% if has_clips %} Each worked example has a silent clip from the lesson video; in the blank version the clip
+  stops before the solving starts.{% endif %}</p>
+<div class="slide-versions" style="display:grid;gap:16px;margin-bottom:8px">
+{% for v in versions %}
+<section class="card">
+  <h2 style="margin-top:0">{{ v.label }}</h2>
+  <p class="muted" style="margin:0 0 12px">{{ v.slides }} slides{% if v.clips %}, {{ v.clips }} with video clips{% endif %}</p>
+  <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0">
+    <a class="btn primary" href="{{ v.html }}" target="_blank" rel="noopener">Present in the browser</a>
+    {% if v.pptx %}<a class="btn" href="{{ v.pptx }}">Download PowerPoint</a>{% endif %}
+  </p>
+</section>
+{% endfor %}
+</div>
+<h2>Presenting</h2>
+<ul>
+  <li>Next slide: <kbd>&rarr;</kbd>, <kbd>Page Down</kbd> or <kbd>Space</kbd> (most clickers send these). Back: <kbd>&larr;</kbd> or <kbd>Page Up</kbd>.</li>
+  <li><kbd>F</kbd> goes fullscreen, <kbd>T</kbd> switches between light and dark, <kbd>K</kbd> plays or pauses the clip, <kbd>B</kbd> blacks the screen.</li>
+  <li>The deck opens in the look you picked for the site. Light usually reads better on a projector.</li>
+</ul>
+<h2>PowerPoint and Google Slides</h2>
+<p>The PowerPoint file has the same slides. Titles are editable text, the math is a picture rendered at full HD, and each
+  slide's speaker notes hold its text (in the solutions version, the worked solution too). Clips are embedded and play in
+  PowerPoint. Google Slides can't play video embedded in a PowerPoint file, so after you import it there the clips show as still frames.</p>
+</div>
+{% endblock %}

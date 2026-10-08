@@ -19,12 +19,21 @@ NOTES = [
 
     Section("Three levels"),
     Text(r"$f''$ tells you how $f'$ changes, and $f'$ tells you how $f$ changes. Every question about $f$ is answered one or two levels down."),
-    Table(r"$f$ increasing & $f' > 0$ & \\ "
-          r"$f$ decreasing & $f' < 0$ & \\ "
-          r"$f$ concave up & $f'$ \blank{increasing} & $f'' > 0$ \\ "
+    Table(r"$f$ positive & & \\ "
+          r"$f$ zero & & \\ "
+          r"$f$ negative & & \\ \hline "
+          r"$f$ increasing & $f'$ \blank{positive} & \\ "
+          r"$f$ decreasing & $f'$ negative & \\ "
+          r"local max or min of $f$ & $f'$ zero, \textbf{and changes sign} & \\ "
+          r"horizontal tangent & $f'$ zero & \\ \hline "
+          r"$f$ concave up & $f'$ \blank{increasing} & $f''$ positive \\ "
           r"$f$ concave down & $f'$ decreasing & $f'' \mblank{< 0}$ \\ "
-          r"relative extremum of $f$ & $f'$ changes sign & \\ "
-          r"inflection point of $f$ & $f'$ has a relative extremum & $f''$ changes sign", "lll", header=r"$f$ & $f'$ & $f''$"),
+          r"inflection point of $f$ & local max or min of $f'$ & $f''$ zero, \textbf{and changes sign}", "lll",
+          header=r"Function, $f$ & First derivative, $f'$ & Second derivative, $f''$"),
+    Text(r"\textbf{The pattern.} Each column is the derivative of the one before, so the words slide one column right: ``increasing'' for $f$ "
+         r"becomes ``increasing'' for $f'$ one group down, and ``positive'' for $f'$ becomes ``positive'' for $f''$."),
+    Text(r"\textbf{Zero is not enough.} $f' = 0$ only gives a horizontal tangent; a max or min needs $f'$ to \blank{change sign}. "
+         r"$f'' = 0$ is only a candidate for an inflection point; $f''$ must change sign ($x^4$ has $f''(0) = 0$ and no inflection point)."),
     Text(r"\textbf{Justify at the right level.} ``$f$ is concave up because $f''$ is positive'' or ``because $f'$ is increasing'' both work. "
          r"``Because $f$ curves up'' restates the claim; it isn't a reason."),
 

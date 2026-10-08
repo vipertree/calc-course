@@ -190,7 +190,7 @@ def _list(items, compact):
 def _practice_body(t, key, compact=False):
     return "\n".join([rf"\topictitle{{{t.number}}}{{{t.title}}}{{{t.unit}}}{{Practice}}",
                       r"Give exact answers unless a problem says to round."]
-                     + _list([_item(i, it, key) for i, it in enumerate(t.practice)], compact))
+                     + _list([(_mcq(it, key) if isinstance(it, MCQ) else _item(i, it, key)) for i, it in enumerate(t.practice)], compact))
 
 
 def practice_tex(t, key, theme):
@@ -282,6 +282,10 @@ DOCS = {"notes": notes_tex, "practice": practice_tex, "quiz": quiz_tex, "testpre
 # ------------------------------------------------------------------ compile
 def compile_tex(tex, name, outdir):
     tex = expand_for_print(glue_punct(tex))          # a sentence's period stays on the formula's line
+    # a text \blank written inside math can't typeset (calc.sty's \blank measures its argument in text mode); the web
+    # export already treats it as \mblank, so print does the same
+    from .web import _blanks_in_math_to_mblank
+    tex = _blanks_in_math_to_mblank(tex)
     os.makedirs(outdir, exist_ok=True)
     build = os.path.join(outdir, "_build")
     os.makedirs(build, exist_ok=True)

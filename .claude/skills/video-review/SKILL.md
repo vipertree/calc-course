@@ -32,7 +32,8 @@ Read every contact sheet and every issue still with the Read tool. Check:
 - **Clutter**: one idea per screen. If a scene has more than about four separate things, split it.
 - **Worked examples**: the problem must be complete on screen before the solving starts, with the
   "Pause and try it" cue and the think pause; multi-part problems reveal one part at a time (`PART:` steps
-  with `[try it]` in the transcript); a real break between examples.
+  with `[try it]` in the transcript); a real break between examples. The algebra goes one step per line and
+  every sign analysis has its number line (see the lesson-writing skill).
 - **On-screen text matches the narration** word for word for quotes and definitions.
 - **Notation**: limit notation on every line of a limit computation; piecewise functions as `cases`.
 

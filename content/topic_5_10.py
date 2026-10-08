@@ -40,6 +40,9 @@ NOTES = [
 
     Section("Then solve"),
     Text(r"With $A(w)$ in hand, it's Unit 5 as usual: $A'(w) = 20 - 2w = 0$ at $w = 10$, and $A'' = -2 < 0$, so the area is largest for the $10 \times 10$ square: $100$."),
+    Text(r"\textbf{Find the domain from the picture.} Imagine the actual shape at extreme values. For a rectangle with perimeter $40$ and width $w$, "
+         r"the length is $20 - w$. A width of $25$ would make the length $-5$: no such rectangle. As $w$ approaches $20$ (or $0$) the rectangle "
+         r"flattens into a line. So the rectangles that exist have \blank{$0 < w < 20$}."),
     Text(r"\textbf{Check the answer makes sense.} An optimal width of $-3$ or $50$ in this problem would mean an error in the setup or the domain."),
     BigIdea(r"Optimization: one quantity, written as a function of one variable (use the constraint), on a sensible domain, then find its absolute max or min."),
     Check(r"Two positive numbers have product $36$. Write their sum as a function of one of them, $x$.", expr(x + 36 / x, var="x"), r"The other is $\frac{36}{x}$, so $S(x) = x + \frac{36}{x}$."),
@@ -58,7 +61,7 @@ PRACTICE = [
          expr(x * (120 - 2 * x), var="x"), r"The side parallel to the wall is $120 - 2x$: $A(x) = x(120 - 2x)$, for $0 < x < 60$.", work="2cm"),
     Item(r"For Taini's garden, what is the largest possible area?", num(1800), r"$A'(x) = 120 - 4x = 0$ at $x = 30$; $A(30) = 30 \cdot 60 = 1800$ ft$^2$.", work="1.8cm"),
     Item(r"What positive number $x$ makes $x + \dfrac{4}{x}$ as small as possible?", num(2), r"$1 - \frac{4}{x^2} = 0$ at $x = 2$; $f'' = \frac{8}{x^3} > 0$.", work="1.8cm"),
-    Item(r"A box with a square base and no top has volume $32$ ft$^3$. Write its surface area as a function of the base edge $x$.", expr(x**2 + 128 / x, var="x"),
+    Item(r"A box with a square base and no top has volume $32$ ft$^3$. Write its surface area as a function of the base edge $x$." r" (The volume of a box is length $\times$ width $\times$ height.)", expr(x**2 + 128 / x, var="x"),
          r"Height $h = \frac{32}{x^2}$. Area $= x^2 + 4xh = x^2 + \frac{128}{x}$.", work="2.2cm"),
     Item(r"For that box, what base edge gives the least surface area?", num(4), r"$2x - \frac{128}{x^2} = 0$: $x^3 = 64$, $x = 4$.", work="1.8cm"),
     Item(r"A farmer has $200$ m of fence for a rectangular pen divided into two equal halves by one more fence parallel to a side. What is the largest total area?", num(sp.Rational(5000, 3)),

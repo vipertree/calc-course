@@ -112,9 +112,11 @@ class Lesson(TranscriptScene):
                      [r"u = p = 40,\ \ u' = 2, \qquad v = q = 300,\ \ v' = -10", r"R' = u'v + uv' = (2)(300) + (40)(-10)", r"= 600 - 400 = 200 \text{ dollars per week}"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
-            rc = rect(0.45, LEFT * 6 + DOWN * 1.6, l=3.6, w=2.2)
-            card = formula_box(M(r"(uv)' = u'v + uv'", 54), DERIV).to_edge(RIGHT, buff=1.2)
-            self.play(FadeIn(rc), FadeIn(card), run_time=1.2)
+            # the takeaway is the rule itself, not the picture (Adder)
+            card = formula_box(M(r"(uv)' = u'v + uv'", 64), DERIV).shift(UP * 0.4)
+            how = T("differentiate one factor at a time, then add", 34, DIM).next_to(card, DOWN, buff=0.5)
+            self.play(FadeIn(card), run_time=1)
+            self.play(FadeIn(how), run_time=0.8)
         self.clear()
 
         self.examples_card()

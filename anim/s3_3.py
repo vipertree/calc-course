@@ -19,21 +19,50 @@ class Lesson(TranscriptScene):
         flip = lambda p: ax.c2p(*ax.p2c(p)[::-1])
         return ax, al, flip
 
+    def find_x(self, tab, row):
+        """'What x gives this g value?': light up the value in the g(x) column, then the x in its row, with an arrow between."""
+        val, xc = tab.cells[row][1], tab.cells[row][0]
+        self.play(Circumscribe(val, color=SECANT), val.animate.set_color(SECANT), run_time=1.0)
+        self.play(GrowArrow(Arrow(val.get_left(), xc.get_right(), buff=0.08, color=SECANT, stroke_width=4, max_tip_length_to_length_ratio=0.3)),
+                  xc.animate.set_color(SECANT), Circumscribe(xc, color=SECANT), run_time=1.0)
+
     def construct(self):
         with self.beat("Undoing a function") as b:
             box = lambda name, col: VGroup(RoundedRectangle(width=2, height=1.2, corner_radius=0.15, color=col), M(name, 44, col))
-            r1 = VGroup(M("1", 48), box("f", FUNC), M("2", 48)).arrange(RIGHT, buff=0.8).shift(UP * 1.6)
-            r2 = VGroup(M("2", 48), box("f^{-1}", DERIV), M("1", 48)).arrange(RIGHT, buff=0.8).shift(DOWN * 0.2)
+            r1 = VGroup(M("1", 48), box("f", FUNC), M("2", 48)).arrange(RIGHT, buff=0.8).shift(UP * 0.9)
+            r2 = VGroup(M("2", 48), box(r"g = f^{-1}", DERIV), M("1", 48)).arrange(RIGHT, buff=0.8).shift(DOWN * 0.9)
+            r2[1][0].stretch_to_fit_width(2.8)
+            r2.arrange(RIGHT, buff=0.8).shift(DOWN * 0.9)
             for r in (r1, r2):
                 r.add(Arrow(r[0].get_right(), r[1].get_left(), buff=0.1, color=DIM), Arrow(r[1].get_right(), r[2].get_left(), buff=0.1, color=DIM))
             self.play(FadeIn(r1), run_time=0.8)
             b.line(1)
-            self.play(FadeIn(r2), run_time=0.8)
+            rev = T(r"algebraic reverse: undo each step, in the opposite order", 34, DIM).to_edge(UP, buff=0.5)
+            self.play(FadeIn(rev), run_time=0.8)
             b.line(2)
-            pts = M(r"(1, 2) \ \longleftrightarrow\ (2, 1)", 50, SECANT).shift(DOWN * 2)
+            defn = formula_box(T(r"$g$ is the inverse of $f$: \quad $f(a) = b$ means $g(b) = a$", 40), DERIV).to_edge(UP, buff=0.4)
+            self.play(FadeOut(rev), FadeIn(defn), run_time=1)
+            b.line(3)
+            io = T(r"inputs become outputs, outputs become inputs", 34, SECANT).next_to(defn, DOWN, buff=0.35)
+            self.play(FadeIn(io), run_time=0.8)
+            b.line(4)
+            self.play(FadeIn(r2), run_time=0.8)
+            b.line(5)
+            pts = M(r"(1, 2) \ \longleftrightarrow\ (2, 1)", 50, SECANT).next_to(r2, DOWN, buff=0.7)
             self.play(Write(pts), run_time=1)
         self.clear()
         self.title()
+
+        with self.beat("Three ways to say inverse") as b:
+            head = T(r"How a problem tells you $g$ is the inverse of $f$", 44).to_edge(UP, buff=0.7)
+            self.play(FadeIn(head), run_time=0.8)
+            cues = VGroup(T(r"(a) It says so: ``$g$ is the inverse of $f$'' (or $g = f^{-1}$).", 38),
+                          T(r"(b) For every $a$ and $b$, $f(a) = b$ means $g(b) = a$.", 38),
+                          T(r"(c) $f\big(g(x)\big) = x$ for every $x$.", 38)).arrange(DOWN, buff=0.6, aligned_edge=LEFT).next_to(head, DOWN, buff=0.8)
+            for k, c in enumerate(cues):
+                b.line(k + 1)
+                self.play(FadeIn(c, shift=RIGHT * 0.2), run_time=0.8)
+        self.clear()
 
         ax, al, flip = self.mirror_axes()
         cf = ax.plot(f, x_range=[0, 2.6], color=FUNC, stroke_width=5)
@@ -67,7 +96,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(note2), run_time=0.6)
         with self.beat("The formula") as b:
             self.play(FadeOut(note), FadeOut(note2), run_time=0.4)
-            rule = formula_box(M(r"f(a) = b \ \Rightarrow\ \big(f^{-1}\big)'(b) = \frac{1}{f'(a)}", 44), DERIV).to_edge(RIGHT, buff=0.4).shift(UP * 1.4)
+            rule = formula_box(M(r"\text{if } f(a) = b, \text{ then } \big(f^{-1}\big)'(b) = \frac{1}{f'(a)}", 40), DERIV).to_edge(RIGHT, buff=0.4).shift(UP * 1.4)
             self.play(FadeIn(rule), run_time=1)
             b.line(1)
             self.play(Flash(ax.c2p(2, 4), color=FUNC), Flash(ax.c2p(4, 2), color=DERIV), run_time=1)
@@ -98,21 +127,25 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(lines), FadeIn(labs), run_time=0.8)
             self.play(GrowArrow(Arrow(lines[0].n2p(2), lines[1].n2p(1), color=DERIV, buff=0.1)), FadeIn(Dot(lines[0].n2p(2), color=DERIV)), FadeIn(Dot(lines[1].n2p(1), color=DERIV)), run_time=1)
         self.clear()
+        self.example_ref = r"f(a) = b:\ \ \big(f^{-1}\big)'(b) = \frac{1}{f'(a)}"
         gtab = table(["x", "g(x)", "g'(x)"], [["1", "4", "3"], ["4", "6", r"\tfrac12"]], size=38)
         self.example("From a table", r"$g$ is invertible. Use the table to find $\left(g^{-1}\right)'(4)$.",
-                     [r"g(1) = 4: \ \text{the matching point is } x = 1", r"\left(g^{-1}\right)'(4) = \frac{1}{g'(1)} = \frac13", r"TEXT:Not $\frac{1}{g'(4)}$: the $4$ is an output of $g$."], at=[1, 2, 3], figure=gtab)
+                     [r"TEXT:Cue: the problem names $g^{-1}$ outright.", r"TEXT:$\left(g^{-1}\right)'(4)$ needs $g^{-1}(4)$: what $x$ gives $g(x) = 4$?",
+                      r"g(1) = 4, \ \text{so } g^{-1}(4) = 1", r"\left(g^{-1}\right)'(4) = \frac{1}{g'(1)} = \frac13",
+                      r"TEXT:Not $\frac{1}{g'(4)}$: the $4$ is an output of $g$."], at=[1, 2, 3, 4, 5], figure=gtab,
+                     cues={2: lambda sc: self.find_x(gtab, 1)})
 
         with self.beat("Implicit differentiation agrees") as b:
             board = Board()
             board.anchor = UP * 2.8
-            board.write(self, r"y = f^{-1}(x) \ \Rightarrow\ f(y) = x")
+            board.write(self, r"y = f^{-1}(x), \ \text{so } f(y) = x")
             b.line(1)
             board.write(self, r"f'(y)\,\frac{dy}{dx} = 1")
             b.line(2)
             board.write(self, r"\frac{dy}{dx} = \frac{1}{f'(y)}", color=DERIV)
         self.clear()
         self.example("The natural log, again", r"Use $\ln x$ as the inverse of $e^x$ to find $\dfrac{d}{dx}\ln x$.",
-                     [r"y = \ln x \ \Rightarrow\ e^y = x", r"e^y\,\frac{dy}{dx} = 1", r"\frac{dy}{dx} = \frac{1}{e^y} = \frac{1}{x}"], at=[1, 2, 3])
+                     [r"y = \ln x, \ \text{so } e^y = x", r"e^y\,\frac{dy}{dx} = 1", r"\frac{dy}{dx} = \frac{1}{e^y} = \frac{1}{x}"], at=[1, 2, 3], ref="")
 
         with self.beat("Close") as b:
             ax, al, flip = self.mirror_axes()
@@ -125,18 +158,21 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.examples_card()
-        self.example("Example 1: From given values", r"$f(2) = 5$ and $f'(2) = -4$. Find $\big(f^{-1}\big)'(5)$.",
-                     [r"\big(f^{-1}\big)'(5) = \frac{1}{f'(2)} = -\frac14"], at=[1])
+        self.example("Example 1: From given values", r"$f\big(g(x)\big) = x$ for every $x$. $f(2) = 5$ and $f'(2) = -4$. Find $g'(5)$.",
+                     [r"TEXT:Cue: $f\big(g(x)\big) = x$, so $g$ is the inverse of $f$.", r"f(2) = 5, \ \text{so } g(5) = 2", r"g'(5) = \frac{1}{f'(2)} = -\frac14"], at=[1, 2, 3])
         tb = table(["x", "g(x)", "g'(x)"], [["1", "3", "4"], ["3", "7", "2"]], size=40)
-        tb.cells[2][2].set_color(TANGENT)
-        tb.cells[1][1].set_color(DERIV)
-        self.example("Example 2: A table with a distractor", VGroup(T(r"Find $\big(g^{-1}\big)'(3)$.", 42), tb).arrange(DOWN, buff=0.3),
-                     [r"g(1) = 3 \ \Rightarrow\ \text{matching input } 1", r"\big(g^{-1}\big)'(3) = \frac{1}{g'(1)} = \frac14", r"TEXT:$g'(3)$ is a distractor."], at=[2, 3, 3],
-                     text=r"Find $\big(g^{-1}\big)'(3)$. \[ \begin{array}{c|cc} x & g(x) & g'(x) \\ \hline 1 & 3 & 4 \\ 3 & 7 & 2 \end{array} \]")
+        self.example("Example 2: A table with a distractor",
+                     VGroup(T(r"For every $a$ and $b$, $g(a) = b$ means $h(b) = a$. Find $h'(3)$.", 40), tb).arrange(DOWN, buff=0.3),
+                     [r"TEXT:Cue: $g(a) = b$ means $h(b) = a$, so $h$ is the inverse of $g$.", r"TEXT:$h'(3)$ needs $h(3)$: what $x$ gives $g(x) = 3$?",
+                      r"g(1) = 3, \ \text{so } h(3) = 1", r"h'(3) = \frac{1}{g'(1)} = \frac14", r"TEXT:$g'(3)$ is a distractor: that $3$ is an input of $g$."],
+                     at=[1, 2, 3, 4, 5], cues={2: lambda sc: self.find_x(tb, 1),
+                                               4: lambda sc: sc.play(Indicate(tb.cells[2][2], color=TANGENT, scale_factor=1.4), run_time=0.8)},
+                     text=r"For every $a$ and $b$, $g(a) = b$ means $h(b) = a$. Find $h'(3)$. \[ \begin{array}{c|cc} x & g(x) & g'(x) \\ \hline 1 & 3 & 4 \\ 3 & 7 & 2 \end{array} \]")
         a3, _ = plot_axes([0, 4, 1], [0, 2, 1], w=5.4, h=3.6)
         gs = np.linspace(-0.2, 1.3, 120)
         fig = VGroup(a3, VMobject(color=DERIV, stroke_width=4).set_points_smoothly([a3.c2p(t ** 3 + t + 1, t) for t in gs if 0 <= t ** 3 + t + 1 <= 4]),
                      a3.plot(lambda x: 1 + (x - 3) / 4, x_range=[0.5, 4], color=TANGENT, stroke_width=4), closed_dot(a3, 3, 1, INK))
         self.example("Example 3: A tangent line to an inverse", r"$g$ is the inverse of $f(x) = x^3 + x + 1$. Find the equation for the line tangent to $g$ at $x = 3$.",
-                     [r"f(1) = 3 \ \Rightarrow\ g(3) = 1", r"f'(1) = 4 \ \Rightarrow\ g'(3) = \frac14", r"y - 1 = \frac14(x - 3)"], figure=fig, at=[1, 2, 3])
+                     [r"TEXT:Cue: it says $g$ is the inverse of $f$ outright.", r"f(1) = 3, \ \text{so } g(3) = 1", r"f'(1) = 4, \ \text{so } g'(3) = \frac14",
+                      r"y - 1 = \frac14(x - 3)"], figure=fig, at=[1, 2, 3, 4])
         self.finish()

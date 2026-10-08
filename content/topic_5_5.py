@@ -38,7 +38,9 @@ NOTES = [
         r"\textbf{1.} Find the critical points of $f$ in $(a, b)$. \par "
         r"\textbf{2.} Evaluate $f$ at each critical point and at both \blank{endpoints}. \par "
         r"\textbf{3.} The largest value is the absolute \blank{maximum}; the smallest is the absolute \blank{minimum}.")),
-    Text(r"The answer is a \emph{value} of $f$; say where it happens too. ``The absolute maximum is $19$, at $x = 3$.''"),
+    Text(r"\textbf{Inputs and outputs.} The maximum or minimum is an \blank{output}: a value of $f$. Where it happens is an \blank{input}: "
+         r"a value of $x$. Say both, each in its place: ``The absolute maximum is $19$, at $x = 3$.'' Then read the question: "
+         r"``What is the absolute maximum?'' wants $19$. ``At what $x$ does it occur?'' wants $3$."),
     Text(r"\textbf{Justification.} On the AP exam, show the table of candidates. That table \emph{is} the justification."),
     VideoExample('A parabola on an interval', work="3cm"),
     BigIdea(r"On a closed interval, test every candidate: the critical points and the endpoints. Biggest wins, smallest loses."),
@@ -49,24 +51,34 @@ NOTES = [
 P = [
     (x**2 - 6 * x + 2, 0, 5, "minimum"),
     (x**3 - 12 * x, -3, 5, "maximum"),
-    (x**3 - 12 * x, -3, 5, "minimum"),
+    (x**3 - 12 * x, -3, 5, "x of minimum"),
     (2 * x**3 - 3 * x**2 - 12 * x + 1, -2, 3, "maximum"),
     (x**4 - 2 * x**2 + 3, -2, 1, "minimum"),
-    (x * sp.exp(-x), 0, 3, "maximum"),
+    (x * sp.exp(-x), 0, 3, "x of maximum"),
     (x + 4 / x, 1, 5, "minimum"),
-    (sp.sin(x) - x / 2, 0, sp.pi, "maximum"),
+    (sp.sin(x) - x / 2, 0, sp.pi, "x of maximum"),
 ]
 PRACTICE = []
 for f, a, b, ask in P:
     c = candidates(f, a, b)
     big, small = extremes(f, a, b)
-    v = big if ask == "maximum" else small
+    kind = ask.split()[-1]
+    v = big if kind == "maximum" else small
+    cands = r"Candidates: " + ", ".join(rf"$f\left({sp.latex(k)}\right) = {sp.latex(val)}$" for k, val in c.items())
+    if ask.startswith("x of"):
+        where = [k for k, val in c.items() if sp.simplify(val - v) == 0]
+        assert len(where) == 1, (f, where)
+        PRACTICE.append(Item(rf"At what value of $x$ does $f(x) = {sp.latex(f)}$ attain its absolute {kind} on $\left[{sp.latex(a)}, {sp.latex(b)}\right]$?",
+                             num(where[0]), cands + rf". The absolute {kind} (an output) is ${sp.latex(v)}$; it occurs at the input $x = {sp.latex(where[0])}$.",
+                             work="2.8cm"))
+        continue
     PRACTICE.append(Item(rf"Find the absolute {ask} value of $f(x) = {sp.latex(f)}$ on $\left[{sp.latex(a)}, {sp.latex(b)}\right]$.", num(v),
-                         r"Candidates: " + ", ".join(rf"$f\left({sp.latex(k)}\right) = {sp.latex(val)}$" for k, val in c.items()) + rf". The absolute {ask} is ${sp.latex(v)}$.",
-                         work="2.8cm"))
+                         cands + rf". The absolute {ask} is ${sp.latex(v)}$.", work="2.8cm"))
 PRACTICE += [
     Item(r"Selected values of a differentiable $g$ on $[0, 6]$ are $g(0) = 5$, $g(6) = 2$. Its only critical points are $x = 2$, where $g(2) = 9$, and $x = 4$, where $g(4) = -1$. "
          r"Find the absolute minimum value of $g$ on $[0, 6]$.", num(-1), r"Candidates $5, 9, -1, 2$: the smallest is $-1$, at $x = 4$.", work="1.6cm"),
+    Item(r"For the same $g$ ($g(0) = 5$, $g(2) = 9$, $g(4) = -1$, $g(6) = 2$, critical points only at $2$ and $4$): at what value of $x$ does $g$ attain its "
+         r"absolute maximum on $[0, 6]$?", num(2), r"The largest output is $9$, so the absolute maximum occurs at the input $x = 2$.", work="1.4cm"),
     Item(r"Amara says the absolute maximum of $f(x) = x^3 - 3x$ on $[0, 3]$ is $f(1) = -2$, since $1$ is the only critical point. What did she miss? Find the absolute maximum.",
          num(18), r"She skipped the endpoints. $f(0) = 0$, $f(1) = -2$, $f(3) = 18$: the absolute maximum is $18$ at $x = 3$.", work="2cm"),
 ]
@@ -89,7 +101,9 @@ QUIZ = [
         MCQ(r"$f$ is continuous on $[1, 7]$ with one critical point, at $x = 4$, where $f$ has a relative minimum. The absolute maximum of $f$ on $[1, 7]$ is", [r"at $x = 1$ or $x = 7$",
             r"at $x = 4$", r"not guaranteed to exist", r"at the midpoint"], "A", r"The only interior candidate is a minimum, so the maximum is at an endpoint."),
         MCQ(r"$f(0) = 3$, $f(2) = -5$, $f(5) = 1$ and $f(8) = 4$, where $2$ and $5$ are the only critical points of $f$ on $[0, 8]$. The absolute maximum is", [r"$3$",
-            r"$1$", r"$-5$", r"$4$"], "D", r"Largest candidate: $4$."),
+            r"$1$", r"$-5$", r"$4$"], "D", r"Largest candidate: $4$.", why_not={"B": "that's an input, not a value"}),
+        MCQ(r"$f(0) = 3$, $f(2) = -5$, $f(5) = 1$ and $f(8) = 4$, where $2$ and $5$ are the only critical points of $f$ on $[0, 8]$. At what $x$ does $f$ attain its absolute minimum?",
+            [r"$x = -5$", r"$x = 2$", r"$x = 0$", r"$x = 5$"], "B", r"The smallest output is $-5$, at the input $x = 2$.", why_not={"A": "$-5$ is the minimum value, not where it occurs"}),
     ),
     Variants(q_item(x * sp.exp(-x), 0, 2, "maximum"), q_item(x - sp.log(x), sp.Rational(1, 2), 2, "minimum"), q_item(x**2 * sp.exp(-x), 0, 4, "maximum")),
     Variants(

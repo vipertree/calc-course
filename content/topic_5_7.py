@@ -30,13 +30,19 @@ NOTES = [
     Video("s5_7.py::Lesson", "The second derivative test", 4),
 
     Section("The test"),
-    Text(r"At a horizontal tangent, the bend of the graph tells the story. A cap with a flat top is a peak; a cup with a flat bottom is a valley."),
+    Text(r"At a horizontal tangent, the bend of the graph tells the story. A hill with a flat top is a peak; a bowl with a flat bottom is a valley."),
     Formula("The Second Derivative Test", (
         r"Suppose $f'(c) = 0$. \par If $f''(c) < 0$ (concave \blank{down}), $f$ has a relative \blank{maximum} at $c$. \par "
         r"If $f''(c) > 0$ (concave \blank{up}), $f$ has a relative \blank{minimum} at $c$. \par "
         r"If $f''(c) = 0$, the test is \blank{inconclusive}: use the First Derivative Test instead.")),
     Text(r"\textbf{Inconclusive means inconclusive.} $x^4$, $-x^4$ and $x^3$ all have $f'(0) = 0$ and $f''(0) = 0$. The first has a minimum, the second a maximum, the third neither."),
     Text(r"\textbf{Justify:} ``$f$ has a relative maximum at $x = 0$ because $f'(0) = 0$ and $f''(0) < 0$.'' Both facts are needed."),
+
+    Section("Which test?"),
+    Text(r"Both tests are correct when they work; choosing one is a judgment call. The \textbf{second} derivative test is quick: plug $c$ into $f''$, no number line. "
+         r"But it only applies where $f'(c) = 0$, and it says nothing when $f''(c) = 0$. The \textbf{first} derivative test always gives an answer, works where $f'$ is "
+         r"undefined (corners, cusps), and gives the increasing/decreasing intervals too, but needs a sign chart. A good habit: if $f''$ is easy to find, try the "
+         r"\blank{second} derivative test; if $f''(c) = 0$ or $f'(c)$ is undefined, use the \blank{first}."),
 
     Section("One critical point means absolute"),
     Text(r"If a continuous function has \blank{only one} critical point on an interval, and it's a relative minimum, then it is the \blank{absolute} minimum on that interval "

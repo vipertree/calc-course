@@ -31,6 +31,8 @@ NOTES = [
     Formula("The Mean Value Theorem (MVT)", (
         r"If $f$ is \blank{continuous} on $[a, b]$ and \blank{differentiable} on $(a, b)$, then there is at least one $c$ in $(a, b)$ with "
         r"\[ f'(c) = \frac{f(b) - f(a)}{b - a}. \]")),
+    Text(r"\textbf{In words.} At some point $c$ between $a$ and $b$, the \blank{instantaneous} rate of change equals the "
+         r"\blank{average} rate of change over $[a, b]$. There can be more than one such $c$. The theorem guarantees at least one."),
     Text(r"\textbf{The picture.} The right side is the slope of the \blank{secant} line from $\left(a, f(a)\right)$ to $\left(b, f(b)\right)$. "
          r"The theorem says some \blank{tangent} line in between is parallel to it: slide the secant line sideways until it just touches the curve."),
     graph("t5_1_pic", [("0.25*x^3 - x + 1", -0.5, 2.6), ("1", -0.3, 2.3, "dashed"), ("0.25*1.1547^3 - 1.1547 + 1 + 0*x", 0.6, 1.7)], (-0.5, 2.6), (-1, 3.5),
@@ -39,11 +41,17 @@ NOTES = [
     Section("Both conditions matter"),
     Text(r"If $f$ has a jump, a hole, or a corner, the conclusion can fail. $f(x) = |x|$ on $[-1, 2]$ has average rate of change "
          r"\[ \frac{2 - 1}{2 - (-1)} = \frac13, \] but $f'(x)$ is only ever $-1$ or $1$. The theorem doesn't apply: $f$ is not differentiable at \blank{$0$}."),
+    Text(r"\textbf{Closed and open.} $f$ must be continuous on the closed interval $[a, b]$, endpoints included, but differentiable "
+         r"only on the open interval $(a, b)$: the endpoints don't need a derivative. On most problems this difference never comes up. "
+         r"You'll usually have a polynomial or another function that is continuous and differentiable well past both ends of the interval."),
     Text(r"\textbf{On the AP exam:} to use the MVT, say so by name and check \blank{both} conditions. A table of values from a differentiable "
          r"function is enough: differentiable implies continuous."),
     VideoExample('From given values', work="2.4cm"),
+    Text(r"\textbf{From a table.} A classic AP question gives a table of values and asks whether $f'(c)$ must equal some number $k$. "
+         r"The average rate over the whole table often isn't $k$. Try pairs of values until one gives an average rate of change of exactly "
+         r"\blank{$k$}, then apply the MVT on that smaller interval. (Example 4 in the video.)"),
     BigIdea(r"Somewhere between $a$ and $b$, the instantaneous rate equals the average rate, as long as $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$."),
-    Check(r"Find the $c$ guaranteed by the MVT for $f(x) = x^2$ on $[1, 3]$.", num(2), r"Average rate $\frac{9 - 1}{2} = 4$, and $f'(c) = 2c = 4$ at $c = 2$."),
+    Check(r"Find the $c$ guaranteed by the MVT for $f(x) = x^2$ on $[1, 3]$.", num(2), r"Average rate $\frac{9 - 1}{3 - 1} = 4$. Set $f'(c) = 2c$ equal to it: $2c = 4$, so $c = 2$, which is in $(1, 3)$."),
 ]
 
 # ---------------------------------------------------------------- practice

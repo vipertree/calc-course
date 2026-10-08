@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from transcripts import parse  # noqa: E402
 
-UNIT_NAMES = {1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
+UNIT_NAMES = {0: "Trig Review", 1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
               3: "Differentiation: Composite, Implicit, and Inverse Functions", 4: "Contextual Applications of Differentiation",
               5: "Analytical Applications of Differentiation", 6: "Integration and Accumulation of Change", 7: "Differential Equations",
               8: "Applications of Integration", 9: "Parametric Equations, Polar Coordinates, and Vector-Valued Functions",
@@ -201,18 +201,26 @@ class TranscriptScene(LessonScene):
     example_ref = None    # a formula (MathTex string) kept in the corner during worked examples, e.g. the chain rule
 
     def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
-                follow=False, ref=None):
+                follow=False, ref=None, cues=None):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
         figure: optional mobject shown on the right, with the problem, or from narration line `figure_at` on (so a
         warning's picture arrives with the words that explain it). follow: a first-of-its-kind problem students watch
         rather than try, so no "Pause and try it" cue and no think pause (Adder, 2026-10-02).
+        cues: {step index: function(scene)} run just before that step is written, e.g. to light up a table cell as the
+        narration points at it.
         text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
         ref = ref if ref is not None else self.example_ref
         with self.beat(beat_name, think=not follow) as b:
-            head = problem if isinstance(problem, Mobject) else T(problem, 42)
+            if isinstance(problem, Mobject):
+                head = problem
+            elif len(re.sub(r"\$[^$]*\$", "xxxx", problem)) > 80:
+                # long word problems wrap onto lines instead of shrinking to fit one
+                head = T(wrap_tex(problem, 62), 40, tex_environment="flushleft")
+            else:
+                head = T(problem, 42)
             card = None
             if ref:
                 # the rule being practiced stays up in the top-right corner (Adder: 2.1's definition, 3.1's chain rule)
@@ -248,6 +256,8 @@ class TranscriptScene(LessonScene):
                 if cue is not None:
                     self.play(FadeOut(cue), run_time=0.3)
                     cue = None
+                if cues and k in cues:
+                    cues[k](self)
                 if isinstance(s, str) and s.startswith("PART:"):
                     # a multi-part question's next part, shown on its own (its [try it] pause follows) before its work
                     part = board.write(self, T(s[5:], 40, SECANT))
@@ -514,6 +524,11 @@ def nudge_arrow(p0, p1, label="dx", side=DOWN, color=INK, size=30, offset=0.18):
     return VGroup(a, M(label, size, color).next_to(a, side, buff=0.08))
 
 
+def car_prop(width=1.1):
+    """Amara's car: a painted side-view sprite (assets/car.png, generated art), facing right."""
+    return ImageMobject(os.path.join(ASSETS, "car.png")).set_width(width)
+
+
 def zeno_bust(height=5.6):
     """Jan de Bisschop's etching of a bust of Zeno of Elea (c. 1670, Rijksmuseum, CC0); see assets/CREDITS.md."""
     return ImageMobject(os.path.join(ASSETS, "zeno.png")).set_height(height)
@@ -532,10 +547,452 @@ def sign_chart(crit, signs, name="f'", width=10, words=None, size=44):
     line = Line(LEFT * width / 2, RIGHT * width / 2, color=DIM, stroke_width=3)
     n = len(crit)
     xs = [line.point_from_proportion((k + 1) / (n + 1)) for k in range(n)]
-    ticks = VGroup(*[Line(p + UP * 0.15, p + DOWN * 0.15, color=INK, stroke_width=3) for p in xs])
-    labels = VGroup(*[M(str(c), 34).next_to(p, DOWN, buff=0.25) for c, p in zip(crit, xs)])
+    # each zero gets a bold tick, a dot, and a dashed divider up through the sign row, so it's obvious which section
+    # each sign belongs to (Adder, 4.2)
+    ticks = VGroup(*[VGroup(Line(p + UP * 0.3, p + DOWN * 0.3, color=INK, stroke_width=5), Dot(p, radius=0.08, color=INK),
+                            DashedLine(p + UP * 0.3, p + UP * 1.0, color=DIM, stroke_width=2, dash_length=0.08)) for p in xs])
+    labels = VGroup(*[M(str(c), 36).next_to(p, DOWN, buff=0.35) for c, p in zip(crit, xs)])
     mids = [line.point_from_proportion((k + 0.5) / (n + 1)) for k in range(n + 1)]
     sg = VGroup(*[M(s, size, DERIV if s == "+" else (TANGENT if s == "-" else DIM)).next_to(p, UP, buff=0.25) for s, p in zip(signs, mids)])
     wd = VGroup(*[T(w, 32, DIM).next_to(p, DOWN, buff=0.75) for w, p in zip(words or [], mids)])
     nm = M(name, 36, DIM).next_to(line, LEFT, buff=0.3)
     return VGroup(line, ticks, labels, sg, wd, nm)
+
+
+def staged_chart(crit, signs, words=None, name="f'", width=10):
+    """A sign chart for a worked example's figure (Adder, unit 5: a number line for every sign problem). The line,
+    ticks and critical points show with the figure; each sign and the words stay hidden until reveal_sign/reveal_words
+    run as cues, so the chart fills in as each test value is worked on the board."""
+    ch = sign_chart(crit, signs, name=name, width=width, words=words)
+    ch[3].set_opacity(0)
+    ch[4].set_opacity(0)
+    return ch
+
+
+def reveal_sign(ch, *ks):
+    """A cue for Scene.example: light up the signs of pieces ks (0 = leftmost)."""
+    return lambda scene: scene.play(*[ch[3][k].animate.set_opacity(1) for k in ks], run_time=0.6)
+
+
+def reveal_words(ch):
+    """A cue for Scene.example: show the inc/dec (or max/min) words under the chart."""
+    return lambda scene: scene.play(ch[4].animate.set_opacity(1), run_time=0.6)
+
+
+def mark_point(ch, k, text, color=SECANT, size=30):
+    """A cue for Scene.example: write a classification ("max", "min", "neither") above critical point k of a sign chart."""
+    def cue(scene):
+        lab = T(text, size, color).next_to(ch[1][k][2], UP, buff=0.12)
+        ch.add(lab)
+        scene.play(FadeIn(lab), run_time=0.5)
+    return cue
+
+
+# ---------------------------------------------------------------- scenery for word problems (Adder: real-life pictures should be pretty too)
+WATER, WATER_HI, SAND = "#5B9BD5", "#BFDCF2", "#D9C291"
+MEADOW, GRASS, GRASS_DK = "#A7C957", "#7FB069", "#55803F"
+WOOD, WOOD_DK = "#9A6B43", "#6E4A2C"
+CARD, CARD_DK, CARD_LT = "#C99A66", "#A57846", "#E2BE8F"
+WOOL, MUZZLE = "#F6F2E9", "#3B3632"
+
+
+def river_band(width, height=0.7, waves=3):
+    """A river seen from above: water, pale ripple lines, and a sandy bank along the bottom edge."""
+    water = Rectangle(width=width, height=height, stroke_width=0, fill_color=WATER, fill_opacity=1)
+    rip = VGroup(*[FunctionGraph(lambda s, k=k: 0.04 * np.sin(5 * s + 1.7 * k), x_range=[-width / 2 + 0.2 + 0.3 * (k % 2), width / 2 - 0.2],
+                                 color=WATER_HI, stroke_width=2).shift(UP * (height / 2 - (k + 1) * height / (waves + 1)))
+                   for k in range(waves)])
+    bank = Line(water.get_corner(DL), water.get_corner(DR), color=SAND, stroke_width=6)
+    return VGroup(water, rip, bank)
+
+
+def fence_path(points, post_gap=0.32):
+    """A wooden fence seen from above along the polyline `points`: a rail with square posts at even spacing."""
+    rail = VMobject(stroke_color=WOOD, stroke_width=6).set_points_as_corners(points)
+    posts = VGroup()
+    for p, q in zip(points, points[1:]):
+        n = max(1, int(np.linalg.norm(q - p) / post_gap))
+        for t in np.linspace(0, 1, n + 1):
+            posts.add(Square(0.11, stroke_width=0, fill_color=WOOD_DK, fill_opacity=1).move_to(p + t * (q - p)))
+    return VGroup(rail, posts)
+
+
+def sheep(size=0.5):
+    """A sheep seen from above: a lumpy wool body and a dark head."""
+    r = size * 0.28
+    body = VGroup(*[Circle(radius=r, stroke_width=0, fill_color=WOOL, fill_opacity=1).move_to([dx * size, dy * size, 0])
+                    for dx, dy in ((-0.22, 0.1), (0, 0.16), (0.2, 0.1), (-0.2, -0.12), (0.02, -0.16), (0.22, -0.1), (0, 0))])
+    head = Ellipse(width=size * 0.34, height=size * 0.26, stroke_width=0, fill_color=MUZZLE, fill_opacity=1).move_to([size * 0.5, 0, 0])
+    ears = VGroup(*[Ellipse(width=size * 0.14, height=size * 0.07, stroke_width=0, fill_color=MUZZLE, fill_opacity=1).move_to([size * 0.44, s * size * 0.17, 0])
+                    for s in (1, -1)])
+    return VGroup(body, ears, head)
+
+
+def water_tank(width=2.2, height=3.0):
+    """A glass tank with a faucet above its left edge. Returns (group, water(level)) where water(level) draws the water
+    for a fill fraction in [0, 1]; use it inside always_redraw."""
+    glass = RoundedRectangle(width=width, height=height, corner_radius=0.12, stroke_color=INK, stroke_width=3, fill_color=WATER_HI, fill_opacity=0.12)
+    spout = VGroup(Line(glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.2, glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.75, color=DIM, stroke_width=8),
+                   Line(glass.get_corner(UL) + UP * 0.9 + RIGHT * 0.72, glass.get_corner(UL) + UP * 0.5 + RIGHT * 0.72, color=DIM, stroke_width=8))
+    group = VGroup(glass, spout)
+
+    def water(level):
+        h = max(level, 0.002) * (height - 0.08)
+        return Rectangle(width=width - 0.08, height=h, stroke_width=0, fill_color=WATER, fill_opacity=0.85).align_to(glass, DOWN).shift(UP * 0.04)
+    return group, water
+
+
+def riemann_boxes(ax, f, edges, kind="left", color=AREA, opacity=0.45):
+    """Riemann rectangles (kind "left", "right" or "mid") or trapezoids (kind "trap") on the partition `edges`, which may
+    be uneven. Heights may be negative; each shape is drawn between the curve sample and the axis."""
+    out = VGroup()
+    for a, b in zip(edges, edges[1:]):
+        if kind == "trap":
+            pts = [ax.c2p(a, 0), ax.c2p(b, 0), ax.c2p(b, f(b)), ax.c2p(a, f(a))]
+        else:
+            s = {"left": a, "right": b, "mid": (a + b) / 2}[kind]
+            h = f(s)
+            pts = [ax.c2p(a, 0), ax.c2p(b, 0), ax.c2p(b, h), ax.c2p(a, h)]
+        out.add(Polygon(*pts, stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity))
+    return out
+
+
+def coffee_mug(height=1.6):
+    """A mug of coffee with a handle and three wisps of steam (vector art)."""
+    w = height * 0.8
+    body = RoundedRectangle(width=w, height=height, corner_radius=0.12, stroke_color=INK, stroke_width=3, fill_color="#E8E1D5", fill_opacity=1)
+    coffee = Ellipse(width=w * 0.86, height=height * 0.12, stroke_width=0, fill_color="#6B4226", fill_opacity=1).move_to(body.get_top() + DOWN * height * 0.08)
+    handle = Arc(radius=height * 0.28, start_angle=-PI / 2, angle=PI, stroke_color=INK, stroke_width=6).next_to(body, RIGHT, buff=-0.05)
+    steam = VGroup(*[FunctionGraph(lambda s, k=k: 0.08 * np.sin(6 * s + k), x_range=[0, 0.7], color=DIM, stroke_width=3).rotate(PI / 2)
+                     .next_to(body, UP, buff=0.1).shift(RIGHT * (k - 1) * w * 0.28) for k in range(3)])
+    return VGroup(steam, handle, body, coffee)
+
+
+def slope_field(ax, f, xs, ys, length=0.36, color=None, width=3):
+    """Short segments of slope f(x, y) centred at each grid point (screen-length `length`), drawn in axis coordinates
+    so the slopes are true to the axes' scales."""
+    color = color or DIM
+    sx = (ax.c2p(1, 0)[0] - ax.c2p(0, 0)[0])
+    sy = (ax.c2p(0, 1)[1] - ax.c2p(0, 0)[1])
+    segs = VGroup()
+    for x in xs:
+        for y in ys:
+            m = f(x, y)
+            d = np.array([sx, m * sy, 0.0])
+            d = d / np.linalg.norm(d) * length / 2
+            p = ax.c2p(x, y)
+            segs.add(Line(p - d, p + d, color=color, stroke_width=width))
+    return segs
+
+
+def region(ax, top, bottom, a, b, var="x", color=AREA, opacity=0.45, n=80):
+    """The region between two curves as a filled polygon. var="x": between y = bottom(x) and y = top(x), a <= x <= b.
+    var="y": between x = bottom(y) (left) and x = top(y) (right), a <= y <= b."""
+    s = np.linspace(a, b, n)
+    pts = [(v, top(v)) for v in s] + [(v, bottom(v)) for v in s[::-1]]
+    if var == "y":
+        pts = [(q, p) for p, q in pts]
+    return Polygon(*[ax.c2p(p, q) for p, q in pts], stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def slice_rect(ax, top, bottom, at, d, var="x", color=SECANT, label=None):
+    """A representative slice of width d at x = at (var="x", vertical) or y = at (var="y", horizontal), from bottom to
+    top, with an optional nudge_arrow label ("dx" or "dy") on its thickness."""
+    if var == "x":
+        pts = [ax.c2p(at - d / 2, bottom(at)), ax.c2p(at + d / 2, bottom(at)), ax.c2p(at + d / 2, top(at)), ax.c2p(at - d / 2, top(at))]
+    else:
+        pts = [ax.c2p(bottom(at), at - d / 2), ax.c2p(top(at), at - d / 2), ax.c2p(top(at), at + d / 2), ax.c2p(bottom(at), at + d / 2)]
+    rect = Polygon(*pts, stroke_color=color, stroke_width=3, fill_color=color, fill_opacity=0.55)
+    if label is None:
+        return rect
+    if var == "x":
+        arr = nudge_arrow(ax.c2p(at - d / 2, bottom(at)), ax.c2p(at + d / 2, bottom(at)), label=label, side=DOWN, color=color, size=26)
+    else:
+        arr = nudge_arrow(ax.c2p(top(at), at - d / 2), ax.c2p(top(at), at + d / 2), label=label, side=RIGHT, color=color, size=26)
+    return VGroup(rect, arr)
+
+
+def solid_of_revolution(ax, r_out, a, b, r_in=None, axis_y=0.0, n=9, color=ACCUM, tilt=0.32):
+    """A 2D sketch of a solid made by revolving about the horizontal line y = axis_y: the outline (curve and its mirror
+    image), n elliptical cross sections (discs, or washers when r_in is given), all in axis coordinates.
+    tilt is the ellipse's width-to-height ratio on screen."""
+    sy = ax.c2p(0, 1)[1] - ax.c2p(0, 0)[1]
+    def edge(r, sign):
+        return ax.plot(lambda v: axis_y + sign * r(v), x_range=[a, b], color=color, stroke_width=3)
+    out = VGroup(edge(r_out, 1), edge(r_out, -1))
+    if r_in is not None:
+        out.add(edge(r_in, 1).set_stroke(opacity=0.7), edge(r_in, -1).set_stroke(opacity=0.7))
+    for v in np.linspace(a, b, n):
+        R = abs(r_out(v)) * sy
+        e = Ellipse(width=max(2 * R * tilt, 0.02), height=max(2 * R, 0.02), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=0.18)
+        e.move_to(ax.c2p(v, axis_y))
+        out.add(e)
+        if r_in is not None:
+            r = abs(r_in(v)) * sy
+            out.add(Ellipse(width=max(2 * r * tilt, 0.02), height=max(2 * r, 0.02), stroke_color=color, stroke_width=2, fill_color=BG, fill_opacity=1).move_to(ax.c2p(v, axis_y)))
+    return out
+
+
+def cross_section(kind, p0, p1, color=ACCUM, squash=1.0):
+    """One cross section standing straight up (screen UP) on the base segment p0-p1 (screen points, e.g. the two ends
+    of a slice of a base region drawn in an oblique view). kind: "square", "rectangle2" (height twice the base),
+    "equilateral", "isosceles_right" (a leg on the base), "isosceles_hyp" (the hypotenuse on the base), or "semicircle" (diameter on the base).
+    squash scales heights to suit the view."""
+    p0, p1 = np.array(p0, dtype=float), np.array(p1, dtype=float)
+    s = np.linalg.norm(p1 - p0)
+    h = UP * s * squash
+    if kind in ("square", "rectangle2"):
+        k = 1 if kind == "square" else 2
+        shape = Polygon(p0, p1, p1 + k * h, p0 + k * h)
+    elif kind == "equilateral":
+        shape = Polygon(p0, p1, (p0 + p1) / 2 + 0.866 * h)
+    elif kind == "isosceles_right":
+        shape = Polygon(p0, p1, p0 + h)
+    elif kind == "isosceles_hyp":            # hypotenuse on the base, right angle on top
+        shape = Polygon(p0, p1, (p0 + p1) / 2 + h / 2)
+    else:
+        c, u = (p0 + p1) / 2, (p1 - p0) / 2
+        shape = Polygon(*[c + np.cos(t) * u + np.sin(t) * h / 2 for t in np.linspace(0, PI, 32)])
+    return shape.set_stroke(color, 3).set_fill(color, 0.35)
+
+
+def oblique(origin=ORIGIN, sx=1.0, sy=1.0, depth=(0.6, 0.42)):
+    """A map (x, y) -> screen point for a base region lying flat, seen from above and in front: x runs to the right,
+    y runs back into the page along the slanted `depth` direction. Cross sections then stand straight up (screen UP),
+    e.g. cross_section("square", P(x, g(x)), P(x, f(x)))."""
+    d = np.array([depth[0], depth[1], 0.0])
+    o = np.array(origin, dtype=float)
+    return lambda x, y: o + RIGHT * x * sx + d * y * sy
+
+
+def base_curve(P, f, a, b, color=FUNC, var="x", width=4):
+    """The curve y = f(x) (var="x") or x = f(y) (var="y") drawn flat in an oblique() view."""
+    if var == "x":
+        return ParametricFunction(lambda s: P(s, f(s)), t_range=[a, b, 0.01], color=color, stroke_width=width)
+    return ParametricFunction(lambda s: P(f(s), s), t_range=[a, b, 0.01], color=color, stroke_width=width)
+
+
+def oblique_axes(P, xr, yr, color=None):
+    """Thin x and y axes in an oblique() view, with labels."""
+    color = color or DIM
+    xa = Arrow(P(xr[0], 0), P(xr[1], 0), buff=0, color=color, stroke_width=2, tip_length=0.18)
+    ya = Arrow(P(0, yr[0]), P(0, yr[1]), buff=0, color=color, stroke_width=2, tip_length=0.18)
+    return VGroup(xa, ya, M("x", 28, color).next_to(xa.get_end(), RIGHT, buff=0.08), M("y", 28, color).next_to(ya.get_end(), UR, buff=0.05))
+
+
+def sections(P, top, bot, xs, kind, squash=1.0, color=ACCUM, var="x"):
+    """Cross sections (cross_section kinds) standing on the base segments at each x in xs (or each y, for var="y")."""
+    out = VGroup()
+    for v in xs:
+        if var == "x":
+            p0, p1 = P(v, bot(v)), P(v, top(v))
+        else:
+            p0, p1 = P(bot(v), v), P(top(v), v)
+        out.add(cross_section(kind, p0, p1, color=color, squash=squash))
+    return out
+
+
+def base_region(P, top, bot, a, b, var="x", color=AREA, opacity=0.35, n=60):
+    s = np.linspace(a, b, n)
+    if var == "x":
+        pts = [P(v, top(v)) for v in s] + [P(v, bot(v)) for v in s[::-1]]
+    else:
+        pts = [P(top(v), v) for v in s] + [P(bot(v), v) for v in s[::-1]]
+    return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def rect_section(p0, p1, height, color=ACCUM):
+    """A rectangle standing up on p0-p1 with the given screen height."""
+    return Polygon(p0, p1, p1 + UP * height, p0 + UP * height).set_stroke(color, 3).set_fill(color, 0.35)
+
+
+def solid_about_vertical(ax, r_out, c, d, r_in=None, axis_x=0.0, n=9, color=ACCUM, tilt=0.32):
+    """solid_of_revolution's twin for a vertical axis x = axis_x: radii are functions of y on [c, d], cross sections are
+    flat ellipses (discs or washers) stacked up the axis."""
+    sx = ax.c2p(1, 0)[0] - ax.c2p(0, 0)[0]
+    def edge(r, sign):
+        return ax.plot_parametric_curve(lambda s: np.array([axis_x + sign * r(s), s, 0.0]), t_range=[c, d, 0.01], color=color, stroke_width=3)
+    out = VGroup(edge(r_out, 1), edge(r_out, -1))
+    if r_in is not None:
+        out.add(edge(r_in, 1).set_stroke(opacity=0.7), edge(r_in, -1).set_stroke(opacity=0.7))
+    for v in np.linspace(c, d, n):
+        R = abs(r_out(v)) * sx
+        out.add(Ellipse(width=max(2 * R, 0.02), height=max(2 * R * tilt, 0.02), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=0.18).move_to(ax.c2p(axis_x, v)))
+        if r_in is not None:
+            r = abs(r_in(v)) * sx
+            out.add(Ellipse(width=max(2 * r, 0.02), height=max(2 * r * tilt, 0.02), stroke_color=color, stroke_width=2, fill_color=BG, fill_opacity=1).move_to(ax.c2p(axis_x, v)))
+    return out
+
+
+def ladybug(size=0.5):
+    """A small ladybug (vector art), facing up; rotate to aim it along a path."""
+    shell = Ellipse(width=size, height=size * 1.15, stroke_color=INK, stroke_width=2, fill_color="#D7263D", fill_opacity=1)
+    head = Circle(radius=size * 0.22, stroke_width=0, fill_color=INK, fill_opacity=1).next_to(shell, UP, buff=-size * 0.12)
+    seam = Line(shell.get_top(), shell.get_bottom(), color=INK, stroke_width=2)
+    spots = VGroup(*[Dot(shell.get_center() + np.array([sx * size * 0.22, sy * size * 0.25, 0]), radius=size * 0.07, color=INK) for sx in (-1, 1) for sy in (-0.6, 0.5)])
+    return VGroup(head, shell, seam, spots)
+
+
+def param_curve(ax, xf, yf, t0, t1, color=FUNC, width=4):
+    """The parametric curve (x(t), y(t)) for t0 <= t <= t1, in axis coordinates."""
+    return ax.plot_parametric_curve(lambda s: np.array([xf(s), yf(s), 0.0]), t_range=[t0, t1, 0.01], color=color, stroke_width=width)
+
+
+def drone(size=0.9):
+    """A small quadcopter seen from above (vector art)."""
+    body = RoundedRectangle(width=size * 0.45, height=size * 0.45, corner_radius=size * 0.1, stroke_color=INK, stroke_width=2, fill_color="#4A5568", fill_opacity=1)
+    arms = VGroup(Line(LEFT * size / 2 + UP * size / 2, RIGHT * size / 2 + DOWN * size / 2, color=INK, stroke_width=4),
+                  Line(LEFT * size / 2 + DOWN * size / 2, RIGHT * size / 2 + UP * size / 2, color=INK, stroke_width=4))
+    rotors = VGroup(*[Circle(radius=size * 0.18, stroke_color=DIM, stroke_width=2, fill_color=WATER_HI, fill_opacity=0.6).move_to(np.array([sx * size / 2, sy * size / 2, 0]))
+                      for sx in (-1, 1) for sy in (-1, 1)])
+    return VGroup(arms, rotors, body)
+
+
+def polar_curve(ax, f, t0, t1, color=FUNC, width=4):
+    """The polar curve r = f(theta), t0 <= theta <= t1, drawn on Cartesian axes."""
+    return ax.plot_parametric_curve(lambda s: np.array([f(s) * np.cos(s), f(s) * np.sin(s), 0.0]), t_range=[t0, t1, 0.01], color=color, stroke_width=width)
+
+
+def lighthouse(height=1.6):
+    """A striped lighthouse with a lamp (vector art)."""
+    w = height * 0.3
+    tower = Polygon([-w / 2, 0, 0], [w / 2, 0, 0], [w * 0.35, height, 0], [-w * 0.35, height, 0], stroke_color=INK, stroke_width=2, fill_color=PANEL, fill_opacity=1)
+    stripes = VGroup(*[Polygon([-w / 2 + k * 0.03, k * height / 4, 0], [w / 2 - k * 0.03, k * height / 4, 0], [w / 2 - (k + 0.5) * 0.03, (k + 0.5) * height / 4, 0], [-w / 2 + (k + 0.5) * 0.03, (k + 0.5) * height / 4, 0],
+                               stroke_width=0, fill_color=TANGENT, fill_opacity=1) for k in range(4)])
+    lamp = Circle(radius=w * 0.3, stroke_width=0, fill_color="#F6C945", fill_opacity=1).move_to([0, height + w * 0.2, 0])
+    return VGroup(tower, stripes, lamp)
+
+
+def polar_region(ax, f, t0, t1, inner=None, color=AREA, opacity=0.45, n=120):
+    """The region swept by r = f(theta) for t0 <= theta <= t1 (from the origin, or from r = inner(theta))."""
+    s = np.linspace(t0, t1, n)
+    outer = [ax.c2p(f(v) * np.cos(v), f(v) * np.sin(v)) for v in s]
+    if inner is None:
+        pts = [ax.c2p(0, 0)] + outer
+    else:
+        pts = outer + [ax.c2p(inner(v) * np.cos(v), inner(v) * np.sin(v)) for v in s[::-1]]
+    return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
+
+
+def polar_wedge(ax, f, t, dt, color=SECANT, opacity=0.7):
+    """A thin sector from the origin at angle t, width dt, radius f(t)."""
+    r = f(t)
+    return Polygon(ax.c2p(0, 0), ax.c2p(r * np.cos(t), r * np.sin(t)), ax.c2p(r * np.cos(t + dt), r * np.sin(t + dt)), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity)
+
+
+# ---------------------------------------------------------------- Unit 0: trig review
+PI_NAMES = {k: t for k, t in ((-2, r"-2\pi"), (-1.5, r"-\tfrac{3\pi}{2}"), (-1, r"-\pi"), (-0.5, r"-\tfrac{\pi}{2}"), (0.5, r"\tfrac{\pi}{2}"), (1, r"\pi"),
+                              (1.5, r"\tfrac{3\pi}{2}"), (2, r"2\pi"), (2.5, r"\tfrac{5\pi}{2}"), (3, r"3\pi"), (3.5, r"\tfrac{7\pi}{2}"), (4, r"4\pi"))}
+
+
+def pi_axes(x0, x1, yr, w=9.0, h=3.6, step=0.5, ylabel="y", yticks=(1, -1), font=26):
+    """Axes over [x0 pi, x1 pi] with tick labels at multiples of step*pi (pi/2 by default) and the y ticks given.
+    Returns (axes, labels); plot with real radians, e.g. ax.plot(np.sin, x_range=[x0 * PI, x1 * PI])."""
+    ax, labs = plot_axes([x0 * PI, x1 * PI, step * PI], yr, w=w, h=h, coords=False, ylabel=ylabel)
+    k = np.ceil(x0 / step - 1e-9) * step
+    while k <= x1 + 1e-9:
+        if abs(k) > 1e-9 and k in PI_NAMES:
+            labs.add(M(PI_NAMES[k], font, DIM).next_to(ax.c2p(k * PI, 0), DOWN, buff=0.12))
+        k += step
+    labs.add(*[M(f"{v:g}", font - 2, DIM).next_to(ax.c2p(0, v), LEFT, buff=0.12) for v in yticks])
+    return ax, labs
+
+
+class TrigCircle(VGroup):
+    """A unit circle with axes, for the trig review. pt(t) is the point at angle t; ray, angle_arc, drop (the
+    reference triangle under a point) and coord (its (cos t, sin t) label) build the usual unit-circle pictures."""
+
+    def __init__(self, r=2.4, center=ORIGIN, ticks=True, **kw):
+        super().__init__(**kw)
+        self.r, self.c = r, np.array(center, dtype=float)
+        self.add(Line(self.c + LEFT * (r + 0.45), self.c + RIGHT * (r + 0.45), color=DIM, stroke_width=2),
+                 Line(self.c + DOWN * (r + 0.45), self.c + UP * (r + 0.45), color=DIM, stroke_width=2),
+                 Circle(radius=r, color=INK, stroke_width=3).move_to(self.c))
+        if ticks:
+            self.add(*[M(s, 24, DIM).move_to(self.c + d * (r + 0.28) + o) for s, d, o in
+                       (("1", RIGHT, DOWN * 0.22), ("-1", LEFT, DOWN * 0.22), ("1", UP, RIGHT * 0.2), ("-1", DOWN, RIGHT * 0.25))])
+
+    def pt(self, t):
+        return self.c + self.r * np.array([np.cos(t), np.sin(t), 0.0])
+
+    def dot(self, t, color=FUNC):
+        return Dot(self.pt(t), radius=0.1, color=color)
+
+    def ray(self, t, color=INK):
+        return Line(self.c, self.pt(t), color=color, stroke_width=4)
+
+    def angle_arc(self, t, color=SECANT, radius=0.5, label=None, size=30):
+        """The angle from the positive x-axis to t (negative t turns clockwise), with an optional label."""
+        g = VGroup(Arc(radius=radius, start_angle=0, angle=t, arc_center=self.c, color=color, stroke_width=4))
+        if abs(t) > 2 * PI - 0.3:
+            g[0].add_tip(tip_length=0.15)
+        if label:
+            g.add(M(label, size, color).move_to(self.c + (radius + 0.32) * np.array([np.cos(t / 2), np.sin(t / 2), 0])))
+        return g
+
+    def drop(self, t, color=SECANT):
+        """The reference triangle: ray to the point, a vertical leg down (or up) to the x-axis, the horizontal leg."""
+        p = self.pt(t)
+        foot = np.array([p[0], self.c[1], 0])
+        return VGroup(Polygon(self.c, foot, p, stroke_color=color, stroke_width=3, fill_color=color, fill_opacity=0.18),
+                      DashedLine(foot, p, color=color))
+
+    def coord(self, t, tex, color=FUNC, size=30, out=0.55):
+        d = np.array([np.cos(t), np.sin(t), 0.0])
+        return M(tex, size, color).move_to(self.pt(t) + out * d + RIGHT * 0.35 * np.sign(np.cos(t)) * (abs(np.cos(t)) > 0.2))
+
+    def arc(self, a, b, color=DERIV, width=9):
+        return Arc(radius=self.r, start_angle=a, angle=b - a, arc_center=self.c, color=color, stroke_width=width)
+
+
+def right_triangle(a, b, opp=None, adj=None, hyp=None, angle=None, color=INK, size=34):
+    """A right triangle with legs a (horizontal) and b (vertical), the angle at the left corner, the right angle at the
+    bottom right. opp, adj, hyp, angle: optional LaTeX labels. Returns a VGroup (triangle first)."""
+    A, B, C = ORIGIN, RIGHT * a, RIGHT * a + UP * b
+    g = VGroup(Polygon(A, B, C, color=color, stroke_width=4),
+               Square(0.22, color=DIM, stroke_width=2).move_to(B + LEFT * 0.11 + UP * 0.11))
+    th = np.arctan2(b, a)
+    if angle:
+        g.add(Arc(radius=0.55, start_angle=0, angle=th, arc_center=A, color=SECANT, stroke_width=4),
+              M(angle, size - 2, SECANT).move_to(A + 0.9 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+    if opp:
+        g.add(M(opp, size, FUNC).next_to(Line(B, C), RIGHT, buff=0.15))
+    if adj:
+        g.add(M(adj, size, DERIV).next_to(Line(A, B), DOWN, buff=0.15))
+    if hyp:
+        n = np.array([-np.sin(th), np.cos(th), 0])
+        g.add(M(hyp, size, INK).move_to((A + C) / 2 + n * 0.42))
+    return g
+
+
+def ferris_wheel(radius=1.6, cars=8):
+    """A Ferris wheel on an A-frame (vector art); the hub is at the group's [0] center."""
+    hub = Dot(ORIGIN, radius=0.08, color=INK)
+    rim = Circle(radius=radius, stroke_color=INK, stroke_width=4)
+    spokes = VGroup(*[Line(ORIGIN, radius * np.array([np.cos(a), np.sin(a), 0]), color=DIM, stroke_width=2) for a in np.linspace(0, TAU, cars, endpoint=False)])
+    pal = ["#D7263D", "#F6C945", "#5B9BD5", "#59A96A"]
+    gondolas = VGroup(*[RoundedRectangle(width=0.3, height=0.24, corner_radius=0.06, stroke_color=INK, stroke_width=2, fill_color=pal[k % 4], fill_opacity=1)
+                        .move_to(radius * np.array([np.cos(a), np.sin(a), 0]) + DOWN * 0.14) for k, a in enumerate(np.linspace(0, TAU, cars, endpoint=False))])
+    legs = VGroup(Line(ORIGIN, DOWN * (radius + 0.5) + LEFT * radius * 0.6, color=INK, stroke_width=5),
+                  Line(ORIGIN, DOWN * (radius + 0.5) + RIGHT * radius * 0.6, color=INK, stroke_width=5))
+    ground = Line(DOWN * (radius + 0.5) + LEFT * radius * 1.1, DOWN * (radius + 0.5) + RIGHT * radius * 1.1, color=SAND, stroke_width=6)
+    return VGroup(hub, legs, ground, spokes, rim, gondolas)
+
+
+def clipped_plot(ax, f, x0, x1, ymax, color=FUNC, width=4, n=600):
+    """Plot y = f(x) on [x0, x1], dropping the parts with |y| > ymax and breaking the curve there (tan, sec, csc near
+    their asymptotes). Returns a VGroup of the separate branches."""
+    xs = np.linspace(x0, x1, n)
+    out, cur = VGroup(), []
+    for xv in xs:
+        with np.errstate(all="ignore"):
+            yv = f(xv)
+        if np.isfinite(yv) and abs(yv) <= ymax:
+            cur.append(ax.c2p(xv, yv))
+        else:
+            if len(cur) > 1:
+                out.add(VMobject(color=color, stroke_width=width).set_points_as_corners(cur))
+            cur = []
+    if len(cur) > 1:
+        out.add(VMobject(color=color, stroke_width=width).set_points_as_corners(cur))
+    return out

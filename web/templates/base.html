@@ -16,7 +16,7 @@
 <body>
 <header class="top"><div class="in">
   <a class="brand" href="{% url 'home' %}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 26 C 10 26, 12 8, 29 5" fill="none" stroke="var(--func)" stroke-width="3" stroke-linecap="round"/><path d="M4 21 L 26 9" stroke="var(--tangent)" stroke-width="2.5" stroke-linecap="round"/><circle cx="15" cy="15" r="3" fill="var(--ink)"/></svg><span>AP Calculus</span></a>
-  <a class="crumb-link" href="{% url 'formulas' %}">Formula sheet</a>
+  <a class="nav-key" href="{% url 'formulas' %}">Key ideas &amp; formulas</a>
   {% block crumbs %}{% endblock %}
   <span class="grow"></span>
   <nav class="themes" aria-label="Color theme">{% for k, label in THEMES %}<a href="{% url 'theme' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == THEME %}on{% endif %}">{{ label }}</a>{% endfor %}</nav>

@@ -68,7 +68,7 @@ def course_map(request):
 
 
 def formulas(request):
-    """The course formula sheet: every formula box and definition from every lesson, filled in, by unit, each
+    """Key ideas and formulas (the course formula sheet): every formula box and definition from every lesson, filled in, by unit, each
     tagged with its topic. A student sees it all, with the topics past the furthest one they've reached grayed."""
     order = [t["n"] for u in content.syllabus() for t in u["topics"]]
     reached = None

@@ -222,10 +222,11 @@ class Lesson(TranscriptScene):
                      [r"y = x^{1/2}", r"POWER:x|\tfrac12|-\tfrac12", r"y' = \frac{1}{2\sqrt x},\quad y'(4) = \frac14", r"(4, 2):\quad y - 2 = \frac14(x - 4)"], at=[1, 1, 2, 3])
 
         with self.beat("Close") as b:
-            s2 = self.square(1.8, 0.2, LEFT * 6 + DOWN * 1)
-            c3 = cube_pieces(1.6, 0.2, RIGHT * 3.2 + DOWN * 1)
-            card = formula_box(M(r"\frac{d}{dx}\, x^n = n x^{n - 1}", 48), DERIV).shift(UP * 0)
-            self.play(FadeIn(s2), FadeIn(c3), FadeIn(card), run_time=1.4)
+            # the takeaway is the rule itself, not the pictures (Adder)
+            card = formula_box(M(r"\frac{d}{dx}\, x^n = n x^{n - 1}", 64), DERIV).shift(UP * 0.4)
+            how = T("bring the exponent down, subtract one from the exponent", 34, DIM).next_to(card, DOWN, buff=0.5)
+            self.play(FadeIn(card), run_time=1)
+            self.play(FadeIn(how), run_time=0.8)
         self.clear()
 
         self.examples_card()

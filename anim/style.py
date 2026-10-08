@@ -330,7 +330,7 @@ class RecordedService(SpeechService):
             offset += len(p)
             in_line += len(p)
 
-        clip = data[int(b["start"] * sr):int(b["end"] * sr)]
+        clip = speech_gate(data[int(b["start"] * sr):int(b["end"] * sr)], sr, b["start"], self.align.get("speech"))
         chunks, last = [], 0
         for at in sorted(inserts):
             cut = int(at * sr)
@@ -344,6 +344,28 @@ class RecordedService(SpeechService):
         assert offset == len(remove_bookmarks(text))
         return {"input_text": text, "input_data": input_data, "original_audio": audio_path,
                 "word_boundaries": boundaries}
+
+
+def speech_gate(clip, sr, t0, speech, fade=0.025):
+    """Mute everything in a slice of Adder's recording that isn't speech (sighs, breaths, clicks).
+
+    `speech` is the list of [start, end] spans, in recording seconds, where Whisper heard words
+    (tools/align_recording.py pads each word and joins short gaps). Edges get raised-cosine fades."""
+    if not speech:
+        return clip
+    gain = np.zeros(len(clip), dtype=np.float32)
+    n_f = max(1, int(fade * sr))
+    ramp = (0.5 - 0.5 * np.cos(np.linspace(0, np.pi, n_f))).astype(np.float32)
+    for a, b in speech:
+        i, j = int((a - t0) * sr), int((b - t0) * sr)
+        if j <= 0 or i >= len(clip):
+            continue
+        gain[max(i, 0):min(j, len(clip))] = 1.0
+        if i - n_f >= 0:
+            gain[i - n_f:i] = np.maximum(gain[i - n_f:i], ramp)
+        if j + n_f <= len(clip):
+            gain[j:j + n_f] = np.maximum(gain[j:j + n_f], ramp[::-1])
+    return clip * gain
 
 
 def _trim(samples, sr, thresh=0.004):

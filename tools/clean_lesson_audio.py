@@ -10,24 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 RECORDINGS = ROOT / "voice" / "adder-lesson-recordings"
 OUTPUT = RECORDINGS / "cleaned"
 
-# Times are seconds in the original FLAC recordings. These edits remove only the
-# spoken recording slate, explicit scratch-that retakes, and a few isolated fillers.
-CUTS = {
-    "01-01": [
-        (4.30, 6.20),       # "okay, recorded in 1.1"
-        (32.24, 37.24),     # abandoned lead-in before the clean Zeno explanation
-        (118.12, 118.37),   # isolated "no" after the function formula
-    ],
-    "01-02": [
-        (106.83, 115.75),   # "scratch that" / restart; preserves the corrected take
-        (315.55, 316.20),   # isolated "huh"
-        (326.50, 341.25),   # abandoned temperature example and "sorry, scratch that sentence"
-        (448.80, 472.78),   # abandoned left-hand notation explanation and scratch marker
-        (489.95, 490.60),   # isolated hesitation
-        (548.00, 554.60),   # repeated conclusion and "scratch that, reduce the sentence"
-        (729.50, 739.10),   # abandoned line and scratch marker before the restart
-    ],
-}
+# Cleaning no longer cuts anything: retakes are found by reading the transcript (tools/cut_retakes.py), and
+# one-off cuts (slates, an isolated "huh") live in voice/aligned/<slug>.cuts.json as "add" spans. Cleaning keeps the
+# recording's clock, so those times are the same in the original and the cleaned master.
+CUTS = {}
 
 
 def make_master(slug, cuts):
@@ -80,5 +66,8 @@ def make_master(slug, cuts):
 
 if __name__ == "__main__":
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    for lesson, edits in CUTS.items():
-        make_master(lesson, edits)
+    import sys
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
+    for source in sorted(p for p in RECORDINGS.iterdir() if p.is_file()):
+        if only is None or source.name == only:
+            make_master(source.name, CUTS.get(source.name, []))

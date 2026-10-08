@@ -56,6 +56,53 @@ def similar(a, b):
     return -1.0
 
 
+SPEECH_PAD = (0.10, 0.18)   # kept before / after each word Whisper heard
+SPEECH_JOIN = 0.35          # gaps shorter than this are natural pauses and stay as recorded
+GATE_REPORT_DB = -35        # muted stretches louder than this are listed in the review for a listen
+
+
+def merge(spans):
+    out = []
+    for a, b in sorted(spans):
+        if out and a <= out[-1][1]:
+            out[-1][1] = max(out[-1][1], b)
+        else:
+            out.append([a, b])
+    return out
+
+
+def speech_spans(spoken, duration):
+    """Where he is actually talking: each word padded a little, short gaps joined. The renderer mutes the rest."""
+    spans = merge([[max(0.0, w["s"] - SPEECH_PAD[0]), min(duration, w["e"] + SPEECH_PAD[1])] for w in spoken])
+    joined = []
+    for a, b in spans:
+        if joined and a - joined[-1][1] < SPEECH_JOIN:
+            joined[-1][1] = b
+        else:
+            joined.append([a, b])
+    return [[round(a, 3), round(b, 3)] for a, b in joined]
+
+
+def loud_gaps(wav, speech, duration):
+    """Muted stretches with something loud in them (a sigh, a cough, or a word Whisper missed)."""
+    import numpy as np
+    import soundfile as sf
+    a, sr = sf.read(str(wav), dtype="float32")
+    a = a if a.ndim == 1 else a.mean(axis=1)
+    edges = [0.0] + [t for sp in speech for t in sp] + [duration]
+    out = []
+    for g0, g1 in zip(edges[::2], edges[1::2]):
+        seg = a[int(g0 * sr):int(g1 * sr)]
+        if len(seg) < sr // 20:
+            continue
+        win = sr // 20
+        rms = [np.sqrt(np.mean(seg[i:i + win] ** 2)) for i in range(0, len(seg) - win + 1, win)]
+        peak = 20 * np.log10(max(rms) + 1e-9)
+        if peak > GATE_REPORT_DB:
+            out.append((g0, g1, peak))
+    return out
+
+
 def sentence_start(spoken, j, reach=6):
     """A line whose first matched word is a few words into a spoken sentence ("Now, that's an | average")
     should start where that sentence starts. Walk back at most `reach` words to a sentence end or a long
@@ -116,7 +163,10 @@ def main(slug):
     _, blist = parse(ROOT / "transcripts" / f"{topic.replace('.', '_')}.md")
     beats = {b["name"]: b for b in blist}
     order = [b["name"] for b in blist]
-    rec = json.load(open(ROOT / "voice" / "aligned" / f"{slug}.words.json"))
+    # the bad takes come out first (tools/cut_retakes.py); align against what is left when that has been run
+    edited = (ROOT / "voice" / "aligned" / f"{slug}.edited.words.json").exists()
+    words_file = f"{slug}.edited.words.json" if edited else f"{slug}.words.json"
+    rec = json.load(open(ROOT / "voice" / "aligned" / words_file))
     spoken = rec["words"]
     W = [norm(w["w"]) for w in spoken]
 
@@ -172,6 +222,8 @@ def main(slug):
     ov_path = ROOT / "voice" / "aligned" / f"{slug}.overrides.json"
     if ov_path.exists():
         for name, ov in json.load(open(ov_path)).items():
+            if name.startswith("_"):
+                continue
             out[name].update(ov)
             if "start" in ov and "lines" not in ov:
                 out[name]["lines"][0] = ov["start"]
@@ -180,8 +232,12 @@ def main(slug):
     for name in names:
         s, e = out[name]["start"], out[name]["end"]
         out[name]["heard"] = " ".join(w["w"] for w in spoken if s <= w["s"] < e)
-    src = f"voice/adder-lesson-recordings/cleaned/{slug}.wav"
-    json.dump({"source": src, "duration": rec["duration"], "beats": out},
+    src = f"voice/aligned/{slug}.edited.wav" if edited else f"voice/adder-lesson-recordings/cleaned/{slug}.wav"
+    speech = speech_spans(spoken, rec["duration"])
+    for s0, s1 in json.load(open(ov_path)).get("_keep", []) if ov_path.exists() else []:
+        speech = merge(speech + [[s0, s1]])
+    gated = loud_gaps(ROOT / src, speech, rec["duration"])
+    json.dump({"source": src, "words": words_file, "duration": rec["duration"], "speech": speech, "beats": out},
               open(ROOT / "voice" / "aligned" / f"{slug}.beats.json", "w"), indent=1)
     with open(ROOT / "voice" / "aligned" / f"{slug}.review.md", "w") as fh:
         fh.write(f"# {topic}: alignment of Adder's recording\n\n| beat | start | length | matched | first words heard |\n|---|---|---|---|---|\n")
@@ -190,6 +246,11 @@ def main(slug):
             mmss = f"{int(b['start'] // 60)}:{b['start'] % 60:04.1f}"
             flag = " **pickup?**" if b["matched"] < PICKUP else ""
             fh.write(f"| {name}{flag} | {mmss} | {b['end'] - b['start']:.1f}s | {b['matched']:.0%} | {' '.join(b['heard'].split()[:14])} |\n")
+        fh.write("\n## Sounds muted between words\n\nEverything outside the words Whisper heard is muted (sighs, breaths, clicks). "
+                 "These muted stretches were loud enough to check by ear; if one is real speech, add it to "
+                 f"`{slug}.overrides.json` as `\"_keep\": [[start, end]]`.\n\n| at | length | peak |\n|---|---|---|\n")
+        for g0, g1, peak in gated:
+            fh.write(f"| {int(g0 // 60)}:{g0 % 60:04.1f} | {g1 - g0:.1f}s | {peak:.0f} dB |\n")
     pickups = [n for n in names if out[n]["matched"] < PICKUP]
     if pickups:
         print(f"{topic}: probably not in the recording (record a pickup, or override): {pickups}")

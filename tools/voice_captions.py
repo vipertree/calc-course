@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 # words Whisper reliably mishears in these lessons (heard -> meant)
 FIXES = {"Aaliyah": "Elea", "Elia": "Elea", "Ilya": "Elea"}
+PHRASE_FIXES = {"Zeno of a Leah": "Zeno of Elea", "Zeno of Alia": "Zeno of Elea", "Zeno of Elia": "Zeno of Elea"}
 
 
 def stamp(t):
@@ -27,7 +28,8 @@ def stamp(t):
 
 def main(vmap_path, slug, out):
     vmap = json.load(open(vmap_path))
-    words = json.load(open(ROOT / "voice" / "aligned" / f"{slug}.words.json"))["words"]
+    beats = json.load(open(ROOT / "voice" / "aligned" / f"{slug}.beats.json"))
+    words = json.load(open(ROOT / "voice" / "aligned" / beats.get("words", f"{slug}.words.json")))["words"]
     timed = []
     for b in vmap:
         s0, s1 = b["rec_start"], b["rec_end"]
@@ -51,7 +53,10 @@ def main(vmap_path, slug, out):
     lines = ["WEBVTT", ""]
     for s, e, text in cues:
         lines += [f"{stamp(s)} --> {stamp(max(e, s + 0.8))}", text, ""]
-    Path(out).write_text("\n".join(lines))
+    vtt = "\n".join(lines)
+    for heard, meant in PHRASE_FIXES.items():
+        vtt = vtt.replace(heard, meant)
+    Path(out).write_text(vtt)
     subprocess.run([sys.executable, str(ROOT / "tools" / "subtitle_math.py"), out], check=True)
     print(out, len(cues), "cues")
 

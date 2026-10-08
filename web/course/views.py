@@ -4,12 +4,16 @@ import re
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Q, Sum
 from django.conf import settings
-from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 
-from accounts.models import Classroom, class_for, has_full_access
+from accounts.models import Classroom, Enrollment, Profile, class_for, has_full_access
+from accounts.permissions import forbidden, is_teacher, teacher_required
+from accounts.ratelimit import ratelimit
 from . import content, grading
 from . import assess, packets
 from .models import Draft, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
@@ -40,7 +44,7 @@ def _lesson(num):
 
 
 def home(request):
-    if request.user.is_authenticated and request.user.profile.is_teacher:
+    if is_teacher(request.user):
         return redirect("teacher")
     return course_map(request)
 
@@ -171,13 +175,30 @@ def lesson(request, num, area="notes"):
 
 # ------------------------------------------------------------------ JSON API
 def _body(request):
+    """The JSON object a page posted, or {} for anything else (a list, a number, broken JSON)."""
     try:
-        return json.loads(request.body or b"{}")
+        d = json.loads(request.body or b"{}")
     except ValueError:
         return {}
+    return d if isinstance(d, dict) else {}
+
+
+def _str(v, n):
+    """A posted value as a string of at most n characters; anything that isn't a string or number is ''."""
+    if isinstance(v, bool) or not isinstance(v, (str, int, float)):
+        return ""
+    return str(v)[:n]
+
+
+def _int(v, default=-1):
+    try:
+        return int(v)
+    except (TypeError, ValueError, OverflowError):
+        return default
 
 
 @require_POST
+@ratelimit("api-check", "user", 300, 60, json=True)
 def api_check(request, num):
     """Check one answer. Returns correctness plus the solution once it has been tried.
     Visitors without full access may check only the free practice problems, and nothing is saved for them."""
@@ -185,10 +206,10 @@ def api_check(request, num):
     priv = content.private(num)
     if not priv:
         raise Http404
-    item, given, area = d.get("item", ""), (d.get("given") or "")[:300], d.get("area", "notes")
+    item, given, area = _str(d.get("item"), 40), _str(d.get("given"), 300), _str(d.get("area"), 10) or "notes"
     if not has_full_access(request.user):
         pub = content.public(num)
-        if num.startswith("U") or item not in _free_ids(pub):
+        if num.startswith("U") or item not in _free_ids(pub) or item not in priv["items"]:
             return JsonResponse({"error": "members only"}, status=403)
         spec = priv["items"][item]
         out = {}
@@ -239,18 +260,19 @@ def _drafts(user, num):
 
 @login_required
 @require_POST
+@ratelimit("api-draft", "user", 300, 60, json=True)
 def api_draft(request, num):
     """Save what is in one answer box (typed text, a picked choice, a shown answer) as the student works."""
     if not has_full_access(request.user):
         return JsonResponse({"error": "members only"}, status=403)
     d = _body(request)
-    item = str(d.get("item", ""))[:40]
+    item = _str(d.get("item"), 40)
     if not item or not content.public(num):
         return JsonResponse({"error": "bad item"}, status=400)
     if not Draft.objects.filter(user=request.user, topic=num, item=item).exists() and \
             Draft.objects.filter(user=request.user, topic=num).count() >= 400:
         return JsonResponse({"error": "too many"}, status=400)
-    defaults = {"value": str(d.get("value", ""))[:2000]}
+    defaults = {"value": _str(d.get("value"), 2000)}
     if d.get("revealed"):
         defaults["revealed"] = True
     Draft.objects.update_or_create(user=request.user, topic=num, item=item, defaults=defaults)
@@ -259,12 +281,13 @@ def api_draft(request, num):
 
 @login_required
 @require_POST
+@ratelimit("api-step", "user", 120, 60, json=True)
 def api_step(request, num):
     if not has_full_access(request.user):
         return JsonResponse({'error': 'members only'}, status=403)
     d = _body(request)
     pub = content.public(num)
-    step = int(d.get("step", -1))
+    step = _int(d.get("step"))
     if not pub or not (0 <= step < len(pub["steps"])):
         return JsonResponse({"error": "bad step"}, status=400)
     StepDone.objects.get_or_create(user=request.user, topic=num, step=step)
@@ -273,6 +296,7 @@ def api_step(request, num):
 
 @login_required
 @require_POST
+@ratelimit("api-quiz", "user", 20, 60, json=True)
 def api_quiz(request, num):
     if not has_full_access(request.user):
         return JsonResponse({'error': 'members only'}, status=403)
@@ -285,11 +309,13 @@ def api_quiz(request, num):
     cls = info["classroom"]
     if cls is not None and QuizAttempt.objects.filter(user=request.user, topic=num, classroom=cls).exists():
         return JsonResponse({"error": "already submitted", "submitted": True}, status=409)
-    answers = d.get("answers", {})
+    answers = d.get("answers")
+    if not isinstance(answers, dict):
+        answers = {}
     detail, score = {}, 0
     for iid in served:
         spec = priv["items"][iid]
-        given = (answers.get(iid) or "")[:300]
+        given = _str(answers.get(iid), 300)
         ok = bool(grading.check(given, spec["answer"])) if given else False
         score += ok
         detail[iid] = {"given": given, "correct": ok, "solution": spec["solution"],
@@ -307,6 +333,7 @@ def api_quiz(request, num):
 
 @login_required
 @require_POST
+@ratelimit("api-frq", "user", 120, 60, json=True)
 def api_frq_score(request, num):
     if not has_full_access(request.user):
         return JsonResponse({'error': 'members only'}, status=403)
@@ -314,21 +341,20 @@ def api_frq_score(request, num):
         return JsonResponse({"error": "results not released yet"}, status=403)
     d = _body(request)
     priv = content.private(num)
-    spec = priv and priv["items"].get(d.get("part", ""))
+    part = _str(d.get("part"), 40)
+    spec = priv and priv["items"].get(part)
     if not spec or "rubric" not in spec:
         raise Http404
     possible = sum(r["points"] for r in spec["rubric"])
-    earned = max(0, min(possible, int(d.get("earned", 0))))
-    FRQScore.objects.update_or_create(user=request.user, part=d["part"],
+    earned = max(0, min(possible, _int(d.get("earned"), 0)))
+    FRQScore.objects.update_or_create(user=request.user, part=part,
                                       defaults={"topic": num, "earned": earned, "possible": possible})
     return JsonResponse({"earned": earned, "possible": possible})
 
 
 # ------------------------------------------------------------------ teacher
-@login_required
+@teacher_required
 def teacher(request):
-    if not request.user.profile.is_teacher:
-        return HttpResponseForbidden("Teachers only.")
     classes = Classroom.objects.filter(teacher=request.user).prefetch_related("enrollments__student__profile")
     have = sorted(content.available(), key=lambda n: [int(x) for x in n.split(".")])
     counts = {n: content.counts(n) for n in have}
@@ -354,7 +380,7 @@ def teacher(request):
                               "practice": prac.get(k, 0), "practice_total": counts[n]["practice"],
                               "quiz": quiz.get(k), "quiz_total": counts[n]["quiz"],
                               "frq": frq.get(k)})
-            rows.append({"name": s.profile.display_name, "cells": cells})
+            rows.append({"id": s.id, "name": s.profile.display_name, "username": s.username, "cells": cells})
         assessments = []
         for n in have + [f"U{u}" for u in sorted(content.unit_tests())]:
             got = QuizAttempt.objects.filter(classroom=c, topic=n)
@@ -367,21 +393,21 @@ def teacher(request):
                                 "form": assess.LETTERS[assess.class_form(c, n, nf)] if nf > 1 else "",
                                 "released": assess.released(c, n)})
         rosters.append({"c": c, "rows": rows, "assessments": assessments})
-    return render(request, "teacher/dashboard.html", {"rosters": rosters, "topics": have})
+    return render(request, "teacher/dashboard.html", {"rosters": rosters, "topics": have,
+                                                      "temp_password": request.session.pop("temp_password", None)})
 
 
-@login_required
+@teacher_required
 @require_POST
 def new_class(request):
-    if not request.user.profile.is_teacher:
-        return HttpResponseForbidden()
-    name = (request.POST.get("name") or "").strip()[:80]
+    name = " ".join((request.POST.get("name") or "").split())[:80]
+    course = request.POST.get("course", "AB")
     if name:
-        Classroom.objects.create(name=name, teacher=request.user, course=request.POST.get("course", "AB")[:2])
+        Classroom.objects.create(name=name, teacher=request.user, course=course if course in ("AB", "BC") else "AB")
     return redirect("teacher")
 
 
-@login_required
+@teacher_required
 @require_POST
 def toggle_class(request, pk):
     c = get_object_or_404(Classroom, pk=pk, teacher=request.user)
@@ -399,7 +425,8 @@ def set_theme(request, theme):
     resp = redirect(nxt)
     if theme not in dict(THEMES):
         return resp
-    resp.set_cookie("theme", theme, max_age=365 * 24 * 3600, samesite="Lax")
+    resp.set_cookie("theme", theme, max_age=365 * 24 * 3600, samesite="Lax", path=settings.COOKIE_PATH,
+                    secure=settings.SESSION_COOKIE_SECURE)
     return resp
 
 
@@ -411,7 +438,8 @@ def set_design(request, design):
         nxt = "home"
     resp = redirect(nxt)
     if design in dict(DESIGNS):
-        resp.set_cookie("design", design, max_age=365 * 24 * 3600, samesite="Lax")
+        resp.set_cookie("design", design, max_age=365 * 24 * 3600, samesite="Lax", path=settings.COOKIE_PATH,
+                        secure=settings.SESSION_COOKIE_SECURE)
     return resp
 
 
@@ -431,10 +459,8 @@ def _transcripts():
     return out
 
 
-@login_required
+@teacher_required
 def transcripts(request):
-    if not request.user.profile.is_teacher:
-        return HttpResponseForbidden("Teachers only.")
     items = _transcripts()
     pick = request.GET.get("t")
     cur = next((t for t in items if t["num"] == pick), None)
@@ -442,7 +468,7 @@ def transcripts(request):
                                                         "total": round(sum(t["minutes"] for t in items))})
 
 
-@login_required
+@teacher_required
 @require_POST
 def release(request, pk, num):
     """Release (or take back) a quiz or unit test's scores and solutions for one class."""
@@ -455,6 +481,44 @@ def release(request, pk, num):
     return redirect("teacher")
 
 
+def _class_student(request, pk, uid):
+    """A student enrolled in one of this teacher's classes, or 404. Never another teacher or an admin."""
+    c = get_object_or_404(Classroom, pk=pk, teacher=request.user)
+    e = get_object_or_404(Enrollment.objects.select_related("student__profile"), classroom=c, student_id=uid)
+    s = e.student
+    if s.is_staff or s.is_superuser or is_teacher(s):
+        raise Http404
+    return c, e, s
+
+
+TEMP_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"
+
+
+@teacher_required
+@require_POST
+@ratelimit("teacher-reset", "user", 60, 3600)
+def reset_student_password(request, pk, uid):
+    """For a student who forgot their password and has no confirmed email. The new password is shown to the
+    teacher once; the student signs in with it and can change it in Account settings."""
+    import secrets
+    c, e, s = _class_student(request, pk, uid)
+    pw = "-".join("".join(secrets.choice(TEMP_ALPHABET) for _ in range(4)) for _ in range(3))
+    s.set_password(pw)
+    s.save(update_fields=["password"])
+    request.session["temp_password"] = {"name": s.profile.display_name, "username": s.username, "password": pw}
+    return redirect("teacher")
+
+
+@teacher_required
+@require_POST
+def remove_student(request, pk, uid):
+    """Take a student out of a class. Their account and their own work stay theirs."""
+    c, e, s = _class_student(request, pk, uid)
+    e.delete()
+    messages.success(request, f"{s.profile.display_name} is no longer in {c.name}.")
+    return redirect("teacher")
+
+
 # ------------------------------------------------------------------ video with HTTP Range (seeking)
 _RANGE = re.compile(r"bytes=(\d*)-(\d*)")
 _VIDEO_TYPES = {".mp4": "video/mp4", ".vtt": "text/vtt"}
@@ -463,9 +527,9 @@ _VIDEO_TYPES = {".mp4": "video/mp4", ".vtt": "text/vtt"}
 def video(request, name):
     """Serve a lesson video or caption file with Range support. Django's static view ignores Range, and without
     206 responses browsers (Brave, Chrome) can't seek: the scrubber snaps back to where playback was."""
-    path = (settings.BASE_DIR / "static" / "video" / name).resolve()
+    path = (settings.VIDEO_DIR / name).resolve()
     ext = path.suffix
-    if ext not in _VIDEO_TYPES or path.parent != (settings.BASE_DIR / "static" / "video").resolve() or not path.is_file():
+    if ext not in _VIDEO_TYPES or path.parent != settings.VIDEO_DIR.resolve() or not path.is_file():
         raise Http404
     size = path.stat().st_size
     m = _RANGE.fullmatch(request.headers.get("Range", "").strip())
@@ -486,6 +550,7 @@ def video(request, name):
         f.seek(start)
         data = f.read(end - start + 1)
     resp = HttpResponse(data, status=206, content_type=_VIDEO_TYPES[ext])
+    resp["Cache-Control"] = "public, max-age=86400"
     resp["Content-Range"] = f"bytes {start}-{end}/{size}"
     resp["Accept-Ranges"] = "bytes"
     resp["Content-Length"] = str(len(data))
@@ -504,9 +569,9 @@ def test_pdf(request, num, form, kind):
     """A paper form of a unit test, or its solutions manual. Class students never get the manual from here:
     their teacher decides when solutions come out."""
     if not has_full_access(request.user):
-        return HttpResponseForbidden("Members only.")
+        return forbidden(request, "This is for members: students in a class, teachers, and anyone with full access.")
     if kind == "key" and class_for(request.user) is not None:
-        return HttpResponseForbidden("Your teacher releases the solutions for your class.")
+        return forbidden(request, "Your teacher releases the solutions for your class.")
     name = f"{num}-unittest-form{form}{'-key' if kind == 'key' else ''}-classic.pdf"
     path = PDF_DIR / num / name
     if not path.is_file():
@@ -531,9 +596,8 @@ def _handout_rows(num, title):
     return {"num": num, "title": title, "docs": docs}
 
 
+@teacher_required
 def handouts(request):
-    if not (request.user.is_authenticated and request.user.profile.is_teacher):
-        return HttpResponseForbidden("Teachers only.")
     units = []
     tests = content.unit_tests()
     for u in content.syllabus():
@@ -562,9 +626,8 @@ def _find_packet(teacher, raw):
             "name": packets.holder_name(p.user)}
 
 
+@teacher_required
 def handout_pdf(request, num, name):
-    if not (request.user.is_authenticated and request.user.profile.is_teacher):
-        return HttpResponseForbidden("Teachers only.")
     path = (PDF_DIR / num / name).resolve()
     if path.parent != (PDF_DIR / num).resolve() or path.suffix != ".pdf" or not path.is_file():
         raise Http404
@@ -584,7 +647,7 @@ def packet(request, num):
     and a packet ID that is recorded, so a leaked copy can be traced. Teachers print from Handouts, stamped with
     their own name."""
     if not has_full_access(request.user):
-        return HttpResponseForbidden("Members only.")
+        return forbidden(request, "This is for members: students in a class, teachers, and anyone with full access.")
     if not packets.available(num):
         raise Http404
     p = packets.issue(request.user, num)

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Account deleted · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  <h1>Your account is deleted</h1>
+  <p>Your account and everything saved with it are gone from the site. The nightly database backups still hold a copy until they are replaced, which takes {{ BACKUP_DAYS }} days.</p>
+  <p><a class="btn" href="{% url 'home' %}">Back to the course</a></p>
+</div></div>
+{% endblock %}

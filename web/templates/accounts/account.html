@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Account settings · AP Calculus{% endblock %}
+{% block main %}
+<div class="narrow account">
+<h1>Account settings</h1>
+<p class="muted">Signed in as <strong>{{ user.get_username }}</strong>{% if p.is_teacher %} (teacher){% endif %}.</p>
+
+<section class="card">
+  <h2>Your name</h2>
+  <form method="post" action="{% url 'account_name' %}" class="stack">{% csrf_token %}
+    {% with form=name_form %}{% include "accounts/_fields.html" %}{% endwith %}
+    <p><button class="btn">Save name</button></p>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Email</h2>
+  {% if user.email %}
+    <p>{{ user.email }} {% if p.email_verified %}<span class="fb good">confirmed</span>{% else %}<span class="fb bad">not confirmed</span>{% endif %}</p>
+    {% if not p.email_verified %}<form method="post" action="{% url 'resend_verification' %}">{% csrf_token %}<button class="btn small">Send the link again</button></form>{% endif %}
+  {% else %}
+    <p class="muted">No email on this account. That's fine: {% if classes %}your teacher can reset your password if you forget it{% else %}but without one, a forgotten password can't be reset{% endif %}. Add one if you'd like to reset it yourself.</p>
+  {% endif %}
+  <details class="pop"{% if open == "email" %} open{% endif %}>
+    <summary class="btn small">{% if user.email %}Change email{% else %}Add an email{% endif %}</summary>
+    <form method="post" action="{% url 'account_email' %}" class="stack">{% csrf_token %}
+      {% with form=email_form %}{% include "accounts/_fields.html" %}{% endwith %}
+      <p class="help">We send a link to the new address. It replaces the old one only when you open that link.</p>
+      <p><button class="btn primary">Send link</button></p>
+    </form>
+  </details>
+</section>
+
+<section class="card">
+  <h2>Password</h2>
+  <details class="pop"{% if open == "password" %} open{% endif %}>
+    <summary class="btn small">Change password</summary>
+    <form method="post" action="{% url 'account_password' %}" class="stack">{% csrf_token %}
+      {% with form=password_form %}{% include "accounts/_fields.html" %}{% endwith %}
+      <p><button class="btn primary">Change password</button></p>
+    </form>
+  </details>
+</section>
+
+{% if p.is_teacher %}
+<section class="card">
+  <h2>Your classes</h2>
+  {% if teaching %}<ul>{% for c in teaching %}<li>{{ c.name }} <span class="muted">({{ c.enrollments.count }} student{{ c.enrollments.count|pluralize }})</span></li>{% endfor %}</ul>{% else %}<p class="muted">None yet.</p>{% endif %}
+  <p><a href="{% url 'teacher' %}">Teacher dashboard</a></p>
+</section>
+{% else %}
+<section class="card">
+  <h2>Classes</h2>
+  {% if classes %}
+  <ul class="plain">{% for c in classes %}<li>
+    <strong>{{ c.name }}</strong> <span class="muted">with {{ c.teacher.profile.display_name }}</span>
+    <details class="pop inline"><summary class="btn small">Leave</summary>
+      <form method="post" action="{% url 'leave_class' c.pk %}" class="stack">{% csrf_token %}
+        <p>Leave {{ c.name }}? Your teacher stops seeing your progress. Your own work stays in your account, and you can rejoin with the code.</p>
+        <p><button class="btn primary">Leave class</button></p>
+      </form>
+    </details>
+  </li>{% endfor %}</ul>
+  {% else %}<p class="muted">You aren't in a class.</p>{% endif %}
+  <p><a href="{% url 'join' %}">Join a class with a code</a></p>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Your data</h2>
+  <p>Download everything the site keeps about you: your account details, classes, answers, drafts, scores and printed packets, as one JSON file.</p>
+  <p><a class="btn" href="{% url 'account_export' %}">Download my data</a></p>
+  <p class="muted small">How we use it: <a href="{% url 'privacy' %}">privacy</a>.</p>
+</section>
+
+<section class="card danger-zone">
+  <h2>Delete account</h2>
+  <p>Deleting removes your account and all your work for good.{% if p.is_teacher %} <strong>Your classes are deleted too</strong>; your students keep their accounts and their own work, but leave the class.{% endif %}</p>
+  <details class="pop"{% if open == "delete" %} open{% endif %}>
+    <summary class="btn small">Delete my account</summary>
+    <form method="post" action="{% url 'account_delete' %}" class="stack">{% csrf_token %}
+      {% with form=delete_form %}{% include "accounts/_fields.html" %}{% endwith %}
+      <p><button class="btn danger">Delete everything</button></p>
+    </form>
+  </details>
+</section>
+</div>
+{% endblock %}

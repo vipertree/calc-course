@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Confirm email · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  {% if ok %}
+  <h1>Email confirmed</h1>
+  <p>{{ email }} is now the email on your account. Password reset links will go there.</p>
+  <p><a class="btn primary" href="{% url 'home' %}">Continue</a></p>
+  {% else %}
+  <h1>That link didn't work</h1>
+  <p>{% if expired %}It has expired.{% elif taken %}Another account already confirmed that email.{% else %}It may be old, already replaced by a newer link, or copied incompletely.{% endif %}</p>
+  <p>Sign in and open Account settings to send a new one.</p>
+  <p><a class="btn" href="{% url 'account' %}">Account settings</a></p>
+  {% endif %}
+</div></div>
+{% endblock %}

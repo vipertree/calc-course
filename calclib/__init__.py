@@ -217,6 +217,7 @@ class MCQ:
     calc: bool = False
     skill: str = ""
     figure: "Figure" = None
+    topic: str = ""        # syllabus topic ("2.8"), for an exam's score report
 
     @property
     def answer(self):
@@ -231,6 +232,7 @@ class Part:
     solution: str
     rubric: list           # list of (points, description)
     work: str = "4cm"
+    topic: str = ""        # syllabus topic ("8.3"), for an exam's score report
 
 
 @dataclass
@@ -433,3 +435,94 @@ def glue_punct(s):
     "... \\[ f'(3) = 6. \\]", so a line never starts with the sentence's period (Adder, 2026-10-02).
     Both the PDF and the web output run every string through this."""
     return _PUNCT_AFTER_DISPLAY.sub(lambda m: m.group(1) + " \\]", s) if s else s
+
+
+# ------------------------------------------------------------------ full-length practice exams
+# The AP Calculus exam's layout (College Board, 2024 onward): Section I is multiple choice, Section II free response.
+EXAM_FORMAT = {
+    "AB": {"counts": (30, 15, 2, 4), "minutes": (60, 45, 30, 60)},
+    "BC": {"counts": (30, 15, 2, 4), "minutes": (60, 45, 30, 60)},
+}
+
+
+@dataclass
+class Exam:
+    """A full-length practice exam in the AP format:
+      Section I Part A: multiple choice, no calculator    Section I Part B: multiple choice, graphing calculator
+      Section II Part A: free response, calculator        Section II Part B: free response, no calculator
+    Each FRQ is worth 9 points. The composite weights both sections equally: multiple choice raw x mc_weight
+    (45 x 1.2 = 54) plus free response raw (6 x 9 = 54) = 108. cutoffs turn a composite into an estimated AP score;
+    they are an estimate, since the College Board sets the real curve each year."""
+    slug: str              # "ab1": the URL and file name
+    title: str
+    course: str            # "AB" or "BC"
+    mcq_a: list
+    mcq_b: list
+    frq_a: list
+    frq_b: list
+    members_only: bool = True
+    cutoffs: tuple = ((5, 68), (4, 53), (3, 40), (2, 30))    # (AP score, lowest composite), out of 108
+    intro: str = ""
+
+    @property
+    def minutes(self):
+        return EXAM_FORMAT[self.course]["minutes"]
+
+    @property
+    def mc_weight(self):
+        return sum(f.points for f in self.frq_a + self.frq_b) / (len(self.mcq_a) + len(self.mcq_b))
+
+    @property
+    def number(self):
+        return f"exam-{self.slug}"
+
+
+_ARROWS = re.compile(r"⇒|\\Rightarrow|\\implies|\\Longrightarrow")
+
+
+def _syllabus_topics():
+    import json
+    p = Path(__file__).resolve().parent.parent / "web" / "course" / "syllabus.json"
+    return {t["n"] for u in json.loads(p.read_text()) for t in u["topics"]}
+
+
+def validate_exam(e: Exam):
+    from collections import Counter
+    tag = f"exam {e.slug}"
+    want = EXAM_FORMAT[e.course]["counts"]
+    got = (len(e.mcq_a), len(e.mcq_b), len(e.frq_a), len(e.frq_b))
+    check(f"{tag} section sizes", got == want, f"{got}, want {want}")
+    topics = _syllabus_topics()
+    for q in e.mcq_a + e.mcq_b:
+        check(f"{tag} MCQ has 4 choices", len(q.choices) == 4, q.stem[:50])
+        check(f"{tag} MCQ choices differ", len(set(q.choices)) == 4, q.stem[:50])
+        check(f"{tag} MCQ letter", q.correct in "ABCD", q.stem[:50])
+        check(f"{tag} MCQ topic", q.topic in topics, f"{q.topic!r}: {q.stem[:50]}")
+    for q in e.mcq_a:
+        check(f"{tag} Part A is no calculator", not q.calc, q.stem[:50])
+    for q in e.mcq_b:
+        check(f"{tag} Part B is calculator", q.calc, q.stem[:50])
+    for f in e.frq_a:
+        check(f"{tag} FRQ Part A is calculator", f.calc, f.title)
+    for f in e.frq_b:
+        check(f"{tag} FRQ Part B is no calculator", not f.calc, f.title)
+    for f in e.frq_a + e.frq_b:
+        check(f"{tag} FRQ is 9 points", f.points == 9, f"{f.title}: {f.points}")
+        for p in f.parts:
+            check(f"{tag} FRQ part topic", p.topic in topics, f"{f.title} ({p.label}): {p.topic!r}")
+    counts = Counter(q.correct for q in e.mcq_a + e.mcq_b)
+    n = len(e.mcq_a) + len(e.mcq_b)
+    check(f"{tag} answer letters balanced", all(0.2 * n <= counts[k] <= 0.3 * n for k in "ABCD"), str(dict(counts)))
+    for blk in _exam_text(e):
+        check(f"{tag} no em dashes", "—" not in blk, blk[:60])
+        check(f"{tag} no implication arrows (write 'so')", not _ARROWS.search(blk), blk[:60])
+
+
+def _exam_text(e):
+    out = [e.intro]
+    for q in e.mcq_a + e.mcq_b:
+        out += [q.stem, q.solution] + list(q.choices) + list(q.why_not.values())
+    for f in e.frq_a + e.frq_b:
+        out += [f.intro] + [p.prompt for p in f.parts] + [p.solution for p in f.parts]
+        out += [d for p in f.parts for _, d in p.rubric]
+    return out

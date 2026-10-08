@@ -8,7 +8,26 @@ HERE = Path(__file__).resolve().parent
 
 @lru_cache(maxsize=None)
 def syllabus():
-    return json.loads((HERE / "syllabus.json").read_text())
+    """Units and their topics, each with its display names. A unit marked "module" (the trig review) is a standalone
+    free module: it is never called a unit, and its lessons show as T1, T2, ... (Adder, 2026-10-08)."""
+    out = json.loads((HERE / "syllabus.json").read_text())
+    for u in out:
+        u["module"] = u.get("module", False)
+        u["short"] = u["title"] if u["module"] else f"Unit {u['n']}"
+        u["heading"] = u["title"] if u["module"] else f"Unit {u['n']}. {u['title']}"
+        u["line"] = f"{u['title']} · free module" if u["module"] else f"Unit {u['n']} · {u['title']}"
+        for t in u["topics"]:
+            t["label"] = f"{u['title'][0]}{t['n'].split('.')[1]}" if u["module"] else t["n"]
+    return out
+
+
+def label(num):
+    """The number a student sees for a lesson: "2.1", or "T3" for a module lesson."""
+    for u in syllabus():
+        for t in u["topics"]:
+            if t["n"] == num:
+                return t["label"]
+    return num
 
 
 def slug(num):
@@ -56,7 +75,11 @@ def topic_meta(num):
 def neighbours(num):
     """The previous and next *written* lessons, as {"n", "title"} dicts (or None)."""
     have = available()
-    flat = [{"n": t["n"], "title": t["title"]} for u in syllabus() for t in u["topics"] if t["n"] in have or t["n"] == num]
+    unit, _ = topic_meta(num)
+    # a module stands alone: its lessons link to each other, and the course's lessons skip over it
+    flat = [{"n": t["n"], "title": t["title"], "label": t["label"]} for u in syllabus() for t in u["topics"]
+            if (t["n"] in have or t["n"] == num) and (u["module"] == (unit or {}).get("module", False))
+            and (not u["module"] or u["n"] == unit["n"])]
     i = [t["n"] for t in flat].index(num)
     return (flat[i - 1] if i > 0 else None), (flat[i + 1] if i + 1 < len(flat) else None)
 

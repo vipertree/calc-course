@@ -277,6 +277,27 @@ def n_forms(*lists):
 
 
 # ------------------------------------------------------------------ topic
+# Standalone free modules: numbered like units internally (0.3) but never shown as a unit (Adder, 2026-10-08)
+MODULES = {0: "Trig Review"}
+
+
+def label(number):
+    """What a student sees for a lesson number: "2.1", or "T3" for the third lesson of the trig module."""
+    u, t = number.split(".")
+    return f"{MODULES[int(u)][0]}{t}" if int(u) in MODULES else number
+
+
+def topic_name(number):
+    """ "Topic 2.1", or "Trig Review, Lesson 3" for a module lesson."""
+    u, t = number.split(".")
+    return f"{MODULES[int(u)]}, Lesson {t}" if int(u) in MODULES else f"Topic {number}"
+
+
+def unit_label(unit):
+    """ "Unit 4", or the module's name."""
+    return MODULES.get(int(unit), f"Unit {unit}") if str(unit).isdigit() else f"Unit {unit}"
+
+
 @dataclass
 class Topic:
     number: str            # "2.1"
@@ -290,6 +311,10 @@ class Topic:
     mcq: list
     frq: list
     bc_only: bool = False
+
+    @property
+    def label(self):
+        return label(self.number)
 
     def __post_init__(self):
         # every example in the notes is solved in the video (Adder, 2026-10-01). Lesson-body examples come in through

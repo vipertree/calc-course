@@ -115,6 +115,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.2", title="The Unit Circle",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: unit circle trigonometry"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: unit circle trigonometry"],
     goals=r"Read $\sin\theta$, $\cos\theta$ and $\tan\theta$ off the unit circle at every landmark angle, using reference angles and the signs by quadrant.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

@@ -42,6 +42,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from calclib import (BigIdea, Check, Definition, Desmos, Example, Figure, FigureRow, Formula,  # noqa: E402
                      Meanings, Section, Table, Text, Video)
 from calclib import web as W  # noqa: E402
+from calclib import label  # noqa: E402  ("2.1", or "T3" for a trig module lesson)
 from calclib.videx import problem_tex, video_examples  # noqa: E402
 from transcripts import parse  # noqa: E402
 
@@ -314,12 +315,13 @@ def slide(kind, kicker, title, body, clip=None, clip_cap="", notes="", math_titl
 
 
 def build_deck(t, version, clips, log):
-    num, slug = t.number, t.number.replace(".", "_")
+    slug = t.number.replace(".", "_")
+    num = label(t.number)                  # what students and teachers see on the slides
     tpath = ROOT / "transcripts" / f"{slug}.md"
     beat_names = [b["name"] for b in parse(str(tpath))[1]] if tpath.exists() else []
-    end_examples = {(ti.split(":", 1)[1].strip() if ":" in ti else ti): ti for ti, *_ in video_examples(num)}
-    body_examples = {ti for ti, *_ in video_examples(num, lesson=True)}
-    raw_steps = {ti: (p, st) for ti, p, st, _ in video_examples(num) + video_examples(num, lesson=True)}
+    end_examples = {(ti.split(":", 1)[1].strip() if ":" in ti else ti): ti for ti, *_ in video_examples(t.number)}
+    body_examples = {ti for ti, *_ in video_examples(t.number, lesson=True)}
+    raw_steps = {ti: (p, st) for ti, p, st, _ in video_examples(t.number) + video_examples(t.number, lesson=True)}
     unit_line = t.unit
     S = [slide("title", "", t.title, f"<span class='chip'>{num}</span><div class='unit'>{W.html(unit_line)}</div>"
                f"<h1>{W.html(t.title)}</h1><div class='goals'>{W.html(t.goals)}</div><div class='ver'>"
@@ -438,9 +440,9 @@ def build_deck(t, version, clips, log):
             items.append(f"<li>{rich(b.body, 'solutions')}</li>")
         else:
             items.append(f"<li><strong>{W.html(b.title)}</strong></li>")
-    nxt = next_topic(num)
+    nxt = next_topic(t.number)
     body = (f"<ul class='recap'>{''.join(items)}</ul>" if items else f"<div class='prose'>{W.html(t.goals)}</div>") + \
-        (f"<div class='upnext'>Up next: {nxt[0]} {W.html(nxt[1])}</div>" if nxt else "")
+        (f"<div class='upnext'>Up next: {label(nxt[0])} {W.html(nxt[1])}</div>" if nxt else "")
     S.append(slide("close", f"{num} · Close", "What to remember", body, notes=plain(t.goals)))
     return S
 
@@ -574,9 +576,9 @@ def deck_html(t, version, slides):
                      f"data-light='{lt['mp4']}' data-dark='{dk['mp4']}' data-poster-light='{lt['jpg']}' data-poster-dark='{dk['jpg']}'>"
                      f"</video><p class='cap'>{H.escape(s['clip_cap'])}</p></aside>")
         parts.append(f"<section class='slide k-{s['kind']}' id='s{i}'>{head}<div class='sb'><div class='main mathy'><div class='fit'>"
-                     f"{s['body']}</div></div>{aside}</div><footer class='sf'><span>{t.number} {W.html(t.title)}</span>"
+                     f"{s['body']}</div></div>{aside}</div><footer class='sf'><span>{label(t.number)} {W.html(t.title)}</span>"
                      f"<span>{i} / {n}</span></footer></section>")
-    label = "solutions" if version == "solutions" else "blank"
+    kind = "solutions" if version == "solutions" else "blank"
     css = site_tokens() + "\n" + (HERE / "deck.css").read_text()
     js = (HERE / "deck.js").read_text()
     return f"""<!doctype html>
@@ -584,7 +586,7 @@ def deck_html(t, version, slides):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{t.number} slides ({label})</title>
+<title>{label(t.number)} slides ({kind})</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="{FONTS}" rel="stylesheet">
 <link rel="stylesheet" href="{KATEX}/katex.min.css">

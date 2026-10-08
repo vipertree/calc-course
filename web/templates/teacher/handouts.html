@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load course_text %}
 {% block title %}Handouts and slides · AP Calculus{% endblock %}
 {% block crumbs %}<a class="muted crumb" href="{% url 'teacher' %}" style="font-family:var(--font-ui);font-size:.9rem">Teacher dashboard</a>{% endblock %}
 {% block main %}
@@ -22,11 +22,11 @@
 </form>
 {% for u in units %}
 <section class="card handouts" style="margin-bottom:18px">
-  <h2 style="margin-top:0">Unit {{ u.n }}. {{ u.title }}</h2>
+  <h2 style="margin-top:0">{{ u.heading }}</h2>
   <table class="handout-table">
     {% for r in u.rows %}
     <tr>
-      <th><span class="chip-sm">{{ r.num }}</span> {{ r.title }}</th>
+      <th><span class="chip-sm">{{ r.num|lesson_label }}</span> {{ r.title }}</th>
       <td>{% if r.slides %}<span class="doc"><a href="{{ r.slides }}"><strong>Slides</strong></a></span>{% endif %}{% for d in r.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
     </tr>
     {% endfor %}

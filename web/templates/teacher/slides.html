@@ -1,9 +1,9 @@
-{% extends "base.html" %}
-{% block title %}Slides {{ num }} · AP Calculus{% endblock %}
+{% extends "base.html" %}{% load course_text %}
+{% block title %}Slides {{ num|lesson_label }} · AP Calculus{% endblock %}
 {% block crumbs %}<a class="muted crumb" href="{% url 'handouts' %}" style="font-family:var(--font-ui);font-size:.9rem">Handouts and slides</a>{% endblock %}
 {% block main %}
 <div class="mathy narrow">
-<h1><span class="chip-sm">{{ num }}</span> {{ title }}: slides</h1>
+<h1><span class="chip-sm">{{ num|lesson_label }}</span> {{ title }}: slides</h1>
 <p class="muted">The same deck in two versions. <strong>Solutions shown</strong> fills in the notes blanks and reveals each
   worked example one step at a time. <strong>Blank</strong> leaves the blanks open and gives each problem a slide with room to work
   it live with the class.{% if has_clips %} Each worked example has a silent clip from the lesson video; in the blank version the clip

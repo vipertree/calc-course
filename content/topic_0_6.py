@@ -147,6 +147,6 @@ FRQS = []
 
 TOPIC = Topic(
     number="0.6", title="Solving Trigonometric Equations",
-    unit="Unit 0: Trig Review", ced=["Prerequisite: solving trigonometric equations"],
+    unit="Trig Review (a free module)", ced=["Prerequisite: solving trigonometric equations"],
     goals=r"Find every solution of a trig equation in an interval, by isolating, factoring, using identities, and handling multiple angles.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

@@ -25,6 +25,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from transcripts import parse  # noqa: E402
 
+# Standalone free modules: numbered internally like units (0.3 is the trig module's third lesson) but never called a
+# unit anywhere a student sees. Adder, 2026-10-08: the trig review is its own free module, not Unit 0.
+MODULES = {0: "Trig Review"}
+
+
+def topic_label(num):
+    """How a lesson is named on screen: "Topic 2.1", or "Trig Review · Lesson 3" for a module lesson."""
+    u, t = num.split(".")
+    return f"{MODULES[int(u)]} \\textperiodcentered{{}} Lesson {t}" if int(u) in MODULES else f"Topic {num}"
+
+
 UNIT_NAMES = {0: "Trig Review", 1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
               3: "Differentiation: Composite, Implicit, and Inverse Functions", 4: "Contextual Applications of Differentiation",
               5: "Analytical Applications of Differentiation", 6: "Integration and Accumulation of Change", 7: "Differential Equations",
@@ -175,12 +186,12 @@ class TranscriptScene(LessonScene):
 
     def outro(self):
         """Closing card with the outro jingle: this topic, and what comes next."""
-        here = T(f"Topic {self.NUM}", 34, DIM)
+        here = T(topic_label(self.NUM), 34, DIM)
         name = T(re.sub(r"(\b\w)\^(\w+)", r"$\1^{\2}$", self.topic_title), 46).set_max_width(12)
         card = VGroup(here, name, Line(LEFT * 2.5, RIGHT * 2.5, color=FUNC, stroke_width=3)).arrange(DOWN, buff=0.3).shift(UP * 0.6)
         nxt = next_topic(self.NUM)
         if nxt:
-            card.add(T(r"Up next: Topic " + nxt[0] + r" \textperiodcentered{} " + re.sub(r"(\b\w)\^(\w+)", r"$\1^{\2}$", nxt[1]), 32, SECANT)
+            card.add(T(r"Up next: " + topic_label(nxt[0]) + r" \textperiodcentered{} " + re.sub(r"(\b\w)\^(\w+)", r"$\1^{\2}$", nxt[1]), 32, SECANT)
                      .set_max_width(12).next_to(card, DOWN, buff=0.6))
         self.add_sound(os.path.join(ASSETS, "outro_guitar.wav"), gain=-4)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=1.0)
@@ -198,7 +209,10 @@ class TranscriptScene(LessonScene):
         unit = int(self.NUM.split(".")[0])
         # titles are plain text; put bits of math like "e^x" into math mode so LaTeX accepts them
         title = re.sub(r"(\b\w)\^(\w+)", r"$\1^{\2}$", self.topic_title)
-        card = title_card(self.NUM, title, f"Unit {unit} \\textperiodcentered{{}} {UNIT_NAMES[unit]}")
+        if unit in MODULES:
+            card = title_card(f"Lesson {self.NUM.split('.')[1]}", title, f"{MODULES[unit]} \\textperiodcentered{{}} a free module")
+        else:
+            card = title_card(self.NUM, title, f"Unit {unit} \\textperiodcentered{{}} {UNIT_NAMES[unit]}")
         # no narration on the title card: just the card and the intro music (Adder, 2026-10-01)
         self.add_sound(os.path.join(ASSETS, "intro_guitar.wav"), gain=-4)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=1.2)
@@ -301,6 +315,9 @@ def next_topic(num):
     key = lambda n: tuple(int(k) for k in n.split("."))
     nums = sorted((p.stem.replace("_", ".") for p in TRANSCRIPTS.glob("*_*.md")), key=key)
     later = [n for n in nums if key(n) > key(num)]
+    if key(num)[0] in MODULES or (later and key(later[0])[0] in MODULES):
+        # a module stands alone: its lessons point to each other, and nothing leads into or out of it
+        later = [n for n in later if key(n)[0] == key(num)[0]]
     if not later:
         return None
     first = (TRANSCRIPTS / f"{later[0].replace('.', '_')}.md").read_text().splitlines()[0]

@@ -39,7 +39,8 @@
     "title": "Inverse Trigonometric Functions",
     "bc": false
    }
-  ]
+  ],
+  "module": true
  },
  {
   "n": 1,
@@ -259,7 +260,7 @@
    },
    {
     "n": "4.7",
-    "title": "Using L\u2019Hospital\u2019s Rule for Determining Limits of Indeterminate Forms",
+    "title": "Using L’Hospital’s Rule for Determining Limits of Indeterminate Forms",
     "bc": false
    }
   ]
@@ -435,7 +436,7 @@
    },
    {
     "n": "7.5",
-    "title": "Approximating Solutions Using Euler\u2019s Method",
+    "title": "Approximating Solutions Using Euler’s Method",
     "bc": true
    },
    {

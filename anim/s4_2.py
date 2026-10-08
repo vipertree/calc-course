@@ -41,19 +41,19 @@ class Lesson(TranscriptScene):
         lab = VGroup(VGroup(M(r"v " + (">" if v_sign > 0 else "<") + " 0", 36, vc), arrow(v_sign, vc)).arrange(RIGHT, buff=0.2),
                      VGroup(M(r"a " + (">" if a_sign > 0 else "<") + " 0", 36, ac), arrow(a_sign, ac)).arrange(RIGHT, buff=0.2)
                      ).arrange(DOWN, buff=0.15, aligned_edge=LEFT).move_to([-5.3, y, 0])
-        road = Line([-3.0, y - 0.3, 0], [2.6, y - 0.3, 0], color=DIM, stroke_width=4)
-        x0, x1 = (-2.5, 2.1) if v_sign > 0 else (2.1, -2.5)
+        road = Line([-3.3, y - 0.3, 0], [3.1, y - 0.3, 0], color=DIM, stroke_width=4)
+        x0, x1 = (-2.6, 2.4) if v_sign > 0 else (2.4, -2.6)
         speeding = v_sign == a_sign
         prog = (lambda s: s * s) if speeding else (lambda s: 1 - (1 - s) ** 2)
         S = ValueTracker(0)
-        car = car_sprite(0.95)
+        car = car_sprite(1.3)
         face(car, v_sign)
         car.add_updater(lambda m: m.move_to([x0 + (x1 - x0) * prog(S.get_value()), y - 0.3 + m.height / 2 + 0.03, 0]))
         car.update()
         # where the car was at equal time steps: the gaps grow when it speeds up and shrink when it slows down
         trail = always_redraw(lambda: VGroup(*[Dot([x0 + (x1 - x0) * prog(k / 5), y - 0.42, 0], radius=0.05, color=INK)
                                                for k in range(6) if k / 5 <= S.get_value() + 1e-6]))
-        verdict = T(word, 34, DERIV if speeding else TANGENT).move_to([4.75, y - 0.05, 0])
+        verdict = T(word, 34, DERIV if speeding else TANGENT).move_to([5.0, y - 0.05, 0])
         return lab, road, car, verdict, S, trail
 
     def construct(self):
@@ -142,15 +142,16 @@ class Lesson(TranscriptScene):
             centers = [0.5, 2.0, 3.8]
             self.play(FadeIn(top), Create(line), FadeIn(t0), FadeIn(tlab), run_time=1)
             self.play(FadeIn(ticks, scale=1.3), run_time=0.8)
-            tests = [(r"t = 0", r"v(0) = 9 > 0", "+"), (r"t = 2", r"v(2) = 12 - 24 + 9 = -3 < 0", "-"), (r"t = 4", r"v(4) = 48 - 48 + 9 = 9 > 0", "+")]
+            tests = [(r"t = 0", r"v(0) = 0 - 0 + 9", r"= 9 > 0", "+"), (r"t = 2", r"v(2) = 12 - 24 + 9", r"= -3 < 0", "-"),
+                     (r"t = 4", r"v(4) = 48 - 48 + 9", r"= 9 > 0", "+")]
             signs = VGroup()
-            for k, (c, (tv, calc, sg)) in enumerate(zip(centers, tests)):
+            for k, (c, (tv, calc, res, sg)) in enumerate(zip(centers, tests)):
                 b.line(k + 1)
                 col = DERIV if sg == "+" else TANGENT
                 qm = M("?", 48, DIM).move_to([px(c), yl + 0.55, 0])
                 self.play(FadeIn(qm), Indicate(Line([px(c) - 0.5, yl, 0], [px(c) + 0.5, yl, 0], color=SECANT, stroke_width=8)), run_time=0.8)
-                tst = VGroup(M(tv, 30, DIM), M(calc, 30)).arrange(DOWN, buff=0.12).move_to([px(c), yl - 1.25, 0])
-                tst.set_max_width(3.6 if k == 1 else 2.2)
+                tst = VGroup(M(tv, 30, DIM), M(calc, 32), M(res, 32, col)).arrange(DOWN, buff=0.1).move_to([px(c), yl - 1.5, 0])
+                tst.set_max_width(3.0)
                 self.play(FadeIn(tst), run_time=1)
                 s_ = M(sg, 60, col).move_to([px(c), yl + 0.55, 0])
                 self.play(ReplacementTransform(qm, s_), run_time=0.6)
@@ -159,13 +160,13 @@ class Lesson(TranscriptScene):
             fac = [("3", "+++"), ("t - 1", "-++"), ("t - 3", "--+")]
             rows = VGroup()
             for r_, (name, sg) in enumerate(fac):
-                yy = -1.0 - 0.62 * r_
+                yy = -1.25 - 0.55 * r_
                 row = VGroup(M(name, 34, DIM).move_to([-5.6, yy, 0]),
                              *[M(s, 40, DERIV if s == "+" else TANGENT).move_to([px(c), yy, 0]) for s, c in zip(sg, centers)])
                 rows.add(row)
-            rule = Line([-6.3, -2.62, 0], [px(4.6), -2.62, 0], color=DIM, stroke_width=2)
-            prod = VGroup(M(r"v", 36, SECANT).move_to([-5.6, -3.05, 0]),
-                          *[M(s, 44, DERIV if s == "+" else TANGENT).move_to([px(c), -3.05, 0]) for s, c in zip("+-+", centers)])
+            rule = Line([-6.3, -2.62 - 0.12, 0], [px(4.6), -2.62 - 0.12, 0], color=DIM, stroke_width=2)
+            prod = VGroup(M(r"v", 36, SECANT).move_to([-5.6, -3.15, 0]),
+                          *[M(s, 44, DERIV if s == "+" else TANGENT).move_to([px(c), -3.15, 0]) for s, c in zip("+-+", centers)])
             for row in rows:
                 self.play(FadeIn(row, shift=DOWN * 0.1), run_time=0.7)
             self.play(Create(rule), FadeIn(prod), run_time=0.8)

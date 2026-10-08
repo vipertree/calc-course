@@ -50,7 +50,7 @@ STEPS = (r"\textbf{1. Know:} the quantities at the instant and the rates you are
          r"\textbf{5. Differentiate} with respect to $t$, \emph{before} substituting anything that changes.")
 
 NOTES = [
-    Video("s4_4.py::Lesson", "Rates that are related", 5),
+    Video("s4_4.py::Lesson", "Rates that are related", 8),
 
     Section("Everything depends on time"),
     Text(r"When several quantities change together, each one is a function of time $t$. If an equation links the quantities, then "

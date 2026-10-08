@@ -1,13 +1,14 @@
 """Topic 4.5: Solving related rates problems.
 
 CED: CHA-3.E (CHA-3.E.1): the full procedure, with geometry (Pythagorean theorem, similar triangles, volume formulas,
-right-triangle trig) to relate the quantities. Worked examples: a sliding 13-ft ladder, a conical tank (similar triangles),
-two cars leaving an intersection.
+right-triangle trig) to relate the quantities. 4.5 solves the same examples 4.4 set up: the shadow, the 13-ft ladder, the
+cone, two cars, the ripple. 3D volume formulas are stated in every problem that needs one, as on the AP exam.
 """
 import sympy as sp
 
-from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num,
+from calclib import (VideoExample, FigureRow, FRQ, MCQ, BigIdea, Check, Example, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num,
                      same, selfcheck)
+from content.topic_4_4 import FIG_CARS, FIG_CONE, FIG_LADDER, FIG_RIPPLE, FIG_SHADOW
 
 t = sp.symbols("t")
 x, y, z, r, h, V, s, th = [sp.Function(n)(t) for n in ("x", "y", "z", "r", "h", "V", "s", "th")]
@@ -24,23 +25,29 @@ same("cone", solve_rate(sp.pi / 27 * h**3, V, h, {d(V): 2, h: 6}), 1 / (2 * sp.p
 same("cars", solve_rate(z**2, x**2 + y**2, z, {d(x): 40, d(y): 30, x: 80, y: 60, z: 100}), 50)
 
 NOTES = [
-    Video("s4_5.py::Lesson", "Solving related rates", 5),
+    Video("s4_5.py::Lesson", "Solving related rates", 6),
 
     Section("A procedure"),
     Formula("Solving a related rates problem", (
-        r"\textbf{1.} Draw a picture. Label every quantity that \blank{changes} with a variable, and every constant with its number. \par "
-        r"\textbf{2.} Write down the given rates and the rate you want, with signs: shrinking quantities have \blank{negative} rates. \par "
-        r"\textbf{3.} Write an equation relating the quantities. \par "
-        r"\textbf{4.} Differentiate with respect to $t$. \par "
-        r"\textbf{5.} Substitute the values \emph{at the moment asked about}, and solve. Answer with units.")),
+        r"\textbf{1. Know:} the quantities at the instant (e.g. $x = 5$ ft) and the given rates (e.g. $\frac{dx}{dt} = 2$ ft/s), with units. "
+        r"Shrinking quantities have \blank{negative} rates. \par "
+        r"\textbf{2. Want:} the rate you are looking for (e.g. $\frac{dy}{dt} = ?$). \par "
+        r"\textbf{3. Fixed:} constants that never change (a ladder's length, a cone's proportions). These can be substituted from the start. \par "
+        r"\textbf{4. Equation:} relate the quantities. \par "
+        r"\textbf{5. Differentiate} with respect to $t$ \emph{before} substituting any value that \blank{changes}. \par "
+        r"\textbf{6. Substitute and solve:} put in the values at the instant, solve for the rate, and answer with units.")),
+    Text(r"Steps 1 to 5 are Topic 4.4's setup. The examples below are the ones set up there; each picks up at step 6."),
+    FigureRow([FIG_LADDER, FIG_CONE, FIG_CARS]),
 
     Section("Where the equation comes from"),
-    Text(r"Most equations come from a few sources: the \blank{Pythagorean theorem} for right triangles, \blank{similar triangles} for shadows "
-         r"and cones, volume and area formulas, and right-triangle trig for angles."),
+    Text(r"Most equations come from a few sources: the \blank{Pythagorean theorem} for right triangles, similar triangles for shadows "
+         r"and cones, volume and area formulas, and right-triangle trig for angles. A volume formula for a solid is given in the problem "
+         r"(for example, ``the volume of a cone is $V = \frac13\pi r^2 h$''); the flat ones you know by heart."),
     Text(r"\textbf{Eliminate first.} If a problem gives a rate for only one of two linked variables (like $r$ and $h$ in a cone with fixed "
          r"proportions), use the geometry to write one variable in terms of the other \emph{before} differentiating."),
+    FigureRow([FIG_SHADOW, FIG_RIPPLE]),
     VideoExample('A shadow', work="3cm"),
-    BigIdea(r"Picture, rates with signs, an equation that holds at every moment, differentiate, then substitute the values at the moment asked."),
+    BigIdea(r"Know, want, fixed, an equation that holds at every moment, differentiate, then substitute the values at the moment asked and solve."),
     Check(r"In a related rates problem, a quantity is shrinking at $3$ cm/s. What value do you use for its rate?", num(-3),
           r"$-3$ cm/s: shrinking means a negative rate."),
 ]
@@ -48,17 +55,18 @@ NOTES = [
 # ---------------------------------------------------------------- practice
 PRACTICE = [
     Item(r"A $10$-ft ladder leans against a wall. The bottom slides away at $1$ ft/s. How fast does the top slide down when the bottom is $6$ ft from the wall?",
-         num(sp.Rational(-3, 4)), r"$x^2 + y^2 = 100$; at $x = 6$, $y = 8$. $2(6)(1) + 2(8)\dfrac{dy}{dt} = 0$, so $\dfrac{dy}{dt} = -\frac34$ ft/s.", work="2.6cm"),
+         num(sp.Rational(-3, 4)), r"Know $\dfrac{dx}{dt} = 1$, $x = 6$; want $\dfrac{dy}{dt}$; fixed $10$ ft. $x^2 + y^2 = 100$, so $2x\dfrac{dx}{dt} + 2y\dfrac{dy}{dt} = 0$. "
+         r"At $x = 6$, $y = 8$: $2(6)(1) + 2(8)\dfrac{dy}{dt} = 0$, so $\dfrac{dy}{dt} = -\frac34$ ft/s.", work="2.8cm"),
     Item(r"A $25$-ft ladder slides so that its top falls at $2$ ft/s. How fast is the bottom moving when the top is $7$ ft high?", num(sp.Rational(7, 12)),
          r"At $y = 7$, $x = 24$. $2(24)\dfrac{dx}{dt} + 2(7)(-2) = 0$, so $\dfrac{dx}{dt} = \frac{7}{12}$ ft/s.", work="2.6cm"),
-    Item(r"Water drains from a cone (point down) with radius $3$ m and height $6$ m at $2$ m$^3$/min. How fast is the depth falling when it is $4$ m?",
+    Item(r"Water drains from a cone (point down) with radius $3$ m and height $6$ m at $2$ m$^3$/min. How fast is the depth falling when it is $4$ m? (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)",
          num(-1 / (2 * sp.pi)), r"$r = \frac h2$, so $V = \frac{\pi}{12}h^3$. $-2 = \frac{\pi}{4}h^2\dfrac{dh}{dt} = 4\pi\dfrac{dh}{dt}$, so $\dfrac{dh}{dt} = -\frac{1}{2\pi}$ m/min.",
          work="2.8cm"),
-    Item(r"Sand pours into a conical pile whose height always equals its radius, at $9\pi$ ft$^3$/min. How fast is the height rising when $h = 3$ ft?", num(1),
+    Item(r"Sand pours into a conical pile whose height always equals its radius, at $9\pi$ ft$^3$/min. How fast is the height rising when $h = 3$ ft? (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)", num(1),
          r"$V = \frac{\pi}{3}h^3$, so $9\pi = \pi h^2\dfrac{dh}{dt} = 9\pi\dfrac{dh}{dt}$: $\dfrac{dh}{dt} = 1$ ft/min.", work="2.4cm"),
     Item(r"Two cyclists leave the same point, one north at $12$ mph and one east at $16$ mph. How fast is the distance between them growing after $1$ hour?",
          num(20), r"$x = 16$, $y = 12$, $z = 20$. $20\dfrac{dz}{dt} = 16(16) + 12(12) = 400$, so $\dfrac{dz}{dt} = 20$ mph.", work="2.6cm"),
-    Item(r"A spherical balloon is inflated at $36\pi$ cm$^3$/s. How fast is the radius growing when $r = 3$ cm?", num(1),
+    Item(r"A spherical balloon is inflated at $36\pi$ cm$^3$/s. How fast is the radius growing when $r = 3$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(1),
          r"$36\pi = 4\pi(9)\dfrac{dr}{dt}$, so $\dfrac{dr}{dt} = 1$ cm/s.", work="2cm"),
     Item(r"For the same balloon, how fast is the surface area $S = 4\pi r^2$ growing when $r = 3$ cm?", num(24 * sp.pi),
          r"$\dfrac{dS}{dt} = 8\pi r\dfrac{dr}{dt} = 8\pi(3)(1) = 24\pi$ cm$^2$/s.", work="2cm"),
@@ -66,7 +74,7 @@ PRACTICE = [
          r"$\frac{18}{x + s} = \frac{6}{s}$ gives $s = \frac x2$, so $\dfrac{ds}{dt} = \frac12(-3) = -1.5$ ft/s: shrinking.", work="2.6cm"),
     Item(r"A kite flies at a height of $60$ ft and drifts horizontally away at $5$ ft/s. How fast is the string being let out when $80$ ft of horizontal distance separate the kite and the flyer?",
          num(4), r"$z^2 = x^2 + 60^2$; at $x = 80$, $z = 100$. $100\dfrac{dz}{dt} = 80(5)$, so $\dfrac{dz}{dt} = 4$ ft/s.", work="2.6cm"),
-    Item(r"A cylindrical tank of radius $2$ m fills at $8\pi$ m$^3$/min. How fast does the water level rise?", num(2),
+    Item(r"A cylindrical tank of radius $2$ m fills at $8\pi$ m$^3$/min. How fast does the water level rise? (The volume of a cylinder with radius $r$ and height $h$ is $V = \pi r^2 h$.)", num(2),
          r"$V = 4\pi h$, so $8\pi = 4\pi\dfrac{dh}{dt}$ and $\dfrac{dh}{dt} = 2$ m/min.", work="2cm"),
     Item(r"A plane flies horizontally at $6$ km altitude, at $500$ km/h, directly over a radar station. How fast is the distance to the station growing when it is $10$ km away?",
          num(400), r"$z^2 = x^2 + 36$; at $z = 10$, $x = 8$. $10\dfrac{dz}{dt} = 8(500)$, so $\dfrac{dz}{dt} = 400$ km/h.", work="2.6cm"),
@@ -105,9 +113,9 @@ QUIZ = [
              r"$x = 40$, $y = 30$, $z = 50$: $50\dfrac{dz}{dt} = 40(8) + 30(6) = 500$, so $10$ m/s.", work="2.4cm"),
     ),
     Variants(
-        Item(r"A sphere's volume grows at $100\pi$ cm$^3$/s. How fast is the radius growing when $r = 5$ cm?", num(1), r"$100\pi = 4\pi(25)\dfrac{dr}{dt}$.", work="1.8cm"),
-        Item(r"A sphere's volume grows at $64\pi$ cm$^3$/s. How fast is the radius growing when $r = 4$ cm?", num(1), r"$64\pi = 4\pi(16)\dfrac{dr}{dt}$.", work="1.8cm"),
-        Item(r"A sphere's volume shrinks at $8\pi$ cm$^3$/s. How fast is the radius changing when $r = 2$ cm?", num(sp.Rational(-1, 2)), r"$-8\pi = 4\pi(4)\dfrac{dr}{dt}$.", work="1.8cm"),
+        Item(r"A sphere's volume grows at $100\pi$ cm$^3$/s. How fast is the radius growing when $r = 5$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(1), r"$100\pi = 4\pi(25)\dfrac{dr}{dt}$.", work="1.8cm"),
+        Item(r"A sphere's volume grows at $64\pi$ cm$^3$/s. How fast is the radius growing when $r = 4$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(1), r"$64\pi = 4\pi(16)\dfrac{dr}{dt}$.", work="1.8cm"),
+        Item(r"A sphere's volume shrinks at $8\pi$ cm$^3$/s. How fast is the radius changing when $r = 2$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(sp.Rational(-1, 2)), r"$-8\pi = 4\pi(4)\dfrac{dr}{dt}$.", work="1.8cm"),
     ),
     Variants(
         MCQ(r"A conical tank (point down) has radius $5$ and height $10$. To relate $V$ to $h$ alone, use", [r"$r = 2h$", r"$r = \frac h2$", r"$r = 5$", r"$h = 10$"], "B",
@@ -132,13 +140,13 @@ same("q", [solve_rate(x**2 + y**2, 169, y, {d(x): 3, x: 12, y: 5}), solve_rate(x
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"Water flows into a cone (point down) of radius $2$ ft and height $8$ ft at $\pi$ ft$^3$/min. How fast is the depth rising when it is $4$ ft?",
+    MCQ(r"Water flows into a cone (point down) of radius $2$ ft and height $8$ ft at $\pi$ ft$^3$/min. How fast is the depth rising when it is $4$ ft? (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)",
         [r"$1$ ft/min", r"$\frac14$ ft/min", r"$\frac{1}{16}$ ft/min", r"$4$ ft/min"], "A",
         r"$r = \frac h4$, $V = \frac{\pi}{48}h^3$. $\pi = \frac{\pi}{16}h^2\dfrac{dh}{dt} = \pi\dfrac{dh}{dt}$ at $h = 4$, so $1$ ft/min."),
     MCQ(r"A point moves along $y = x^2$ with $\dfrac{dx}{dt} = 3$. How fast is its distance from the origin changing at $(1, 1)$?",
         [r"$3\sqrt2$", r"$\dfrac{9}{\sqrt2}$", r"$9$", r"$\dfrac{3}{\sqrt2}$"], "B",
         r"$D^2 = x^2 + x^4$, so $2D\dfrac{dD}{dt} = (2x + 4x^3)\dfrac{dx}{dt} = 18$ at $x = 1$, and $D = \sqrt2$: $\dfrac{dD}{dt} = \frac{9}{\sqrt2}$."),
-    MCQ(r"The edge of a cube grows at $2$ cm/s. When the volume is $27$ cm$^3$, the surface area grows at", [r"$24$ cm$^2$/s", r"$36$ cm$^2$/s", r"$72$ cm$^2$/s", r"$54$ cm$^2$/s"], "C",
+    MCQ(r"The edge of a cube grows at $2$ cm/s. When the volume is $27$ cm$^3$, the surface area grows at (a cube with edge $s$ has volume $V = s^3$ and surface area $S = 6s^2$)", [r"$24$ cm$^2$/s", r"$36$ cm$^2$/s", r"$72$ cm$^2$/s", r"$54$ cm$^2$/s"], "C",
         r"$s = 3$. $S = 6s^2$, so $\dfrac{dS}{dt} = 12s\dfrac{ds}{dt} = 12(3)(2) = 72$."),
     MCQ(r"A $6$-ft person walks away from a $24$-ft lamppost at $6$ ft/s. The tip of the shadow moves at", [r"$2$ ft/s", r"$6$ ft/s", r"$4$ ft/s", r"$8$ ft/s"], "D",
         r"$\frac{24}{x + s} = \frac{6}{s}$ gives $s = \frac x3$. The tip is at $x + s = \frac{4x}{3}$, moving at $\frac43(6) = 8$ ft/s.", why_not={"A": "that's the shadow's length"}),

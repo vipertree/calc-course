@@ -12,7 +12,7 @@ import numpy as np
 from manim import *
 from PIL import Image, ImageFilter
 
-from style import BG, DIM, FUNC, INK, PANEL, TANGENT, THEME
+from style import BG, DERIV, DIM, FUNC, INK, PANEL, SECANT, TANGENT, THEME
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
@@ -179,7 +179,7 @@ class Tank(VGroup):
         front_rim = Arc(radius=1, start_angle=PI, angle=PI).stretch(w / 2, 0).stretch(e, 1).shift(UP * h / 2)
         front_rim.set_stroke(INK, 3.5)
         # metal bands at the top and bottom
-        bands = VGroup(front_rim.copy().set_stroke(DIM, 9, opacity=0.55), base_front.copy().set_stroke(DIM, 9, opacity=0.55))
+        bands = VGroup(front_rim.copy().set_stroke(DIM, 9, opacity=0.55))
         # highlights on the glass: two soft vertical streaks on the left
         shine = VGroup(Line([-0.36 * w, -0.4 * h, 0], [-0.36 * w, 0.4 * h, 0]).set_stroke(WHITE, 7, opacity=0.28),
                        Line([-0.27 * w, -0.3 * h, 0], [-0.27 * w, 0.33 * h, 0]).set_stroke(WHITE, 3, opacity=0.22))
@@ -196,7 +196,7 @@ class Tank(VGroup):
                 g.add(MathTex(lab, font_size=22, color=DIM).next_to([w / 2, y, 0], RIGHT, buff=0.12))
         if unit:
             g.add(MathTex(r"\text{" + unit + "}", font_size=22, color=DIM).next_to([w / 2, h / 2, 0], RIGHT, buff=0.12).shift(UP * 0.32))
-        parts = [frame, plinth, plinth_top, tint, back_rim]
+        parts = [frame, plinth, tint, back_rim]
         self.add(*parts)
         # the water lives between the back rim and the front glass, redrawn from the frame each frame
         self.water = always_redraw(self._draw_water)
@@ -341,3 +341,121 @@ def water_cone(depth=0.6, H=4.2, R=1.4, tip=ORIGIN):
     shine = Line(tip + [-0.55 * R * 0.6, H * 0.6, 0], tip + [-0.55 * R * 0.95, H * 0.95, 0]).set_stroke(WHITE, 5, opacity=0.25)
     shell = VGroup(left, right, rim, tint, shine)
     return VGroup(water, shell), h, r
+
+
+# ---------------------------------------------------------------- related rates diagrams (4.4 sets them up, 4.5 solves them)
+# Fixed quantities are numbers, changing ones are letters, and a given rate is a small arrow where it helps.
+
+def _lab(tex, size=36, color=INK):
+    return MathTex(tex, font_size=size, color=color)
+
+
+def pond_ripple(R, center=ORIGIN):
+    """A ripple of radius R on a pond, seen from above: the leading ring, two fainter rings behind it, a light wash inside."""
+    R = max(R, 0.02)
+    wash = Circle(radius=R).set_fill(FUNC, 0.16).set_stroke(width=0)
+    rings = VGroup(*[Circle(radius=R * k).set_stroke(FUNC, w, opacity=o) for k, w, o in ((1, 5, 1), (0.72, 3, 0.55), (0.46, 2, 0.35))])
+    return VGroup(wash, rings).move_to(center)
+
+
+def fig_ripple(r=1.5):
+    pond = Circle(radius=r * 1.4).set_fill(FUNC, 0.08).set_stroke(FUNC, 1.5, opacity=0.35)
+    rad = Line(ORIGIN, RIGHT * r).set_stroke(INK, 3)
+    return VGroup(pond, pond_ripple(r), Dot(radius=0.05, color=INK), rad, _lab("r").next_to(rad, UP, buff=0.08))
+
+
+def fig_square(s=2.0):
+    sq = Square(s).set_fill(FUNC, 0.25).set_stroke(FUNC, 4)
+    return VGroup(sq, _lab("s").next_to(sq, DOWN, buff=0.12), _lab("s").next_to(sq, LEFT, buff=0.12), _lab("A", 40, FUNC).move_to(sq))
+
+
+def fig_ladder(L=3.6, x=1.4, length="13", rate=r"\tfrac{dx}{dt}"):
+    """Wall, ground and the ladder sprite, labeled x, y and its length, with dx/dt at the foot."""
+    y = float(np.sqrt(L * L - x * x))
+    base = np.array([0.0, 0.0, 0.0])
+    wall = brick_wall(height=y + 0.5, width=0.45, brick_h=0.25)
+    wall.next_to(base, LEFT, buff=0).align_to(base, DOWN)
+    gr = Line(base + LEFT * 0.5, base + RIGHT * (x + 1.3), color=DIM, stroke_width=4)
+    lad = ladder(base + RIGHT * x, base + UP * y, width=0.36)
+    corner = VMobject().set_points_as_corners([base + UP * 0.22, base + UP * 0.22 + RIGHT * 0.22, base + RIGHT * 0.22]).set_stroke(DIM, 2)
+    lx = _lab("x").next_to(Line(base, base + RIGHT * x), DOWN, buff=0.12)
+    ly = _lab("y").next_to(wall, LEFT, buff=0.1)
+    ll = _lab(length, 34).move_to(base + np.array([x / 2 + 0.45, y / 2 + 0.2, 0]))
+    arr = Arrow(base + RIGHT * x + DOWN * 0.6, base + RIGHT * (x + 0.9) + DOWN * 0.6, buff=0, color=TANGENT, stroke_width=4,
+                max_tip_length_to_length_ratio=0.3)
+    return Group(wall, gr, corner, lad, lx, ly, ll, arr, _lab(rate, 28, TANGENT).next_to(arr, RIGHT, buff=0.08))
+
+
+def fig_cone(depth=0.67, H=3.6, R=1.2):
+    g, h, r = water_cone(depth, H, R)
+    tip = g[1][0].get_start()
+    hl = DashedLine(tip, tip + UP * h, color=SECANT)
+    rl = Line(tip + UP * h, tip + UP * h + RIGHT * r, color=DERIV, stroke_width=4)
+    big_h = DoubleArrow(tip + RIGHT * (R + 0.45), tip + RIGHT * (R + 0.45) + UP * H, buff=0, color=DIM, stroke_width=3, tip_length=0.15)
+    return VGroup(g, hl, rl, _lab("h", 34, SECANT).next_to(hl, LEFT, buff=0.1), _lab("r", 34, DERIV).next_to(rl, UP, buff=0.06),
+                  big_h, _lab("9", 32, DIM).next_to(big_h, RIGHT, buff=0.1),
+                  _lab("3", 32, DIM).move_to(tip + UP * (H + 0.45) + RIGHT * R / 2))
+
+
+def fig_cars(x=2.8, y=2.1):
+    """The intersection: one car east (x), one north (y), the distance z between them, and each car's speed."""
+    o = np.array([0.0, 0.0, 0.0])
+    ex = Arrow(o, o + RIGHT * (x + 0.9), buff=0, color=DIM, stroke_width=3, max_tip_length_to_length_ratio=0.06)
+    ny = Arrow(o, o + UP * (y + 0.9), buff=0, color=DIM, stroke_width=3, max_tip_length_to_length_ratio=0.08)
+    a, b = o + RIGHT * x, o + UP * y
+    z = Line(a, b, color=FUNC, stroke_width=5)
+    ca = car_sprite(0.75).move_to(a + UP * 0.2)
+    cb = car_sprite(0.75)
+    cb.rotate(PI / 2).move_to(b + RIGHT * 0.2)
+    va = Arrow(a + DOWN * 0.35, a + DOWN * 0.35 + RIGHT * 0.8, buff=0, color=TANGENT, stroke_width=4, max_tip_length_to_length_ratio=0.3)
+    vb = Arrow(b + LEFT * 0.35, b + LEFT * 0.35 + UP * 0.7, buff=0, color=TANGENT, stroke_width=4, max_tip_length_to_length_ratio=0.3)
+    return Group(ex, ny, MathTex(r"\text{E}", font_size=28, color=DIM).next_to(ex, RIGHT, buff=0.08),
+                 MathTex(r"\text{N}", font_size=28, color=DIM).next_to(ny, UP, buff=0.08), z, ca, cb,
+                 _lab("x").next_to(Line(o, a), DOWN, buff=0.12).shift(LEFT * 0.5), _lab("y").next_to(Line(o, b), LEFT, buff=0.12).shift(DOWN * 0.3),
+                 _lab("z", 36, FUNC).move_to((a + b) / 2 + np.array([0.3, 0.3, 0])),
+                 va, _lab(r"40", 26, TANGENT).next_to(va, DOWN, buff=0.06), vb, _lab(r"30", 26, TANGENT).next_to(vb, LEFT, buff=0.06))
+
+
+def fig_shadow(H=3.0, h=1.0, x=2.2):
+    """The lamppost (15 ft), Ana (5 ft) walking away, and her shadow s, with the light ray over her head."""
+    s = x * h / (H - h)
+    o = np.array([0.0, 0.0, 0.0])
+    gr = Line(o + LEFT * 0.4, o + RIGHT * (x + s + 0.5), color=DIM, stroke_width=4)
+    post = lamppost(H * 1.08)
+    post.move_to(o, aligned_edge=DOWN)
+    ana = person_walking(h * 1.05).move_to(o + RIGHT * x, aligned_edge=DOWN)
+    tip = o + RIGHT * (x + s)
+    ray = DashedLine(o + UP * H, tip, color=SECANT, stroke_width=3)
+    shade = Line(o + RIGHT * x, tip, color=INK, stroke_width=9, stroke_opacity=0.55)
+    bx = BraceBetweenPoints(o, o + RIGHT * x, DOWN, color=DIM)
+    bs = BraceBetweenPoints(o + RIGHT * x, tip, DOWN, color=DIM)
+    return Group(gr, shade, post, ana, ray, _lab("15", 32).next_to(post, LEFT, buff=0.12),
+                 _lab("5", 32).next_to(ana, LEFT, buff=0.1),
+                 bx, _lab("x").next_to(bx, DOWN, buff=0.08), bs, _lab("s").next_to(bs, DOWN, buff=0.08))
+
+
+def ride(car, point, angle):
+    """Sit a car_sprite on a road at `point` (where its wheels touch), tilted to `angle` (radians). The car keeps track
+    of its own tilt, so this can run every frame from an updater."""
+    if not hasattr(car, "h0"):
+        car.h0 = car.height
+    car.rotate(angle - getattr(car, "tilt", 0.0))
+    car.tilt = angle
+    n = np.array([-np.sin(angle), np.cos(angle), 0.0])
+    car.move_to(np.array(point, dtype=float) + n * car.h0 * 0.5)
+    return car
+
+
+def car_on_graph(ax, f, x, way, width=0.75):
+    """A car_sprite driving along the graph of f: its position is the ValueTracker x, it faces `way` (1 right, -1 left)
+    and tilts with the curve."""
+    c = car_sprite(width)
+    face(c, way)
+
+    def upd(m):
+        u = x.get_value()
+        p0, p1 = ax.c2p(u - 0.01, f(u - 0.01)), ax.c2p(u + 0.01, f(u + 0.01))
+        ride(m, ax.c2p(u, f(u)), float(np.arctan2(p1[1] - p0[1], p1[0] - p0[0])))
+    c.add_updater(upd)
+    c.update()
+    return c

@@ -68,7 +68,7 @@ class Lesson(TranscriptScene):
             tb = table([r"\text{expression}", r"\text{meaning}", r"\text{units}"],
                        [[r"W(5)", r"\text{the amount at } t = 5", r"\text{liters}"],
                         [r"\frac{W(8) - W(2)}{8 - 2}", r"\text{the average rate on } [2, 8]", r"\text{liters/min}"],
-                        [r"W'(5)", r"\text{the rate at the instant } t = 5", r"\text{liters/min}"]], size=38)
+                        [r"W'(5)", r"\text{the rate at the instant } t = 5", r"\text{liters/min}"]], size=38, gap=0.5)
             self.play(FadeIn(tb[1]), FadeIn(tb[0][0]), run_time=0.6)
             for r in (1, 2, 3):
                 self.play(FadeIn(tb[0][r], shift=RIGHT * 0.2), run_time=0.8)

@@ -36,7 +36,7 @@ FIG = graph("t4_2_x", [("x^3-6*x^2+9*x", 0, 4.2)], xr=(0, 4.5), yr=(-1, 6), clos
             caption=r"Position $x(t) = t^3 - 6t^2 + 9t$. The graph is not the path: the particle moves along a line, back and forth.")
 
 NOTES = [
-    Video("s4_2.py::Lesson", "Motion on a line", 5),
+    Video("s4_2.py::Lesson", "Motion on a line", 9),
 
     Section("Position, velocity, acceleration"),
     Formula("Position, velocity, acceleration", (

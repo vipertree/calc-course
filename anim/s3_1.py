@@ -128,7 +128,7 @@ class Lesson(TranscriptScene):
             self.play(Write(wrong), run_time=1)
             self.play(Create(Cross(wrong, stroke_color=TANGENT, scale_factor=0.9)), run_time=0.6)
             b.line(1)
-            right = VGroup(M(r"x = 1 \ \Rightarrow\ u = 1^2 + 1 = 2", 44), M(r"\frac{dy}{du} = 3(2)^2 = 12", 44, DERIV))
+            right = VGroup(M(r"x = 1,\ \text{so}\ u = 1^2 + 1 = 2", 44), M(r"\frac{dy}{du} = 3(2)^2 = 12", 44, DERIV))
             right.arrange(DOWN, aligned_edge=LEFT, buff=0.3).shift(UP * 0.2 + LEFT * 3)
             self.play(Write(right), run_time=1.4)
             b.line(2)

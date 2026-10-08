@@ -166,6 +166,6 @@ class Lesson(TranscriptScene):
         fig3 = VGroup(a3, a3.plot(lambda x: 2 * x - np.tan(x), x_range=[0, 1.1], color=FUNC, stroke_width=4),
                       Line(a3.c2p(PI / 4 - 0.3, top), a3.c2p(PI / 4 + 0.3, top), color=TANGENT, stroke_width=4), closed_dot(a3, PI / 4, top, INK))
         self.example("Example 3: Where is the slope a given value?", r"For $0 \le x < \frac{\pi}{2}$, where does $y = 2x - \tan x$ have a horizontal tangent?",
-                     [r"\text{horizontal} \Rightarrow \text{when is } y' = 0\,?", r"y' = 2 - \sec^2 x = 0 \ \Rightarrow\ \sec^2 x = 2", r"\cos^2 x = \frac12, \quad \cos x = \frac{1}{\sqrt2}", r"x = \frac{\pi}{4}"],
+                     [r"\text{horizontal},\ \text{so}\ \text{when is } y' = 0\,?", r"y' = 2 - \sec^2 x = 0,\ \text{so}\ \sec^2 x = 2", r"\cos^2 x = \frac12, \quad \cos x = \frac{1}{\sqrt2}", r"x = \frac{\pi}{4}"],
                      figure=fig3, at=[1, 2, 3, 4])
         self.finish()

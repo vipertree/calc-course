@@ -242,7 +242,7 @@ class Lesson(TranscriptScene):
         self.example("Combine with earlier rules", r"Find $f'(x)$ for $f(x) = 3\sin x - 4e^x + 2\ln x - \cos x$.",
                      [r"f'(x) = 3\cos x - 4e^x + 2\cdot\frac1x - (-\sin x)", r"f'(x) = 3\cos x - 4e^x + \frac{2}{x} + \sin x"], at=[1, 2])
         self.example("A tangent line", r"Find the equation for the line tangent to $y = e^x$ at $x = 0$.",
-                     [r"\text{point: } e^0 = 1 \ \Rightarrow\ (0, 1)", r"\text{slope: } y' = e^x,\ \ e^0 = 1", r"y - 1 = 1(x - 0),\ \text{ or } y = x + 1"], at=[1, 2, 3])
+                     [r"\text{point: } e^0 = 1,\ \text{so}\ (0, 1)", r"\text{slope: } y' = e^x,\ \ e^0 = 1", r"y - 1 = 1(x - 0),\ \text{ or } y = x + 1"], at=[1, 2, 3])
 
         with self.beat("Close") as b:
             top, bot, g = trig_axes(("y", r"y'"))
@@ -266,5 +266,5 @@ class Lesson(TranscriptScene):
                       Line(a3.c2p(np.log(2) - 0.5, 2 - 2 * np.log(2)), a3.c2p(np.log(2) + 0.5, 2 - 2 * np.log(2)), color=TANGENT, stroke_width=4),
                       closed_dot(a3, np.log(2), 2 - 2 * np.log(2), INK))
         self.example("Example 3: Where is the slope a given value?", r"Where does $y = e^x - 2x$ have a horizontal tangent line?",
-                     [r"y' = e^x - 2 = 0 \ \Rightarrow\ e^x = 2", r"x = \ln 2", r"\approx 0.693"], figure=fig3, at=[1, 2, 3])
+                     [r"y' = e^x - 2 = 0,\ \text{so}\ e^x = 2", r"x = \ln 2", r"\approx 0.693"], figure=fig3, at=[1, 2, 3])
         self.finish()

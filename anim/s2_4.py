@@ -234,6 +234,6 @@ class Lesson(TranscriptScene):
                      [r"1^2 + 1 = 2, \quad \lim_{x\to1^+}(3x - 1) = 2 \ \checkmark", r"\text{slopes: } 2 \text{ and } 3 \ \times",
                       r"\text{continuous, not differentiable}"], figure=fig2, at=[1, 2, 3])
         self.example("Example 3: Making it smooth", r"Find $a$ and $b$ so that $h$ is differentiable at $x = 1$. \[ h(x) = \begin{cases} ax^2, & x \le 1 \\ 4x + b, & x > 1 \end{cases} \]",
-                     [r"\text{slopes match and values match}", r"2a(1) = 4 \ \Rightarrow\ a = 2", r"a(1)^2 = 4(1) + b \ \Rightarrow\ 2 = 4 + b \ \Rightarrow\ b = -2"],
+                     [r"\text{slopes match and values match}", r"2a(1) = 4,\ \text{so}\ a = 2", r"a(1)^2 = 4(1) + b,\ \text{so}\ 2 = 4 + b,\ \text{so}\ b = -2"],
                      at=[1, 2, 3])
         self.finish()

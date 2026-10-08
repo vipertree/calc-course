@@ -21,5 +21,6 @@ for LOOK in ${LOOKS:-light dark}; do
   cp "$DIR/Lesson.mp4" "$OUT/$SLUG$SUFFIX.mp4"
   # manim writes SRT subtitles from the narration; browsers want WebVTT (same timings in both looks)
   { echo "WEBVTT"; echo; sed -E 's/([0-9]{2}:[0-9]{2}:[0-9]{2}),([0-9]{3})/\1.\2/g' "$DIR/Lesson.srt"; } > "$OUT/$SLUG.vtt"
+  python3 ../tools/subtitle_math.py "$OUT/$SLUG.vtt"
   echo "published $OUT/$SLUG$SUFFIX.mp4 ($(du -h "$OUT/$SLUG$SUFFIX.mp4" | cut -f1))"
 done

@@ -29,7 +29,7 @@ class Lesson(TranscriptScene):
         self.title()
 
         with self.beat("Direct comparison") as b:
-            box = formula_box(VGroup(M(r"0 \le a_n \le b_n:", 38), M(r"\sum b_n \text{ converges} \ \Rightarrow\ \sum a_n \text{ converges}", 36), M(r"\sum a_n \text{ diverges} \ \Rightarrow\ \sum b_n \text{ diverges}", 36)).arrange(DOWN, buff=0.2), ACCUM).to_edge(UP, buff=0.6)
+            box = formula_box(VGroup(M(r"0 \le a_n \le b_n:", 38), M(r"\sum b_n \text{ converges},\ \text{so}\ \sum a_n \text{ converges}", 36), M(r"\sum a_n \text{ diverges},\ \text{so}\ \sum b_n \text{ diverges}", 36)).arrange(DOWN, buff=0.2), ACCUM).to_edge(UP, buff=0.6)
             self.play(FadeIn(box), run_time=1.2)
             b.line(1)
             words = T("smaller than convergent: converges; bigger than divergent: diverges", 32).next_to(box, DOWN, buff=0.5)

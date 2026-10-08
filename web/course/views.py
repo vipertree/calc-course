@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from accounts.models import Classroom, Enrollment, Profile, class_for, has_full_access
@@ -353,6 +354,7 @@ def api_frq_score(request, num):
 
 
 # ------------------------------------------------------------------ teacher
+@never_cache
 @teacher_required
 def teacher(request):
     classes = Classroom.objects.filter(teacher=request.user).prefetch_related("enrollments__student__profile")

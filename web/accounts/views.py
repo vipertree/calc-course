@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from . import forms as F
@@ -193,6 +194,7 @@ def _account_page(request, **forms):
     return render(request, "accounts/account.html", ctx, status=400 if forms.get("open") else 200)
 
 
+@never_cache
 @login_required
 def account(request):
     if getattr(request.user, "profile", None) is None:
@@ -260,6 +262,7 @@ def account_delete(request):
     return render(request, "accounts/deleted.html")
 
 
+@never_cache
 @login_required
 def account_export(request):
     """Everything stored about the signed-in person, as JSON."""

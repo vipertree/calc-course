@@ -376,6 +376,6 @@ details.manage { margin-top: 12px; font-family: var(--font-ui); }
 details.manage > summary { cursor: pointer; color: var(--ink-2); }
 .manage-list > li > span { margin-right: 6px; }
 .temp-pw { margin-bottom: 20px; border-color: var(--good); }
-.prose { line-height: 1.65; }
-.prose h2 { margin-top: 1.4em; font-size: 1.2rem; }
-.prose li { margin: 4px 0; }
+.legal { line-height: 1.65; }
+.legal h2 { margin-top: 1.4em; font-size: 1.2rem; }
+.legal li { margin: 4px 0; }

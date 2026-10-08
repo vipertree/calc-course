@@ -64,7 +64,11 @@ def course_map(request):
         tests = content.unit_tests()
         best_u = best.get(f"U{u['n']}")
         units.append({**u, "topics": topics, "test": u["n"] in tests, "test_num": f"U{u['n']}", "test_best": best_u})
-    return render(request, "course/map.html", {"units": units, "current_unit": _current_unit(request.user), "exams": exams.available()})
+    groups = [{"modules": True, "units": [u for u in units if u["module"]]},
+              {"modules": False, "units": [u for u in units if not u["module"]]}]
+    return render(request, "course/map.html", {"groups": [g for g in groups if g["units"]],
+                                               "current_unit": _current_unit(request.user),
+                                               "exams": exams.available()})
 
 
 def formulas(request):
@@ -86,9 +90,9 @@ def formulas(request):
             if not pub or not pub.get("formulas"):
                 continue
             ahead = reached is not None and order.index(t["n"]) > reached
-            rows.append({"n": t["n"], "title": t["title"], "ahead": ahead, "items": pub["formulas"]})
+            rows.append({"n": t["n"], "label": t["label"], "title": t["title"], "ahead": ahead, "items": pub["formulas"]})
         if rows:
-            units.append({"n": u["n"], "title": u["title"], "rows": rows})
+            units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows})
     return render(request, "course/formulas.html", {"units": units, "graying": reached is not None})
 
 
@@ -541,7 +545,7 @@ def handouts(request):
         rows = [r for r in rows if r["docs"]]
         test = _handout_rows(f"U{u['n']}", "Unit test") if u["n"] in tests else None
         if rows or (test and test["docs"]):
-            units.append({"n": u["n"], "title": u["title"], "rows": rows, "test": test})
+            units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows, "test": test})
     lookup = None
     if request.GET.get("packet"):
         lookup = {"code": request.GET["packet"].strip()[:20], "found": _find_packet(request.user, request.GET["packet"])}

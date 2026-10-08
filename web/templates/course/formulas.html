@@ -6,10 +6,10 @@
   Topics you haven't reached yet are grayed out, but they're all here.{% endif %}</p>
 {% for u in units %}
 <section class="unit-sheet" id="unit-{{ u.n }}">
-  <h2>Unit {{ u.n }}. {{ u.title }}</h2>
+  <h2>{{ u.heading }}</h2>
   {% for r in u.rows %}
   <div class="sheet-topic{% if r.ahead %} ahead{% endif %}">
-    <a class="sheet-tag" href="{% url 'lesson' r.n %}"><span class="chip-sm">{{ r.n }}</span> {{ r.title }}</a>
+    <a class="sheet-tag" href="{% url 'lesson' r.n %}"><span class="chip-sm">{{ r.label }}</span> {{ r.title }}</a>
     {% for f in r.items %}
     <div class="block {{ f.type }}">{% if f.type == "formula" %}<span class="tag">{{ f.title|safe }}</span>{% else %}<div class="tag">{{ f.title|safe }}</div>{% endif %}<div>{{ f.html|safe }}</div></div>
     {% endfor %}

@@ -5,13 +5,16 @@
 <p class="muted">One lesson per topic in the College Board course description. Lessons that are ready are highlighted.</p>
 {% if exams %}<a class="topic ready exam-promo" href="{% url 'exams' %}"><span class="n">Exam</span>
   <span style="flex:1"><strong>Full-length practice exam</strong><br><small class="muted">The whole AP Calculus AB exam, timed part by part, with an estimated AP score at the end. The first one is free.</small></span></a>{% endif %}
-{% for u in units %}
-<details class="unit" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
-  <summary><h2><span class="chev" aria-hidden="true"></span>Unit {{ u.n }}. {{ u.title }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
+{% for group in groups %}
+{% if group.modules %}<h2 class="map-group">Free modules</h2>
+<p class="muted">Refreshers that stand on their own. Free for everyone.</p>{% else %}<h2 class="map-group">The course</h2>{% endif %}
+{% for u in group.units %}
+<details class="unit{% if u.module %} module{% endif %}" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
+  <summary><h2><span class="chev" aria-hidden="true"></span>{{ u.heading }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
   <div class="topics">
   {% for t in u.topics %}
     {% if t.ready %}<a class="topic ready" href="{% url 'lesson' t.n %}">{% else %}<div class="topic soon">{% endif %}
-      <span class="n">{{ t.n }}</span>
+      <span class="n">{{ t.label }}</span>
       <span style="flex:1">{{ t.title }}{% if t.bc and not u.bc %} <span class="bc-tag">BC</span>{% endif %}
         {% if t.ready %}<div class="prog"><i style="width:{% widthratio t.done t.steps 100 %}%"></i></div>{% endif %}
         {% if t.quiz %}<small class="muted">Quiz best {{ t.quiz.best }}/{{ t.quiz.total }}</small>{% endif %}
@@ -19,9 +22,10 @@
     {% if t.ready %}</a>{% else %}</div>{% endif %}
   {% endfor %}
   {% if u.test %}<a class="topic ready" href="{% url 'unit_test' u.test_num %}"><span class="n">Test</span>
-    <span style="flex:1"><strong>Unit {{ u.n }} test</strong>{% if u.test_best %}<br><small class="muted">Multiple-choice best {{ u.test_best.best }}/{{ u.test_best.total }}</small>{% endif %}</span></a>{% endif %}
+    <span style="flex:1"><strong>{{ u.short }} test</strong>{% if u.test_best %}<br><small class="muted">Multiple-choice best {{ u.test_best.best }}/{{ u.test_best.total }}</small>{% endif %}</span></a>{% endif %}
   </div>
 </details>
+{% endfor %}
 {% endfor %}
 <script>
   // a link to #unit-N (the "Unit N" button on a lesson) opens that unit

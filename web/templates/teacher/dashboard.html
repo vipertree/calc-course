@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load course_text %}
 {% block title %}Teacher dashboard · AP Calculus{% endblock %}
 {% block main %}
 <h1>Your classes</h1>
@@ -22,7 +22,7 @@
   <div class="roster"><table>
     <thead><tr><th>Quiz or test</th><th>Form</th><th>Submitted</th><th>Results</th></tr></thead>
     <tbody>{% for a in r.assessments %}<tr>
-      <td>{% if a.num|slice:":1" == "U" %}Unit {{ a.num|slice:"1:" }} test{% else %}Topic {{ a.num }} quiz{% endif %}</td>
+      <td>{{ a.num|work_name }}</td>
       <td>{{ a.form|default:"one form" }}</td>
       <td>{{ a.submitted }} of {{ a.of }}</td>
       <td><form method="post" action="{% url 'release' r.c.pk a.num %}">{% csrf_token %}

@@ -13,8 +13,11 @@ def f(x):
 def view(R):
     ax, al = plot_axes([-R, R, R / 5], [-1, 4, 1], w=10.5, h=4.8, coords=False)
     ax.shift(DOWN * 0.3)
-    lab = M(rf"-{R} \le x \le {R}", 34, DIM).next_to(ax, DOWN, buff=0.2)
-    return VGroup(ax, ax.plot(f, x_range=[-R, R], color=FUNC, stroke_width=5), DashedLine(ax.c2p(-R, 3), ax.c2p(R, 3), color=SECANT), lab)
+    lab = M(rf"-{R:.3g} \le x \le {R:.3g}", 34, DIM).next_to(ax, DOWN, buff=0.2)
+    # sample densely near 0, where the dip is narrow at wide windows (a coarse plot invents wiggles there)
+    xs = np.unique(np.concatenate([np.linspace(-R, R, 800), np.linspace(-min(R, 12), min(R, 12), 800)]))
+    curve = VMobject(color=FUNC, stroke_width=5).set_points_smoothly([ax.c2p(x, f(x)) for x in xs])
+    return VGroup(ax, curve, DashedLine(ax.c2p(-R, 3), ax.c2p(R, 3), color=SECANT), lab)
 
 
 class Lesson(TranscriptScene):
@@ -25,8 +28,13 @@ class Lesson(TranscriptScene):
         with self.beat("Zooming out") as b:
             self.play(FadeIn(v[0]), Create(v[1]), FadeIn(v[3]), run_time=1.6)
             b.line(1)
-            for R in (50, 500):
-                self.play(Transform(v, view(R)), run_time=1.6)
+            # a real, continuous zoom out: the window is redrawn every frame on a log scale (no morphing between levels)
+            self.remove(v, *v)          # its pieces were added one by one, so remove them too
+            z = ValueTracker(np.log10(5))
+            v = always_redraw(lambda: view(10 ** z.get_value()))
+            self.add(v)
+            self.play(z.animate.set_value(np.log10(500)), run_time=3.2, rate_func=smooth)
+            v.clear_updaters()
             self.play(Create(v[2]), run_time=0.8)
         self.clear()
         self.title()

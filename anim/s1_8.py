@@ -23,7 +23,7 @@ class Lesson(TranscriptScene):
             pts = [ax.c2p(s * x, wiggle(s * x)) for x in side]
             parts.add(VMobject(color=FUNC, stroke_width=3).set_points_as_corners(pts))
         hole = Circle(radius=0.09, color=FUNC, stroke_width=3, fill_color=BG, fill_opacity=1).move_to(ax.c2p(0, 0))
-        tag = M(rf"-{R:g} \le x \le {R:g}", 30, DIM).next_to(ax, DOWN, buff=0.15).align_to(ax, RIGHT)
+        tag = M(rf"-{R:.2g} \le x \le {R:.2g}", 30, DIM).next_to(ax, DOWN, buff=0.15).align_to(ax, RIGHT)
         return VGroup(ax, parts, hole, tag).shift(DOWN * 0.4)
 
     def construct(self):
@@ -38,11 +38,17 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(v[2], scale=2), FadeIn(note), GrowArrow(arrow), run_time=1)
             b.line(2)
             self.play(FadeOut(note), FadeOut(arrow), run_time=0.4)
+            # a real, continuous zoom: the window is redrawn every frame on a log scale (Adder: no morphing between levels)
+            self.remove(v, *v)          # its pieces were added one by one, so remove them too
+            z = ValueTracker(np.log10(0.5))
+            v = always_redraw(lambda: self.view(10 ** z.get_value()))
+            self.add(v)
             for R in (0.12, 0.03):
-                self.play(Transform(v, self.view(R)), run_time=2.2)
+                self.play(z.animate.set_value(np.log10(R)), run_time=2.2, rate_func=smooth)
                 self.wait(0.6)
             b.line(3)
-            self.play(Transform(v, self.view(0.5)), run_time=1.6)
+            self.play(z.animate.set_value(np.log10(0.5)), run_time=1.6, rate_func=smooth)
+            v.clear_updaters()
             self.play(Indicate(v[1], color=SECANT, scale_factor=1.02), run_time=1.2)
         self.clear()
         self.title()

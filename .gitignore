@@ -23,3 +23,5 @@ voice/
 
 # collectstatic output (production builds it on the server)
 web/staticfiles/
+
+web/course/content/exams/*.json

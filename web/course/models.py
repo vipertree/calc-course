@@ -95,3 +95,27 @@ class IssuedPacket(models.Model):
 
     def __str__(self):
         return f"{self.code} ({self.topic}, {self.user})"
+
+
+class ExamAttempt(models.Model):
+    """One sitting of a full-length practice exam (content/exams/). The server owns the clock: a part starts when the
+    server stamps part_started, its deadline is that stamp plus the part's minutes, and an answer that arrives after it
+    (or for a part already over) is refused. Parts only move forward. See course/exams.py."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exam_attempts")
+    exam = models.CharField(max_length=20)                        # the exam's slug, "ab1"
+    started = models.DateTimeField(auto_now_add=True)
+    part = models.PositiveSmallIntegerField(default=0)            # index of the current part; len(parts) = all done
+    part_started = models.DateTimeField(null=True, blank=True)    # null: waiting on the "start this part" screen
+    timing = models.JSONField(default=dict)                       # part key -> {"start", "end", "timed_out"}
+    answers = models.JSONField(default=dict)                      # multiple-choice item id -> letter
+    flags = models.JSONField(default=list)                        # item ids marked for review
+    frq = models.JSONField(default=dict)                          # FRQ part id -> [bool per rubric line], self-scored
+    finished = models.DateTimeField(null=True, blank=True)
+    mc_score = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-started"]
+        indexes = [models.Index(fields=["user", "exam"])]
+
+    def __str__(self):
+        return f"{self.exam} #{self.pk} ({self.user})"

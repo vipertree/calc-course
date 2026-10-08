@@ -433,11 +433,67 @@ class ApiHardening(TestCase):
         cache.clear()
 
 
+class ExamsAndSlides(TestCase):
+    """Views added on main after this review began: practice exams (per-student attempts) and teacher slides."""
+
+    def setUp(self):
+        from course import exams
+        self.exams = exams
+        self.slug = "ab1"
+        if not exams.public(self.slug):
+            self.skipTest("build the exam first: python3 build.py exam-ab1 --web")
+        self.a, self.b = make_user("ana"), make_user("ben")
+
+    def attempt(self, user):
+        self.client.force_login(user)
+        self.client.post(f"/exams/{self.slug}/start/")
+        from course.models import ExamAttempt
+        return ExamAttempt.objects.get(user=user, exam=self.slug, finished__isnull=True)
+
+    def test_a_student_never_reaches_another_students_sitting(self):
+        from course.models import ExamAttempt
+        bens = self.attempt(self.b)
+        self.client.force_login(self.a)
+        base = f"/exams/{self.slug}/attempt/{bens.pk}/"
+        self.assertEqual(self.client.get(base).status_code, 404)
+        for action in ("state", "begin", "answer", "flag", "submit", "frq"):
+            r = self.client.post(f"/api/exams/{self.slug}/{bens.pk}/{action}/", json.dumps({"item": "x", "value": "A"}),
+                                 content_type="application/json")
+            self.assertEqual(r.status_code, 404, action)
+        self.client.post(base + "discard/")
+        self.assertTrue(ExamAttempt.objects.filter(pk=bens.pk).exists())
+
+    def test_garbage_bodies_get_4xx_not_500(self):
+        att = self.attempt(self.a)
+        bodies = ["[1]", "7", "nope", {"item": ["x"], "value": {"a": 1}}, {"part": None}, {"part": "1A", "checks": "yes"},
+                  {"part": {"x": 1}, "checks": [1, 2]}, {"item": "z" * 5000, "on": "maybe"}]
+        for action in ("state", "begin", "answer", "flag", "submit", "frq"):
+            for body in bodies:
+                r = self.client.post(f"/api/exams/{self.slug}/{att.pk}/{action}/",
+                                     body if isinstance(body, str) else json.dumps(body), content_type="application/json")
+                self.assertLess(r.status_code, 500, (action, body))
+
+    def test_visitors_sign_in_first(self):
+        self.client.logout()
+        r = self.client.post(f"/exams/{self.slug}/start/")
+        self.assertIn("/login/", r["Location"])
+        self.assertEqual(self.client.get(f"/exams/{self.slug}/print/key/").status_code, 302)
+
+    def test_slides_are_teacher_only(self):
+        for who in (None, self.a):
+            if who:
+                self.client.force_login(who)
+            for url in ("/teacher/slides/1.2/", "/teacher/slides/1.2/deck-blank.html"):
+                self.assertEqual(self.client.get(url).status_code, 403, (who, url))
+
+
 class Headers(TestCase):
     @override_settings(DESMOS_API_KEY="test-key")
     def test_csp_has_a_fresh_nonce_that_every_inline_script_carries(self):
         nonces = set()
-        for url in ("/course/", "/topic/2.1/", "/formulas/", "/login/"):
+        make_user("ana")
+        self.client.login(username="ana", password=PW)
+        for url in ("/course/", "/topic/2.1/", "/formulas/", "/exams/", "/exams/ab1/"):
             r = self.client.get(url)
             csp = r["Content-Security-Policy"]
             nonce = re.search(r"'nonce-([^']+)'", csp).group(1)
@@ -451,7 +507,7 @@ class Headers(TestCase):
                 if "src=" in tag or 'type="application/json"' in tag:
                     continue
                 self.assertIn(f'nonce="{nonce}"', tag, url)
-        self.assertEqual(len(nonces), 4)
+        self.assertEqual(len(nonces), 5)
 
     def test_slide_decks_are_made_csp_ready_when_served(self):
         from course.views import _csp_ready

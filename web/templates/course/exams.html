@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Practice exams · AP Calculus{% endblock %}
+{% block main %}
+<div class="narrow mathy">
+<h1>Practice exams</h1>
+<p class="muted">Full-length exams in the AP format, timed part by part like the real thing. Multiple choice is graded for you;
+  you score your own free response against the scoring guide.</p>
+<div class="exam-cards">
+{% for e in exams %}
+  {% if e.open %}<a class="topic ready exam-card" href="{% url 'exam_home' e.slug %}">{% else %}<div class="topic exam-card locked-card">{% endif %}
+    <span class="n">{{ e.course }}</span>
+    <span style="flex:1"><strong>{{ e.title }}</strong><br>
+      <small class="muted">3 hours 15 minutes · 45 multiple choice · 6 free response</small>
+      {% if not e.members_only %} <span class="free-tag">Free</span>{% elif not e.open %} <span class="lock">members</span>{% endif %}</span>
+  {% if e.open %}</a>{% else %}</div>{% endif %}
+{% empty %}
+  <p>No practice exams are available yet.</p>
+{% endfor %}
+</div>
+{% if not user.is_authenticated %}<p class="muted">Sign in to take an exam. The first exam is free with any account.</p>{% endif %}
+</div>
+{% endblock %}

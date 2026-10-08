@@ -26,6 +26,14 @@ def pizza(r=1.2, slice_angle=PI / 4):
     return VGroup(rest, pep, piece)
 
 
+def circle_with(R, O, th):
+    """A circle of radius r with the two sides of an angle theta at its center, labeled r and theta."""
+    circ = Circle(radius=R, color=DIM, stroke_width=2).move_to(O)
+    edges = VGroup(Line(O, O + RIGHT * R, color=INK), Line(O, O + R * np.array([np.cos(th), np.sin(th), 0]), color=INK))
+    labs = VGroup(M("r", 30).next_to(edges[0], DOWN, buff=0.1), M(r"\theta", 30, SECANT).move_to(O + 0.6 * np.array([np.cos(th / 2), np.sin(th / 2), 0])))
+    return circ, edges, labs
+
+
 class Lesson(TranscriptScene):
     NUM = "0.2"
 
@@ -73,21 +81,28 @@ class Lesson(TranscriptScene):
             R, O = 2.0, LEFT * 3 + DOWN * 0.3
             circ = Circle(radius=R, color=INK, stroke_width=3).move_to(O)
             rad = Line(O, O + RIGHT * R, color=FUNC, stroke_width=6)
-            self.play(Create(circ), Create(rad), FadeIn(M("r", 34, FUNC).next_to(rad, DOWN, buff=0.1)), run_time=1)
+            self.play(Create(circ), Create(rad), FadeIn(M("1", 34, FUNC).next_to(rad, DOWN, buff=0.1)), FadeIn(Dot(O, color=INK)), run_time=1)
             b.line(1)
+            a0 = 2.1
+            side = Line(O, O + R * np.array([np.cos(a0), np.sin(a0), 0]), color=INK, stroke_width=3)
+            arc0 = Arc(radius=R, start_angle=0, angle=a0, arc_center=O, color=SECANT, stroke_width=9)
+            defn = formula_box(T("radian measure = arc length\\\\on a circle of radius 1", 34, SECANT), SECANT).to_edge(RIGHT, buff=0.6).shift(UP * 2.4)
+            self.play(Create(side), Create(arc0), FadeIn(defn), run_time=1.2)
+            b.line(2)
+            self.play(FadeOut(side), FadeOut(arc0), run_time=0.5)
             bent = Arc(radius=R, start_angle=0, angle=1, arc_center=O, color=FUNC, stroke_width=8)
             self.play(Transform(rad.copy(), bent), run_time=1.4)
             self.play(FadeIn(Sector(radius=R, angle=1, arc_center=O, fill_color=SECANT, fill_opacity=0.3, stroke_width=0)),
                       Create(Line(O, O + R * np.array([np.cos(1), np.sin(1), 0]), color=INK, stroke_width=3)),
-                      FadeIn(M(r"1 \text{ radian} \approx 57.3^\circ", 34, SECANT).to_edge(RIGHT, buff=0.8).shift(UP * 2)), run_time=1)
-            b.line(2)
+                      FadeIn(M(r"1 \text{ radian} \approx 57.3^\circ", 34, SECANT).next_to(defn, DOWN, buff=0.4)), run_time=1)
+            b.line(3)
+            self.play(FadeIn(M(r"\text{circumference} = 2\pi r = 2\pi(1) = 2\pi", 36).next_to(defn, DOWN, buff=1.2)), run_time=0.8)
             arcs = VGroup(*[Arc(radius=R + 0.12 * (k % 2), start_angle=k, angle=min(1, TAU - k), arc_center=O, color=[FUNC, DERIV][k % 2], stroke_width=8) for k in range(7)])
             nums = VGroup(*[M(str(k + 1), 28, [FUNC, DERIV][k % 2]).move_to(O + (R + 0.5) * np.array([np.cos(k + 0.5), np.sin(k + 0.5), 0])) for k in range(6)])
             for a, n in zip(arcs[:6], nums):
                 self.play(Create(a), FadeIn(n), run_time=0.45)
             self.play(Create(arcs[6]), run_time=0.4)
-            self.play(FadeIn(M(r"\text{circumference} = 2\pi r", 38).to_edge(RIGHT, buff=0.8).shift(UP * 0.6)), run_time=0.8)
-            b.line(3)
+            b.line(4)
             box = formula_box(VGroup(M(r"\text{full turn} = 2\pi \approx 6.28 \text{ radians}", 40, ACCUM), M(r"\text{half turn} = \pi \text{ radians}", 40, ACCUM)).arrange(DOWN, buff=0.3), ACCUM)
             self.play(FadeIn(box.to_edge(RIGHT, buff=0.6).shift(DOWN * 1.4)), run_time=0.8)
         self.clear()
@@ -147,28 +162,63 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("same terminal side", 34).to_edge(RIGHT, buff=0.9).shift(DOWN * 1.6)), run_time=0.6)
         self.clear()
 
-        with self.beat("Arc length and sector area") as b:
-            R, O, th = 2.2, LEFT * 3.4 + DOWN * 0.8, 1.1
-            circ = Circle(radius=R, color=DIM, stroke_width=2).move_to(O)
-            sec = Sector(radius=R, angle=th, arc_center=O, fill_color=AREA, fill_opacity=0.4, stroke_width=0)
-            arc = Arc(radius=R, angle=th, arc_center=O, color=TANGENT, stroke_width=9)
-            edges = VGroup(Line(O, O + RIGHT * R, color=INK), Line(O, O + R * np.array([np.cos(th), np.sin(th), 0]), color=INK))
-            self.play(Create(circ), Create(edges), FadeIn(M("r", 30).next_to(edges[0], DOWN, buff=0.1)), FadeIn(M(r"\theta", 30, SECANT).move_to(O + 0.6 * np.array([np.cos(th / 2), np.sin(th / 2), 0]))), run_time=0.8)
-            self.play(Create(arc), FadeIn(M("s", 34, TANGENT).move_to(O + (R + 0.35) * np.array([np.cos(th / 2), np.sin(th / 2), 0]))), run_time=0.8)
-            f1 = M(r"s = r\theta", 52, TANGENT).to_edge(RIGHT, buff=1.6).shift(UP * 2)
-            self.play(Write(f1), run_time=0.8)
+        with self.beat("What fraction of the circle") as b:
+            R, O = 2.0, LEFT * 3.3 + DOWN * 0.4
+            th = ValueTracker(1.1)
+            circ = Circle(radius=R, color=INK, stroke_width=3).move_to(O)
+            wedge = always_redraw(lambda: Sector(radius=R, angle=th.get_value(), arc_center=O, fill_color=AREA, fill_opacity=0.45, stroke_color=INK, stroke_width=2))
+            self.play(Create(circ), FadeIn(wedge), FadeIn(M(r"\theta \text{ out of } 2\pi", 38, SECANT).next_to(circ, UP, buff=0.3)), run_time=1)
+            frac = formula_box(M(r"\text{fraction of the circle} = \frac{\theta}{2\pi}", 44, ACCUM), ACCUM).to_edge(RIGHT, buff=0.6).shift(UP * 2.2)
+            self.play(FadeIn(frac), run_time=0.8)
             b.line(1)
-            self.play(FadeIn(sec), run_time=0.6)
-            f2 = M(r"A = \frac{\theta}{2\pi}\cdot \pi r^2 = \tfrac12 r^2\theta", 46, AREA).next_to(f1, DOWN, buff=0.6)
-            self.play(Write(f2), run_time=1)
-            self.play(FadeIn(pizza(0.9).next_to(f2, DOWN, buff=0.5)), run_time=0.6)
+            for k, (val, tex) in enumerate(((PI / 2, r"\theta = \tfrac{\pi}{2}: \ \ \frac{\pi/2}{2\pi} = \frac14"), (PI, r"\theta = \pi: \ \ \frac{\pi}{2\pi} = \frac12"),
+                                            (PI / 3, r"\theta = \tfrac{\pi}{3}: \ \ \frac{\pi/3}{2\pi} = \frac16"))):
+                row = M(tex, 38).next_to(frac, DOWN, buff=0.5 + 1.15 * k).align_to(frac, LEFT).shift(RIGHT * 0.3)
+                self.play(th.animate.set_value(val), FadeIn(row), run_time=1.2)
+        self.clear()
+
+        with self.beat("Arc length") as b:
+            R, O, th = 2.1, LEFT * 3.6 + DOWN * 0.6, 1.1
+            circ, edges, labs = circle_with(R, O, th)
+            whole = Circle(radius=R, color=TANGENT, stroke_width=4, stroke_opacity=0.35).move_to(O)
+            arc = Arc(radius=R, angle=th, arc_center=O, color=TANGENT, stroke_width=9)
+            self.play(Create(circ), Create(edges), FadeIn(labs), run_time=0.8)
+            self.play(Create(arc), FadeIn(M("s", 34, TANGENT).move_to(O + (R + 0.35) * np.array([np.cos(th / 2), np.sin(th / 2), 0]))), run_time=0.8)
+            self.play(Create(whole), FadeIn(T(r"whole circumference: $2\pi r$", 32, TANGENT).next_to(circ, DOWN, buff=0.35)), run_time=1)
+            b.line(1)
+            l1 = M(r"s = \frac{\theta}{2\pi} \cdot 2\pi r", 50, TANGENT).to_edge(RIGHT, buff=1.4).shift(UP * 2)
+            self.play(Write(l1), run_time=1)
             b.line(2)
-            self.play(FadeIn(T(r"$\theta$ in radians", 36, SECANT).next_to(circ, DOWN, buff=0.3)), run_time=0.6)
+            l2 = M(r"= \frac{\theta}{\cancel{2\pi}} \cdot \cancel{2\pi}\, r", 50, TANGENT).next_to(l1, DOWN, buff=0.4).align_to(l1, LEFT).shift(RIGHT * 0.55)
+            self.play(Write(l2), run_time=1)
+            box = formula_box(M(r"s = r\theta", 56, TANGENT), TANGENT).next_to(l2, DOWN, buff=0.6)
+            self.play(FadeIn(box), run_time=0.8)
+            self.play(FadeIn(T(r"($\theta$ in radians)", 30, DIM).next_to(box, DOWN, buff=0.2)), run_time=0.5)
+        self.clear()
+
+        with self.beat("Sector area") as b:
+            R, O, th = 2.1, LEFT * 3.6 + DOWN * 0.6, 1.1
+            circ, edges, labs = circle_with(R, O, th)
+            disk = Circle(radius=R, stroke_width=0, fill_color=AREA, fill_opacity=0.12).move_to(O)
+            sec = Sector(radius=R, angle=th, arc_center=O, fill_color=AREA, fill_opacity=0.5, stroke_width=0)
+            self.play(Create(circ), Create(edges), FadeIn(labs), FadeIn(disk), FadeIn(sec), run_time=1)
+            self.play(FadeIn(T(r"whole disk: $\pi r^2$", 32, AREA).next_to(circ, DOWN, buff=0.35)), run_time=0.6)
+            b.line(1)
+            l1 = M(r"A = \frac{\theta}{2\pi} \cdot \pi r^2", 50, AREA).to_edge(RIGHT, buff=1.6).shift(UP * 2.3)
+            l2 = M(r"= \frac{\theta\, r^2}{2} = \tfrac12 r^2\theta", 50, AREA).next_to(l1, DOWN, buff=0.4).align_to(l1, LEFT).shift(RIGHT * 0.55)
+            self.play(Write(l1), run_time=1)
+            self.play(Write(l2), run_time=1)
+            self.play(FadeIn(pizza(0.8).next_to(l2, DOWN, buff=0.4)), run_time=0.6)
+            b.line(2)
+            note = T(r"$\theta$ in radians. In degrees, the fraction is $\frac{\theta}{360^\circ}$.", 32, SECANT).to_edge(DOWN, buff=0.5).to_edge(RIGHT, buff=0.5)
+            self.play(FadeIn(note), run_time=0.6)
         self.clear()
 
         with self.beat("Close") as b:
             card = VGroup(M(r"180^\circ = \pi \text{ radians}", 46, ACCUM), M(r"\text{full turn: } 2\pi", 42), M(r"\text{coterminal: add or subtract } 2\pi", 40),
-                          M(r"s = r\theta, \quad A = \tfrac12 r^2\theta \quad (\theta \text{ in radians})", 42, TANGENT)).arrange(DOWN, buff=0.45)
+                          M(r"\text{fraction of the circle: } \frac{\theta}{2\pi}", 40, SECANT),
+                          M(r"s = \frac{\theta}{2\pi}(2\pi r) = r\theta, \quad A = \frac{\theta}{2\pi}(\pi r^2) = \tfrac12 r^2\theta \quad (\theta \text{ in radians})", 38, TANGENT)).arrange(DOWN, buff=0.4)
+            card.set_max_width(13)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 
@@ -184,7 +234,9 @@ class Lesson(TranscriptScene):
                       M(r"80 \text{ cm}", 28).move_to(1.5 * np.array([np.sin(PI / 12), -np.cos(PI / 12), 0]) + RIGHT * 0.6),
                       M(r"30^\circ", 28, SECANT).move_to(DOWN * 1.0))
         self.example("Example 3: Arc length", r"A pendulum $80$ cm long swings through an angle of $30^\circ$. How far does its tip travel?",
-                     [r"30^\circ = \frac{\pi}{6}", r"s = r\theta = 80 \cdot \frac{\pi}{6}", r"= \frac{40\pi}{3} \approx 41.9 \text{ cm}"], at=[1, 2, 3], figure=pend)
+                     [r"30^\circ = \frac{\pi}{6}", r"\text{fraction: } \frac{\pi/6}{2\pi} = \frac{1}{12}", r"s = \frac{1}{12} \cdot 2\pi(80) = \frac{40\pi}{3}", r"\approx 41.9 \text{ cm}",
+                      r"\text{same as } r\theta = 80 \cdot \frac{\pi}{6}"], at=[1, 2, 3, 3, 4], figure=pend, follow=True)
         self.example("Example 4: Sector area", r"A pizza has radius $8$ inches and is cut into $8$ equal slices. Find the area of one slice.",
-                     [r"\theta = \frac{2\pi}{8} = \frac{\pi}{4}", r"A = \tfrac12 r^2\theta = \tfrac12 \cdot 64 \cdot \frac{\pi}{4}", r"= 8\pi \approx 25.1 \text{ in}^2"], at=[1, 2, 3], figure=pizza(1.6))
+                     [r"\theta = \frac{2\pi}{8} = \frac{\pi}{4}", r"\text{fraction: } \frac{\pi/4}{2\pi} = \frac18", r"A = \frac18 \cdot \pi(8)^2 = 8\pi", r"\approx 25.1 \text{ in}^2",
+                      r"\text{same as } \tfrac12 r^2\theta = \tfrac12 \cdot 64 \cdot \frac{\pi}{4} = 8\pi"], at=[1, 2, 3, 3, 4], figure=pizza(1.6), follow=True)
         self.finish()

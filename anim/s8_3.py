@@ -85,7 +85,7 @@ class Lesson(TranscriptScene):
                       r"\text{(c) } 8 + 2t - t^2 = 0", r"t^2 - 2t - 8 = 0", r"(t - 4)(t + 2) = 0", r"t = 4 \ \ (t = -2 \text{ is outside})",
                       r"A'(1) = 8 + 2 - 1 = 9 > 0", r"A'(5) = -7 < 0", r"A(0) = 50, \ \ A(4) = \tfrac{230}{3} \approx 76.7, \ \ A(6) = 62", r"\text{greatest: } \tfrac{230}{3} \text{ liters at } t = 4"],
                      at=[1, 1, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8], figure=ch, figure_at=5,
-                     cues={10: reveal_sign(ch, 0), 11: lambda sc: (reveal_sign(ch, 1)(sc), reveal_words(ch)(sc)), 13: mark_point(ch, 0, "max")})
+                     cues={10: reveal_sign(ch, 0), 11: lambda sc: (reveal_sign(ch, 1)(sc), reveal_words(ch)(sc)), 13: mark_point(ch, 0, "max")}, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"A(t) = A(0) + \int_0^t (\text{rate in} - \text{rate out})", 42, ACCUM), T("units: rate units $\\times$ time units", 34),

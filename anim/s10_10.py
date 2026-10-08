@@ -40,7 +40,7 @@ class Lesson(TranscriptScene):
 
         self.example("Bounding an error", r"Use $S_4$ to approximate $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n^2}$. Bound the error, and say whether $S_4$ is an overestimate or an underestimate.",
                      [r"TEXT:The series passes the AST: $\frac{1}{n^2}$ decreases to $0$.", r"S_4 = 1 - \tfrac14 + \tfrac19 - \tfrac{1}{16}", r"= \tfrac{115}{144} \approx 0.7986", r"\text{error} \le b_5 = \tfrac{1}{25} = 0.04",
-                      r"TEXT:The first omitted term, $+\frac{1}{25}$, is positive: $S_4$ is an underestimate.", r"\text{(true sum } \tfrac{\pi^2}{12} \approx 0.8225)"], at=[1, 2, 2, 3, 4, 5])
+                      r"TEXT:The first omitted term, $+\frac{1}{25}$, is positive: $S_4$ is an underestimate.", r"\text{(true sum } \tfrac{\pi^2}{12} \approx 0.8225)"], at=[1, 2, 2, 3, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"|S - S_n| \le b_{n+1}", 48, ACCUM), T("$S$ is between $S_n$ and $S_{n+1}$", 34), T("first omitted term positive: $S_n$ underestimates; negative: overestimates", 32, SECANT), T("check the AST conditions first", 32, DIM)).arrange(DOWN, buff=0.45)

@@ -42,7 +42,7 @@ class Lesson(TranscriptScene):
 
         self.example("New series from old", r"Find the Maclaurin series for $e^{-x^2}$: the first four nonzero terms and the general term.",
                      [r"e^u = 1 + u + \tfrac{u^2}{2!} + \tfrac{u^3}{3!} + \cdots", r"u = -x^2", r"e^{-x^2} = 1 + (-x^2) + \tfrac{(-x^2)^2}{2!} + \tfrac{(-x^2)^3}{3!} + \cdots", r"= 1 - x^2 + \tfrac{x^4}{2} - \tfrac{x^6}{6} + \cdots",
-                      r"\text{general term: } \tfrac{(-x^2)^n}{n!} = \tfrac{(-1)^n x^{2n}}{n!}", r"e^{-x^2} = \sum_{n=0}^{\infty} \tfrac{(-1)^n x^{2n}}{n!}, \ \text{all } x"], at=[1, 1, 2, 3, 4, 4])
+                      r"\text{general term: } \tfrac{(-x^2)^n}{n!} = \tfrac{(-1)^n x^{2n}}{n!}", r"e^{-x^2} = \sum_{n=0}^{\infty} \tfrac{(-1)^n x^{2n}}{n!}, \ \text{all } x"], at=[1, 1, 2, 3, 4, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("know $e^x$, $\\sin x$, $\\cos x$, $\\frac{1}{1 - x}$ and their intervals", 34), T("substitute, multiply by powers of $x$, or differentiate/integrate (10.15)", 34, SECANT),

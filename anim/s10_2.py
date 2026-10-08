@@ -64,7 +64,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Summing a geometric series", r"Find $\displaystyle\sum_{n=0}^{\infty} 3\left(\frac25\right)^n$.",
-                     [r"a = 3\left(\tfrac25\right)^0 = 3", r"r = \tfrac25", r"|r| < 1: \ \text{converges}", r"\text{sum} = \frac{3}{1 - \frac25}", r"= \frac{3}{3/5} = 5"], at=[1, 2, 2, 3, 3])
+                     [r"a = 3\left(\tfrac25\right)^0 = 3", r"r = \tfrac25", r"|r| < 1: \ \text{converges}", r"\text{sum} = \frac{3}{1 - \frac25}", r"= \frac{3}{3/5} = 5"], at=[1, 2, 2, 3, 3], follow=True)
 
         with self.beat("Watch the starting index") as b:
             rows = VGroup(M(r"\sum_{n=1}^{\infty} \left(\tfrac12\right)^n: \ a = \tfrac12, \ \text{sum} = \frac{1/2}{1 - 1/2} = 1", 40), M(r"\sum_{n=0}^{\infty} \left(\tfrac12\right)^n: \ a = 1, \ \text{sum} = \frac{1}{1 - 1/2} = 2", 40),

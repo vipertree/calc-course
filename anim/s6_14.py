@@ -64,7 +64,7 @@ class Lesson(TranscriptScene):
         self.example("Choosing the tool",
                      r"Choose a technique for each: (a) $\int x\cos\left(x^2\right) dx$ (b) $\int \left(x^2 + 1\right)^2 dx$ (c) $\int \frac{dx}{x^2 + 6x + 10}$ (d) $\int \sin^2 x\cos x\,dx$.",
                      [r"\text{(a) } u = x^2 \text{ (}2x \text{ is a factor): substitution, } \tfrac12\sin\left(x^2\right) + C", r"\text{(b) a power of a sum: expand, then the power rule}",
-                      r"\text{(c) } (x + 3)^2 + 1: \ \arctan(x + 3) + C", r"\text{(d) } u = \sin x \text{ (}\cos x \text{ is a factor): } \tfrac13\sin^3 x + C"], at=[1, 2, 3, 4])
+                      r"\text{(c) } (x + 3)^2 + 1: \ \arctan(x + 3) + C", r"\text{(d) } u = \sin x \text{ (}\cos x \text{ is a factor): } \tfrac13\sin^3 x + C"], at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             tray = tool_tray(names, bc).shift(DOWN * 0.6)

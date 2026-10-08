@@ -82,7 +82,7 @@ class Lesson(TranscriptScene):
                       r"v(1) = 1 - 6 + 8 = 3 > 0", r"v(3) = 9 - 18 + 8 = -1 < 0", r"v(5) = 25 - 30 + 8 = 3 > 0",
                       r"\int_0^2 v\,dt = \tfrac{20}{3}, \ \ \int_2^4 v\,dt = -\tfrac43, \ \ \int_4^5 v\,dt = \tfrac43", r"\text{distance} = \tfrac{20}{3} + \tfrac43 + \tfrac43 = \tfrac{28}{3}"],
                      at=[1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 6, 7], figure=ch, figure_at=4,
-                     cues={7: reveal_sign(ch, 0), 8: reveal_sign(ch, 1), 9: lambda sc: (reveal_sign(ch, 2)(sc), reveal_words(ch)(sc))})
+                     cues={7: reveal_sign(ch, 0), 8: reveal_sign(ch, 1), 9: lambda sc: (reveal_sign(ch, 2)(sc), reveal_words(ch)(sc))}, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\text{displacement} = \int v\,dt \ \ (\text{can cancel})", 40, ACCUM),

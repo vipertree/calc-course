@@ -36,7 +36,7 @@ class Lesson(TranscriptScene):
 
         self.example("Using the ratio test", r"Does $\displaystyle\sum_{n=1}^{\infty} \frac{n}{3^n}$ converge?",
                      [r"a_n = \frac{n}{3^n}, \quad a_{n+1} = \frac{n + 1}{3^{n+1}}", r"\frac{a_{n+1}}{a_n} = \frac{n + 1}{3^{n+1}} \cdot \frac{3^n}{n}", r"= \frac{n + 1}{n} \cdot \frac{3^n}{3^{n+1}}", r"= \frac{n + 1}{n} \cdot \frac13",
-                      r"L = \lim \frac{n + 1}{3n} = \frac13", r"\tfrac13 < 1: \ \text{converges}"], at=[1, 2, 3, 3, 4, 5])
+                      r"L = \lim \frac{n + 1}{3n} = \frac13", r"\tfrac13 < 1: \ \text{converges}"], at=[1, 2, 3, 3, 4, 5], follow=True)
 
         with self.beat("Factorials") as b:
             rows = VGroup(M(r"n! = n \cdot (n - 1) \cdots 2 \cdot 1", 44), M(r"(n + 1)! = (n + 1) \cdot n!", 44, SECANT), M(r"\frac{(n + 1)!}{n!} = n + 1, \qquad \frac{n!}{(n + 1)!} = \frac{1}{n + 1}", 42, ACCUM),

@@ -60,7 +60,7 @@ class Lesson(TranscriptScene):
 
         self.example("Reading the rate", r"$\dfrac{dP}{dt} = 0.3P\left(1 - \dfrac{P}{500}\right)$. (a) Find $\dfrac{dP}{dt}$ when $P = 100$. (b) Is $P$ increasing or decreasing when $P = 600$?",
                      [r"\text{(a) } 0.3(100)\left(1 - \tfrac{100}{500}\right) = 30(0.8) = 24", r"TEXT:When $P = 100$, the population grows at $24$ individuals per unit of time.",
-                      r"\text{(b) } 0.3(600)\left(1 - \tfrac{600}{500}\right) = 180(-0.2) = -36", r"-36 < 0: \ P \text{ is decreasing}"], at=[1, 2, 3, 4])
+                      r"\text{(b) } 0.3(600)\left(1 - \tfrac{600}{500}\right) = 180(-0.2) = -36", r"-36 < 0: \ P \text{ is decreasing}"], at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("A differential equation gives the rate of change.", 38, ACCUM), T("Its solutions are functions.", 36), T("Proportional to: a constant $k$ times.", 36),

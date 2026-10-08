@@ -45,7 +45,7 @@ class Lesson(TranscriptScene):
         self.example("A full motion problem", r"A particle has $x'(t) = 2t - 4$, $y'(t) = 3t^2$, and is at $(1, 0)$ at $t = 0$. (a) Speed at $t = 1$? (b) For which $t > 0$ is it moving left? (c) Position at $t = 2$? (d) Distance traveled, $0 \le t \le 2$?",
                      [r"\text{(a) } x'(1) = -2, \ y'(1) = 3", r"\text{speed} = \sqrt{(-2)^2 + 3^2} = \sqrt{13} \approx 3.61", r"\text{(b) } 2t - 4 < 0: \ 0 < t < 2",
                       r"\text{(c) } x(2) = 1 + \int_0^2 (2t - 4)\,dt = 1 + (4 - 8) = -3", r"y(2) = 0 + \int_0^2 3t^2\,dt = 8", r"\text{position } (-3, 8)",
-                      r"\text{(d) } \int_0^2 \sqrt{(2t - 4)^2 + 9t^4}\,dt \approx 10.468"], at=[1, 1, 2, 3, 4, 4, 5])
+                      r"\text{(d) } \int_0^2 \sqrt{(2t - 4)^2 + 9t^4}\,dt \approx 10.468"], at=[1, 1, 2, 3, 4, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("position: start $+ \\int$ velocity (each component)", 34), M(r"\text{speed: } \sqrt{(x')^2 + (y')^2}", 38), M(r"\text{distance: } \int \text{speed}\,dt", 38, ACCUM),

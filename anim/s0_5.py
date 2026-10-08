@@ -52,7 +52,7 @@ class Lesson(TranscriptScene):
 
         self.example("Simplifying an expression", r"Simplify $\dfrac{1 - \cos^2 x}{\sin x\cos x}$.",
                      [r"1 - \cos^2 x = \sin^2 x", r"\frac{1 - \cos^2 x}{\sin x\cos x} = \frac{\sin^2 x}{\sin x\cos x}", r"= \frac{\sin x}{\cos x}", r"= \tan x"], at=[1, 2, 3, 4],
-                     ref=r"\sin^2 x + \cos^2 x = 1")
+                     ref=r"\sin^2 x + \cos^2 x = 1", follow=True)
 
         with self.beat("Even and odd") as b:
             uc = TrigCircle(r=2.2, center=LEFT * 3.6 + DOWN * 0.2)

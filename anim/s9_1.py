@@ -66,7 +66,7 @@ class Lesson(TranscriptScene):
         fig = VGroup(ax, param_curve(ax, X, Y, -2.1, 2.15), Dot(ax.c2p(3, 2), color=TANGENT), Line(ax.c2p(1.2, 2 - 9 / 4 * 1.8), ax.c2p(4.2, 2 + 9 / 4 * 1.2), color=TANGENT, stroke_width=4))
         self.example("A tangent line", r"For $x = t^2 - 1$, $y = t^3 - 3t$, find $\frac{dy}{dx}$ and the equation of the tangent line at $t = 2$.",
                      [r"\frac{dx}{dt} = 2t", r"\frac{dy}{dt} = 3t^2 - 3", r"\frac{dy}{dx} = \frac{3t^2 - 3}{2t}", r"t = 2: \ \frac{dy}{dx} = \frac{12 - 3}{4} = \frac94",
-                      r"x(2) = 3, \ \ y(2) = 8 - 6 = 2", r"y - 2 = \tfrac94(x - 3)"], at=[1, 1, 2, 3, 4, 5], figure=fig, figure_at=4)
+                      r"x(2) = 3, \ \ y(2) = 8 - 6 = 2", r"y - 2 = \tfrac94(x - 3)"], at=[1, 1, 2, 3, 4, 5], figure=fig, figure_at=4, follow=True)
 
         with self.beat("Horizontal and vertical tangents") as b:
             ax, al = plot_axes([-1.6, 3.6, 1], [-2.8, 2.8, 1], w=4.8, h=4.8)

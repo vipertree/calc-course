@@ -40,7 +40,7 @@ class Lesson(TranscriptScene):
 
         self.example("Position from velocity", r"A particle has velocity $\vec v(t) = \langle 2t,\ 3t^2\rangle$ and $\vec r(0) = \langle 1, -2\rangle$. Find $\vec r(t)$ and $\vec r(2)$.",
                      [r"\vec r(t) = \left\langle \int 2t\,dt,\ \int 3t^2\,dt\right\rangle = \langle t^2 + C_1,\ t^3 + C_2\rangle", r"\vec r(0) = \langle C_1,\ C_2\rangle = \langle 1, -2\rangle", r"\vec r(t) = \langle t^2 + 1,\ t^3 - 2\rangle",
-                      r"\vec r(2) = \langle 4 + 1,\ 8 - 2\rangle = \langle 5, 6\rangle", r"\text{or: } \langle 1, -2\rangle + \int_0^2 \langle 2t, 3t^2\rangle\,dt = \langle 1, -2\rangle + \langle 4, 8\rangle = \langle 5, 6\rangle"], at=[1, 2, 3, 3, 4])
+                      r"\vec r(2) = \langle 4 + 1,\ 8 - 2\rangle = \langle 5, 6\rangle", r"\text{or: } \langle 1, -2\rangle + \int_0^2 \langle 2t, 3t^2\rangle\,dt = \langle 1, -2\rangle + \langle 4, 8\rangle = \langle 5, 6\rangle"], at=[1, 2, 3, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\int \langle x, y\rangle\,dt = \left\langle \int x\,dt, \int y\,dt\right\rangle + \langle C_1, C_2\rangle", 40), M(r"\int_a^b \vec v\,dt = \text{displacement}", 40, ACCUM),

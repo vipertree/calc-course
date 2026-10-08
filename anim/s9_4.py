@@ -63,7 +63,7 @@ class Lesson(TranscriptScene):
         fig = VGroup(ax, param_curve(ax, X, Y, -2, 2.2), Arrow(ax.c2p(4, 2), ax.c2p(4 + 0.25 * 4, 2 + 0.25 * 9), buff=0, color=DERIV, stroke_width=5), Dot(ax.c2p(4, 2), color=INK))
         self.example("Velocity and acceleration at a time", r"$\vec r(t) = \langle t^2,\ t^3 - 3t\rangle$. Find the velocity, acceleration, and speed at $t = 2$.",
                      [r"\vec v(t) = \vec r\,'(t) = \langle 2t,\ 3t^2 - 3\rangle", r"\vec v(2) = \langle 4,\ 9\rangle", r"\vec a(t) = \vec r\,''(t) = \langle 2,\ 6t\rangle", r"\vec a(2) = \langle 2,\ 12\rangle",
-                      r"\text{speed} = |\vec v(2)| = \sqrt{4^2 + 9^2} = \sqrt{97} \approx 9.85"], at=[1, 2, 3, 3, 4], figure=fig, figure_at=2)
+                      r"\text{speed} = |\vec v(2)| = \sqrt{4^2 + 9^2} = \sqrt{97} \approx 9.85"], at=[1, 2, 3, 3, 4], figure=fig, figure_at=2, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\vec r(t) = \langle x(t),\ y(t)\rangle", 42, FUNC), M(r"\vec v = \vec r\,' = \langle x', y'\rangle: \ \text{tangent, length} = \text{speed}", 38, DERIV),

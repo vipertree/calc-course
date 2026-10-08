@@ -44,7 +44,7 @@ class Lesson(TranscriptScene):
         self.example("Concavity at a point", r"For $x = t^2 - 1$, $y = t^3 - 3t$, find $\frac{d^2y}{dx^2}$ and decide the concavity at $t = 2$.",
                      [r"\frac{dy}{dx} = \frac{3t^2 - 3}{2t} = \tfrac32 t - \tfrac32 t^{-1}", r"\frac{d}{dt}\left(\frac{dy}{dx}\right) = \tfrac32 + \tfrac32 t^{-2}", r"\frac{d^2y}{dx^2} = \frac{\tfrac32 + \frac{3}{2t^2}}{2t}",
                       r"= \frac{3t^2 + 3}{4t^3}", r"t = 2: \ \frac{12 + 3}{32} = \frac{15}{32} > 0: \ \text{concave up}", r"TEXT:The wrong shortcut gives $\frac{6t}{2} = 3t = 6$."],
-                     at=[1, 2, 3, 4, 5, 6])
+                     at=[1, 2, 3, 4, 5, 6], follow=True)
 
         with self.beat("Where is it concave up?") as b:
             f1 = M(r"\frac{d^2y}{dx^2} = \frac{3t^2 + 3}{4t^3}", 46).to_edge(UP, buff=0.6)

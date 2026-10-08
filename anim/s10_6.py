@@ -39,7 +39,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("A direct comparison", r"Does $\displaystyle\sum_{n=1}^{\infty} \frac{1}{n^2 + 3}$ converge?",
-                     [r"n^2 + 3 > n^2, \ \text{so} \ \frac{1}{n^2 + 3} < \frac{1}{n^2}", r"\sum \frac{1}{n^2} \text{ converges } (p = 2)", r"TEXT:By direct comparison, $\sum \frac{1}{n^2 + 3}$ converges."], at=[1, 2, 3])
+                     [r"n^2 + 3 > n^2, \ \text{so} \ \frac{1}{n^2 + 3} < \frac{1}{n^2}", r"\sum \frac{1}{n^2} \text{ converges } (p = 2)", r"TEXT:By direct comparison, $\sum \frac{1}{n^2 + 3}$ converges."], at=[1, 2, 3], follow=True)
 
         with self.beat("Limit comparison") as b:
             box = formula_box(M(r"a_n, b_n > 0, \ \lim \frac{a_n}{b_n} = c, \ 0 < c < \infty: \ \text{same behavior}", 38, ACCUM).set_max_width(11), ACCUM).to_edge(UP, buff=0.5)

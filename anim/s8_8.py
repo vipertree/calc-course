@@ -57,7 +57,7 @@ class Lesson(TranscriptScene):
         self.example("Semicircles on a parabola", r"The base of a solid is the region between $y = 4 - x^2$ and the $x$-axis. Cross sections perpendicular to the $x$-axis are semicircles. Find the volume.",
                      [r"4 - x^2 = 0 \text{ at } x = \pm2", r"s(x) = 4 - x^2", r"r = \tfrac s2 = \tfrac{4 - x^2}{2}", r"A(x) = \tfrac12\pi r^2 = \tfrac\pi8\left(4 - x^2\right)^2",
                       r"\left(4 - x^2\right)^2 = 16 - 8x^2 + x^4", r"V = \tfrac\pi8\int_{-2}^{2} \left(16 - 8x^2 + x^4\right) dx", r"= \tfrac\pi8 \cdot 2\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)",
-                      r"= \tfrac\pi8 \cdot \tfrac{512}{15}", r"= \tfrac{64\pi}{15} \approx 13.40"], at=[1, 1, 2, 3, 4, 5, 5, 5, 6], figure=fig)
+                      r"= \tfrac\pi8 \cdot \tfrac{512}{15}", r"= \tfrac{64\pi}{15} \approx 13.40"], at=[1, 1, 2, 3, 4, 5, 5, 5, 6], figure=fig, follow=True)
 
         with self.beat("Leg or hypotenuse?") as b:
             s = 2.6

@@ -64,7 +64,7 @@ class Lesson(TranscriptScene):
 
         self.example("A telescoping series", r"Find the sum of $\displaystyle\sum_{n=1}^{\infty} \frac{1}{n(n + 1)}$.",
                      [r"\frac{1}{n(n + 1)} = \frac1n - \frac{1}{n + 1}", r"S_n = \left(1 - \tfrac12\right) + \left(\tfrac12 - \tfrac13\right) + \left(\tfrac13 - \tfrac14\right) + \cdots + \left(\tfrac1n - \tfrac{1}{n + 1}\right)",
-                      r"TEXT:The middle terms cancel in pairs.", r"S_n = 1 - \frac{1}{n + 1}", r"\lim_{n\to\infty} S_n = 1", r"TEXT:The series converges to $1$."], at=[1, 2, 3, 3, 4, 4])
+                      r"TEXT:The middle terms cancel in pairs.", r"S_n = 1 - \frac{1}{n + 1}", r"\lim_{n\to\infty} S_n = 1", r"TEXT:The series converges to $1$."], at=[1, 2, 3, 3, 4, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"S_n = a_1 + \cdots + a_n", 44, SECANT), T("converges to $S$ if $S_n \\to S$; otherwise diverges", 36), T("telescoping: terms cancel, leaving the first and last", 34, DIM)).arrange(DOWN, buff=0.5)

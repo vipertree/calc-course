@@ -47,7 +47,7 @@ class Lesson(TranscriptScene):
         self.example("The area inside a cardioid", r"Find the area inside $r = 1 + \cos\theta$.",
                      [r"\text{traced once for } 0 \le \theta \le 2\pi", r"A = \tfrac12\int_0^{2\pi} (1 + \cos\theta)^2\,d\theta", r"(1 + \cos\theta)^2 = 1 + 2\cos\theta + \cos^2\theta", r"\cos^2\theta = \tfrac12(1 + \cos 2\theta)",
                       r"= \tfrac32 + 2\cos\theta + \tfrac12\cos 2\theta", r"A = \tfrac12\left[\tfrac{3\theta}{2} + 2\sin\theta + \tfrac14\sin 2\theta\right]_0^{2\pi}", r"= \tfrac12(3\pi) = \tfrac{3\pi}{2} \approx 4.71"],
-                     at=[1, 2, 2, 3, 4, 5, 5], figure=fig)
+                     at=[1, 2, 2, 3, 4, 5, 5], figure=fig, follow=True)
 
         with self.beat("Choosing the limits") as b:
             rose = lambda s: np.sin(2 * s)

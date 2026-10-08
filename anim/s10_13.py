@@ -55,7 +55,7 @@ class Lesson(TranscriptScene):
         self.example("Finding the interval", r"Find the interval of convergence of $\displaystyle\sum_{n=1}^{\infty} \frac{(x - 2)^n}{n \cdot 3^n}$.",
                      [r"\left|\frac{a_{n+1}}{a_n}\right| = \frac{|x - 2|^{n+1}}{(n + 1)3^{n+1}} \cdot \frac{n \cdot 3^n}{|x - 2|^n}", r"= \frac{|x - 2|}{3} \cdot \frac{n}{n + 1}", r"L = \frac{|x - 2|}{3}",
                       r"L < 1: \ |x - 2| < 3, \ R = 3, \ -1 < x < 5", r"x = 5: \ \sum \frac{3^n}{n3^n} = \sum \frac1n \ \text{diverges}", r"x = -1: \ \sum \frac{(-3)^n}{n3^n} = \sum \frac{(-1)^n}{n} \ \text{converges (AST)}", r"[-1, 5)"],
-                     at=[1, 1, 2, 3, 4, 5, 6], figure=fig, figure_at=6)
+                     at=[1, 1, 2, 3, 4, 5, 6], figure=fig, figure_at=6, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("ratio test on $|a_{n+1}/a_n|$: $L < 1$ gives $|x - a| < R$", 34), T("check both endpoints separately (often $p$-series or AST)", 34, SECANT),

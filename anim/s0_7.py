@@ -94,7 +94,7 @@ class Lesson(TranscriptScene):
         self.example("Evaluating inverse trig functions", r"Find $\arcsin\left(-\frac12\right)$, $\arccos\left(-\frac12\right)$, and $\arctan\sqrt3$.",
                      [r"\arcsin\left(-\tfrac12\right): \ \theta \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right], \ \sin\theta = -\tfrac12", r"= -\frac{\pi}{6}",
                       r"\arccos\left(-\tfrac12\right): \ \theta \in [0, \pi], \text{ reference angle } \tfrac{\pi}{3}, \text{ quadrant II}", r"= \pi - \frac{\pi}{3} = \frac{2\pi}{3}",
-                      r"\arctan\sqrt3 = \frac{\pi}{3}"], at=[1, 2, 3, 4, 5], figure=evfig, figure_at=2)
+                      r"\arctan\sqrt3 = \frac{\pi}{3}"], at=[1, 2, 3, 4, 5], figure=evfig, figure_at=2, follow=True)
 
         with self.beat("Notation") as b:
             big = M(r"\sin^{-1} x = \arcsin x", 64, DERIV).shift(UP * 1.4)

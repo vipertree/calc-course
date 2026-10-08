@@ -44,7 +44,7 @@ class Lesson(TranscriptScene):
         self.example("Using the integral test", r"Use the integral test to decide whether $\displaystyle\sum_{n=1}^{\infty} \frac{n}{n^2 + 1}$ converges.",
                      [r"f(x) = \frac{x}{x^2 + 1}", r"TEXT:Positive for $x \ge 1$; continuous.", r"f'(x) = \frac{1 - x^2}{(x^2 + 1)^2} \le 0 \text{ for } x \ge 1: \ \text{decreasing}",
                       r"\int_1^\infty \frac{x}{x^2 + 1}\,dx = \lim_{b\to\infty} \tfrac12\ln(x^2 + 1)\Big|_1^b", r"= \lim_{b\to\infty} \tfrac12\left[\ln(b^2 + 1) - \ln 2\right] = \infty", r"TEXT:The integral diverges, so the series diverges."],
-                     at=[1, 1, 2, 3, 4, 5])
+                     at=[1, 1, 2, 3, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("$f$ positive, continuous, decreasing; $a_n = f(n)$", 36), T("$\\sum a_n$ and $\\int f(x)\\,dx$ behave the same", 36, ACCUM), T("the integral's value is not the series' sum", 34, TANGENT)).arrange(DOWN, buff=0.5)

@@ -73,7 +73,7 @@ class Lesson(TranscriptScene):
         self.example("The cardioid's tangent line", r"Find the slope of $r = 1 + \cos\theta$ at $\theta = \frac\pi2$, and the tangent line there.",
                      [r"x = (1 + \cos\theta)\cos\theta, \quad y = (1 + \cos\theta)\sin\theta", r"\tfrac{dx}{d\theta} = -\sin\theta\cos\theta - (1 + \cos\theta)\sin\theta = -\sin\theta(1 + 2\cos\theta)",
                       r"\tfrac{dy}{d\theta} = -\sin^2\theta + (1 + \cos\theta)\cos\theta = \cos\theta + \cos 2\theta", r"\theta = \tfrac\pi2: \ \tfrac{dx}{d\theta} = -1, \ \ \tfrac{dy}{d\theta} = 0 + \cos\pi = -1",
-                      r"\frac{dy}{dx} = \frac{-1}{-1} = 1", r"r = 1: \ \text{point } (0, 1); \quad y - 1 = x"], at=[1, 2, 3, 4, 5, 5], figure=fig, figure_at=5)
+                      r"\frac{dy}{dx} = \frac{-1}{-1} = 1", r"r = 1: \ \text{point } (0, 1); \quad y - 1 = x"], at=[1, 2, 3, 4, 5, 5], figure=fig, figure_at=5, follow=True)
 
         with self.beat("What dr/dθ tells you") as b:
             ax, _ = plot_axes([-0.8, 2.4, 1], [-1.6, 1.6, 1], w=4.6, h=4.6, coords=False)

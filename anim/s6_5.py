@@ -87,7 +87,7 @@ class Lesson(TranscriptScene):
                      text=r"The graph of $f$ on $[-4, 6]$ consists of the upper half of the circle of radius $2$ centered at $(-2, 0)$, a segment from $(0, 0)$ to "
                           r"$(2, -2)$, and a segment from $(2, -2)$ to $(6, 2)$. Let $g(x) = \int_0^x f(t)\,dt$. (a) Find $g(2)$, $g(4)$, $g(6)$ and $g(-4)$. "
                           r"(b) Where does $g$ have relative extrema? (c) Find the absolute maximum and minimum values of $g$ on $[-4, 6]$. (d) Find the inflection points of $g$.",
-                     notes_graph=dict(fns=[("sqrt(abs(4-(x+2)^2))", -4, 0), ("-x", 0, 2), ("x-4", 2, 6)], xr=(-4, 6), yr=(-3, 3), ylabel="f(t)", xlabel="t"))
+                     notes_graph=dict(fns=[("sqrt(abs(4-(x+2)^2))", -4, 0), ("-x", 0, 2), ("x-4", 2, 6)], xr=(-4, 6), yr=(-3, 3), ylabel="f(t)", xlabel="t"), follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T(r"$g' = f$: the sign of $f$ gives $g$'s direction; its sign changes give $g$'s extrema.", 32),

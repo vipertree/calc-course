@@ -57,7 +57,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Using the model", r"$\dfrac{dP}{dt} = 0.4P\left(1 - \dfrac{P}{1000}\right)$, $P(0) = 100$. (a) Find $\lim_{t\to\infty} P(t)$. (b) For what $P$ is it growing fastest? (c) Concave up or down at $P = 300$?",
-                     [r"\text{(a) } L = 1000, \ P(0) > 0: \ \lim_{t\to\infty} P(t) = 1000", r"\text{(b) } P = \frac L2 = 500", r"\text{(c) } 300 < 500: \ \text{growth still speeding up, concave up}"], at=[1, 2, 3])
+                     [r"\text{(a) } L = 1000, \ P(0) > 0: \ \lim_{t\to\infty} P(t) = 1000", r"\text{(b) } P = \frac L2 = 500", r"\text{(c) } 300 < 500: \ \text{growth still speeding up, concave up}"], at=[1, 2, 3], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\frac{dP}{dt} = kP\left(1 - \frac PL\right): \ L \text{ is the carrying capacity}", 40, ACCUM), M(r"P(0) > 0: \ \lim P = L", 40),

@@ -37,7 +37,7 @@ class Lesson(TranscriptScene):
         self.example("A series for ln(1 + x)", r"Find the Maclaurin series for $\ln(1 + x)$ and its interval of convergence.",
                      [r"\frac{1}{1 + x} = 1 - x + x^2 - x^3 + \cdots, \ |x| < 1", r"\ln(1 + x) = \int_0^x \frac{dt}{1 + t}", r"= \int_0^x \left(1 - t + t^2 - t^3 + \cdots\right) dt", r"= x - \tfrac{x^2}{2} + \tfrac{x^3}{3} - \tfrac{x^4}{4} + \cdots",
                       r"= \sum_{n=0}^{\infty} \frac{(-1)^n x^{n+1}}{n + 1}, \ R = 1", r"x = 1: \ 1 - \tfrac12 + \tfrac13 - \cdots \ \text{converges (AST)}", r"x = -1: \ -\left(1 + \tfrac12 + \tfrac13 + \cdots\right) \ \text{diverges}", r"(-1, 1]"],
-                     at=[1, 2, 3, 3, 4, 5, 5, 6], figure=fig, figure_at=6)
+                     at=[1, 2, 3, 3, 4, 5, 5, 6], figure=fig, figure_at=6, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("differentiate or integrate term by term", 36), T("radius unchanged; recheck endpoints", 36, TANGENT), T("start from a known series (often geometric); fix $C$ with a known value", 32, DIM)).arrange(DOWN, buff=0.5)

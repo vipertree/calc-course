@@ -47,7 +47,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("The alternating harmonic series", r"Show that $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n}$ converges.",
-                     [r"b_n = \tfrac1n > 0", r"b_{n+1} = \tfrac{1}{n + 1} < \tfrac1n = b_n: \ \text{decreasing}", r"\lim \tfrac1n = 0", r"TEXT:By the alternating series test, the series converges.", r"\text{(its sum is } \ln 2 \approx 0.693)"], at=[1, 2, 3, 3, 3])
+                     [r"b_n = \tfrac1n > 0", r"b_{n+1} = \tfrac{1}{n + 1} < \tfrac1n = b_n: \ \text{decreasing}", r"\lim \tfrac1n = 0", r"TEXT:By the alternating series test, the series converges.", r"\text{(its sum is } \ln 2 \approx 0.693)"], at=[1, 2, 3, 3, 3], follow=True)
 
         with self.beat("When the test fails") as b:
             r1 = M(r"\sum (-1)^n \frac{n}{n + 1}: \ b_n = \frac{n}{n + 1} \to 1 \ne 0", 40).shift(UP * 1.4)

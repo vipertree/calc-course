@@ -67,7 +67,7 @@ class Lesson(TranscriptScene):
         fig = VGroup(oblique_axes(P, (-0.2, 4.6), (-0.2, 2.5)), base_region(P, np.sqrt, lambda s: 0, 0, 4), base_curve(P, np.sqrt, 0, 4.3),
                      sections(P, np.sqrt, lambda s: 0, np.linspace(0.25, 4, 10), "square"))
         self.example("Squares on a root", r"The base of a solid is the region bounded by $y = \sqrt x$, the $x$-axis, and $x = 4$. Cross sections perpendicular to the $x$-axis are squares. Find the volume.",
-                     [r"s(x) = \sqrt x - 0 = \sqrt x", r"A(x) = s^2 = \left(\sqrt x\right)^2 = x", r"V = \int_0^4 x\,dx", r"= \left[\tfrac{x^2}{2}\right]_0^4", r"= 8"], at=[1, 2, 3, 3, 3], figure=fig)
+                     [r"s(x) = \sqrt x - 0 = \sqrt x", r"A(x) = s^2 = \left(\sqrt x\right)^2 = x", r"V = \int_0^4 x\,dx", r"= \left[\tfrac{x^2}{2}\right]_0^4", r"= 8"], at=[1, 2, 3, 3, 3], figure=fig, follow=True)
 
         with self.beat("Rectangles") as b:
             head = M(r"\text{rectangle: } A = \text{base} \times \text{height}", 44).to_edge(UP, buff=0.6)

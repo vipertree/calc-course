@@ -148,7 +148,7 @@ class Lesson(TranscriptScene):
         self.example("Sine and cosine of 5π/6", r"Find $\cos\frac{5\pi}{6}$ and $\sin\frac{5\pi}{6}$.",
                      [r"\text{reference angle: } \pi - \frac{5\pi}{6} = \frac{\pi}{6}", r"\text{at } \tfrac{\pi}{6}: \ \left(\tfrac{\sqrt3}{2},\ \tfrac12\right)",
                       r"\text{quadrant II: } \cos < 0, \ \sin > 0", r"\cos\frac{5\pi}{6} = -\frac{\sqrt3}{2}", r"\sin\frac{5\pi}{6} = \frac12"],
-                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=1)
+                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=1, follow=True)
 
         with self.beat("Tangent") as b:
             uc = TrigCircle(r=2.5, center=LEFT * 2.8 + DOWN * 0.3)

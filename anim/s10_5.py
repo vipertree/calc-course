@@ -44,7 +44,7 @@ class Lesson(TranscriptScene):
                      *[VGroup(Dot(line.n2p(v), color=c), M(l, 26, c).next_to(line.n2p(v), UP, buff=0.15 + 0.25 * (k % 2))) for k, (v, l, c) in enumerate(marks)])
         self.example("Classifying p-series", r"Classify each series: (a) $\sum \frac{1}{n^{1.01}}$ (b) $\sum \frac{1}{\sqrt n}$ (c) $\sum \frac{1}{n^\pi}$ (d) $\sum n^{-0.99}$.",
                      [r"\text{(a) } p = 1.01 > 1: \ \text{converges}", r"\text{(b) } \tfrac{1}{\sqrt n} = \tfrac{1}{n^{1/2}}, \ p = \tfrac12 \le 1: \ \text{diverges}", r"\text{(c) } p = \pi > 1: \ \text{converges}",
-                      r"\text{(d) } n^{-0.99} = \tfrac{1}{n^{0.99}}, \ p = 0.99 \le 1: \ \text{diverges}"], at=[1, 2, 3, 4], figure=fig, figure_at=1)
+                      r"\text{(d) } n^{-0.99} = \tfrac{1}{n^{0.99}}, \ p = 0.99 \le 1: \ \text{diverges}"], at=[1, 2, 3, 4], figure=fig, figure_at=1, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\text{harmonic } \sum \tfrac1n \text{ diverges}", 42, TANGENT), formula_box(M(r"\sum \frac{1}{n^p}: \ p > 1 \text{ converges}, \ p \le 1 \text{ diverges}", 42, ACCUM), ACCUM),

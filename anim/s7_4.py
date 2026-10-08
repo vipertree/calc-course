@@ -67,7 +67,7 @@ class Lesson(TranscriptScene):
 
         self.example("Concavity from the equation", r"$\dfrac{dy}{dx} = y(2 - y)$. (a) Find $\dfrac{d^2y}{dx^2}$ in terms of $y$. (b) Is the solution through $(0, 1.5)$ concave up or down there?",
                      [r"\frac{dy}{dx} = 2y - y^2", r"\frac{d^2y}{dx^2} = (2 - 2y)\frac{dy}{dx}", r"= (2 - 2y) \cdot y(2 - y)", r"y = 1.5: \ (2 - 3)(1.5)(0.5) = -0.75 < 0: \ \text{concave down}"],
-                     at=[1, 2, 3, 4])
+                     at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("Sketch through a point: follow the segments both ways.", 34), T(r"Equilibrium: $y = c$ with $\frac{dy}{dx} = 0$ for all $x$.", 34, ACCUM),

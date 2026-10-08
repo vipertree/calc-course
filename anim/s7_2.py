@@ -43,7 +43,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("One that fails", r"Is $y = e^{2x}$ a solution of $y'' - y = 0$?",
-                     [r"y' = 2e^{2x}, \ \ y'' = 4e^{2x}", r"y'' - y = 4e^{2x} - e^{2x} = 3e^{2x}", r"3e^{2x} \ne 0: \ \text{not a solution}"], at=[1, 2, 3])
+                     [r"y' = 2e^{2x}, \ \ y'' = 4e^{2x}", r"y'' - y = 4e^{2x} - e^{2x} = 3e^{2x}", r"3e^{2x} \ne 0: \ \text{not a solution}"], at=[1, 2, 3], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("Differentiate, substitute, simplify.", 40, ACCUM), T("Equal for every $x$: a solution.", 38), T("Solutions usually come in families.", 36, DIM)).arrange(DOWN, buff=0.5)

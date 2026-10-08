@@ -49,7 +49,7 @@ class Lesson(TranscriptScene):
         self.example("Inside the circle, outside the cardioid", r"Find the area inside $r = 3\cos\theta$ and outside $r = 1 + \cos\theta$.",
                      [r"3\cos\theta = 1 + \cos\theta", r"\cos\theta = \tfrac12, \ \ \theta = \pm\tfrac\pi3", r"R = 3\cos\theta, \ \ r = 1 + \cos\theta", r"R^2 - r^2 = 9\cos^2\theta - \left(1 + 2\cos\theta + \cos^2\theta\right) = 8\cos^2\theta - 2\cos\theta - 1",
                       r"8\cos^2\theta = 4 + 4\cos 2\theta: \ \ R^2 - r^2 = 3 + 4\cos 2\theta - 2\cos\theta", r"A = \tfrac12\int_{-\pi/3}^{\pi/3} \left(3 + 4\cos 2\theta - 2\cos\theta\right) d\theta",
-                      r"= \tfrac12\left[3\theta + 2\sin 2\theta - 2\sin\theta\right]_{-\pi/3}^{\pi/3}", r"= \tfrac12(2\pi) = \pi"], at=[1, 1, 2, 3, 4, 5, 5, 6], figure=fig)
+                      r"= \tfrac12\left[3\theta + 2\sin 2\theta - 2\sin\theta\right]_{-\pi/3}^{\pi/3}", r"= \tfrac12(2\pi) = \pi"], at=[1, 1, 2, 3, 4, 5, 5, 6], figure=fig, follow=True)
 
         with self.beat("Close") as b:
             cardv = VGroup(formula_box(M(r"A = \tfrac12\int_\alpha^\beta \left(R^2 - r^2\right) d\theta", 46, ACCUM), ACCUM), T("$R$: outer curve, $r$: inner curve (from the origin)", 34), T("limits: set the $r$'s equal", 34),

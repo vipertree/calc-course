@@ -110,7 +110,7 @@ class Lesson(TranscriptScene):
                      level(ax, 1, 0, 2 * PI, ACCUM), level(ax, 4, 0, 2 * PI, SECANT), level(ax, -2, 0, 2 * PI, SECANT))
         self.example("Describing a cosine graph", r"For $y = 3\cos(2x) + 1$, find the amplitude, period, midline, maximum, and minimum.",
                      [r"\text{amplitude } |3| = 3", r"\text{period } \frac{2\pi}{2} = \pi", r"\text{midline } y = 1", r"\text{maximum } 1 + 3 = 4", r"\text{minimum } 1 - 3 = -2"],
-                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=3)
+                     at=[1, 2, 3, 4, 5], figure=fig, figure_at=3, follow=True)
 
         with self.beat("The graph of tangent") as b:
             ax, labs = pi_axes(-1.5, 1.5, [-4, 4, 1], w=10, h=5.2, yticks=(2, -2))

@@ -71,7 +71,7 @@ class Lesson(TranscriptScene):
 
         self.example("Complete the square", r"Find $\displaystyle\int \frac{1}{x^2 + 4x + 13}\,dx$.",
                      [r"x^2 + 4x + 13 = \left(x^2 + 4x + 4\right) + 9 = (x + 2)^2 + 9", r"u = x + 2, \ \ du = dx, \ \ a = 3", r"\int \frac{du}{u^2 + 3^2} = \frac13\arctan\frac u3",
-                      r"= \frac13\arctan\frac{x + 2}{3} + C"], at=[1, 2, 3, 4])
+                      r"= \frac13\arctan\frac{x + 2}{3} + C"], at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T(r"Top degree $\ge$ bottom degree: divide first.", 36, SECANT), T("Quadratic bottom that won't factor: complete the square.", 36),

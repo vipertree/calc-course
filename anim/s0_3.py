@@ -84,7 +84,7 @@ class Lesson(TranscriptScene):
         tri = right_triangle(3.6, 1.92, opp="8", adj="15", hyp="?", angle=r"\theta", size=32)
         self.example("Ratios from sides", r"A right triangle has legs $8$ and $15$. $\theta$ is the angle opposite the side of length $8$. Find $\sin\theta$, $\cos\theta$, and $\tan\theta$.",
                      [r"\text{hyp}^2 = 8^2 + 15^2 = 64 + 225 = 289", r"\text{hyp} = 17", r"\sin\theta = \frac{\text{opp}}{\text{hyp}} = \frac{8}{17}", r"\cos\theta = \frac{\text{adj}}{\text{hyp}} = \frac{15}{17}",
-                      r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{8}{15}"], at=[1, 2, 3, 4, 5], figure=tri)
+                      r"\tan\theta = \frac{\text{opp}}{\text{adj}} = \frac{8}{15}"], at=[1, 2, 3, 4, 5], figure=tri, follow=True)
 
         with self.beat("Any angle, any point") as b:
             ax, al = plot_axes([-5, 5, 1], [-5, 5, 1], w=5.6, h=5.6, coords=False)

@@ -63,7 +63,7 @@ class Lesson(TranscriptScene):
                      r"$\int_0^5 f(x)\,dx = 10$ and $\int_3^5 f(x)\,dx = 4$. Find (a) $\int_0^3 f(x)\,dx$, (b) $\int_3^0 2f(x)\,dx$, (c) $\int_0^3 \left[f(x) + 1\right] dx$.",
                      [r"\text{(a) } \int_0^3 f\,dx + \int_3^5 f\,dx = \int_0^5 f\,dx: \ \ \int_0^3 f\,dx + 4 = 10", r"\int_0^3 f(x)\,dx = 6",
                       r"\text{(b) } \int_3^0 2f(x)\,dx = -2\int_0^3 f(x)\,dx = -2(6) = -12", r"\text{(c) } \int_0^3 f(x)\,dx + \int_0^3 1\,dx = 6 + 3", r"= 9"],
-                     at=[1, 2, 3, 4, 5], figure=nfig)
+                     at=[1, 2, 3, 4, 5], figure=nfig, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\int_a^a = 0", 42), T("Backward limits flip the sign.", 38), T("Constants come out. Sums split.", 38), T("Neighboring intervals add.", 38, AREA)).arrange(DOWN, buff=0.45)

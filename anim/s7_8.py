@@ -47,7 +47,7 @@ class Lesson(TranscriptScene):
 
         self.example("Finding k from data", r"A population grows at a rate proportional to its size. $P(0) = 500$ and $P(3) = 800$. Find $P(6)$.",
                      [r"P = 500e^{kt}", r"800 = 500e^{3k}", r"e^{3k} = \frac85, \ \ k = \tfrac13\ln\tfrac85 \approx 0.157", r"P(6) = 500e^{6k} = 500\left(e^{3k}\right)^2", r"= 500\left(\tfrac85\right)^2 = 1280"],
-                     at=[1, 1, 2, 3, 4])
+                     at=[1, 1, 2, 3, 4], follow=True)
 
         with self.beat("Half-life and doubling time") as b:
             r1 = M(r"\text{decay: } e^{kT} = \tfrac12, \ \ T = \frac{\ln 2}{|k|}", 44, TANGENT).to_edge(UP, buff=0.6)

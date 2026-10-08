@@ -76,7 +76,7 @@ class Lesson(TranscriptScene):
 
         self.example("Evaluating an integral", r"Evaluate $\displaystyle\int_1^4 \left(3x^2 - 2x\right) dx$.",
                      [r"\text{antiderivative: } x^3 - x^2", r"\left[x^3 - x^2\right]_1^4 = \left(4^3 - 4^2\right) - \left(1^3 - 1^2\right)", r"= (64 - 16) - (1 - 1)", r"= 48 - 0 = 48"],
-                     at=[1, 2, 3, 4])
+                     at=[1, 2, 3, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\int_a^b f(x)\,dx = F(b) - F(a), \ \ F' = f", 44, ACCUM), T("Antiderivatives: run derivative rules backward.", 36),

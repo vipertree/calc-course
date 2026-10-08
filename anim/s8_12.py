@@ -55,7 +55,7 @@ class Lesson(TranscriptScene):
                      DashedLine(ax.c2p(-0.3, -1), ax.c2p(1.4, -1), color=TANGENT, stroke_width=4), solid_of_revolution(ax, lambda s: s + 1, 0, 1, r_in=lambda s: s * s + 1, axis_y=-1, n=6))
         self.example("About y = −1", r"The region between $y = x$ and $y = x^2$ is revolved about the line $y = -1$. Find the volume.",
                      [r"R = x - (-1) = x + 1", r"r = x^2 - (-1) = x^2 + 1", r"R^2 = x^2 + 2x + 1", r"r^2 = x^4 + 2x^2 + 1", r"R^2 - r^2 = 2x - x^2 - x^4", r"V = \pi\int_0^1 \left(2x - x^2 - x^4\right) dx",
-                      r"= \pi\left(1 - \tfrac13 - \tfrac15\right)", r"= \tfrac{7\pi}{15} \approx 1.47"], at=[1, 1, 2, 2, 3, 4, 4, 4], figure=fig)
+                      r"= \pi\left(1 - \tfrac13 - \tfrac15\right)", r"= \tfrac{7\pi}{15} \approx 1.47"], at=[1, 1, 2, 2, 3, 4, 4, 4], figure=fig, follow=True)
 
         with self.beat("An axis above the region") as b:
             ax, al = plot_axes([-0.3, 1.4, 0.5], [-0.3, 2.4, 0.5], w=5, h=4.6)

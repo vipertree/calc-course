@@ -97,7 +97,7 @@ class Lesson(TranscriptScene):
         self.example("From sum to integral", r"Write $\displaystyle\lim_{n\to\infty} \sum_{k=1}^{n} \left(1 + \frac{2k}{n}\right)^2 \frac2n$ as a definite integral.",
                      [r"\Delta x = \frac2n, \ \text{so} \ b - a = 2", r"x_k = 1 + \frac{2k}{n}, \ \text{so} \ a = 1", r"b = 1 + 2 = 3", r"f(x) = x^2", r"\int_1^3 x^2\,dx"],
                      at=[1, 2, 3, 4, 5], figure=ffig, cues={4: lambda sc: sc.play(FadeIn(shade13), run_time=0.6)},
-                     notes_graph=dict(fns=[("x^2", 0, 3.2)], xr=(0, 3.5), yr=(0, 10), ystep=2))
+                     notes_graph=dict(fns=[("x^2", 0, 3.2)], xr=(0, 3.5), yr=(0, 10), ystep=2), follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T(r"$\Sigma$: add up, $k$ from bottom to top.", 38), M(r"\text{Right sum: } \sum_{k=1}^{n} f(a + k\Delta x)\,\Delta x, \quad \Delta x = \frac{b - a}{n}", 40, AREA),

@@ -106,7 +106,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Converting 150 degrees", r"Convert $150^\circ$ to radians.",
-                     [r"150^\circ \cdot \frac{\pi}{180^\circ}", r"= \frac{150\pi}{180}", r"= \frac{150 \div 30}{180 \div 30}\,\pi = \frac{5\pi}{6}"], at=[1, 2, 3])
+                     [r"150^\circ \cdot \frac{\pi}{180^\circ}", r"= \frac{150\pi}{180}", r"= \frac{150 \div 30}{180 \div 30}\,\pi = \frac{5\pi}{6}"], at=[1, 2, 3], follow=True)
 
         with self.beat("Landmark angles") as b:
             uc = TrigCircle(r=2.7, center=LEFT * 2.2 + DOWN * 0.2, ticks=False)

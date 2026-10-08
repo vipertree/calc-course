@@ -39,7 +39,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.example("Using the test", r"Does $\displaystyle\sum_{n=1}^{\infty} \frac{n}{2n + 1}$ converge or diverge?",
-                     [r"a_n = \frac{n}{2n + 1}", r"\lim_{n\to\infty} \frac{n}{2n + 1} = \lim \frac{1}{2 + 1/n} = \frac12", r"\tfrac12 \ne 0", r"TEXT:By the $n$th term test, the series diverges."], at=[1, 2, 3, 3])
+                     [r"a_n = \frac{n}{2n + 1}", r"\lim_{n\to\infty} \frac{n}{2n + 1} = \lim \frac{1}{2 + 1/n} = \frac12", r"\tfrac12 \ne 0", r"TEXT:By the $n$th term test, the series diverges."], at=[1, 2, 3, 3], follow=True)
 
         with self.beat("Zero isn't enough") as b:
             def panel(f, lab, col, yr):

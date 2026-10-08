@@ -36,7 +36,7 @@ class Lesson(TranscriptScene):
 
         self.example("Bounding the error for e to the 0.1", r"$P_3(x) = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$ approximates $e^x$. Use the Lagrange error bound to bound the error in approximating $e^{0.1}$.",
                      [r"n = 3, \ a = 0, \ x = 0.1", r"f^{(4)}(z) = e^z", r"0 \le z \le 0.1: \ e^z \le e^{0.1} < 1.2, \ \ M = 1.2", r"\text{error} \le \frac{1.2}{4!}(0.1)^4", r"= \frac{1.2 \cdot 0.0001}{24}", r"= 0.000005"],
-                     at=[1, 1, 2, 3, 4, 4])
+                     at=[1, 1, 2, 3, 4, 4], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"|f(x) - P_n(x)| \le \frac{M}{(n + 1)!}|x - a|^{n+1}", 44, ACCUM), T("$M$: an upper bound for $|f^{(n+1)}|$ between $a$ and $x$", 34), T("same shape as the next Taylor term", 34, DIM)).arrange(DOWN, buff=0.5)

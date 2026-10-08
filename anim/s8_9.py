@@ -51,7 +51,7 @@ class Lesson(TranscriptScene):
                      Line(ax.c2p(2.5, 0), ax.c2p(2.5, np.sqrt(2.5)), color=TANGENT, stroke_width=5))
         self.example("Discs on a root", r"The region under $y = \sqrt x$ for $0 \le x \le 4$ is revolved about the $x$-axis. Find the volume.",
                      [r"R(x) = \sqrt x - 0 = \sqrt x", r"A(x) = \pi\left(\sqrt x\right)^2 = \pi x", r"V = \pi\int_0^4 x\,dx", r"= \pi\left[\tfrac{x^2}{2}\right]_0^4", r"= 8\pi \approx 25.13"], at=[1, 2, 3, 3, 3], figure=fig,
-                     notes_graph=dict(fns=[("sqrt(x)", 0, 4)], xr=(-0.3, 4.6), yr=(-2.4, 2.4)))
+                     notes_graph=dict(fns=[("sqrt(x)", 0, 4)], xr=(-0.3, 4.6), yr=(-2.4, 2.4)), follow=True)
 
         with self.beat("A check with a cone") as b:
             ax, al = plot_axes([-0.3, 6.6, 1], [-3.6, 3.6, 1], w=6, h=4.6)

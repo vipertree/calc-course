@@ -77,7 +77,7 @@ class Lesson(TranscriptScene):
 
         self.example("Term by term", r"Find $\displaystyle\int \left(3\sqrt x - \frac{4}{x^2} + 2\cos x\right) dx$.",
                      [r"= \int \left(3x^{1/2} - 4x^{-2} + 2\cos x\right) dx", r"3 \cdot \frac{x^{3/2}}{3/2} = 2x^{3/2}", r"-4 \cdot \frac{x^{-1}}{-1} = 4x^{-1} = \frac4x", r"2\sin x",
-                      r"2x^{3/2} + \frac4x + 2\sin x + C"], at=[1, 2, 3, 4, 5])
+                      r"2x^{3/2} + \frac4x + 2\sin x + C"], at=[1, 2, 3, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\int f(x)\,dx = F(x) + C", 48, ACCUM), T("Read derivative rules backward.", 38), T("Rewrite into powers before integrating.", 38), T("Always $+\\,C$.", 40, SECANT)).arrange(DOWN, buff=0.45)

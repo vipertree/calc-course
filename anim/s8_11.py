@@ -58,7 +58,7 @@ class Lesson(TranscriptScene):
                      solid_of_revolution(ax, line, 0, 1, r_in=par, n=7))
         self.example("Washers between a line and a parabola", r"The region between $y = x$ and $y = x^2$ is revolved about the $x$-axis. Find the volume.",
                      [r"x = x^2 \text{ at } x = 0, 1", r"TEXT:On $(0, 1)$, $x > x^2$, so $R = x$ and $r = x^2$.", r"V = \pi\int_0^1 \left(x^2 - \left(x^2\right)^2\right) dx", r"= \pi\int_0^1 \left(x^2 - x^4\right) dx",
-                      r"= \pi\left[\tfrac{x^3}{3} - \tfrac{x^5}{5}\right]_0^1", r"= \pi\left(\tfrac13 - \tfrac15\right)", r"= \tfrac{2\pi}{15} \approx 0.42"], at=[1, 2, 3, 3, 4, 4, 5], figure=fig)
+                      r"= \pi\left[\tfrac{x^3}{3} - \tfrac{x^5}{5}\right]_0^1", r"= \pi\left(\tfrac13 - \tfrac15\right)", r"= \tfrac{2\pi}{15} \approx 0.42"], at=[1, 2, 3, 3, 4, 4, 5], figure=fig, follow=True)
 
         with self.beat("Around the y-axis") as b:
             ax, al = plot_axes([-1.3, 1.3, 0.5], [-0.2, 1.3, 0.5], w=5, h=3.6, coords=False)

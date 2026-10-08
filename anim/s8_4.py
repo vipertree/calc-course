@@ -94,7 +94,7 @@ class Lesson(TranscriptScene):
                       r"A = \int_{-1}^{2} \big(x - (x^2 - 2)\big)\,dx", r"= \int_{-1}^{2} \left(x - x^2 + 2\right) dx", r"= \left[\tfrac{x^2}{2} - \tfrac{x^3}{3} + 2x\right]_{-1}^{2}",
                       r"= \left(2 - \tfrac83 + 4\right) - \left(\tfrac12 + \tfrac13 - 2\right)", r"= \tfrac{10}{3} - \left(-\tfrac76\right)", r"= \tfrac{27}{6} = \tfrac92"],
                      at=[1, 2, 2, 2, 3, 4, 4, 5, 6, 6, 7], figure=fig, figure_at=3,
-                     notes_graph=dict(fns=[("x", -1.8, 2.8), ("x^2-2", -1.8, 2.25)], xr=(-2, 3), yr=(-2.5, 3)))
+                     notes_graph=dict(fns=[("x", -1.8, 2.8), ("x^2-2", -1.8, 2.25)], xr=(-2, 3), yr=(-2.5, 3)), follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(formula_box(M(r"\text{Area} = \int_a^b (\text{top} - \text{bottom})\,dx", 46, ACCUM), ACCUM), T("limits: where the curves meet", 36), T("top: test a point", 36, SECANT)).arrange(DOWN, buff=0.5)

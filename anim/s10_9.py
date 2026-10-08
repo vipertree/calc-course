@@ -50,7 +50,7 @@ class Lesson(TranscriptScene):
 
         self.example("Three classifications", r"Classify as absolutely convergent, conditionally convergent, or divergent: (a) $\sum \frac{(-1)^n}{n^2}$ (b) $\sum \frac{(-1)^n}{n}$ (c) $\sum (-1)^n\frac{n}{n + 1}$.",
                      [r"\text{(a) } \sum \tfrac{1}{n^2} \text{ converges } (p = 2): \ \text{absolutely convergent}", r"\text{(b) } \sum \tfrac1n \text{ diverges; } \sum \tfrac{(-1)^n}{n} \text{ converges (AST)}", r"\text{conditionally convergent}",
-                      r"\text{(c) } \tfrac{n}{n + 1} \to 1 \ne 0: \ \text{divergent}"], at=[1, 2, 2, 3])
+                      r"\text{(c) } \tfrac{n}{n + 1} \to 1 \ne 0: \ \text{divergent}"], at=[1, 2, 2, 3], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("absolute: $\\sum |a_n|$ converges (and then $\\sum a_n$ converges)", 34, DERIV), T("conditional: $\\sum a_n$ converges, $\\sum |a_n|$ diverges", 34, SECANT), T("check the absolute values first", 34)).arrange(DOWN, buff=0.5)

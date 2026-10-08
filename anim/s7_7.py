@@ -35,7 +35,7 @@ class Lesson(TranscriptScene):
 
         self.example("Find C right away", r"Find the particular solution of $\dfrac{dy}{dx} = \dfrac xy$ with $y(1) = 2$.",
                      [r"y\,dy = x\,dx, \ \ \frac{y^2}{2} = \frac{x^2}{2} + C", r"(1, 2): \ \frac42 = \frac12 + C, \ \ C = \frac32", r"y^2 = x^2 + 3",
-                      r"y = +\sqrt{x^2 + 3} \ \ (y(1) = 2 > 0)", r"TEXT:Substitute the point as soon as you've integrated."], at=[1, 2, 3, 4, 5])
+                      r"y = +\sqrt{x^2 + 3} \ \ (y(1) = 2 > 0)", r"TEXT:Substitute the point as soon as you've integrated."], at=[1, 2, 3, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T("Separate, integrate, then substitute the initial condition to find $C$.", 34, ACCUM), T("Then solve for $y$, choosing the sign that fits the point.", 34),

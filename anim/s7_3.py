@@ -52,7 +52,7 @@ class Lesson(TranscriptScene):
         col = lambda xv: (lambda sc: sc.play(Create(slope_field(ga, f, [xv], [-1, 0, 1], length=0.55, color=ACCUM, width=4)), run_time=0.8))
         self.example("Sketching nine segments", r"Sketch the slope field for $\dfrac{dy}{dx} = x - y$ at the nine points with $x, y \in \{-1, 0, 1\}$.",
                      [r"x = -1: \ y = -1, 0, 1 \ \to \ 0, \ -1, \ -2", r"x = 0: \ \to \ 1, \ 0, \ -1", r"x = 1: \ \to \ 2, \ 1, \ 0", r"\text{flat segments line up along } y = x"],
-                     at=[1, 2, 3, 4], figure=gfig, cues={0: col(-1), 1: col(0), 2: col(1)})
+                     at=[1, 2, 3, 4], figure=gfig, cues={0: col(-1), 1: col(0), 2: col(1)}, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T(r"Slope field: a short segment of slope $\frac{dy}{dx}$ at each point.", 34, ACCUM), T("Only $x$: same slope down columns. Only $y$: same slope along rows.", 32),

@@ -51,7 +51,7 @@ class Lesson(TranscriptScene):
                      solid_of_revolution(ax, lambda s: 4 - s * s, -2, 2, axis_y=4, n=8), Line(ax.c2p(1.1, 1.21), ax.c2p(1.1, 4), color=SECANT, stroke_width=5))
         self.example("Spinning about y = 4", r"The region bounded by $y = x^2$ and $y = 4$ is revolved about the line $y = 4$. Find the volume.",
                      [r"x^2 = 4 \text{ at } x = \pm2", r"R(x) = 4 - x^2", r"R^2 = \left(4 - x^2\right)^2 = 16 - 8x^2 + x^4", r"V = \pi\int_{-2}^{2} \left(16 - 8x^2 + x^4\right) dx",
-                      r"= 2\pi\left[16x - \tfrac{8x^3}{3} + \tfrac{x^5}{5}\right]_0^2", r"= 2\pi\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)", r"= \tfrac{512\pi}{15} \approx 107.23"], at=[1, 2, 3, 4, 4, 5, 5], figure=fig)
+                      r"= 2\pi\left[16x - \tfrac{8x^3}{3} + \tfrac{x^5}{5}\right]_0^2", r"= 2\pi\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)", r"= \tfrac{512\pi}{15} \approx 107.23"], at=[1, 2, 3, 4, 4, 5, 5], figure=fig, follow=True)
 
         with self.beat("Vertical lines too") as b:
             ax, al = plot_axes([-0.6, 2.6, 1], [-1.6, 1.6, 1], w=4.8, h=4.6)

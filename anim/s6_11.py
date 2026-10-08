@@ -63,7 +63,7 @@ class Lesson(TranscriptScene):
         t1 = parts_table("x", r"e^x\,dx", "dx", "e^x")
         self.example("A first example", r"Find $\displaystyle\int x e^x\,dx$.",
                      [r"u = x, \ \ dv = e^x\,dx", r"du = dx, \ \ v = e^x", r"\int x e^x\,dx = x e^x - \int e^x\,dx", r"= x e^x - e^x + C"], at=[1, 2, 3, 4], figure=t1,
-                     cues={0: fill(t1, 0, 1), 1: fill(t1, 2, 3)})
+                     cues={0: fill(t1, 0, 1), 1: fill(t1, 2, 3)}, follow=True)
         t2 = parts_table(r"\ln x", "dx", r"\frac1x\,dx", "x")
         self.example("A definite integral", r"Evaluate $\displaystyle\int_1^e \ln x\,dx$.",
                      [r"u = \ln x, \ dv = dx, \ du = \frac1x\,dx, \ v = x", r"\left[x\ln x\right]_1^e - \int_1^e x \cdot \frac1x\,dx", r"= \left[x\ln x - x\right]_1^e",

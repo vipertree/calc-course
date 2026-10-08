@@ -128,7 +128,7 @@ class Lesson(TranscriptScene):
                      cues={1: lambda sc: sc.play(LaggedStart(*[FadeIn(bx) for bx in boxes], lag_ratio=0.3), run_time=1.4)},
                      text=r"Water flows into a tank at $r(t)$ gallons per minute, with selected values in the table. "
                           r"\[ \begin{array}{c|ccccc} t \text{ (min)} & 0 & 2 & 5 & 9 & 10 \\ \hline r(t) & 4 & 6 & 7 & 5 & 3 \end{array} \] "
-                          r"Use a left Riemann sum with the four subintervals indicated by the table to approximate the water that flows in from $t = 0$ to $t = 10$.")
+                          r"Use a left Riemann sum with the four subintervals indicated by the table to approximate the water that flows in from $t = 0$ to $t = 10$.", follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(T(r"Riemann sum: add (height) $\times$ (width).", 38, AREA), T("Left, right, midpoint: where the height comes from.", 34),

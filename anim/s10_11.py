@@ -42,7 +42,7 @@ class Lesson(TranscriptScene):
         self.example("ln x near 1", r"Find the third-degree Taylor polynomial for $f(x) = \ln x$ centered at $x = 1$, and use it to approximate $\ln 1.2$.",
                      [r"f(1) = \ln 1 = 0", r"f'(x) = \tfrac1x: \ 1; \quad f''(x) = -\tfrac{1}{x^2}: \ -1; \quad f'''(x) = \tfrac{2}{x^3}: \ 2", r"\text{coefficients: } 0, \ 1, \ -\tfrac12, \ \tfrac26 = \tfrac13",
                       r"P_3(x) = (x - 1) - \tfrac12(x - 1)^2 + \tfrac13(x - 1)^3", r"P_3(1.2) = 0.2 - \tfrac12(0.04) + \tfrac13(0.008)", r"\approx 0.182667", r"\text{(} \ln 1.2 \approx 0.182322\text{)}"],
-                     at=[1, 2, 3, 4, 5, 5, 6], figure=tab, figure_at=1)
+                     at=[1, 2, 3, 4, 5, 5, 6], figure=tab, figure_at=1, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"P_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x - a)^k", 44, ACCUM), T("coefficient of $(x - a)^k$: $\\frac{f^{(k)}(a)}{k!}$", 34), T("make a table: derivative, value at $a$, divide by $k!$", 34, SECANT)).arrange(DOWN, buff=0.5)

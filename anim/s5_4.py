@@ -59,7 +59,7 @@ class Lesson(TranscriptScene):
                       r"x = 0: \ - \text{ to } +, \text{ relative minimum}", r"x = 4: \ \text{no sign change, no extremum}"], at=[1, 1, 2, 3, 4, 5, 6, 7],
                      figure=c0, figure_at=2, cues={3: reveal_sign(c0, 0), 4: reveal_sign(c0, 1),
                                                    5: lambda sc: (reveal_sign(c0, 2)(sc), reveal_words(c0)(sc)),
-                                                   6: mark_point(c0, 0, "min"), 7: mark_point(c0, 1, "neither", DIM)})
+                                                   6: mark_point(c0, 0, "min"), 7: mark_point(c0, 1, "neither", DIM)}, follow=True)
 
         with self.beat("Close") as b:
             charts = VGroup(*[VGroup(sign_chart(["c"], list(s), width=2.6, size=36), T(w, 32, SECANT)).arrange(DOWN, buff=0.5)

@@ -78,7 +78,7 @@ class Lesson(TranscriptScene):
                      [r"TEXT:$f'$ crosses zero at $-2$, $1$ and $3$.", r"x = -2: \ - \text{ to } +, \ \text{relative min}",
                       r"x = 1: \ + \text{ to } -, \ \text{relative max}", r"x = 3: \ - \text{ to } +, \ \text{relative min}"], at=[1, 2, 3, 4], figure=rfig,
                      cues={k: (lambda xv, w: lambda sc: sc.play(FadeIn(T(w, 26, SECANT).next_to(ra.c2p(xv, 0), UP, buff=0.25)), run_time=0.5))(xv, w)
-                           for k, (xv, w) in {1: (-2, "min"), 2: (1, "max"), 3: (3, "min")}.items()})
+                           for k, (xv, w) in {1: (-2, "min"), 2: (1, "max"), 3: (3, "min")}.items()}, follow=True)
 
         ax, al = plot_axes([-3, 3, 1], [-5, 5, 1], w=7, h=5, coords=False, ylabel="f'(x)")
         VGroup(ax, al).to_edge(LEFT, buff=0.8).shift(DOWN * 0.2)
@@ -157,5 +157,5 @@ class Lesson(TranscriptScene):
                            5: lambda sc: (reveal_sign(s2, 0, 1)(sc), reveal_words(s2)(sc)),
                            6: mark_point(s2, 0, "inflection"),
                            7: lambda sc: sc.play(*[FadeIn(Dot(sa.c2p(px, py), color=SECANT)) for px, py in ((0, 0), (1, 4), (2, 2), (3, 0))], run_time=0.8),
-                           8: lambda sc: sc.play(Create(sa.plot(cubic, x_range=[-0.08, 4.1], color=FUNC, stroke_width=4)), run_time=1.6)})
+                           8: lambda sc: sc.play(Create(sa.plot(cubic, x_range=[-0.08, 4.1], color=FUNC, stroke_width=4)), run_time=1.6)}, follow=True)
         self.finish()

@@ -53,7 +53,7 @@ class Lesson(TranscriptScene):
         self.clear()
         self.example("Draining a tank", r"$W(t)$ is the number of liters of water in a tank $t$ minutes after a drain opens. Interpret $W'(5) = -3$.",
                      [r"\text{when: } t = 5 \text{ minutes}", r"\text{what: the amount of water}", r"\text{which way: } -3 < 0, \text{ decreasing}",
-                      r"\text{how fast: } 3 \text{ liters per minute}", r"TEXT:At $t = 5$ minutes, the amount of water in the tank is decreasing at a rate of $3$ liters per minute."], at=[1, 1, 1, 2, 3])
+                      r"\text{how fast: } 3 \text{ liters per minute}", r"TEXT:At $t = 5$ minutes, the amount of water in the tank is decreasing at a rate of $3$ liters per minute."], at=[1, 1, 1, 2, 3], follow=True)
 
         with self.beat("Three wrong readings") as b:
             bad = VGroup(T(r"``The tank holds $-3$ liters.''", 40), T(r"``Exactly $3$ liters drain over the next minute.''", 40),

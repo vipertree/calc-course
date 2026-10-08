@@ -104,7 +104,7 @@ class Lesson(TranscriptScene):
                      [r"2w + 2\ell = 40", r"2\ell = 40 - 2w, \ \ \ell = 20 - w", r"A(w) = w(20 - w)", r"w = 25: \ \ell = 20 - 25 = -5 \ \text{(no rectangle)}",
                       r"TEXT:As $w \to 20$ or $w \to 0$, the rectangle flattens to a line.", r"\text{domain: } 0 < w < 20"],
                      at=[1, 2, 3, 4, 5, 6], figure=holder,
-                     cues={0: lambda sc: sc.add(rect), 3: show_no, 4: flatten})
+                     cues={0: lambda sc: sc.add(rect), 3: show_no, 4: flatten}, follow=True)
 
         with self.beat("Then it's a Unit 5 problem") as b:
             lines = VGroup(M(r"A'(x) = 200 - 4x", 44), M(r"200 - 4x = 0, \ \ 4x = 200, \ \ x = 50", 44), M(r"A''(x) = -4 < 0:\ \text{maximum}", 44, DERIV),

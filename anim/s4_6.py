@@ -68,7 +68,7 @@ class Lesson(TranscriptScene):
             self.play(Write(approx), run_time=0.8)
         self.clear()
         self.example("Using given values", r"$f(4) = 10$ and $f'(4) = 2.5$. Estimate $f(4.2)$.",
-                     [r"L(x) = 10 + 2.5(x - 4)", r"f(4.2) \approx L(4.2) = 10 + 2.5(0.2) = 10.5"], at=[1, 2])
+                     [r"L(x) = 10 + 2.5(x - 4)", r"f(4.2) \approx L(4.2) = 10 + 2.5(0.2) = 10.5"], at=[1, 2], follow=True)
 
         with self.beat("Choosing a") as b:
             q = M(r"\text{Estimate } \sqrt{26}", 56).shift(UP * 2)

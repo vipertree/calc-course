@@ -176,7 +176,7 @@ class Lesson(TranscriptScene):
         self.clear()
         self.example("Find the critical points", r"Find the critical points of $f(x) = x^4 - 8x^2$.",
                      [r"f'(x) = 4x^3 - 16x", r"= 4x(x^2 - 4)", r"= 4x(x - 2)(x + 2)", r"4x = 0 \text{ or } x - 2 = 0 \text{ or } x + 2 = 0",
-                      r"x = 0,\ x = 2,\ x = -2", r"f' \text{ is never undefined}"], at=[1, 2, 3, 4, 4, 5])
+                      r"x = 0,\ x = 2,\ x = -2", r"f' \text{ is never undefined}"], at=[1, 2, 3, 4, 4, 5], follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"\text{Critical point: } f'(c) = 0 \text{ or } f'(c) \text{ undefined}", 44, SECANT),

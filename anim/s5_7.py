@@ -42,7 +42,7 @@ class Lesson(TranscriptScene):
         self.clear()
         self.example("Using the test", r"Classify the critical points of $f(x) = 2x^3 - 6x$.",
                      [r"f'(x) = 6x^2 - 6", r"6x^2 - 6 = 0, \ \ x^2 = 1, \ \ x = \pm 1", r"f''(x) = 12x",
-                      r"f''(-1) = -12 < 0: \ \text{concave down, relative max}", r"f''(1) = 12 > 0: \ \text{concave up, relative min}"], at=[1, 2, 3, 4, 5])
+                      r"f''(-1) = -12 < 0: \ \text{concave down, relative max}", r"f''(1) = 12 > 0: \ \text{concave up, relative min}"], at=[1, 2, 3, 4, 5], follow=True)
 
         with self.beat("When the test is silent") as b:
             g = VGroup(flat(lambda s: 0.8 * s**4, r"$x^4$: min", DERIV), flat(lambda s: -0.8 * s**4, r"$-x^4$: max", TANGENT), flat(lambda s: 0.8 * s**3, r"$x^3$: neither", DIM))

@@ -131,7 +131,7 @@ class Lesson(TranscriptScene):
                                          5: lambda scene: scene.play(Indicate(pieces[0], color=DERIV), run_time=1)},
                      text=r"The graph of $f'$ on $[-4, 6]$ consists of line segments and a semicircle, as shown. Where is $f$ increasing? "
                           r"Decreasing? Where does $f$ change direction?",
-                     notes_graph=dict(fns=[("-x-2", -4, -2), ("-sqrt(abs(4-x^2))", -2, 2), ("x-2", 2, 4), ("2+0*x", 4, 6)], xr=(-4, 6), yr=(-3, 3), ylabel="f'(x)"))
+                     notes_graph=dict(fns=[("-x-2", -4, -2), ("-sqrt(abs(4-x^2))", -2, 2), ("x-2", 2, 4), ("2+0*x", 4, 6)], xr=(-4, 6), yr=(-3, 3), ylabel="f'(x)"), follow=True)
 
         with self.beat("Justify with the derivative") as b:
             s = T(r"$f$ is decreasing on $(-2, 2)$ \textbf{because} $f'(x) < 0$ there.", 46)

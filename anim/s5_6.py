@@ -93,7 +93,7 @@ class Lesson(TranscriptScene):
                      [r"f'(x) = 3x^2 + 6x", r"f''(x) = 6x + 6", r"6x + 6 = 0, \ \ 6x = -6, \ \ x = -1", r"f''(-2) = -12 + 6 = -6 < 0", r"f''(0) = 6 > 0",
                       r"\text{concave down on } (-\infty, -1), \text{ up on } (-1, \infty)", r"f(-1) = -1 + 3 = 2: \ \text{inflection point } (-1, 2)"],
                      at=[1, 2, 3, 4, 5, 6, 7], figure=k0, figure_at=4,
-                     cues={3: reveal_sign(k0, 0), 4: lambda sc: (reveal_sign(k0, 1)(sc), reveal_words(k0)(sc)), 6: mark_point(k0, 0, "inflection")})
+                     cues={3: reveal_sign(k0, 0), 4: lambda sc: (reveal_sign(k0, 1)(sc), reveal_words(k0)(sc)), 6: mark_point(k0, 0, "inflection")}, follow=True)
 
         with self.beat("Close") as b:
             a1, _ = plot_axes([-1, 1, 1], [-1, 1, 1], w=2.6, h=2.2, coords=False)

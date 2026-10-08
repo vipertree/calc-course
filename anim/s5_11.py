@@ -123,7 +123,7 @@ class Lesson(TranscriptScene):
                       r"4x - 4 = 0, \ \ x = 1", r"\text{second derivative } 4 > 0: \ \text{minimum}", r"y = 1 + 1 = 2: \ \text{the point } (1, 2)",
                       r"D = \sqrt{(1 - 3)^2 + 2^2} = \sqrt8 = 2\sqrt2"], at=[1, 2, 3, 4, 4, 5, 6, 6], figure=lfig,
                      cues={0: lambda sc: (sc.add(seg), sc.play(P0.animate.set_value(2.5), run_time=1.2), sc.play(P0.animate.set_value(0), run_time=1)),
-                           6: lambda sc: sc.play(P0.animate.set_value(1), run_time=0.8)})
+                           6: lambda sc: sc.play(P0.animate.set_value(1), run_time=0.8)}, follow=True)
 
         with self.beat("Close") as b:
             X2 = ValueTracker(2)

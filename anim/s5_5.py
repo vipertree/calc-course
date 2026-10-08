@@ -82,7 +82,7 @@ class Lesson(TranscriptScene):
         self.example("A parabola on an interval", r"Find the absolute extrema of $f(x) = x^2 - 4x$ on $[0, 5]$. Give each value and where it happens.",
                      [r"f'(x) = 2x - 4", r"2x - 4 = 0, \ \text{so}\ x = 2", r"f(0) = 0", r"f(2) = 4 - 8 = -4", r"f(5) = 25 - 20 = 5",
                       r"\text{absolute max: } 5 \text{ (output), at } x = 5 \text{ (input)}", r"\text{absolute min: } -4 \text{ (output), at } x = 2 \text{ (input)}"],
-                     at=[1, 2, 3, 4, 5, 6, 7])
+                     at=[1, 2, 3, 4, 5, 6, 7], follow=True)
 
         with self.beat("Close") as bt:
             tab = table(["x", "f(x)"], [["0", "0"], ["1", "-2"], ["3", "18"]], size=40)

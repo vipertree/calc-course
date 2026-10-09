@@ -424,6 +424,10 @@ class ApiHardening(TestCase):
     def test_answer_checks_are_rate_limited(self):
         cache.clear()
         self.client.force_login(self.a)
+        from unittest import mock
+        frozen = mock.patch("accounts.ratelimit.time.time", return_value=1_800_000_010.0)   # one fixed window
+        frozen.start()
+        self.addCleanup(frozen.stop)
         codes = [self.post("/api/2.1/check/", {"item": "p2_1-1", "given": "1", "area": "practice"}).status_code
                  for _ in range(301)]
         self.assertEqual(codes[:300], [200] * 300)

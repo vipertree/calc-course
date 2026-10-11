@@ -106,15 +106,16 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("Oscillation") as b:
-            a, _ = plot_axes([-1, 1, 0.5], [-1.5, 1.5, 0.5], w=10, h=5, coords=False)
-            curve = VGroup(a.plot(lambda x: np.sin(1 / x), x_range=[0.005, 1], color=FUNC, use_smoothing=False),
-                           a.plot(lambda x: np.sin(1 / x), x_range=[-1, -0.005], color=FUNC, use_smoothing=False))
-            self.play(FadeIn(a), Create(curve), run_time=2)
+            # a calculator-style scroll zoom: labeled axes rescale every frame, the curve is redrawn, no camera move
+            osc = lambda x: np.sin(1 / x)
+            z, view = zoom_tracker(1.0, lambda R: tick_view(osc, R, w=10, h=5, labels=True, ry=1.5, samples=3000,
+                                                            gap=0.002, smooth=False).shift(DOWN * 0.3))
+            self.play(FadeIn(view), run_time=1.2)
             b.line(1)
-            self.play(self.camera.frame.animate.scale(0.35).move_to(a.c2p(0, 0)), run_time=2.5)
-            self.play(self.camera.frame.animate.scale(0.5).move_to(a.c2p(0, 0)), run_time=2)
+            self.play(zoom_to(z, 0.1), run_time=4, rate_func=smooth)
             b.line(2)
-            self.play(self.camera.frame.animate.scale(1 / (0.35 * 0.5)).move_to(ORIGIN + DOWN * (config.frame_height * 0.22 / 2 - 0.45)), run_time=1.6)
+            self.play(zoom_to(z, 0.01), run_time=4, rate_func=smooth)
+            self.wait(0.6)
         self.clear()
 
         with self.beat("Graphs can hide things") as b:

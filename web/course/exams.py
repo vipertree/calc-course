@@ -318,7 +318,7 @@ def report(att, pub):
         spec = priv["items"][it["id"]]
         given = att.answers.get(it["id"], "")
         mcs.append({**it, "given": given, "key": spec["answer"], "ok": given == spec["answer"], "solution": spec["solution"],
-                    "why": spec["why_not"].get(given, ""), "topic": spec["topic"], "topic_title": idx[spec["topic"]][2]})
+                    "topic": spec["topic"], "topic_title": idx[spec["topic"]][2]})
     frqs = []
     for p in parts(pub):
         if p["kind"] != "frq":

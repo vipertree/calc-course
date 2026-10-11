@@ -429,7 +429,7 @@
             h("span", { class: "muted small" }, `Topic ${q.topic}`)),
           h("div", { html: q.html }), figureEl(q.figure), ul,
           h("div", { class: "solution" }, h("div", { class: "lbl" }, "Solution"),
-            q.why ? h("p", { html: `<strong>Choice ${q.given} comes from a common slip:</strong> ${q.why}.` }) : null, h("div", { html: q.solution })));
+            h("div", { html: q.solution })));
       }));
       typeset(list);
     };

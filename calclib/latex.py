@@ -151,9 +151,7 @@ def _mcq(q: MCQ, key):
     s += r"\end{choices}" + "\n"
     if key:
         s += r"{\small " + q.solution
-        if q.why_not:
-            s += r"\par\smallskip{\color{soft}\hfont Common wrong answers:} " + "; ".join(
-                f"({k}) {v}" for k, v in sorted(q.why_not.items()))
+        # no "common wrong answers" note: Adder 2026-10-11, the key shows the solution only
         s += r"\par}" + "\n"
     return s + r"\end{keepitem}" + "\n"
 

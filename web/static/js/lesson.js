@@ -572,7 +572,7 @@
         card.querySelectorAll("label").forEach((lb) => lb.classList.remove("right", "wrong"));
         sel.closest("label").classList.add(r.correct ? "right" : "wrong");
         fb(status, r.correct, r.correct ? "Correct" : "Not this one");
-        out.replaceChildren(solutionBox((r.why_not ? `<p><strong>That answer comes from:</strong> ${r.why_not}.</p>` : "") + (r.correct ? r.solution : "<p>Try another choice, or read on.</p>" + r.solution)));
+        out.replaceChildren(solutionBox((r.correct ? r.solution : "<p>Try another choice, or read on.</p>" + r.solution)));
       });
       card.append(ul, h("div", { class: "row" }, btn, status, it.calc ? desmosButton(card) : null), out);
       typeset(card); mcqs.append(card, h("div", { style: "height:14px" }));

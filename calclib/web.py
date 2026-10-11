@@ -492,8 +492,7 @@ def export(t: Topic, outdir, figdir):
         if isinstance(it, MCQ):
             d = {"id": iid, "type": "mcq", "html": para(it.stem), "calc": it.calc,
                  "choices": [html(c) for c in it.choices], "figure": figpub(it.figure)}
-            priv["items"][iid] = {"answer": _answer(it.answer), "solution": html(it.solution),
-                                  "why_not": {k: html(v) for k, v in it.why_not.items()}}
+            priv["items"][iid] = {"answer": _answer(it.answer), "solution": html(it.solution)}
         else:
             stem = it.stem
             if _units(it.answer):   # the box shows the units, so the web prompt doesn't ask for them
@@ -549,7 +548,7 @@ def export_test(u: UnitTest, outdir, figdir):
                         "figure": {"src": figure_svg(q.figure, figdir), "caption": html(q.figure.caption)} if q.figure else None,
                         "part": "A" if i < na else "B"})
             priv["items"][iid] = {"answer": {"kind": "choice", "value": q.correct, "display": f"({q.correct})"},
-                                  "solution": html(q.solution), "why_not": {k: html(w) for k, w in q.why_not.items()}}
+                                  "solution": html(q.solution)}
         qv.append(row)
     qs = [row[0] for row in qv]
     frq_rows = []
@@ -594,8 +593,7 @@ def export_exam(e, outdir, figdir):
         for i, q in enumerate(qs, start):
             iid = f"{e.slug}-m{i}"
             out.append({"id": iid, "n": i, "html": para(q.stem), "choices": [html(c) for c in q.choices], "figure": fig(q.figure)})
-            priv["items"][iid] = {"answer": q.correct, "solution": html(q.solution), "topic": q.topic,
-                                  "why_not": {k: html(w) for k, w in q.why_not.items()}}
+            priv["items"][iid] = {"answer": q.correct, "solution": html(q.solution), "topic": q.topic}
         return out
 
     def frqs(fs, start):

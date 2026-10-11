@@ -310,8 +310,6 @@ def api_check(request, num):
     if given or d.get("reveal"):
         out["solution"] = spec.get("solution", "")
         out["display"] = spec.get("answer", {}).get("display", "")
-        if "why_not" in spec and given in spec["why_not"]:
-            out["why_not"] = spec["why_not"][given]
         if "rubric" in spec:
             out["rubric"] = spec["rubric"]
     return JsonResponse(out)

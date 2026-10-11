@@ -6,6 +6,10 @@ from kit import *
 from style import *
 
 
+# the point-on-the-terminal-side rule, stacked so the corner card stays readable during examples
+POINT_REF = r"\begin{aligned}\sin\theta &= \tfrac{y}{r}\\ \cos\theta &= \tfrac{x}{r}\\ \tan\theta &= \tfrac{y}{x}\end{aligned}"
+
+
 def point_axes(x, y, xr, yr, unit=0.32, label=None, r_label=None):
     """Small axes with the ray from the origin to (x, y), the point, its label, and the r on the ray."""
     ax, al = plot_axes([xr[0], xr[1], 1], [yr[0], yr[1], 1], w=unit * (xr[1] - xr[0]), h=unit * (yr[1] - yr[0]), coords=False)
@@ -39,7 +43,7 @@ class Lesson(TranscriptScene):
             Q = ax.c2p(-0.6, 0.8)
             self.play(dot.animate.move_to(Q), run_time=1.6)
             div = M(r"\div 5", 30, SECANT).next_to(Line(P, Q), LEFT, buff=0.1)
-            newlab = M(r"\left(-\tfrac35,\ \tfrac45\right)", 30, FUNC).to_edge(RIGHT, buff=1.6).shift(UP * 1.6)
+            newlab = M(r"\left(-\tfrac35,\ \tfrac45\right)", 30, FUNC).move_to(Q + RIGHT * 3.2 + UP * 1.4)
             self.play(FadeIn(div), FadeIn(newlab), Create(Arrow(newlab.get_left(), Q + RIGHT * 0.1, buff=0.15, color=FUNC, stroke_width=3)), run_time=1)
             b.line(2)
             self.play(FadeIn(VGroup(M(r"\cos\theta = -\tfrac35", 40, DERIV), M(r"\sin\theta = \tfrac45", 40, FUNC)).arrange(DOWN, buff=0.3).next_to(newlab, DOWN, buff=0.8)), run_time=0.8)
@@ -58,14 +62,14 @@ class Lesson(TranscriptScene):
             unit = Circle(radius=ax.x_axis.get_unit_size(), color=DIM, stroke_width=2).move_to(O)
             Q = ax.c2p(-0.6, 0.8)
             self.play(Create(unit), FadeIn(Dot(Q, color=SECANT)), FadeIn(M(r"\left(\tfrac{x}{r},\ \tfrac{y}{r}\right)", 28, SECANT).next_to(Q, LEFT, buff=0.2)), run_time=1)
-            defs = VGroup(M(r"\sin\theta = \frac{y}{r}", 42, FUNC), M(r"\cos\theta = \frac{x}{r}", 42, DERIV), M(r"\tan\theta = \frac{y}{x}", 42, TANGENT)).arrange(RIGHT, buff=0.5).to_edge(RIGHT, buff=0.4).shift(UP * 1.2)
+            defs = VGroup(M(r"\sin\theta = \frac{y}{r}", 42, FUNC), M(r"\cos\theta = \frac{x}{r}", 42, DERIV), M(r"\tan\theta = \frac{y}{x}", 42, TANGENT)).arrange(RIGHT, buff=0.5).to_edge(RIGHT, buff=0.4).shift(UP * 1.5)
             self.play(Write(defs), run_time=1.2)
             b.line(2)
-            tri = right_triangle(2.4, 1.8, opp=r"y\ (\text{opp})", adj=r"x\ (\text{adj})", hyp=r"r", angle=r"\theta", size=28).to_edge(RIGHT, buff=1.4).shift(DOWN * 1.6)
+            tri = right_triangle(2.4, 1.8, opp=r"y\ (\text{opp})", adj=r"x\ (\text{adj})", hyp=r"r", angle=r"\theta", size=28).to_edge(RIGHT, buff=1.4).shift(DOWN * 2.1)
             self.play(FadeIn(tri), FadeIn(T("quadrant I: SOH CAH TOA", 30, ACCUM).next_to(tri, UP, buff=0.3)), run_time=1)
         self.clear()
 
-        self.example_ref = r"\sin\theta = \tfrac{y}{r},\ \ \cos\theta = \tfrac{x}{r},\ \ \tan\theta = \tfrac{y}{x}"
+        self.example_ref = POINT_REF
         self.example("A point on the terminal side", r"The point $(-5, 12)$ is on the terminal side of $\theta$. Find $\sin\theta$, $\cos\theta$, and $\tan\theta$.",
                      [r"r = \sqrt{25 + 144} = \sqrt{169} = 13", r"\sin\theta = \frac{y}{r} = \frac{12}{13}", r"\cos\theta = \frac{x}{r} = -\frac{5}{13}",
                       r"\tan\theta = \frac{y}{x} = \frac{12}{-5} = -\frac{12}{5}", r"TEXT:Quadrant II: sine positive, cosine negative."], at=[1, 2, 3, 4, 5],
@@ -106,10 +110,10 @@ class Lesson(TranscriptScene):
         self.clear()
 
         self.examples_card()
-        self.example_ref = r"\csc\theta = \tfrac{1}{\sin\theta},\ \ \sec\theta = \tfrac{1}{\cos\theta},\ \ \cot\theta = \tfrac{1}{\tan\theta}"
+        self.example_ref = r"\begin{aligned}\csc\theta &= \tfrac{1}{\sin\theta}\\ \sec\theta &= \tfrac{1}{\cos\theta}\\ \cot\theta &= \tfrac{1}{\tan\theta}\end{aligned}"
         self.example("Example 1: Reciprocals at landmark angles", r"Find $\sec\frac{5\pi}{4}$ and $\csc\frac{5\pi}{6}$.",
                      [r"\cos\frac{5\pi}{4} = -\frac{\sqrt2}{2}", r"\sec\frac{5\pi}{4} = \frac{1}{-\sqrt2/2} = -\frac{2}{\sqrt2} = -\sqrt2", r"\sin\frac{5\pi}{6} = \frac12", r"\csc\frac{5\pi}{6} = 2"], at=[1, 2, 3, 4])
-        self.example_ref = r"\sin\theta = \tfrac{y}{r},\ \ \cos\theta = \tfrac{x}{r},\ \ \tan\theta = \tfrac{y}{x}"
+        self.example_ref = POINT_REF
         self.example("Example 2: A point in quadrant IV", r"The point $(4, -3)$ is on the terminal side of $\theta$. Find $\csc\theta$, $\sec\theta$, and $\cot\theta$.",
                      [r"r = \sqrt{16 + 9} = 5", r"\csc\theta = \frac{r}{y} = \frac{5}{-3} = -\frac53", r"\sec\theta = \frac{r}{x} = \frac54", r"\cot\theta = \frac{x}{y} = \frac{4}{-3} = -\frac43"],
                      at=[1, 2, 3, 4], figure=point_axes(4, -3, (-2, 6), (-5, 3), unit=0.55, r_label="r"))

@@ -1,0 +1,137 @@
+/* Safety card: an airline safety card. Numbered panels, pictogram-plain shapes, navy and safety orange, type
+   built to be read at a glance (Bitter for headings, Atkinson Hyperlegible for reading). Rolled by
+   tools/design_dice.py (seed 424667361), picked by Adder 2026-10-08. Light: warm grey card stock. Dark: navy. */
+
+:root[data-design="safety"] {
+  --bg: #DEDAD2; --panel: #FFFFFF; --panel-2: #EEEBE5; --field: #FFFFFF; --ink: #13294B; --ink-2: #2D4266; --dim: #56637A;
+  --rule: #13294B; --soft: #C9C3B8; --focus: #C2410C;
+  --func: #1D4E9E; --secant: #C2410C; --tangent: #B42318; --area: #1B7A4A; --accum: #6B3FA0; --deriv: #1B7A4A;
+  --accent: #EA6A1C; --accent-ink: #13294B; --hi: #C2410C;
+  --good: #1B7A4A; --good-bg: #DCF0E3; --bad: #B42318; --bad-bg: #FBE3E0;
+  --font-body: "Atkinson Hyperlegible", "Verdana", sans-serif; --font-head: "Bitter", "Georgia", serif; --font-ui: "Atkinson Hyperlegible", "Verdana", sans-serif;
+  --radius: 12px; --shadow: none; --line: 2px;
+  color-scheme: light;
+}
+:root[data-design="safety"][data-theme="slate"] {
+  --bg: #0E1E38; --panel: #16294A; --panel-2: #1D3459; --field: #0B1830; --ink: #F4F6FA; --ink-2: #D2DAE8; --dim: #9AA8C0;
+  --rule: #5A6F93; --soft: #2C426A; --focus: #FF9A55;
+  --func: #8CB8FF; --secant: #FF9A55; --tangent: #FF8A80; --area: #7FD8A6; --accum: #C9A8F5; --deriv: #7FD8A6;
+  --accent: #F07A2A; --accent-ink: #0E1E38; --hi: #FFAD70;
+  --good: #7FD8A6; --good-bg: #173D33; --bad: #FF8A80; --bad-bg: #4A2229;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-design="safety"]:not([data-theme]) {
+  --bg: #0E1E38; --panel: #16294A; --panel-2: #1D3459; --field: #0B1830; --ink: #F4F6FA; --ink-2: #D2DAE8; --dim: #9AA8C0;
+  --rule: #5A6F93; --soft: #2C426A; --focus: #FF9A55;
+  --func: #8CB8FF; --secant: #FF9A55; --tangent: #FF8A80; --area: #7FD8A6; --accum: #C9A8F5; --deriv: #7FD8A6;
+  --accent: #F07A2A; --accent-ink: #0E1E38; --hi: #FFAD70;
+  --good: #7FD8A6; --good-bg: #173D33; --bad: #FF8A80; --bad-bg: #4A2229;
+  color-scheme: dark;
+  }
+}
+
+[data-design="safety"] body { font-size: 17px; line-height: 1.6; }
+[data-design="safety"] h1, [data-design="safety"] h2, [data-design="safety"] h3 { font-family: var(--font-head); font-weight: 800; line-height: 1.1; letter-spacing: -.005em; }
+[data-design="safety"] a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* ---------- header: the navy band across the top of the card */
+[data-design="safety"] .top { background: #13294B; backdrop-filter: none; border-bottom: 6px solid var(--accent); }
+[data-design="safety"] .top, [data-design="safety"] .top a, [data-design="safety"] .brand { color: #FFFFFF; }
+[data-design="safety"] .brand { font: 800 1.3rem var(--font-head); }
+[data-design="safety"] .top .crumb { color: #D2DAE8 !important; }
+[data-design="safety"] .themes a, [data-design="safety"] .design-pick summary { border: 2px solid #5A6F93; border-radius: 8px; color: #FFFFFF; }
+[data-design="safety"] .themes a.on, [data-design="safety"] .design-pick[open] summary { background: var(--accent); border-color: var(--accent); color: #13294B; }
+[data-design="safety"] .design-menu { border-radius: 12px; border: 2px solid var(--rule); background: var(--panel); box-shadow: none; }
+[data-design="safety"] .design-menu a { color: var(--ink); font-weight: 700; }
+[data-design="safety"] .design-menu a.on { background: var(--accent); color: #13294B; }
+
+/* ---------- buttons + fields: big, plain, high contrast */
+[data-design="safety"] .btn { border-radius: 10px; border: var(--line) solid var(--rule); background: var(--panel); color: var(--ink); font-weight: 700; min-height: 44px; }
+[data-design="safety"] .btn:hover { border-color: var(--accent); }
+[data-design="safety"] .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+[data-design="safety"] .btn.primary:hover { filter: brightness(1.06); }
+[data-design="safety"] input[type=text], [data-design="safety"] input[type=password], [data-design="safety"] input[type=email], [data-design="safety"] select,
+[data-design="safety"] math-field { background: var(--field); border: var(--line) solid var(--rule); border-radius: 8px; color: var(--ink); }
+[data-design="safety"] .kbd-btn { border-radius: 8px; border: var(--line) solid var(--rule); box-shadow: none; }
+[data-design="safety"] .lock, [data-design="safety"] .calc, [data-design="safety"] .unit h2 .bc, [data-design="safety"] .bc-tag {
+  background: var(--accent); color: #13294B; border: 0; border-radius: 6px; padding: 1px 7px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* ---------- lesson head: the topic number in an orange tab */
+[data-design="safety"] .chip { background: var(--accent); color: #13294B; border-radius: 8px; font: 800 1.35rem var(--font-head); padding: 6px 14px; }
+[data-design="safety"] .lesson-head .unit { color: var(--dim); }
+[data-design="safety"] .lesson-head h1 { font-size: clamp(1.9rem, 4.4vw, 3rem); }
+/* the four steps as numbered panels in a strip */
+[data-design="safety"] .tabs { border: var(--line) solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--panel); gap: 0; counter-reset: step; }
+[data-design="safety"] .tabs a { counter-increment: step; flex: 1; text-align: center; padding: 12px 10px; color: var(--ink); font-weight: 700; border: 0; border-right: var(--line) solid var(--soft); }
+[data-design="safety"] .tabs a:last-child { border-right: 0; }
+[data-design="safety"] .tabs a::before { content: counter(step); display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 50%; border: 2px solid currentColor; font-size: .85rem; }
+[data-design="safety"] .tabs a.on { background: #13294B; color: #FFFFFF; }
+[data-design="safety"] .tabs a.on::before { background: var(--accent); border-color: var(--accent); color: #13294B; }
+[data-design="safety"] .goals strong { color: var(--hi); }
+
+[data-design="safety"] .rail li::before { border: 2px solid var(--rule); border-radius: 50%; font-weight: 700; }
+[data-design="safety"] .rail li.done::before { background: var(--good); border-color: var(--good); color: var(--panel); }
+[data-design="safety"] .rail li.cur::before { background: var(--accent); border-color: var(--accent); color: #13294B; }
+[data-design="safety"] .rail .bar { border-radius: 4px; background: var(--soft); height: 8px; }
+[data-design="safety"] .rail .bar i { background: var(--accent); }
+[data-design="safety"] .video { border-radius: 12px; border: var(--line) solid var(--rule); overflow: hidden; }
+[data-design="safety"] .vtitle { font-weight: 700; color: var(--ink); }
+
+/* ---------- steps + blocks: every block is a panel with a lettered corner */
+[data-design="safety"] .step > h2 { font-size: 1.8rem; gap: 12px; }
+[data-design="safety"] .step > h2 .n { background: #13294B; color: #FFFFFF; border-radius: 8px; width: 38px; height: 38px; font: 800 1.1rem var(--font-head); }
+[data-design="safety"] .formula { background: var(--panel); border: var(--line) solid var(--rule); border-radius: 12px; box-shadow: 6px 6px 0 var(--accent); }
+[data-design="safety"] .formula > .tag { background: #13294B; color: #FFFFFF; border-radius: 6px; padding: 2px 10px; font-weight: 700; }
+[data-design="safety"] .definition { background: var(--panel); border: var(--line) solid var(--rule); border-left-width: 8px; border-radius: 12px; padding: 10px 16px; }
+[data-design="safety"] .definition > .tag { color: var(--func); font-weight: 700; }
+[data-design="safety"] .bigidea { background: #13294B; color: #FFFFFF; border: 0; border-radius: 12px; padding: 14px 18px; font: 700 1.25rem/1.35 var(--font-head); font-style: normal; }
+[data-design="safety"] .card { background: var(--panel); border: var(--line) solid var(--rule); border-radius: 12px; box-shadow: none; }
+[data-design="safety"] .card > .tag { font-weight: 700; }
+[data-design="safety"] .card.check { border-style: dashed; }
+[data-design="safety"] .solution { background: var(--panel-2); border-radius: 10px; }
+[data-design="safety"] .solution > .lbl { color: var(--good); font-weight: 700; letter-spacing: 0; text-transform: none; }
+[data-design="safety"] .fb { border-radius: 10px; }
+[data-design="safety"] table.data th { background: #13294B; color: #FFFFFF; }
+[data-design="safety"] .blank input, [data-design="safety"] .blank math-field { border-radius: 6px; background: var(--field); border: var(--line) solid var(--rule); }
+[data-design="safety"] .meanings .c { border: var(--line) solid var(--soft); border-radius: 12px; opacity: .55; }
+[data-design="safety"] .meanings .c.on { border-color: var(--rule); background: var(--panel); opacity: 1; box-shadow: 4px 4px 0 var(--accent); }
+[data-design="safety"] .desmos-box { border-radius: 12px; border: var(--line) solid var(--rule); }
+
+/* ---------- questions: numbered like the card's panels */
+[data-design="safety"] .q > .tag::before { background: var(--accent); color: #13294B; border-radius: 50%; font-weight: 800; }
+[data-design="safety"] .choices label { border: var(--line) solid var(--soft); border-radius: 10px; background: var(--field); }
+[data-design="safety"] .choices label:hover { border-color: var(--rule); }
+[data-design="safety"] .choices .L { font: 800 1.1rem var(--font-head); color: var(--ink); }
+[data-design="safety"] .choices label.right { border-color: var(--good); background: var(--good-bg); }
+[data-design="safety"] .choices label.wrong { border-color: var(--bad); background: var(--bad-bg); }
+[data-design="safety"] .score { font: 800 2.6rem var(--font-head); color: var(--hi); }
+
+/* ---------- course map: units as panels, topics as numbered rows */
+[data-design="safety"] details.unit { background: var(--panel); border: var(--line) solid var(--rule); border-radius: 12px; padding: 4px 18px; margin-bottom: 14px; }
+[data-design="safety"] details.unit h2 { font-size: 1.5rem; }
+[data-design="safety"] .unit.module { box-shadow: 6px 6px 0 var(--accent); }
+[data-design="safety"] .map-group { font-size: 1.1rem; text-transform: none; color: var(--dim); margin-top: 26px; }
+[data-design="safety"] .topic { border: 0; border-top: 1px solid var(--soft); border-radius: 0; background: transparent; }
+[data-design="safety"] .topic .n { background: #13294B; color: #FFFFFF; border-radius: 6px; padding: 2px 8px; font-weight: 700; min-width: 2.6em; text-align: center; }
+[data-design="safety"] .topic.ready:hover { background: var(--panel-2); }
+[data-design="safety"] .topic .prog { height: 6px; border-radius: 3px; background: var(--soft); }
+[data-design="safety"] .topic .prog i { background: var(--accent); }
+[data-design="safety"] a.topic { color: var(--ink); text-decoration: none; }
+
+/* in dark mode the header band and navy fills sit one step lighter so they still read as panels */
+:root[data-design="safety"][data-theme="slate"] .top, :root[data-design="safety"][data-theme="slate"] .tabs a.on,
+:root[data-design="safety"][data-theme="slate"] .bigidea, :root[data-design="safety"][data-theme="slate"] .formula > .tag,
+:root[data-design="safety"][data-theme="slate"] .step > h2 .n, :root[data-design="safety"][data-theme="slate"] .topic .n,
+:root[data-design="safety"][data-theme="slate"] table.data th { background: #24406F; }
+@media (prefers-color-scheme: dark) {
+  :root[data-design="safety"]:not([data-theme]) .top, :root[data-design="safety"]:not([data-theme]) .tabs a.on,
+  :root[data-design="safety"]:not([data-theme]) .bigidea, :root[data-design="safety"]:not([data-theme]) .formula > .tag,
+  :root[data-design="safety"]:not([data-theme]) .step > h2 .n, :root[data-design="safety"]:not([data-theme]) .topic .n,
+  :root[data-design="safety"]:not([data-theme]) table.data th { background: #24406F; }
+}
+
+@media (max-width: 560px) {
+  [data-design="safety"] .tabs a { padding: 10px 4px; font-size: .9rem; }
+  [data-design="safety"] .tabs a::before { display: block; margin: 0 auto 4px; }
+}

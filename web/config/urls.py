@@ -9,6 +9,10 @@ NUM = r"(?P<num>\d{1,2}\.\d{1,2}|U\d{1,2})"
 
 urlpatterns = [
     path("", v.home, name="home"),
+    path("students/", v.for_students, name="for_students"),
+    path("teachers/", v.for_teachers, name="for_teachers"),
+    path("membership/", v.membership, name="membership"),
+    path("membership/<slug:plan>/", v.checkout, name="checkout"),
     path("login/", acc.LoginView.as_view(), name="login"),
     path("logout/", auth.LogoutView.as_view(), name="logout"),
     path("join/", acc.join, name="join"),

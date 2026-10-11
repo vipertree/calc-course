@@ -48,6 +48,9 @@ SESSION_COOKIE_SAMESITE = CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30          # a month; students sign in on shared school devices too
 
 DESMOS_API_KEY = os.environ.get("DESMOS_API_KEY", "")
+# Payments: Stripe is not connected yet (course/payments.py). Empty keys keep checkout off and the pages say so.
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
 INSTALLED_APPS = [
     "django.contrib.admin",

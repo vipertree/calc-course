@@ -10,7 +10,7 @@
 <p class="muted">Refreshers that stand on their own. Free for everyone.</p>{% else %}<h2 class="map-group">The course</h2>{% endif %}
 {% for u in group.units %}
 <details class="unit{% if u.module %} module{% endif %}" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
-  <summary><h2><span class="chev" aria-hidden="true"></span>{{ u.heading }} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
+  <summary><h2><span class="chev" aria-hidden="true"></span>{{ u.heading }}{% if u.free %}<span class="free-tag">Free</span>{% endif %} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
   <div class="topics">
   {% for t in u.topics %}
     {% if t.ready %}<a class="topic ready" href="{% url 'lesson' t.n %}">{% else %}<div class="topic soon">{% endif %}

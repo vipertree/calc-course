@@ -8,11 +8,20 @@
   const area = app.dataset.area;
   const correctSet = new Set(S.correct);
 
+  const LINKS = window.LINKS || { join: "/join/", login: "/login/", signup: "/signup/", membership: "/membership/" };
+  const next = "?next=" + encodeURIComponent(location.pathname);
   const lockedCard = (what) => h("div", { class: "card locked-card" },
     h("div", { class: "tag" }, "Members only"),
-    h("p", {}, `${what} come with a membership. Videos and the first few practice problems are free for everyone.`),
-    h("p", {}, h("a", { class: "btn primary", href: "/join/" }, "Join with a class code"), " ",
-      h("a", { class: "btn", href: "/login/?next=" + encodeURIComponent(location.pathname) }, "Sign in")));
+    h("p", {}, `${what} come with a membership. Units 1 to 3, the Trig Review and every video are free.`),
+    h("p", {}, h("a", { class: "btn primary", href: LINKS.membership }, "See membership"), " ",
+      h("a", { class: "btn", href: LINKS.join }, "Join with a class code"), " ",
+      h("a", { class: "btn", href: LINKS.login + next }, "Sign in")));
+  // a visitor on a free lesson: everything is open, but scores need somewhere to be saved
+  const signupCard = (what) => h("div", { class: "card locked-card" },
+    h("div", { class: "tag" }, "Free account"),
+    h("p", {}, `${what} are free here. Make a free account to take them and keep your scores.`),
+    h("p", {}, h("a", { class: "btn primary", href: LINKS.signup + next }, "Make a free account"), " ",
+      h("a", { class: "btn", href: LINKS.login + next }, "Sign in")));
 
   // ------------------------------------------------------------ helpers
   const h = (tag, attrs = {}, ...kids) => {
@@ -405,7 +414,7 @@
     const markDone = (i) => {
       if (done.has(i)) return;
       done.add(i); refresh(current);
-      post(app.dataset.step, { step: i }).catch(() => {});
+      if (!S.visitor) post(app.dataset.step, { step: i }).catch(() => {});
     };
     let current = 0;
     if ("IntersectionObserver" in window) {
@@ -435,6 +444,7 @@
   function quiz(opts = {}) {
     const wrap = h("div", { class: "narrow" });
     if (L.preview) { app.append(h("div", { class: "narrow" }, lockedCard("Quizzes"))); return; }
+    if (S.visitor) { app.append(h("div", { class: "narrow" }, signupCard("Quizzes"))); return; }
     const fields = {};
     const cards = L.quiz.map((it) => {
       const card = h("div", { class: "card q", id: it.id }, h("div", { class: "tag" }, it.calc ? h("span", { class: "calc" }, "calculator") : null,
@@ -597,7 +607,7 @@
             cb.addEventListener("change", async () => {
               const got = [...ul.querySelectorAll("input")].reduce((s, c, j) => s + (c.checked ? r.rubric[j].points : 0), 0);
               earned += got - mine; mine = got; upd();
-              await post(app.dataset.frq, { part: p.id, earned: got });
+              if (!S.visitor) await post(app.dataset.frq, { part: p.id, earned: got });
             });
             ul.append(h("li", {}, cb, h("span", { class: "pts" }, `${line.points} pt`), h("span", { html: line.html })));
           });

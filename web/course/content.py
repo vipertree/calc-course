@@ -6,6 +6,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 
+from accounts.models import FREE_UNITS  # noqa: E402
+
+
 @lru_cache(maxsize=None)
 def syllabus():
     """Units and their topics, each with its display names. A unit marked "module" (the trig review) is a standalone
@@ -13,6 +16,7 @@ def syllabus():
     out = json.loads((HERE / "syllabus.json").read_text())
     for u in out:
         u["module"] = u.get("module", False)
+        u["free"] = u["n"] in FREE_UNITS
         u["short"] = u["title"] if u["module"] else f"Unit {u['n']}"
         u["heading"] = u["title"] if u["module"] else f"Unit {u['n']}. {u['title']}"
         u["line"] = f"{u['title']} · free module" if u["module"] else f"Unit {u['n']} · {u['title']}"

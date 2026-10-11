@@ -64,6 +64,33 @@ def has_full_access(user):
     return p.is_teacher or p.full_access or user.enrollments.exists()
 
 
+# What anyone can use without paying (Adder, 2026-10-08): the free modules (unit 0 is the Trig Review module) and
+# Units 1-3, all of it: notes, practice, quizzes, test prep, unit tests. Videos are free everywhere. A free account
+# is only needed to save work; everything else in Units 4-10 needs a membership (has_full_access).
+FREE_UNITS = {0, 1, 2, 3}
+
+
+def unit_of(num):
+    """The unit a lesson ("2.1") or unit test ("U2") belongs to, or None."""
+    s = str(num)
+    s = s[1:] if s.startswith("U") else s.split(".")[0]
+    return int(s) if s.isdigit() else None
+
+
+def is_free(num):
+    return unit_of(num) in FREE_UNITS
+
+
+def can_open(user, num):
+    """Can see this lesson's notes, quizzes and test prep (whether or not their work is saved)."""
+    return is_free(num) or has_full_access(user)
+
+
+def can_save(user, num):
+    """Their answers, steps and scores on this lesson are recorded: signed in, and the lesson is open to them."""
+    return user.is_authenticated and can_open(user, num)
+
+
 def class_for(user):
     """The class a student takes quizzes and tests with, or None for individual (self-paced) users.
     Class students all get the same form and see results only after the teacher releases them."""

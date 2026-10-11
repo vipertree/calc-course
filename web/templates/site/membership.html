@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Membership · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="narrow mathy page-membership">
+  <h1>Membership</h1>
+  <p class="lede">Units 1 to 3, the Trig Review and every video stay free. A membership opens the rest.</p>
+  {% if not enabled %}<p class="visitor-note">Checkout isn't open yet. Prices and payment are coming soon.</p>{% endif %}
+  <div class="plans">
+    {% for p in plans %}
+    <div class="card plan">
+      <div class="tag">{% if p.who == "teacher" %}For teachers{% else %}For students{% endif %}</div>
+      <h3>{{ p.name }}</h3>
+      <p class="muted">{{ p.price }}{% if p.kind == "subscription" %} per year{% else %}, one time{% endif %}</p>
+      <ul>{% for g in p.gives %}<li>{{ g }}</li>{% endfor %}</ul>
+      <p><a class="btn primary" href="{% url 'checkout' p.key %}">Choose this</a></p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

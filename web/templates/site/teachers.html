@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}For teachers · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="narrow mathy page-teachers">
+  <h1>For teachers</h1>
+  <p class="lede">The whole AP Calculus AB and BC course, built from the College Board course description: a video, guided notes, practice, test prep and a quiz for every topic, plus unit tests and full practice exams.</p>
+
+  <h2>Two ways to use it</h2>
+  <div class="plans">
+    {% for p in plans %}
+    <div class="card plan">
+      <h3>{{ p.name }}</h3>
+      <p class="muted">{{ p.price }}{% if p.kind == "subscription" %} per year{% else %}, one time{% endif %}</p>
+      <ul>{% for g in p.gives %}<li>{{ g }}</li>{% endfor %}</ul>
+      <p><a class="btn primary" href="{% url 'checkout' p.key %}">Choose {{ p.name|lower }}</a></p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>Try it first</h2>
+  <p>Units 1 to 3 and the Trig Review are free for you and your students, along with every video. <a href="{% url 'map' %}">Browse the course</a>.</p>
+  <p>To set up classes, <a href="{% url 'teacher_signup' %}">request a teacher account</a>. Teacher accounts see answer keys, so each one is checked before it's turned on.</p>
+</div>
+{% endblock %}

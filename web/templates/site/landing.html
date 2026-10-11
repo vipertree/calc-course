@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Mr Oaks Math · AP Calculus{% endblock %}
+{% block main %}
+<div class="landing mathy">
+  <section class="hero">
+    <h1>AP Calculus AB and BC, one topic at a time</h1>
+    <p class="lede">A short video for every topic in the College Board course, notes to fill in alongside it, practice that checks your answers, quizzes, unit tests and full practice exams.</p>
+  </section>
+
+  <section class="doors" aria-label="Who is this for">
+    <a class="door card" href="{% url 'for_students' %}">
+      <span class="door-who">I'm a student</span>
+      <span class="door-what">Learn it, practice it, and keep track of what you've done.</span>
+      <span class="btn primary">Start here</span>
+    </a>
+    <a class="door card" href="{% url 'for_teachers' %}">
+      <span class="door-who">I'm a teacher</span>
+      <span class="door-what">Lessons, printable materials and slide decks for your class, with grading built in.</span>
+      <span class="btn primary">See what's included</span>
+    </a>
+  </section>
+
+  <section class="free-list">
+    <h2>Free for everyone</h2>
+    <ul>
+      <li>Every lesson video, in every unit</li>
+      {% for f in free %}<li>{% if f.first %}<a href="{% url 'lesson' f.first %}">{% endif %}{% if f.module %}The {{ f.title }} module{% else %}{{ f.name }}: {{ f.title }}{% endif %}{% if f.first %}</a>{% endif %}, all of it</li>{% endfor %}
+      <li><a href="{% url 'formulas' %}">Key ideas and formulas</a> for the whole course</li>
+      <li>A full-length <a href="{% url 'exams' %}">AP Calculus AB practice exam</a>, graded for you</li>
+    </ul>
+    <p class="muted">No account needed to read and practice. A free account saves your work and lets you take quizzes and tests.</p>
+  </section>
+</div>
+{% endblock %}

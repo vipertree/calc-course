@@ -13,7 +13,8 @@ from django.contrib.auth.models import User
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
-from accounts.models import Classroom, Enrollment, Profile, class_for, has_full_access
+from . import payments
+from accounts.models import Classroom, Enrollment, Profile, can_open, can_save, class_for, has_full_access, is_free
 from accounts.permissions import forbidden, is_teacher, teacher_required
 from accounts.ratelimit import ratelimit
 from . import content, grading
@@ -47,9 +48,48 @@ def _lesson(num):
 
 
 def home(request):
+    """Teachers land on their dashboard and signed-in students on the course map. Everyone else gets the landing page,
+    which sorts them into the student and teacher pages."""
     if is_teacher(request.user):
         return redirect("teacher")
-    return course_map(request)
+    if request.user.is_authenticated:
+        return course_map(request)
+    return render(request, "site/landing.html", {"free": _free_summary()})
+
+
+def _free_summary():
+    """The free lessons, for the landing and student pages: the free modules, then Units 1-3."""
+    out = []
+    for u in content.syllabus():
+        if u["free"]:
+            ready = [t for t in u["topics"] if t["n"] in content.available()]
+            out.append({"name": u["short"] if u["module"] else f"Unit {u['n']}", "title": u["title"], "module": u["module"],
+                        "count": len(ready), "first": ready[0]["n"] if ready else None})
+    return out
+
+
+def for_students(request):
+    return render(request, "site/students.html", {"free": _free_summary(), "plan": payments.PLANS["student"]})
+
+
+def for_teachers(request):
+    return render(request, "site/teachers.html",
+                  {"plans": [dict(p, key=k) for k, p in payments.PLANS.items() if p["who"] == "teacher"]})
+
+
+def membership(request):
+    return render(request, "site/membership.html", {
+        "plans": [dict(p, key=k) for k, p in payments.PLANS.items()], "enabled": payments.payments_enabled()})
+
+
+def checkout(request, plan):
+    """PLACEHOLDER for Stripe Checkout (course/payments.py). Until payments are on, this says checkout opens soon."""
+    if plan not in payments.PLANS:
+        raise Http404
+    url = payments.checkout_url(request, plan)
+    if url:
+        return redirect(url)
+    return render(request, "site/checkout_soon.html", {"plan": payments.PLANS[plan]})
 
 
 def course_map(request):
@@ -124,8 +164,11 @@ def _current_unit(user):
 
 
 def unit_test(request, num):
-    if not has_full_access(request.user):
+    if not can_open(request.user, num):
         return render(request, "course/locked.html", {"what": "Unit tests"})
+    if not request.user.is_authenticated:
+        # free unit tests are open, but a test is something you take and get scored on: that needs a (free) account
+        return redirect(f"{reverse('signup')}?next={request.path}")
     pub = content.public(num)
     if not pub:
         raise Http404("That unit test isn't written yet.")
@@ -148,13 +191,18 @@ def lesson(request, num, area="notes"):
         raise Http404
     pub, unit, prev, nxt = _lesson(num)
     pub = assess.strip(pub)
-    full = has_full_access(request.user)
-    if not full:
+    if not can_open(request.user, num):
         pub = _preview(pub)
         state = {"steps_done": [], "correct": [], "frq": {}, "quiz": [], "full": False}
         return render(request, f"course/{area}.html", {
             "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-            "lesson_json": pub, "state_json": state, "packet": False})
+            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": False})
+    if not request.user.is_authenticated:
+        # a free lesson for a visitor: everything to read and check, nothing saved (answers stay in this browser)
+        state = {"full": True, "visitor": True, "steps_done": [], "correct": [], "frq": {}, "quiz": []}
+        return render(request, f"course/{area}.html", {
+            "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
+            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": True})
     info = None
     if area == "quiz":
         pub, info = assess.draw(request, num, _lesson(num)[0])
@@ -176,7 +224,7 @@ def lesson(request, num, area="notes"):
             state["quiz"] = []
     return render(request, f"course/{area}.html", {
         "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-        "lesson_json": pub, "state_json": state, "packet": packets.available(num),
+        "lesson_json": pub, "state_json": state, "packet": packets.available(num), "OPEN": True,
         "slides": _is_teacher(request.user) and slides.manifest(num) is not None,
     })
 
@@ -215,9 +263,17 @@ def api_check(request, num):
     if not priv:
         raise Http404
     item, given, area = _str(d.get("item"), 40), _str(d.get("given"), 300), _str(d.get("area"), 10) or "notes"
-    if not has_full_access(request.user):
+    if not can_save(request.user, num):
+        # not recorded: a visitor on a free lesson (any item), or anyone on a paid lesson's free practice problems
+        if item in priv["blanks"] and is_free(num) and not num.startswith("U"):
+            ok = grading.check_blank(given, priv["blanks"][item])
+            out = {"correct": ok}
+            if ok or d.get("reveal"):
+                out["answer"] = priv["blanks"][item]
+            return JsonResponse(out)
         pub = content.public(num)
-        if num.startswith("U") or item not in _free_ids(pub) or item not in priv["items"]:
+        free_item = is_free(num) or item in _free_ids(pub)
+        if num.startswith("U") or not free_item or item not in priv["items"]:
             return JsonResponse({"error": "members only"}, status=403)
         spec = priv["items"][item]
         out = {}
@@ -271,7 +327,7 @@ def _drafts(user, num):
 @ratelimit("api-draft", "user", 300, 60, json=True)
 def api_draft(request, num):
     """Save what is in one answer box (typed text, a picked choice, a shown answer) as the student works."""
-    if not has_full_access(request.user):
+    if not can_save(request.user, num):
         return JsonResponse({"error": "members only"}, status=403)
     d = _body(request)
     item = _str(d.get("item"), 40)
@@ -291,7 +347,7 @@ def api_draft(request, num):
 @require_POST
 @ratelimit("api-step", "user", 120, 60, json=True)
 def api_step(request, num):
-    if not has_full_access(request.user):
+    if not can_save(request.user, num):
         return JsonResponse({'error': 'members only'}, status=403)
     d = _body(request)
     pub = content.public(num)
@@ -306,7 +362,7 @@ def api_step(request, num):
 @require_POST
 @ratelimit("api-quiz", "user", 20, 60, json=True)
 def api_quiz(request, num):
-    if not has_full_access(request.user):
+    if not can_save(request.user, num):
         return JsonResponse({'error': 'members only'}, status=403)
     d = _body(request)
     pub, priv = content.public(num), content.private(num)
@@ -343,7 +399,7 @@ def api_quiz(request, num):
 @require_POST
 @ratelimit("api-frq", "user", 120, 60, json=True)
 def api_frq_score(request, num):
-    if not has_full_access(request.user):
+    if not can_save(request.user, num):
         return JsonResponse({'error': 'members only'}, status=403)
     if num.startswith("U") and assess.withheld(request, num):
         return JsonResponse({"error": "results not released yet"}, status=403)
@@ -583,8 +639,8 @@ def _paper_forms(num):
 def test_pdf(request, num, form, kind):
     """A paper form of a unit test, or its solutions manual. Class students never get the manual from here:
     their teacher decides when solutions come out."""
-    if not has_full_access(request.user):
-        return forbidden(request, "This is for members: students in a class, teachers, and anyone with full access.")
+    if not (request.user.is_authenticated and can_open(request.user, num)):
+        return forbidden(request, "Printable copies are free for Units 1 to 3 with a free account, and for members everywhere.")
     if kind == "key" and class_for(request.user) is not None:
         return forbidden(request, "Your teacher releases the solutions for your class.")
     name = f"{num}-unittest-form{form}{'-key' if kind == 'key' else ''}-classic.pdf"
@@ -662,8 +718,8 @@ def packet(request, num):
     """The topic's lesson, practice and AP test prep as one PDF, stamped on every page with who it was printed for
     and a packet ID that is recorded, so a leaked copy can be traced. Teachers print from Handouts, stamped with
     their own name."""
-    if not has_full_access(request.user):
-        return forbidden(request, "This is for members: students in a class, teachers, and anyone with full access.")
+    if not (request.user.is_authenticated and can_open(request.user, num)):
+        return forbidden(request, "Printable copies are free for Units 1 to 3 with a free account, and for members everywhere.")
     if not packets.available(num):
         raise Http404
     p = packets.issue(request.user, num)

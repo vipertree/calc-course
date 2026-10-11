@@ -212,23 +212,33 @@ class Flow(TestCase):
         self.join()
         self.assertEqual(self.client.get("/teacher/transcripts/").status_code, 403)
 
-    def test_visitor_preview(self):
+    def test_visitor_free_lesson(self):
+        """Units 1-3 are free (Adder 2026-10-08): a visitor gets the whole lesson and can check any answer, but
+        nothing is saved, and taking a unit test needs a free account."""
         r = self.client.get("/topic/2.1/")
         self.assertEqual(r.status_code, 200)
         body = r.content.decode()
-        self.assertIn('"preview": true', body)
-        self.assertNotIn("Shrinking the interval", body)          # notes stay on the server
-        self.assertIn("From average to instant", body)            # the video is free
-        r = self.client.get("/topic/2.1/practice/")
-        self.assertEqual(body.count("p2_1-5"), 0)
+        self.assertNotIn('"preview": true', body)
+        self.assertIn("Shrinking the interval", body)               # the notes are there
+        self.assertIn("Make a free account", body)
         ok = self.client.post("/api/2.1/check/", json.dumps({"item": "p2_1-1", "given": "11", "area": "practice"}),
                               content_type="application/json")
         self.assertTrue(ok.json()["correct"])
-        self.assertEqual(Response.objects.count(), 0)              # nothing saved for visitors
-        no = self.client.post("/api/2.1/check/", json.dumps({"item": "p2_1-6", "given": "1", "area": "practice"}),
+        later = self.client.post("/api/2.1/check/", json.dumps({"item": "p2_1-6", "given": "1", "area": "practice"}),
+                                 content_type="application/json")
+        self.assertEqual(later.status_code, 200)                     # every practice problem, not just the first few
+        self.assertEqual(Response.objects.count(), 0)                # nothing saved for visitors
+        self.assertEqual(self.client.get("/unit/U1/test/").status_code, 302)   # to sign-up
+
+    def test_visitor_preview(self):
+        """Unit 4 on is for members: a visitor gets the video and the first few practice problems."""
+        r = self.client.get("/topic/4.1/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('"preview": true', r.content.decode())
+        no = self.client.post("/api/4.1/check/", json.dumps({"item": "p4_1-6", "given": "1", "area": "practice"}),
                               content_type="application/json")
         self.assertEqual(no.status_code, 403)
-        self.assertContains(self.client.get("/unit/U1/test/"), "for members")
+        self.assertContains(self.client.get("/unit/U4/test/"), "for members")
         self.assertEqual(self.client.get("/course/").status_code, 200)
 
     def test_student_cannot_see_dashboard(self):
@@ -256,7 +266,7 @@ class Designs(TestCase):
             self.assertIn(f'data-design="{key}"', page)
             self.assertIn(f"css/designs/{key}.css", page)
         self.client.get("/design/nonsense/?next=/course/")     # unknown names are ignored
-        self.assertIn('data-design="chalk"', self.client.get("/course/").content.decode())
+        self.assertIn(f'data-design="{DESIGNS[-1][0]}"', self.client.get("/course/").content.decode())   # still the last pick
         self.client.cookies["design"] = "../evil"
         self.assertNotIn("data-design", self.client.get("/course/").content.decode())
 
@@ -367,8 +377,10 @@ class Drafts(Assessments):
         nob = self.student("nob", in_class=False)
         nob.profile.full_access = False; nob.profile.save()
         self.client.force_login(nob)
+        r = self.client.post("/api/4.1/draft/", json.dumps({"item": "x", "value": "y"}), content_type="application/json")
+        self.assertEqual(r.status_code, 403)                         # a paid unit
         r = self.client.post("/api/1.1/draft/", json.dumps({"item": "x", "value": "y"}), content_type="application/json")
-        self.assertEqual(r.status_code, 403)
+        self.assertNotEqual(r.status_code, 403)                      # a free unit saves for a free account
 
 
 class Video(TestCase):
@@ -488,7 +500,8 @@ class Packets(Assessments):
         nobody = User.objects.create_user("nob", password="pw123456")
         Profile.objects.create(user=nobody, display_name="Nob")
         self.client.force_login(nobody)
-        self.assertEqual(self.download().status_code, 403)
+        self.assertEqual(self.download("4.1").status_code, 403)                  # a paid unit
+        self.assertNotEqual(self.download().status_code, 403)                    # Unit 1 prints with a free account
 
     def test_teacher_gets_masters_and_traces_codes(self):
         from .models import IssuedPacket
@@ -658,3 +671,27 @@ class SlideDecks(Assessments):
         self.assertNotContains(self.client.get("/topic/1.1/"), "/teacher/slides/")      # 1.1 has no deck here
         self.client.force_login(self.student("stu", in_class=False))
         self.assertNotContains(self.client.get("/topic/1.2/"), "/teacher/slides/")
+
+
+class SitePages(TestCase):
+    """The landing page sorts visitors into students and teachers; membership checkout is a placeholder until
+    Stripe is connected (course/payments.py)."""
+
+    def test_landing_for_visitors(self):
+        page = self.client.get("/").content.decode()
+        self.assertIn("I'm a student", page)
+        self.assertIn("I'm a teacher", page)
+        self.assertIn("Free for everyone", page)
+        for url in ("/students/", "/teachers/", "/membership/"):
+            self.assertEqual(self.client.get(url).status_code, 200, url)
+
+    def test_signed_in_students_skip_the_landing(self):
+        u = User.objects.create_user("kim", password="pw123456")
+        Profile.objects.create(user=u, display_name="Kim")
+        self.client.force_login(u)
+        self.assertNotIn("I'm a teacher", self.client.get("/").content.decode())
+
+    def test_checkout_is_a_placeholder(self):
+        r = self.client.get("/membership/student/")
+        self.assertContains(r, "isn't open yet")
+        self.assertEqual(self.client.get("/membership/nonsense/").status_code, 404)

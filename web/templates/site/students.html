@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}For students · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="narrow mathy page-students">
+  <h1>For students</h1>
+  <p class="lede">Each topic is a video, notes you fill in while you watch, practice problems that check your answers, AP-style test prep and a short quiz.</p>
+
+  <h2>Start free</h2>
+  <ul class="free-units">
+    {% for f in free %}<li>{% if f.first %}<a href="{% url 'lesson' f.first %}">{% endif %}<strong>{% if f.module %}{{ f.title }}{% else %}{{ f.name }}{% endif %}</strong>{% if not f.module %}: {{ f.title }}{% endif %}{% if f.first %}</a>{% endif %} <span class="muted">({{ f.count }} lessons)</span></li>{% endfor %}
+    <li>Every video in Units 4 to 10, and the <a href="{% url 'formulas' %}">key ideas and formulas</a></li>
+  </ul>
+  <p>You can read and practice without an account. <a class="btn primary" href="{% url 'signup' %}">Make a free account</a> to save your answers and progress and to take quizzes, unit tests and the free practice exam.</p>
+
+  <h2>In a class?</h2>
+  <p>If your teacher gave you a class code, <a href="{% url 'join' %}">join with it here</a>. Your teacher's class includes the whole course.</p>
+
+  <h2>Go further with a membership</h2>
+  <div class="card plan">
+    <h3>{{ plan.name }}</h3>
+    <ul>{% for g in plan.gives %}<li>{{ g }}</li>{% endfor %}</ul>
+    <p><a class="btn" href="{% url 'membership' %}">See membership</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Checkout · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="narrow mathy">
+  <h1>{{ plan.name }}</h1>
+  <p class="lede">Checkout isn't open yet. Payments are being set up, and this page will take you there once they are.</p>
+  <p>Until then, Units 1 to 3, the Trig Review and every video are free. <a href="{% url 'map' %}">Go to the course</a> or <a href="{% url 'membership' %}">back to membership</a>.</p>
+</div>
+{% endblock %}

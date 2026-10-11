@@ -121,7 +121,7 @@ class Lesson(TranscriptScene):
             hx = Line(uc.c, np.array([p[0], uc.c[1], 0]), color=DERIV, stroke_width=6)
             vy = Line(np.array([p[0], uc.c[1], 0]), p, color=FUNC, stroke_width=6)
             self.play(Create(uc), Create(uc.ray(t)), FadeIn(uc.angle_arc(t, label=r"\theta")), FadeIn(uc.dot(t)), run_time=1)
-            self.play(Create(hx), FadeIn(M(r"x = \cos\theta", 30, DERIV).next_to(hx, DOWN, buff=0.15)), Create(vy), FadeIn(M(r"y = \sin\theta", 30, FUNC).next_to(vy, RIGHT, buff=0.15)), run_time=1)
+            self.play(Create(hx), FadeIn(M(r"x = \cos\theta", 30, DERIV).next_to(hx, DOWN, buff=0.15)), Create(vy), FadeIn(M(r"y = \sin\theta", 30, FUNC).move_to(np.array([uc.c[0] + uc.r + 0.25, vy.get_center()[1], 0]), aligned_edge=LEFT)), run_time=1)
             big = M(r"P = (\cos\theta,\ \sin\theta)", 46).next_to(top, DOWN, buff=0.6).to_edge(RIGHT, buff=0.8)
             self.play(Write(big), FadeIn(M("P", 30, FUNC).next_to(p, UR, buff=0.1)), run_time=0.8)
             b.line(2)

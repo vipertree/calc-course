@@ -27,7 +27,7 @@
 </details>
 {% endfor %}
 {% endfor %}
-<script>
+<script nonce="{{ CSP_NONCE }}">
   // a link to #unit-N (the "Unit N" button on a lesson) opens that unit
   (function () {
     const open = () => { const el = location.hash && document.getElementById(location.hash.slice(1)); if (el && el.tagName === "DETAILS") el.open = true; };

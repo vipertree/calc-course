@@ -42,11 +42,17 @@ class Lesson(TranscriptScene):
             ok = T(r"That's okay: it still has tangent lines.", 32, DERIV).next_to(two, DOWN, buff=0.5)
             self.play(FadeIn(ok), run_time=0.8)
             b.line(4)
-            self.camera.frame.save_state()
             self.play(FadeIn(closed_dot(ax, 3, 4, INK)), run_time=0.3)
-            self.play(self.camera.frame.animate.scale(0.15).move_to(ax.c2p(3, 4)), run_time=2.5)
+            # a calculator-style zoom on (3, 4) (Adder: no camera zooms): the top half of the circle redrawn in a
+            # window whose numbered axes rescale, until the curve near the point looks like a straight line
+            top = lambda x: np.sqrt(max(25 - x * x, 0.0))
+            z, view = zoom_tracker(3.0, lambda R: tick_view(top, R, w=6.4, h=4.6, labels=True, cx=3, cy=4,
+                                                            dots=[(3, 4, INK)]).to_edge(RIGHT, buff=0.5).shift(DOWN * 0.6))
+            others = [m for m in self.mobjects if m not in (ax,)]
+            self.play(*[FadeOut(m) for m in others], FadeIn(view), run_time=0.8)
+            self.play(zoom_to(z, 0.05), run_time=3, rate_func=smooth)
             self.wait(0.8)
-            self.play(Restore(self.camera.frame), run_time=1.5)
+            self.play(FadeOut(view), *[FadeIn(m) for m in others], run_time=1)
         self.clear()
         self.title()
 

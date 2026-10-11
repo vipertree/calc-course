@@ -5,10 +5,12 @@
   <h1>Sign in</h1>
   <form method="post">{% csrf_token %}
     {% if form.non_field_errors %}<ul class="errorlist"><li>That username and password don't match.</li></ul>{% endif %}
-    <label for="id_username">Username</label><input type="text" name="username" id="id_username" autocomplete="username" required autofocus>
+    <label for="id_username">Username or email</label><input type="text" name="username" id="id_username" autocomplete="username" autocapitalize="none" required autofocus value="{{ form.username.value|default:'' }}">
     <label for="id_password">Password</label><input type="password" name="password" id="id_password" autocomplete="current-password" required>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     <p><button class="btn primary">Sign in</button></p>
   </form>
-  <p class="muted">New here? <a href="{% url 'join' %}">Join your class with a code</a>.</p>
+  <p class="muted"><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
+  <p class="muted">New here? <a href="{% url 'join' %}">Join your class with a code</a>, <a href="{% url 'signup' %}">study on your own</a>, or <a href="{% url 'teacher_signup' %}">ask for a teacher account</a>.</p>
 </div></div>
 {% endblock %}

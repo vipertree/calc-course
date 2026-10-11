@@ -30,10 +30,9 @@ class Lesson(TranscriptScene):
             b.line(1)
             # a real, continuous zoom out: the window is redrawn every frame on a log scale (no morphing between levels)
             self.remove(v, *v)          # its pieces were added one by one, so remove them too
-            z = ValueTracker(np.log10(5))
-            v = always_redraw(lambda: view(10 ** z.get_value()))
+            z, v = zoom_tracker(5, view)
             self.add(v)
-            self.play(z.animate.set_value(np.log10(500)), run_time=3.2, rate_func=smooth)
+            self.play(zoom_to(z, 500), run_time=3.2, rate_func=smooth)
             v.clear_updaters()
             self.play(Create(v[2]), run_time=0.8)
         self.clear()

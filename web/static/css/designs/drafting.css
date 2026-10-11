@@ -64,7 +64,7 @@
 [data-design="drafting"] .btn:active { transform: translateY(1px); }
 [data-design="drafting"] .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--ink); }
 [data-design="drafting"] .btn.primary:hover { background: var(--accent); filter: brightness(1.12); }
-[data-design="drafting"] input[type=text], [data-design="drafting"] input[type=password], [data-design="drafting"] select,
+[data-design="drafting"] input[type=text], [data-design="drafting"] input[type=password], [data-design="drafting"] input[type=email], [data-design="drafting"] select,
 [data-design="drafting"] math-field { background: var(--field); border: 1.5px solid var(--ink); border-radius: 0; color: var(--ink); }
 [data-design="drafting"] .kbd-btn { border-radius: 0; border: 2px solid var(--ink); background: var(--panel); box-shadow: none; font-family: var(--font-ui); }
 [data-design="drafting"] .lock, [data-design="drafting"] .calc, [data-design="drafting"] .unit h2 .bc, [data-design="drafting"] .bc-tag {

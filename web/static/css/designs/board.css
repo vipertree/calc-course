@@ -1,0 +1,124 @@
+/* Chalkboard (new): a slate board in a wooden frame, colored chalk for the parts that matter. Young Serif for
+   headings, Hanken Grotesk for reading, Kalam for the teacher's chalk labels. Rolled by tools/design_dice.py
+   (seed 424667361), picked by Adder 2026-10-08. Dark: the green board. Light: a pale sage board with darker chalk. */
+
+:root[data-design="board"] {
+  --bg: #E4ECE6; --panel: #EEF3EF; --panel-2: #D9E3DB; --field: #F7FAF7; --ink: #1F3328; --ink-2: #33493D; --dim: #566B5F;
+  --rule: #8FA597; --frame: #7B5530; --frame-2: #5F3F22; --focus: #1F5F99;
+  --func: #1F5F99; --secant: #8A6400; --tangent: #A8325E; --area: #2D7A3E; --accum: #6B3FA0; --deriv: #2D7A3E;
+  --accent: #8A6400; --accent-ink: #FFFFFF; --hi: #A8325E; --chalk-y: #8A6400; --chalk-p: #A8325E; --chalk-b: #1F5F99;
+  --good: #2D7A3E; --good-bg: #D5EBD9; --bad: #A8325E; --bad-bg: #F3DDE6;
+  --font-body: "Hanken Grotesk", "Verdana", sans-serif; --font-head: "Young Serif", "Georgia", serif; --font-hand: "Kalam", cursive; --font-ui: "Hanken Grotesk", "Verdana", sans-serif;
+  --radius: 6px; --shadow: none;
+  --dust: none;
+  color-scheme: light;
+}
+:root[data-design="board"][data-theme="slate"] {
+  --bg: #2F4A3C; --panel: #355343; --panel-2: #3C5B4A; --field: #26402F; --ink: #F4F1E6; --ink-2: #DCE4DC; --dim: #B4C4B8;
+  --rule: #6F8D7C; --focus: #F6D365;
+  --func: #A9D8F5; --secant: #F6D365; --tangent: #F4A6B8; --area: #B5E3A1; --accum: #D9C2F0; --deriv: #B5E3A1;
+  --accent: #F6D365; --accent-ink: #213428; --hi: #F4A6B8; --chalk-y: #F6D365; --chalk-p: #F4A6B8; --chalk-b: #A9D8F5;
+  --good: #B5E3A1; --good-bg: #2F5A41; --bad: #F4A6B8; --bad-bg: #5A3A44;
+  --dust: radial-gradient(ellipse at 28% 18%, rgba(255,255,255,.06), transparent 60%), radial-gradient(ellipse at 76% 72%, rgba(255,255,255,.045), transparent 55%);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-design="board"]:not([data-theme]) {
+  --bg: #2F4A3C; --panel: #355343; --panel-2: #3C5B4A; --field: #26402F; --ink: #F4F1E6; --ink-2: #DCE4DC; --dim: #B4C4B8;
+  --rule: #6F8D7C; --focus: #F6D365;
+  --func: #A9D8F5; --secant: #F6D365; --tangent: #F4A6B8; --area: #B5E3A1; --accum: #D9C2F0; --deriv: #B5E3A1;
+  --accent: #F6D365; --accent-ink: #213428; --hi: #F4A6B8; --chalk-y: #F6D365; --chalk-p: #F4A6B8; --chalk-b: #A9D8F5;
+  --good: #B5E3A1; --good-bg: #2F5A41; --bad: #F4A6B8; --bad-bg: #5A3A44;
+  --dust: radial-gradient(ellipse at 28% 18%, rgba(255,255,255,.06), transparent 60%), radial-gradient(ellipse at 76% 72%, rgba(255,255,255,.045), transparent 55%);
+  color-scheme: dark;
+  }
+}
+
+/* the whole page is the board, framed in wood */
+[data-design="board"] body { font-size: 17px; line-height: 1.65; background-color: var(--bg); background-image: var(--dust); background-attachment: fixed;
+  border: 14px solid var(--frame); border-bottom-width: 22px; min-height: 100vh; box-sizing: border-box; box-shadow: inset 0 0 0 4px var(--frame-2); }
+[data-design="board"] h1, [data-design="board"] h2, [data-design="board"] h3 { font-family: var(--font-head); font-weight: 400; line-height: 1.15; }
+[data-design="board"] a { color: var(--ink); text-decoration-color: var(--chalk-y); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* ---------- header: written along the top of the board, a dashed chalk line under it */
+[data-design="board"] .top { background: transparent; backdrop-filter: none; border-bottom: 2px dashed var(--rule); }
+[data-design="board"] .brand { font: 400 1.35rem var(--font-head); color: var(--ink); }
+[data-design="board"] .top .crumb { font-family: var(--font-hand) !important; font-size: 1.05rem !important; color: var(--chalk-y) !important; }
+[data-design="board"] .themes a, [data-design="board"] .design-pick summary { border: 1.5px solid var(--rule); border-radius: 6px; color: var(--ink-2); }
+[data-design="board"] .themes a.on, [data-design="board"] .design-pick[open] summary { border: 2px solid var(--chalk-y); color: var(--ink); }
+[data-design="board"] .design-menu { background: var(--panel); border: 2px solid var(--rule); border-radius: 8px; box-shadow: none; }
+[data-design="board"] .design-menu a.on { text-decoration: underline 3px var(--chalk-y); text-underline-offset: 4px; }
+
+/* ---------- buttons + fields: yellow chalk for the main action, chalk lines to write on */
+[data-design="board"] .btn { border-radius: 6px; border: 2px solid var(--ink-2); background: transparent; color: var(--ink); font-weight: 600; min-height: 44px; }
+[data-design="board"] .btn:hover { border-color: var(--chalk-y); }
+[data-design="board"] .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+[data-design="board"] input[type=text], [data-design="board"] input[type=password], [data-design="board"] input[type=email], [data-design="board"] select,
+[data-design="board"] math-field { background: var(--field); border: 0; border-bottom: 3px solid var(--ink-2); border-radius: 4px 4px 0 0; color: var(--ink); }
+[data-design="board"] .kbd-btn { border-radius: 6px; border: 2px solid var(--ink-2); box-shadow: none; }
+[data-design="board"] .lock, [data-design="board"] .calc, [data-design="board"] .unit h2 .bc, [data-design="board"] .bc-tag {
+  background: none; border: 0; padding: 0 2px; color: var(--chalk-p); font: 700 1rem var(--font-hand); text-transform: none; letter-spacing: 0; }
+
+/* ---------- lesson head: number in chalk, a pink chalk stroke under the title */
+[data-design="board"] .chip { background: none; color: var(--chalk-y); font: 400 1.7rem var(--font-head); padding: 0 4px; }
+[data-design="board"] .lesson-head .unit { color: var(--dim); }
+[data-design="board"] .lesson-head h1 { font-size: clamp(1.9rem, 4.2vw, 2.9rem); padding-bottom: 10px;
+  background: linear-gradient(var(--chalk-p), var(--chalk-p)) left bottom / min(520px, 80%) 4px no-repeat; }
+[data-design="board"] .tabs { border-bottom: 2px solid var(--rule); gap: 6px; }
+[data-design="board"] .tabs a { font: 700 1.15rem var(--font-hand); color: var(--dim); border-bottom: 4px solid transparent; padding: 8px 14px 4px; }
+[data-design="board"] .tabs a.on { color: var(--ink); border-bottom-color: var(--chalk-y); }
+[data-design="board"] .goals strong { font: 700 1.1rem var(--font-hand); color: var(--chalk-p); }
+
+[data-design="board"] .rail li::before { border: 2px solid var(--rule); border-radius: 50%; }
+[data-design="board"] .rail li.done::before { border-color: var(--good); color: var(--good); }
+[data-design="board"] .rail li.cur::before { border-color: var(--chalk-y); }
+[data-design="board"] .rail .bar { border-radius: 3px; background: var(--rule); height: 6px; }
+[data-design="board"] .rail .bar i { background: var(--chalk-y); }
+[data-design="board"] .video { border-radius: 4px; border: 2px solid var(--rule); }
+[data-design="board"] .vtitle { font: 700 1.05rem var(--font-hand); color: var(--ink-2); }
+
+/* ---------- steps + blocks: the rule boxed in yellow chalk, slightly askew */
+[data-design="board"] .step > h2 { font-size: 1.8rem; gap: 14px; }
+[data-design="board"] .step > h2 .n { border: 2.5px solid var(--chalk-y); border-radius: 50%; width: 38px; height: 38px; font: 600 1.05rem var(--font-body); color: var(--ink); }
+[data-design="board"] .formula { border: 3px solid var(--chalk-y); border-radius: 6px; background: transparent; transform: rotate(-.35deg); }
+[data-design="board"] .formula > .tag { background: var(--bg); color: var(--chalk-y); font: 700 1.1rem var(--font-hand); border-radius: 0; padding: 0 8px; }
+[data-design="board"] .definition { border-left: 4px solid var(--chalk-b); background: transparent; border-radius: 0; padding: 4px 16px; }
+[data-design="board"] .definition > .tag { font: 700 1.1rem var(--font-hand); color: var(--chalk-b); }
+[data-design="board"] .bigidea { border: 0; font: 400 1.4rem/1.35 var(--font-head); font-style: normal; color: var(--chalk-p); padding: 6px 0; }
+[data-design="board"] .card { background: transparent; border: 2px solid var(--rule); border-radius: 6px; box-shadow: none; }
+[data-design="board"] .card > .tag { font: 700 1.1rem var(--font-hand); }
+[data-design="board"] .card.check { border-style: dashed; }
+[data-design="board"] .auth .card { background: var(--panel); }
+[data-design="board"] .solution { background: var(--panel-2); border-radius: 6px; }
+[data-design="board"] .solution > .lbl { text-transform: none; letter-spacing: 0; font: 700 1.1rem var(--font-hand); color: var(--good); }
+[data-design="board"] table.data th { font-family: var(--font-hand); font-size: 1.05rem; color: var(--chalk-y); }
+[data-design="board"] .blank input, [data-design="board"] .blank math-field { background: var(--field); border: 0; border-bottom: 3px solid var(--ink-2); border-radius: 4px 4px 0 0; }
+[data-design="board"] .meanings .c { border: 2px solid var(--rule); border-radius: 6px; opacity: .55; }
+[data-design="board"] .meanings .c.on { border: 2.5px solid var(--chalk-y); background: transparent; opacity: 1; }
+[data-design="board"] .meanings .r { font: 700 1.05rem var(--font-hand); }
+[data-design="board"] .desmos-box { border-radius: 6px; }
+
+/* ---------- questions */
+[data-design="board"] .q > .tag::before { background: none; color: var(--ink); border: 2px solid var(--chalk-y); border-radius: 50%; font: 600 .9rem var(--font-body); }
+[data-design="board"] .choices label { border: 2px solid var(--rule); border-radius: 6px; background: var(--field); }
+[data-design="board"] .choices label:hover { border-color: var(--chalk-y); }
+[data-design="board"] .choices .L { font: 700 1.15rem var(--font-hand); color: var(--ink); }
+[data-design="board"] .choices label.right { border-color: var(--good); background: var(--good-bg); }
+[data-design="board"] .choices label.wrong { border-color: var(--bad); background: var(--bad-bg); }
+[data-design="board"] .score { font: 700 2.6rem var(--font-hand); color: var(--chalk-y); }
+
+/* ---------- course map: the schedule written up on the board */
+[data-design="board"] details.unit { margin-bottom: 22px; }
+[data-design="board"] details.unit h2 { font-size: 1.6rem; border-bottom: 2px solid var(--rule); padding-bottom: 4px; }
+[data-design="board"] .map-group { font: 700 1.2rem var(--font-hand); color: var(--chalk-y); text-transform: none; margin-top: 26px; }
+[data-design="board"] .topic { border: 0; border-radius: 6px; background: transparent; padding: 8px 10px; }
+[data-design="board"] .topic .n { font: 700 1.15rem/1.2 var(--font-hand); color: var(--chalk-p); min-width: 2.4em; }
+[data-design="board"] .topic.ready:hover { background: var(--panel-2); }
+[data-design="board"] .topic .prog { height: 4px; border-radius: 3px; background: var(--rule); max-width: 220px; }
+[data-design="board"] .topic .prog i { background: var(--chalk-y); }
+[data-design="board"] a.topic { color: var(--ink); text-decoration: none; }
+
+@media (max-width: 560px) {
+  [data-design="board"] body { border-width: 6px; border-bottom-width: 10px; }
+  [data-design="board"] .tabs a { padding: 8px 8px 4px; font-size: 1.02rem; }
+}

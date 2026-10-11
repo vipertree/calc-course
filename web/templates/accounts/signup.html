@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{% if teacher %}Teacher account{% else %}Sign up{% endif %} · AP Calculus{% endblock %}
+{% block main %}
+<div class="auth"><div class="card">
+  {% if teacher %}
+  <h1>Ask for a teacher account</h1>
+  <p class="muted">Teacher accounts can see answer keys, so we check each one by hand before it opens. Confirm your email when the link arrives; we'll write when your account is ready.</p>
+  {% else %}
+  <h1>Study on your own</h1>
+  <p class="muted">In a class? <a href="{% url 'join' %}">Join with your teacher's code</a> instead. You won't need an email.</p>
+  {% endif %}
+  <form method="post" novalidate>{% csrf_token %}
+    {% include "accounts/_fields.html" %}
+    <p><button class="btn primary">{% if teacher %}Send request{% else %}Create account{% endif %}</button></p>
+  </form>
+  <p class="muted small">By signing up you agree to the <a href="{% url 'terms' %}">terms</a>. See <a href="{% url 'privacy' %}">what we keep</a>.</p>
+  <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a>.</p>
+</div></div>
+{% endblock %}

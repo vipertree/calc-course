@@ -40,14 +40,13 @@ class Lesson(TranscriptScene):
             self.play(FadeOut(note), FadeOut(arrow), run_time=0.4)
             # a real, continuous zoom: the window is redrawn every frame on a log scale (Adder: no morphing between levels)
             self.remove(v, *v)          # its pieces were added one by one, so remove them too
-            z = ValueTracker(np.log10(0.5))
-            v = always_redraw(lambda: self.view(10 ** z.get_value()))
+            z, v = zoom_tracker(0.5, self.view)
             self.add(v)
             for R in (0.12, 0.03):
-                self.play(z.animate.set_value(np.log10(R)), run_time=2.2, rate_func=smooth)
+                self.play(zoom_to(z, R), run_time=2.2, rate_func=smooth)
                 self.wait(0.6)
             b.line(3)
-            self.play(z.animate.set_value(np.log10(0.5)), run_time=1.6, rate_func=smooth)
+            self.play(zoom_to(z, 0.5), run_time=1.6, rate_func=smooth)
             v.clear_updaters()
             self.play(Indicate(v[1], color=SECANT, scale_factor=1.02), run_time=1.2)
         self.clear()

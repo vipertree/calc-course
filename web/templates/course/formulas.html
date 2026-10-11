@@ -19,7 +19,7 @@
 {% endfor %}
 </div>
 {% endblock %}
-{% block scripts %}<script>
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">
   // display math (\[...\]) and inline math, as on the lessons
   window.addEventListener("load", () => { if (window.renderMathInElement) renderMathInElement(document.querySelector(".formula-sheet"), { throwOnError: false,
     delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\[", right: "\\]", display: true }, { left: "$", right: "$", display: false }] }); });

@@ -1035,3 +1035,157 @@ def clipped_plot(ax, f, x0, x1, ymax, color=FUNC, width=4, n=600):
     if len(cur) > 1:
         out.add(VMobject(color=color, stroke_width=width).set_points_as_corners(cur))
     return out
+
+
+# ---------------------------------------------------------------- scroll zoom (moved from s2_4.py)
+# A zoom that looks like scrolling in on a graphing calculator: the window and its labeled ticks are redrawn every
+# frame on a log scale, so the axes keep their numbers and the curve is simply redrawn at the new scale. Adder: no
+# camera zooms or morphing between levels (1.3, 1.8, 1.15, 2.4).
+def _nice_steps(R, half):
+    """Tick steps 1, 5, 10, 50, ... times a power of ten (each a multiple of the one before), with each step's spacing on
+    screen: half-width R maps to `half` scene units."""
+    k = int(np.floor(np.log10(R))) - 3
+    out = []
+    while True:
+        for m in (1, 5):
+            st = m * 10.0 ** k
+            if st > 2 * R:
+                return out
+            out.append((st, st / R * half))
+        k += 1
+
+
+_LABELS = {}
+
+
+def _label(text):
+    """A tick label; cached, since a zoom redraws every label on every frame."""
+    if text not in _LABELS:
+        _LABELS[text] = M(text, 22, DIM)
+    return _LABELS[text].copy()
+
+
+def _ramp(x, lo, hi):
+    return float(np.clip((x - lo) / (hi - lo), 0, 1))
+
+
+def tick_view(fn, R, w=7.6, h=5, labels=False, cx=0.0, cy=0.0, smooth=True, step=None, ry=None, samples=601, gap=None,
+              extras=(), dots=()):
+    """A window [cx - R, cx + R] x [cy - ry, cy + ry] with axes through the origin (when in view) and tick marks.
+    The ticks come from the 1-5-10 ladder: a step's ticks fade in once they are far enough apart on screen, and its
+    labels (if labels=True) fade in once they have room, so redrawing this at a slowly changing R is a smooth zoom
+    (see zoom_tracker). `step` pins a single tick step instead (no fading). `ry` fixes the window's half-height (the
+    default zooms y with x, keeping the scales equal); `samples` and `gap` (an |x| below which nothing is drawn, as a
+    fraction of R) are for curves like sin(1/x) that wiggle without end. `extras` are more curves as (fn, color), e.g. a
+    secant line; `dots` are (x, y, color) points, drawn when in view."""
+    fixed_y = ry is not None
+    ry = ry if fixed_y else R * h / w
+    frame = Rectangle(width=w, height=h, color=DIM, stroke_width=2)
+    to = lambda x, y: frame.get_center() + RIGHT * (x - cx) / R * w / 2 + UP * (y - cy) / ry * h / 2
+    g = VGroup(frame)
+    if abs(cy) <= ry:
+        g.add(Line(to(cx - R, 0), to(cx + R, 0), color=DIM, stroke_width=2))
+    if abs(cx) <= R:
+        g.add(Line(to(0, cy - ry), to(0, cy + ry), color=DIM, stroke_width=2))
+    fmt = lambda v: f"{v:.10f}".rstrip("0").rstrip(".") if abs(v) > 1e-12 else "0"
+    steps = [(step, 9.0)] if step else _nice_steps(R, w / 2)
+    ysteps = steps if not fixed_y else [(st, st / ry * h / 2) for st, _ in _nice_steps(ry, h / 2)]
+    steps = [(st, sp) for st, sp in steps if sp >= 0.5]
+    if not steps:
+        steps = [(R, w / 2)]
+    fine = steps[0][0]
+
+    def alphas(v):
+        """(tick, label) opacity for the value v: the best over every ladder step v is a multiple of."""
+        ta = la = 0.0
+        for st, sp in steps:
+            q = v / st
+            if abs(q - round(q)) < 1e-6:
+                ta = max(ta, 1.0 if step else _ramp(sp, 0.5, 0.7))
+                la = max(la, 1.0 if step else _ramp(sp, 0.7, 0.95))
+        return ta, la
+
+    def edge(p, lo, hi, room):
+        return _ramp(min(p - lo, hi - p), room, room + 0.3)
+
+    L, Rt = frame.get_left()[0], frame.get_right()[0]
+    B, Tp = frame.get_bottom()[1], frame.get_top()[1]
+    if abs(cy) <= ry:
+        for k in range(int(np.ceil((cx - R) / fine)), int(np.floor((cx + R) / fine)) + 1):
+            x = k * fine
+            if k == 0:
+                continue
+            ta, la = alphas(x)
+            pt = to(x, 0)
+            if ta > 0:
+                g.add(Line(pt + DOWN * 0.08, pt + UP * 0.08, color=DIM, stroke_width=2).set_stroke(opacity=ta))
+            la *= edge(pt[0], L, Rt, 0.35)
+            if labels and la > 0:
+                g.add(_label(fmt(x)).next_to(pt, DOWN, buff=0.12).set_opacity(la))
+    if fixed_y:
+        steps = [(st, sp) for st, sp in ysteps if sp >= 0.5] or [(ry, h / 2)]
+        fine = steps[0][0]
+    if abs(cx) <= R:
+        for k in range(int(np.ceil((cy - ry) / fine)), int(np.floor((cy + ry) / fine)) + 1):
+            y = k * fine
+            if k == 0:
+                continue
+            ta, la = alphas(y)
+            pt = to(0, y)
+            if ta > 0:
+                g.add(Line(pt + LEFT * 0.08, pt + RIGHT * 0.08, color=DIM, stroke_width=2).set_stroke(opacity=ta))
+            la *= edge(pt[1], B, Tp, 0.2)
+            if labels and la > 0:
+                g.add(_label(fmt(y)).next_to(pt, LEFT, buff=0.12).set_opacity(la))
+    xs = np.linspace(cx - R, cx + R, samples)
+    if gap:
+        xs = xs[np.abs(xs) > gap * R]
+    pts = [to(x, fn(x)) for x in xs if abs(fn(x) - cy) <= ry]
+    curve = VMobject(color=FUNC, stroke_width=5)
+    curve.set_points_smoothly(pts) if smooth else curve.set_points_as_corners(pts)
+    g.add(curve)
+    for efn, color in extras:
+        ex = [to(x, efn(x)) for x in np.linspace(cx - R, cx + R, 201) if abs(efn(x) - cy) <= ry]
+        if len(ex) > 1:
+            g.add(VMobject(color=color, stroke_width=4).set_points_as_corners(ex))
+    for x, y, color in dots:
+        if abs(x - cx) <= R and abs(y - cy) <= ry:
+            g.add(Dot(to(x, y), radius=0.09, color=color))
+    return g
+
+
+def zoom_tracker(R0, build):
+    """A continuous zoom: a tracker on log10 of the window half-width R, and the view `build(R)` redrawn every frame.
+    Animate it with zoom_to(tracker, R1); equal times give equal zoom factors, so it reads as a steady camera zoom."""
+    z = ValueTracker(np.log10(R0))
+    # swap the parts in outright each frame: always_redraw's become() lines old and new parts up point by point, and
+    # when the tick and label counts change between frames that stretches them into spikes
+    view = VGroup()
+
+    def redraw(m, dt=0):
+        # manim keeps drawing the parts it listed when an animation began, so the parts being replaced are emptied
+        # first; otherwise the zoom level at the start of each play stays ghosted under the new one
+        for old in m.submobjects:
+            for part in old.get_family():
+                part.points = np.zeros((0, 3))
+        m.submobjects = list(build(10 ** z.get_value()).submobjects)
+    view.add_updater(redraw)
+    redraw(view)
+    z.zoom_view, z.zoom_redraw = view, redraw
+    return z, view
+
+
+def zoom_redraw(z):
+    """An animation that only redraws a zoom view; play it alongside anything else the view's picture depends on
+    (a tracker for h, say), for the same reason zoom_to carries the redraw."""
+    return UpdateFromFunc(z.zoom_view, z.zoom_redraw)
+
+
+def zoom_to(z, R1, **kw):
+    """The zoom as one animation. The view's redraw rides along inside it: manim freezes a snapshot of anything not
+    being animated into the background at the start of a play, which left the old zoom level ghosted under the new."""
+    if not hasattr(z, "zoom_view"):
+        return z.animate.set_value(np.log10(R1))
+    return AnimationGroup(z.animate.set_value(np.log10(R1)), UpdateFromFunc(z.zoom_view, z.zoom_redraw), **kw)
+
+

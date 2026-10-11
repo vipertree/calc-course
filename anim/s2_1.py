@@ -196,11 +196,19 @@ class Lesson(TranscriptScene):
 
         with self.beat("Zooming in") as b:
             self.play(h.animate.set_value(0.4), run_time=0.6)
-            self.camera.frame.save_state()
-            self.play(self.camera.frame.animate.scale(0.12).move_to(ax.c2p(1.15, s(1.15))), run_time=3)
+            # a calculator-style zoom on the same graph (Adder: no camera zooms): the window and its numbered axes
+            # redraw as it scrolls in on (1, 16), the secant and both points drawn at each scale
+            hv = lambda: h.get_value()
+            line = lambda t: s(1) + (s(1 + hv()) - s(1)) / hv() * (t - 1)
+            z, view = zoom_tracker(2.5, lambda R: tick_view(s, R, w=7.6, h=5, labels=True, cx=1.15, cy=s(1.15),
+                                                            extras=[(line, SECANT)],
+                                                            dots=[(1, s(1), INK), (1 + hv(), s(1 + hv()), SECANT)]).to_edge(RIGHT, buff=0.5).shift(DOWN * 0.3))
+            others = [m for m in self.mobjects if m not in (ax, al)]
+            self.play(*[FadeOut(m) for m in others], FadeIn(view), run_time=0.8)
+            self.play(zoom_to(z, 0.3), run_time=3, rate_func=smooth)
             b.line(1)
-            self.play(h.animate.set_value(0.15), run_time=1.5)
-            self.play(Restore(self.camera.frame), run_time=2)
+            self.play(h.animate.set_value(0.15), zoom_redraw(z), run_time=1.5)
+            self.play(FadeOut(view), *[FadeIn(m) for m in others], run_time=1)
 
         with self.beat("Why h can't be zero") as b:
             self.play(FadeOut(sec), FadeOut(brace), FadeOut(hlab), FadeOut(st), FadeOut(nine), run_time=0.5)

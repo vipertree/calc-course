@@ -37,4 +37,7 @@ def site(request):
             "DESIGN": design, "DESIGNS": DESIGNS, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),
-            "FULL_ACCESS": has_full_access(request.user)}
+            "FULL_ACCESS": has_full_access(request.user),
+            "CSP_NONCE": getattr(request, "csp_nonce", ""),
+            "LEGAL_REVIEWED": settings.LEGAL_PAGES_REVIEWED, "CONTACT_EMAIL": settings.CONTACT_EMAIL,
+            "BACKUP_DAYS": settings.BACKUP_DAYS, "UNVERIFIED_DAYS": settings.UNVERIFIED_ACCOUNT_DAYS}

@@ -21,14 +21,18 @@
   <span class="grow"></span>
   <nav class="themes" aria-label="Color theme">{% for k, label in THEMES %}<a href="{% url 'theme' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == THEME %}on{% endif %}">{{ label }}</a>{% endfor %}</nav>
   <details class="design-pick"><summary>Design</summary><nav class="design-menu" aria-label="Site design">{% for k, label in DESIGNS %}<a href="{% url 'design' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == DESIGN %}on{% endif %}">{{ label }}</a>{% endfor %}</nav></details>
-  {% if user.is_authenticated %}<span class="who">{{ PROFILE.display_name }}</span>
+  {% if user.is_authenticated %}<a class="who" href="{% url 'account' %}" title="Account settings">{{ PROFILE.display_name|default:user.get_username }}</a>
   <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="linkbtn">Sign out</button></form>
   {% else %}<a class="linkbtn" href="{% url 'login' %}">Sign in</a>{% endif %}
 </div></header>
-<main class="wrap">{% block main %}{% endblock %}</main>
+<main class="wrap">
+{% if messages %}<div class="flash" role="status">{% for m in messages %}<p class="fb {% if m.level_tag == 'error' %}bad{% else %}good{% endif %}">{{ m }}</p>{% endfor %}</div>{% endif %}
+{% if user.is_authenticated and PROFILE and PROFILE.teacher_requested and not IS_TEACHER %}<p class="notice">Your teacher account request is waiting for approval{% if not PROFILE.email_verified %}. First, confirm your email with the link we sent{% endif %}. Until then you can look around as a student.</p>{% endif %}
+{% block main %}{% endblock %}</main>
+<footer class="foot"><div class="in"><a href="{% url 'privacy' %}">Privacy</a><a href="{% url 'terms' %}">Terms</a>{% if user.is_authenticated %}<a href="{% url 'account' %}">Account</a>{% endif %}</div></footer>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
-  onload="document.querySelectorAll('.mathy').forEach((e) => renderMathInElement(e, {throwOnError: false, delimiters: [{left: '$', right: '$', display: false}]}))"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script defer src="{% static 'js/site.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

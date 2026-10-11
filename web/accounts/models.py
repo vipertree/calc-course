@@ -17,6 +17,10 @@ class Profile(models.Model):
     role = models.CharField(max_length=10, choices=[(TEACHER, "Teacher"), (STUDENT, "Student")], default=STUDENT)
     display_name = models.CharField(max_length=80)
     full_access = models.BooleanField(default=False, help_text="Paid or granted access outside a class")
+    email_verified = models.BooleanField(default=False, help_text="The address in the account's email was confirmed")
+    teacher_requested = models.DateTimeField(null=True, blank=True,
+                                             help_text="Asked for a teacher account; approve in the admin")
+    school = models.CharField(max_length=120, blank=True, help_text="Teachers only, given when asking for an account")
 
     def __str__(self):
         return f"{self.display_name} ({self.role})"

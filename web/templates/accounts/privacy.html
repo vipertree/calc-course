@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Privacy · AP Calculus{% endblock %}
+{% block main %}
+{# ADDER: plain-language DRAFT. Read it against what the site really does, ideally with a lawyer, then set LEGAL_PAGES_REVIEWED=true in .env to drop the draft notice. docs/PRIVACY_NOTES.md lists what is and isn't covered (COPPA, FERPA, GDPR). #}
+<article class="narrow legal">
+{% include "accounts/_draft_notice.html" %}
+<h1>Privacy</h1>
+<p>This site teaches AP Calculus. It keeps only what it needs to run your account and show you and your teacher your progress. It has no ads, no analytics and no tracking, and we don't sell or share your information.</p>
+
+<h2>What we keep</h2>
+<ul>
+  <li><strong>Your account:</strong> username, the name you give us, your password (stored scrambled, so nobody can read it), when you joined and last signed in.</li>
+  <li><strong>Email, only if you give one.</strong> Students who join with a class code aren't asked for an email. People who sign up on their own, and teachers, give one so they can reset a forgotten password. We use it only for account emails such as confirmation links and password resets.</li>
+  <li><strong>Teachers:</strong> the school name, if you give it, so we can check the request.</li>
+  <li><strong>Your work:</strong> lesson sections you finish, answers you check, what you type into answer boxes (saved so it's there when you come back), quiz and test scores, scores you give yourself on free-response questions, and the ID of each packet you print. Printed packets show your name and that ID on every page.</li>
+  <li><strong>Server logs:</strong> like any website, the web server notes the address a request came from, the page and the time. We use these only to keep the site running and safe, and they are deleted after a short time.</li>
+</ul>
+
+<h2>Who can see it</h2>
+<ul>
+  <li><strong>You.</strong> Account settings has a button that downloads all of it.</li>
+  <li><strong>Your teacher</strong>, if you joined a class: your name, username, progress, quiz and test scores, and who printed a packet they look up. Teachers can reset a class student's password and remove students from their class.</li>
+  <li><strong>The person who runs the site</strong>, to fix problems and approve teacher accounts.</li>
+</ul>
+
+<h2>Cookies</h2>
+<p>We use only the cookies the site needs: one keeps you signed in, one protects forms from being submitted by other websites, and two remember the color theme and design you picked (only if you pick one). There are no advertising or tracking cookies, so there is nothing to opt out of.</p>
+
+<h2>Other services the pages use</h2>
+<p>Pages load fonts from Google Fonts, the math display and math keyboard from the jsDelivr network, and the graphing calculator from Desmos. Your browser contacts those services directly, so they see your IP address and browser details, as with any web request. We don't send them your account information. Account emails go out through an email delivery service.</p>
+{# ADDER: name the email provider once chosen. Self-hosting the fonts, KaTeX and MathLive would take Google and jsDelivr out of this paragraph. #}
+
+<h2>How long we keep it</h2>
+<ul>
+  <li>Your account and work stay until you delete them.</li>
+  <li>Accounts made on your own whose email is never confirmed are deleted after {{ UNVERIFIED_DAYS }} days if they haven't been used.</li>
+  <li>Deleted information disappears from the site right away and from our backups within {{ BACKUP_DAYS }} days.</li>
+</ul>
+{# ADDER: the unconfirmed-account window is UNVERIFIED_ACCOUNT_DAYS (14) and backups BACKUP_DAYS (14); they happen to match. Decide whether long-unused accounts should be deleted; nothing does that yet. #}
+
+<h2>Your choices</h2>
+<ul>
+  <li><strong>See it:</strong> Account settings, "Download my data".</li>
+  <li><strong>Fix it:</strong> change your name, email and password in Account settings.</li>
+  <li><strong>Delete it:</strong> Account settings, "Delete my account". It takes effect at once.</li>
+  <li><strong>Leave a class</strong> at any time. Your own work stays yours.</li>
+</ul>
+
+<h2>Students under 13</h2>
+<p>You must be 13 or older to sign up on your own. Younger students use the site only through a class their teacher sets up, and we don't ask them for an email. A parent who wants to see or delete their child's information can ask the teacher, or contact us.</p>
+
+<h2>Contact</h2>
+<p>{% if CONTACT_EMAIL %}Questions or requests: <a href="mailto:{{ CONTACT_EMAIL }}">{{ CONTACT_EMAIL }}</a>.{% else %}Contact address coming soon.{% endif %}</p>
+<p class="muted small">Last updated: draft, October 2026.</p>
+</article>
+{% endblock %}

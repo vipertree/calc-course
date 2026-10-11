@@ -6,4 +6,4 @@
 <div id="exam" class="mathy" data-api="{% url 'api_exam' slug att.pk 'state' %}" data-static="{% static '' %}" data-home="{% url 'exam_home' slug %}" data-topic="{% url 'lesson' '0.0' %}"></div>
 {{ data|json_script:"exam-data" }}{{ meta|json_script:"exam-meta" }}
 {% endblock %}
-{% block scripts %}<script>window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/exam.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">window.CSRF = "{{ csrf_token }}";</script><script defer src="{% static 'js/exam.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>{% endblock %}

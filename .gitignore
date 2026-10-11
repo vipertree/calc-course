@@ -20,4 +20,8 @@ ap-calculus-ab-and-bc-course-and-exam-description.pdf
 voice/
 .env
 .claude/worktrees/
+
+# collectstatic output (production builds it on the server)
+web/staticfiles/
+
 web/course/content/exams/*.json

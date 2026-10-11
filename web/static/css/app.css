@@ -78,7 +78,7 @@ h1, h2, h3 { font-family: var(--font-head); line-height: 1.2; margin: 0 0 .4em; 
 .btn.small { padding: 4px 10px; font-size: .85rem; }
 .btn:disabled { opacity: .5; cursor: default; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-input[type=text], input[type=password], select { background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
+input[type=text], input[type=password], input[type=email], select { background: var(--panel); color: var(--ink); border: 1px solid var(--rule);
   border-radius: 8px; padding: 8px 10px; width: 100%; }
 math-field { background: var(--panel); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px;
   padding: 4px 8px; min-width: 9rem; font-size: 1.1rem; --caret-color: var(--accent); --selection-background-color: color-mix(in srgb, var(--accent) 30%, transparent);
@@ -343,6 +343,42 @@ html .blank.bad input, html .blank.bad math-field { border-bottom-color: var(--b
 /* unit test scoring summary */
 .scoring { font-family: var(--font-ui); font-size: .92rem; }
 .scoring ul { margin: 6px 0 0; padding-left: 1.2em; }
+
+/* ------------------------------------------------------------ accounts, privacy, notices */
+.hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.auth label.check, .stack label.check { display: flex; gap: 8px; align-items: center; font-weight: 400; }
+.small { font-size: .85rem; }
+.flash { display: grid; gap: 6px; margin: 0 0 16px; }
+.flash .fb { margin: 0; border-radius: var(--radius); padding: 8px 12px; }
+.notice { background: var(--panel-2); border: 1px solid var(--rule); border-left: 4px solid var(--secant);
+  border-radius: var(--radius); padding: 10px 14px; margin: 0 0 16px; font-family: var(--font-ui); }
+.foot { border-top: 1px solid var(--rule); font: .85rem var(--font-ui); }
+.foot .in { max-width: 1180px; margin: 0 auto; padding: 14px 16px 28px; display: flex; gap: 18px; flex-wrap: wrap; }
+.foot a { color: var(--dim); }
+.top a.who { text-decoration: none; }
+.top a.who:hover { color: var(--ink); }
+.account .card { margin: 0 0 16px; }
+.account h2 { font-size: 1.15rem; }
+.stack label { display: block; font: 600 .9rem var(--font-ui); margin: 12px 0 4px; }
+.stack .help { color: var(--dim); font-size: .82rem; }
+.stack input[type=text], .stack input[type=password], .stack input[type=email] { max-width: 26rem; }
+details.pop > summary { list-style: none; }
+details.pop > summary::-webkit-details-marker { display: none; }
+details.pop[open] > summary { border-color: var(--ink-2); }
+details.pop > form { margin-top: 10px; padding: 12px 14px; background: var(--panel-2); border: 1px solid var(--rule); border-radius: var(--radius); }
+details.pop.inline { display: inline-block; vertical-align: middle; margin-left: 6px; }
+details.pop.inline[open] { display: block; margin: 8px 0 0; }
+.btn.danger { background: var(--bad); color: var(--bg); border-color: var(--bad); font-weight: 600; }
+.danger-zone { border-color: color-mix(in srgb, var(--bad) 40%, var(--rule)); }
+ul.plain { list-style: none; padding: 0; margin: 0 0 10px; }
+ul.plain > li { padding: 8px 0; border-bottom: 1px solid var(--rule); }
+details.manage { margin-top: 12px; font-family: var(--font-ui); }
+details.manage > summary { cursor: pointer; color: var(--ink-2); }
+.manage-list > li > span { margin-right: 6px; }
+.temp-pw { margin-bottom: 20px; border-color: var(--good); }
+.legal { line-height: 1.65; }
+.legal h2 { margin-top: 1.4em; font-size: 1.2rem; }
+.legal li { margin: 4px 0; }
 
 /* ------------------------------------------------------------ full-length practice exams */
 .exam-cards { display: grid; gap: 10px; margin: 18px 0; }

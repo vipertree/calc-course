@@ -1,0 +1,7 @@
+{% autoescape off %}Hi {{ name }},
+
+Open this link to confirm your email for AP Calculus:
+
+{{ link }}
+
+It works for {{ days }} days. If you didn't ask for this, ignore this email and nothing changes.{% endautoescape %}

@@ -73,7 +73,7 @@
 [data-design="transit"] .btn.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
 [data-design="transit"] .btn.primary:hover { background: var(--bg); color: var(--ink); border-color: var(--ink); }
 [data-design="transit"] .btn.small { padding: 4px 10px; }
-[data-design="transit"] input[type=text], [data-design="transit"] input[type=password], [data-design="transit"] select,
+[data-design="transit"] input[type=text], [data-design="transit"] input[type=password], [data-design="transit"] input[type=email], [data-design="transit"] select,
 [data-design="transit"] math-field { border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; background: var(--panel); }
 [data-design="transit"] .kbd-btn { border-radius: 0; border: 2px solid var(--ink); background: var(--bg); box-shadow: none; }
 [data-design="transit"] .lock { text-transform: none; letter-spacing: 0; font-size: .72rem; font-weight: 700; border: 0; border-radius: 0;

@@ -68,12 +68,14 @@ def _load(path, mtime):
     data = json.loads(open(path, encoding="utf-8").read())
     out = []
     for q in data["questions"]:
+        q = {**q, "text": _tidy(q["text"])}
         cats = [BY_FOLDER[c] for c in q["categories"] if c in BY_FOLDER]
         cat = cats[0] if cats else None
         out.append({
             "id": q["id"], "year": q["year"], "exam": q["exam"], "number": q["number"], "exams": q["exams"],
             "cat": cat and cat[0], "cat_name": cat[2] if cat else "Not sorted yet",
-            "label": f"{q['exam']} Question {q['number']}",
+            "label": f"{q['exam']} Question {q['number']}" + (" (Form B)" if q.get("form") else ""),
+            "form": q.get("form", ""),
             "also": _also(q),
             "text": q["text"], "search": _fold(q["text"]),
             "question_pages": q["question_pages"], "guideline_pages": q["guideline_pages"],
@@ -82,8 +84,17 @@ def _load(path, mtime):
     return out
 
 
+# older PDFs set math in the Symbol font, which extracts as Latin-1 look-alikes: £ is <=, ³ is >=, ¢ is a prime
+_SYMBOL = str.maketrans({"\u00a3": "\u2264", "\u00b3": "\u2265", "\u00a2": "\u2032", "\u2014": "-"})
+
+
+def _tidy(text):
+    """Search and list text: the PDF's em dashes (section headers) become hyphens, Symbol-font stand-ins their symbols."""
+    return text.translate(_SYMBOL)
+
+
 def _also(q):
-    """'Also BC Question 3' for a question that was on both exams (the shared scoring guidelines say AB/BC)."""
+    """'Also on the BC exam' for a question that was on both exams (from 2017, when the scoring guidelines say so)."""
     if len(q["exams"]) < 2:
         return ""
     other = "BC" if q["exam"] == "AB" else "AB"
@@ -145,7 +156,10 @@ def filtered(cat=None, exam="", year_from=None, year_to=None, text=""):
 def snippet(q, text="", width=170):
     """A line of the question for the list: the opening of its stem, or the part around the first search word."""
     flat = re.sub(r"\s+", " ", q["text"]).strip()
-    flat = re.sub(r"^\d\.\s*", "", flat)
+    # the stem starts at "3. A student ..."; table cells and section headers often come out of the PDF first
+    m = re.search(rf"(?<![\d.]){q['number']}\.\s+(?=[A-Z])", flat)
+    if m:
+        flat = flat[m.end():]
     words = [w for w in _fold(text).split() if w]
     if words:
         i = flat.lower().find(words[0])

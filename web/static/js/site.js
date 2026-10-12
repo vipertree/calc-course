@@ -9,12 +9,28 @@
 // main navigation: open on wide screens, a Menu button on narrow ones; one dropdown open at a time
 (function () {
   const fold = document.querySelector(".nav-fold");
-  const narrow = window.matchMedia("(max-width: 1180px)");
+  const mq = window.matchMedia("(max-width: 1180px)");
+  const top = document.querySelector(".top");
+  const bar = top && top.querySelector(".in");
+  // wider than 1180px the bar can still overflow (links style, a signed-in name, a wide design font): measure it
+  // with the links laid out in a row and fold into the Menu button when they don't fit (.nav-tight, app.css)
+  const measure = () => {
+    if (!bar || mq.matches) { if (top) top.classList.remove("nav-tight"); return; }
+    top.classList.remove("nav-tight");
+    if (fold) fold.open = true;
+    top.classList.toggle("nav-tight", bar.scrollWidth > bar.clientWidth + 1);
+  };
+  const narrow = { get matches() { return mq.matches || !!(top && top.classList.contains("nav-tight")); } };
   const groups = [...document.querySelectorAll(".nav-group")];
   // inside the narrow Menu every group stays open as a labelled list; on wide screens they are dropdowns
-  const sync = () => { if (fold) fold.open = !narrow.matches; groups.forEach((g) => { g.open = narrow.matches; }); };
+  const sync = () => { measure(); if (fold) fold.open = !narrow.matches; groups.forEach((g) => { g.open = narrow.matches; }); };
   sync();
-  narrow.addEventListener ? narrow.addEventListener("change", sync) : narrow.addListener(sync);
+  mq.addEventListener ? mq.addEventListener("change", sync) : mq.addListener(sync);
+  let t = 0, lastW = window.innerWidth;
+  // width changes only: a phone's address bar resizes the height while scrolling, and that must not shut the Menu
+  window.addEventListener("resize", () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth;
+    clearTimeout(t); t = setTimeout(sync, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
   groups.forEach((g) => g.addEventListener("toggle", () => {
     if (g.open && !narrow.matches) groups.forEach((o) => { if (o !== g) o.open = false; });
   }));

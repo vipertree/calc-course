@@ -1,21 +1,17 @@
 {% extends "base.html" %}
 {% block title %}{{ q.year }} {{ q.label }} · AP FRQ Archive{% endblock %}
-{% block crumbs %}<a class="muted crumb" href="{% url 'frq' %}" style="font-family:var(--font-ui);font-size:.9rem">AP FRQ Archive</a>{% endblock %}
 {% block main %}
 <article class="frq-page frq-one">
   <header class="frq-head">
     <p class="frq-kicker"><a href="{% url 'frq' %}">AP FRQ Archive</a>{% if cat %} / <a href="{% url 'frq_category' cat.0 %}">{{ cat.2 }}</a>{% endif %}</p>
-    <div class="lesson-head">
-      <span class="chip">{{ q.year }}</span>
-      <span class="unit">AP Calculus {{ q.exam }} · {{ calc }}{% if q.also %} · {{ q.also }}{% endif %}</span>
-      <h1>{{ q.label }}</h1>
-    </div>
+    <div class="frq-title"><span class="chip">{{ q.year }}</span><h1>{{ q.label }}</h1></div>
+    <p class="frq-meta">AP Calculus {{ q.exam }} · {{ calc }}{% if q.also %} · {{ q.also }}{% endif %}</p>
   </header>
 
   <div class="frq-tools">
     <a class="btn small" href="{% url 'frq_file' q.id q.pdf %}" target="_blank" rel="noopener">Open the PDF ({{ pdf_kb }} KB)</a>
-    {% if older %}<a class="btn small" href="{% url 'frq_question' older.id %}">Older: {{ older.year }} {{ older.exam }} {{ older.number }}</a>{% endif %}
-    {% if newer %}<a class="btn small" href="{% url 'frq_question' newer.id %}">Newer: {{ newer.year }} {{ newer.exam }} {{ newer.number }}</a>{% endif %}
+    {% if newer %}<a class="btn small" href="{% url 'frq_question' newer.id %}">Previous: {{ newer.year }} {{ newer.exam }} {{ newer.number }}</a>{% endif %}
+    {% if older %}<a class="btn small" href="{% url 'frq_question' older.id %}">Next: {{ older.year }} {{ older.exam }} {{ older.number }}</a>{% endif %}
   </div>
 
   <section class="frq-sheets" aria-label="The question">
@@ -23,7 +19,7 @@
       alt="{{ q.year }} AP Calculus {{ q.exam }} free-response question {{ q.number }}, page {{ forloop.counter }} of {{ q.question_pages|length }}"{% if not forloop.first %} loading="lazy"{% endif %}>{% endfor %}
   </section>
 
-  <details class="frq-sg">
+  {% if q.guideline_pages %}<details class="frq-sg">
     <summary class="btn primary"><span class="when-closed">Show the scoring guidelines</span><span class="when-open">Hide the scoring guidelines</span></summary>
     <p class="muted">Try the whole question first. Then score your work point by point, the way an AP reader would.</p>
     <section class="frq-sheets" aria-label="Scoring guidelines">
@@ -31,6 +27,7 @@
         alt="Scoring guidelines for {{ q.year }} {{ q.exam }} question {{ q.number }}, page {{ forloop.counter }} of {{ q.guideline_pages|length }}">{% endfor %}
     </section>
   </details>
+  {% else %}<p class="frq-nosg muted">The scoring guidelines for this question aren't in the archive yet.</p>{% endif %}
 
   <details class="frq-text">
     <summary>The question as text</summary>

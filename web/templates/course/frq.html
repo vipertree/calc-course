@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ page_title }} · Mr Oaks Math{% endblock %}
-{% block crumbs %}{% if cat %}<a class="muted crumb" href="{% url 'frq' %}" style="font-family:var(--font-ui);font-size:.9rem">AP FRQ Archive</a>{% endif %}{% endblock %}
 {% block main %}
 <div class="frq-page">
   <header class="frq-head">
     {% if cat %}<p class="frq-kicker"><a href="{% url 'frq' %}">AP FRQ Archive</a></p><h1>{{ cat.2 }}</h1>
     <p class="muted">{{ cat.3 }}</p>
     {% else %}<h1>AP FRQ Archive</h1>
-    <p class="muted">Every released AP Calculus free-response question from 2002 to 2025, sorted by the kind of question it is.
-      Each one comes with its official scoring guidelines. Free, no account needed.</p>{% endif %}
+    <p class="muted">{% if total %}{{ total }} free-response questions from {{ years|length }} past AP Calculus exams, {{ years|first }} to {{ years|last }}{% else %}Free-response questions from past AP Calculus exams{% endif %},
+      sorted by the kind of question. Each one comes with the College Board's scoring guidelines. Free, no account needed.</p>{% endif %}
   </header>
 
   <nav class="frq-cats" aria-label="Question types">
@@ -21,7 +20,7 @@
   <form class="frq-filter" method="get" role="search" aria-label="Filter the questions">
     <label class="frq-search"><span>Search the questions</span>
       <input type="text" name="q" value="{{ f.text }}" placeholder="tank, particle, slope field..." autocomplete="off"></label>
-    <label><span>Exam</span><select name="exam">
+    <label class="frq-exam"><span>Exam</span><select name="exam">
       <option value="">AB and BC</option>
       <option value="AB"{% if f.exam == "AB" %} selected{% endif %}>AB exam</option>
       <option value="BC"{% if f.exam == "BC" %} selected{% endif %}>BC exam</option></select></label>

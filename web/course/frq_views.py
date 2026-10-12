@@ -54,7 +54,7 @@ def index(request, cat=None):
     query = request.GET.urlencode()
     return render(request, "course/frq.html", {
         "cats": cats, "cat": cat and frq.BY_SLUG[cat], "groups": groups, "count": len(rows),
-        "matching": len(everything), "built": bool(frq.questions()), "f": f, "active": active, "years": frq.years(), "query": query,
+        "matching": len(everything), "built": bool(frq.questions()), "f": f, "active": active, "years": frq.years(), "total": len(frq.questions()), "query": query,
         "page_title": frq.BY_SLUG[cat][2] if cat else "AP FRQ Archive"})
 
 

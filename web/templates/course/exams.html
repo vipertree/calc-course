@@ -18,7 +18,7 @@
 {% endfor %}
 </div>
 {% if not user.is_authenticated %}<p class="muted">Sign in to take an exam. The AB exam is open to any account.</p>{% endif %}
-<p>Want more free response? The <a href="{% url 'frq' %}">AP FRQ Archive</a> has every released AP Calculus free-response question
-  from 2002 to 2025, sorted by type, with the scoring guidelines. Free, no account needed.</p>
+<p>Want more free response? The <a href="{% url 'frq' %}">AP FRQ Archive</a> has questions from past AP Calculus exams, 2002 to 2025,
+  sorted by type, each with its scoring guidelines. Free, no account needed.</p>
 </div>
 {% endblock %}

@@ -439,6 +439,9 @@ FIG2 = graph("exam_bc1_q2", [], (-3.6, 3.6), (-3.6, 4.6), w="7cm", h="8cm", yste
                    r"\addplot[fn2, domain=0:360, samples=200, variable=\t]({3*cos(\t)},{3*sin(\t)});"
                    r"\node[font=\footnotesize] at (axis cs:0,3.5) {$R$};",
              caption=r"The cardioid $r = 2 + 2\sin\theta$ (solid) and the circle $r = 3$ (dashed). The shaded region $R$ is inside the cardioid and outside the circle.")
+# tick labels at 3 and -3 would sit on the dashed circle: keep only the inner ones
+FIG2.tikz = FIG2.tikz.replace("xtick={-3,-2,-1,1,2,3}", "xtick={-2,-1,1,2}", 1).replace("ytick={-3,-2,-1,1,2,3,4}", "ytick={-2,-1,1,2}", 1)
+check("Q2 figure ticks trimmed", "xtick={-2,-1,1,2}" in FIG2.tikz and "ytick={-2,-1,1,2}" in FIG2.tikz)
 FRQ2 = FRQ("Polar curves", (
     r"The figure shows the graphs of the polar curves $r = 2 + 2\sin\theta$ and $r = 3$ for $0 \le \theta \le 2\pi$. "
     r"Let $R$ be the shaded region that is inside the graph of $r = 2 + 2\sin\theta$ and outside the graph of $r = 3$."), [
@@ -483,7 +486,7 @@ same("Q3 values", [f3[-4], f3[4], f3[3]], [3 - 2 * sp.pi, 1, 0])
 same("Q3c limit", sp.limit((f3[3] + sp.integrate(FP3G["seg2"], (x, 3, x))) / (x - 3)**2, x, 3), 1)
 check("Q3d min at x = -4", float(f3[-4]) < min(0, float(f3[0]), float(f3[3]), float(f3[4])))
 FIG3 = graph("exam_bc1_q3", [("sqrt(max(0,4-(x+2)^2))", -4, 0), ("-x", 0, 2), ("2*x-6", 2, 4)], (-4.6, 4.6), (-2.6, 2.6),
-             closed=[(-4, 0), (4, 2)], caption=r"The graph of $f'$, the derivative of $f$.", w="11cm", h="6.2cm", ylabel="y", samples=200)
+             closed=[(-4, 0), (4, 2)], caption=r"The graph of $f'$, the derivative of $f$.", w="11cm", h="5.6cm", ylabel="y", samples=200)
 FIG3.tikz = FIG3.tikz.replace(r"\begin{axis}[calcaxes", r"\begin{axis}[calcaxes, xticklabel style={yshift=-3pt}", 1)
 FRQ3 = FRQ("The graph of a derivative", (
     r"Let $f$ be a function defined on the closed interval $-4 \le x \le 4$ with $f(0) = 3$. The graph of $f'$, the derivative of $f$, consists of a semicircle and two line segments, as shown in the figure."), [
@@ -503,13 +506,13 @@ FRQ3 = FRQ("The graph of a derivative", (
          r"$\displaystyle\lim_{x\to 3} \frac{f(x)}{(x - 3)^2} = \lim_{x\to 3} \frac{f'(x)}{2(x - 3)} = \lim_{x\to 3} \frac{2x - 6}{2(x - 3)} = 1$, "
          r"since $f'(x) = 2x - 6$ for $2 \le x \le 4$.",
          [(1, r"Shows $\displaystyle\lim_{x\to 3} f(x) = 0$ (from $f(3) = 0$) and $\displaystyle\lim_{x\to 3} (x - 3)^2 = 0$, and uses L'Hospital's Rule."),
-          (1, r"Gives the answer, $1$.")], work="3cm", topic="4.7"),
+          (1, r"Gives the answer, $1$.")], work="2.4cm", topic="4.7"),
     Part("d", r"Find the absolute minimum value of $f$ on the closed interval $-4 \le x \le 4$. Justify your answer.",
          selfcheck(r"3 - 2\pi"),
          r"The candidates are the endpoints and the critical points: $f(-4) = 3 - 2\pi$, $f(0) = 3$, $f(3) = 0$, and $f(4) = 1$. "
          r"Since $\pi > 3$, $3 - 2\pi < -3 < 0$. Therefore the absolute minimum value of $f$ is $3 - 2\pi$, at $x = -4$.",
          [(1, r"Considers the endpoints and the critical points."), (1, r"Finds $f(3) = 0$ and uses the values from part (a)."),
-          (1, r"Gives the answer, $3 - 2\pi$, with the comparison.")], work="2.8cm", topic="5.5"),
+          (1, r"Gives the answer, $3 - 2\pi$, with the comparison.")], work="2.4cm", topic="5.5"),
 ], frq_type="Graph of f'", figure=FIG3)
 
 # ---- Question 4: a differential equation in context

@@ -35,12 +35,17 @@ NOTES = [
         r"\[ R_n = \sum_{k=1}^{n} f(x_k)\,\Delta x = \sum_{k=1}^{n} f\left(a + k\,\frac{b - a}{n}\right)\frac{b - a}{n}. \]")),
 
     Section("The definite integral"),
+    Text(r"Take the limit as $n \to \infty$: more and more rectangles, as many as we like, and in the limit the sum gives the exact area under the curve. "
+         r"We call this the \blank{definite integral}. It is the other core concept of the course: the first half was about derivatives, and now we "
+         r"start on integrals."),
     Formula("Definite integral", (
         r"\[ \int_a^b f(x)\,dx = \lim_{n\to\infty} \sum_{k=1}^{n} f(x_k)\,\Delta x. \] "
-        r"The integral sign is a stretched-out S, for sum. $\Sigma$ is an S for sum too: $\Sigma$ adds up a certain number of rectangles, and $\int$ is "
-        r"what that sum becomes in the limit, with infinitely many. "
         r"$a$ and $b$ are the \blank{limits of integration}, $f(x)$ is the \blank{integrand}, and $dx$ stands for a tiny width. "
         r"If $f \ge 0$, the integral is the exact area under the graph from $a$ to $b$.")),
+    Text(r"\textbf{Reading the notation, piece by piece.} The integral sign is a stretched-out S, for sum. $\Sigma$ is an S for sum too: $\Sigma$ adds up "
+         r"a certain number of rectangles, and $\int$ is what that sum becomes in the limit. $f(x_k)$, the height at one sample point, becomes $f(x)$. "
+         r"And $\Delta x$ becomes $dx$: $\Delta x$ is a finite little difference in $x$, the width of one rectangle, while $dx$ is a tiny nudge in $x$, "
+         r"arbitrarily small. You can picture it as infinitely small, but really it is a tiny nudge whose behavior we look at as it shrinks toward zero."),
     Text(r"\textbf{From a limit to an integral.} Find $\Delta x$ (so $b - a$), read $a$ from $x_k = a + k\,\Delta x$, then see what is done to $x_k$: that's $f$."),
     VideoExample('From sum to integral', work="2.4cm"),
     Text(r"\textbf{Geometry.} When the region is a familiar shape, its area gives the integral: $\int_{-2}^{2} \sqrt{4 - x^2}\,dx$ is half a circle of radius $2$, so it equals $2\pi$."),

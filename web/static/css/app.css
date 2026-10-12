@@ -599,7 +599,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .lp-lede { font-size: clamp(1.08rem, 1.6vw, 1.22rem); color: var(--ink-2); max-width: 40em; margin: 0; }
 .lp-fine { color: var(--dim); font: .95rem var(--font-ui); margin: 14px 0 0; }
 .lp-hero-art { position: relative; padding-bottom: 72px; }
-.lp-hero-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 32%; border-radius: var(--radius); }
+.lp-hero-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 20%; border-radius: var(--radius); }
 .lp-screen { position: absolute; left: 0; bottom: 0; width: 76%; margin: 0; background: var(--panel); border: 1px solid var(--rule);
   border-radius: var(--radius); padding: 6px; box-shadow: var(--shadow); }
 .lp-screen video { width: 100%; border-radius: calc(var(--radius) - 4px); background: #f3ead6; }

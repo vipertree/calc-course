@@ -125,7 +125,8 @@ class Lesson(TranscriptScene):
             self.play(Write(bd[2]), run_time=1)
             self.play(Write(bd[3]), run_time=0.8)
             b.line(2)
-            self.play(FadeIn(bd[4]), Indicate(ltags, color=SECANT), run_time=1.2)
+            self.play(FadeIn(bd[4]), run_time=0.6)
+            self.play(*[Circumscribe(r, color=SECANT, run_time=0.9) for r in left], run_time=0.9)
         self.play(FadeOut(bd), FadeOut(left), FadeOut(ltags), run_time=0.6)
 
         with self.beat("Right Riemann sum") as b:
@@ -195,7 +196,8 @@ class Lesson(TranscriptScene):
             gaps = VGroup(*[region(ax, F, (lambda h: lambda s: h)(F(a)), a, a + 2, color=TANGENT, opacity=0.75) for a in (0, 2, 4, 6)])
             ans = VGroup(T("underestimate", 36, AREA), T("every rectangle is under the graph", 28, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.12).next_to(q, DOWN, buff=0.5).align_to(q, LEFT)
             self.play(FadeIn(gaps), run_time=0.8)
-            self.play(Indicate(gaps, color=TANGENT), FadeIn(ans), run_time=1.2)
+            self.play(gaps.animate.set_fill(opacity=1), FadeIn(ans), run_time=0.6)
+            self.play(gaps.animate.set_fill(opacity=0.75), run_time=0.6)
             b.line(2)
             right = VGroup(*[rect(ax, a, a + 2, F(a + 2), SECANT, 0.35) for a in (0, 2, 4, 6)])
             q2 = T("Right Riemann sum?", 32, SECANT).next_to(ans, DOWN, buff=0.5).align_to(q, LEFT)
@@ -204,7 +206,8 @@ class Lesson(TranscriptScene):
             pokes = VGroup(*[region(ax, (lambda h: lambda s: h)(F(a + 2)), F, a, a + 2, color=TANGENT, opacity=0.75) for a in (0, 2, 4, 6)])
             ans2 = VGroup(T("overestimate", 36, SECANT), T("the rectangles poke above the graph", 28, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.12).next_to(q2, DOWN, buff=0.3).align_to(q, LEFT)
             self.play(FadeIn(pokes), run_time=0.8)
-            self.play(Indicate(pokes, color=TANGENT), FadeIn(ans2), run_time=1.2)
+            self.play(pokes.animate.set_fill(opacity=1), FadeIn(ans2), run_time=0.6)
+            self.play(pokes.animate.set_fill(opacity=0.75), run_time=0.6)
             self.wait(0.6)
             self.clear()
 

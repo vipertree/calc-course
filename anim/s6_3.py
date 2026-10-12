@@ -76,7 +76,8 @@ class Lesson(TranscriptScene):
             VGroup(ax, al).to_edge(LEFT, buff=0.7).shift(DOWN * 0.5)
             lim = M(r"\lim_{n\to\infty} \sum_{k=1}^{n} f(x_k)\,\Delta x", 44).to_edge(UP, buff=0.4).shift(LEFT * 2.6)
             boxes = riemann_boxes(ax, sq, np.linspace(1, 3, 5), "right")
-            self.play(FadeIn(ax), FadeIn(al), Create(ax.plot(sq, x_range=[0, 3.2], color=FUNC, stroke_width=5)), FadeIn(boxes), Write(lim), run_time=1.4)
+            cv = ax.plot(sq, x_range=[0, 3.2], color=FUNC, stroke_width=5)
+            self.play(FadeIn(ax), FadeIn(al), Create(cv), FadeIn(boxes), Write(lim), run_time=1.4)
             for n in (8, 16, 64, 256):
                 self.play(Transform(boxes, riemann_boxes(ax, sq, np.linspace(1, 3, n + 1), "right", opacity=0.45 if n < 64 else 0.55)), run_time=1)
             solid = ax.get_area(ax.plot(sq, x_range=[1, 3]), x_range=[1, 3], color=AREA, opacity=0.55)
@@ -87,7 +88,7 @@ class Lesson(TranscriptScene):
             self.play(Write(big), run_time=1.6)
             self.play(FadeIn(name, shift=UP * 0.2), Circumscribe(VGroup(big, name), color=ACCUM), run_time=1.2)
             b.line(2)
-            self.play(FadeOut(ax), FadeOut(al), FadeOut(solid), FadeOut(lim), run_time=0.6)
+            self.play(FadeOut(ax), FadeOut(al), FadeOut(cv), FadeOut(solid), FadeOut(lim), run_time=0.6)
             self.play(VGroup(big, name).animate.scale(0.7).to_edge(UP, buff=0.6), run_time=0.8)
             halves = VGroup(VGroup(T("Derivatives", 44, DERIV), T("the first half of the course", 30, DIM)).arrange(DOWN, buff=0.2),
                             VGroup(T("Integrals", 44, ACCUM), T("the other core concept", 30, DIM)).arrange(DOWN, buff=0.2)).arrange(RIGHT, buff=2.2).shift(DOWN * 1.2)

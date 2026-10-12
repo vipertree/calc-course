@@ -72,7 +72,8 @@ def question(request, qid):
     i = [x["id"] for x in same].index(q["id"])
     newer = same[i - 1] if i > 0 else None
     older = same[i + 1] if i + 1 < len(same) else None
-    calc = "Part A: a graphing calculator is required" if q["number"] <= 2 else "Part B: no calculator"
+    # Part A (calculator) was questions 1-3 through 2010 and 1-2 from 2011; the section headers in the PDFs agree
+    calc = "Part A: graphing calculator required" if q["number"] <= (3 if q["year"] <= 2010 else 2) else "Part B: no calculator"
     return render(request, "course/frq_question.html", {
         "q": q, "cat": q["cat"] and frq.BY_SLUG[q["cat"]], "lessons": lessons, "newer": newer, "older": older,
         "calc": calc, "pdf_kb": round(q["pdf_size"] / 1024)})

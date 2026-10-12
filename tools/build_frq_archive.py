@@ -42,6 +42,8 @@ SET_FILE = re.compile(r"_(?P<exam>AB|BC)/(?P<year>\d{4})/Q(?P<n>\d)\.pdf")
 SG_HEAD = re.compile(r"scoring\s+guidelines?", re.I)
 # "AP CALCULUS AB/CALCULUS BC 2017 SCORING GUIDELINES", "AP Calculus AB/BC 2025 Scoring Guidelines"
 SHARED = re.compile(r"calculus\s+ab\s*/\s*(calculus\s+)?bc", re.I)
+PART = re.compile(r"Part\s+[AB]\s*\((AB or BC|AB|BC)\)")
+FORM_B = re.compile(r"\(Form\s*B\)", re.I)
 BOILER = re.compile(r"(©|Copyright).*?$|Visit (the )?College Board on the (W|w)eb.*?$|GO ON TO THE NEXT PAGE\.?|"
                     r"Available (to AP professionals )?at .*?$|.*FREE-RESPONSE QUESTIONS.*?$|"
                     r"AP®? CALCULUS (AB|BC).*?$|-\d+-|\bWRITE ALL WORK IN THE (EXAM|PINK) BOOKLET\.?", re.M | re.I)
@@ -69,6 +71,21 @@ def render(page, dest):
     return {"file": dest.name, "w": pix.width, "h": pix.height}
 
 
+def reuse(path):
+    with Image.open(path) as img:
+        return {"file": path.name, "w": img.width, "h": img.height}
+
+
+def exams_for(exam, sg_text):
+    """Which exams a question was on. From 2021 one combined AB/BC scoring document labels each question
+    "Part A (AB or BC)", "Part B (AB)" or "Part A (BC)". 2017-2019 headed a shared question "AP CALCULUS AB/CALCULUS
+    BC". Before that each exam had its own scoring document, so a shared question can't be told apart: exam only."""
+    parts = PART.findall(sg_text)
+    if parts:
+        return ["AB", "BC"] if "AB or BC" in parts else [parts[0]]
+    return ["AB", "BC"] if SHARED.search(sg_text) else [exam]
+
+
 def main():
     if not RAW.is_dir():
         sys.exit(f"{RAW} is missing: run tools/fetch_frq_archive.py first")
@@ -90,8 +107,9 @@ def main():
             q["categories"].append(m["cat"])
     # 2. split each question's PDF into question pages and scoring-guideline pages, render, extract text
     out_pages = FRQ / "files"
-    shutil.rmtree(out_pages, ignore_errors=True)
-    out_pages.mkdir(parents=True)
+    out_pages.mkdir(parents=True, exist_ok=True)
+    for stale in {p.name for p in out_pages.iterdir()} - set(qs):
+        shutil.rmtree(out_pages / stale)
     for qid, q in sorted(qs.items()):
         shas = {s["sha256"] for s in q["sources"]}
         if len(shas) > 1:
@@ -107,7 +125,7 @@ def main():
             head = page.get_text()[:400]
             kinds.append("s" if SG_HEAD.search(head) else "q")
         if "s" not in kinds:
-            problems.append(f"{qid}: no scoring guideline page found")
+            problems.append(f"{qid}: no scoring guidelines in the file ({len(kinds)} page(s), the question only)")
         if kinds[0] != "q":
             problems.append(f"{qid}: first page isn't the question")
         # a "q" page after the guidelines start would be odd: report it, keep it with the guidelines
@@ -115,12 +133,21 @@ def main():
         if "q" in kinds[first_s:]:
             problems.append(f"{qid}: a question page after the scoring guidelines (pages {kinds})")
         d = out_pages / qid
-        d.mkdir()
-        q["question_pages"] = [render(doc[i], d / f"q{i + 1}.webp") for i in range(first_s)]
-        q["guideline_pages"] = [render(doc[i], d / f"s{i - first_s + 1}.webp") for i in range(first_s, len(kinds))]
+        d.mkdir(exist_ok=True)
+        # pages are only re-rendered when the source PDF changed (rendering all of them takes several minutes)
+        stamp = d / ".source-sha256"
+        fresh = stamp.is_file() and stamp.read_text() == q["sources"][0]["sha256"]
+        if not fresh:
+            for old in d.iterdir():
+                old.unlink()
+        names = [f"q{i + 1}.webp" for i in range(first_s)] + [f"s{i - first_s + 1}.webp" for i in range(first_s, len(kinds))]
+        pages = [reuse(d / n) if fresh and (d / n).is_file() else render(doc[i], d / n) for i, n in enumerate(names)]
+        q["question_pages"], q["guideline_pages"] = pages[:first_s], pages[first_s:]
+        stamp.write_text(q["sources"][0]["sha256"])
         text = "\n".join(doc[i].get_text() for i in range(first_s))
-        sg_text = " ".join(doc[i].get_text()[:300] for i in range(first_s, len(kinds)))
-        q["exams"] = ["AB", "BC"] if SHARED.search(sg_text) else [q["exam"]]
+        sg_text = " ".join(doc[i].get_text()[:400] for i in range(first_s, len(kinds)))
+        q["exams"] = exams_for(q["exam"], sg_text)
+        q["form"] = "B" if FORM_B.search(text[:600]) else ""
         q["text"] = clean_text(text)
         if len(q["text"]) < 80:
             problems.append(f"{qid}: little or no question text ({len(q['text'])} characters), search won't find it")

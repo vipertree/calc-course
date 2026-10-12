@@ -404,7 +404,7 @@ FRQ1 = FRQ("Bike-share station", (
          num(round(q1b, 3), tol=0.0015, display=rf"R'(4) \approx {q1b:.3f}"),
          rf"$R'(4) \approx {q1b:.3f}$. At time $t = 4$ hours, the rate at which bikes are returned to the station is increasing at ${q1b:.3f}$ bikes per hour per hour.",
          [(1, rf"Gives $R'(4) \approx {q1b:.3f}$."),
-          (1, r"Interprets: the rate at which bikes are returned is increasing at that many bikes per hour per hour at time $t = 4$.")], work="2.4cm", topic="4.1"),
+          (1, rf"Interprets, with units: at time $t = 4$ hours, the rate at which bikes are returned is increasing at ${q1b:.3f}$ bikes per hour per hour.")], work="2.4cm", topic="4.1"),
     Part("c", r"How many bikes are at the station at time $t = 8$?",
          num(round(q1c, 3), tol=0.0015), rf"$30 + \int_0^8 \left(R(t) - C(t)\right) dt \approx {q1c:.3f}$ bikes.",
          [(1, r"Writes $30 + \int_0^8 \left(R(t) - C(t)\right) dt$."), (1, rf"Gives the answer, ${q1c:.3f}$ bikes.")], work="2.4cm", topic="8.3"),

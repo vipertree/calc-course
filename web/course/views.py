@@ -824,9 +824,11 @@ def exam_list(request):
     rows = []
     for slug in exams.available():
         pub = exams.public(slug)
-        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"],
+        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"], "outline": exams.outline(pub),
                      "open": exams.can_take(request.user, pub) if request.user.is_authenticated else not pub["members_only"]})
-    return render(request, "course/exams.html", {"exams": rows})
+    free = sorted({r["course"] for r in rows if not r["members_only"]})
+    note = (f"The {' and '.join(free)} exam{'s are' if len(free) > 1 else ' is'} open to any account." if free else "")
+    return render(request, "course/exams.html", {"exams": rows, "free_note": note})
 
 
 def exam_home(request, slug):
@@ -842,7 +844,7 @@ def exam_home(request, slug):
     past = [{"id": a.pk, "started": a.started, "summary": exams.summary(a, pub)} for a in attempts if a.finished]
     live = next((a for a in attempts if not a.finished), None)
     return render(request, "course/exam_home.html", {
-        "E": pub, "slug": slug, "live": live, "past": past,
+        "E": pub, "slug": slug, "live": live, "past": past, "outline": exams.outline(pub),
         "live_part": live and exams.parts(pub)[live.part],
         "print_ready": {k: (PDF_DIR / f"exam-{slug}" / f"exam-{slug}-exam{'-key' if k == 'key' else ''}-classic.pdf").is_file() for k in ("exam", "key")}})
 

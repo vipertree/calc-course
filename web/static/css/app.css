@@ -590,3 +590,8 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .top .in { max-width: 1320px; }
 .brand span, .top .linkbtn, .site-nav a, .nav-group > summary { white-space: nowrap; }
 @media (min-width: 1181px) { .site-nav { flex-wrap: nowrap; } }
+
+/* the whole header strip of a unit opens and closes it, not just the heading's text (Adder 2026-10-12): the spacing
+   lives inside the summary as padding, so no margin or box padding is left unclickable */
+details.unit > summary { display: block; padding: 4px 0 10px; }
+details.unit > summary h2 { margin: 0; }

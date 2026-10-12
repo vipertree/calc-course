@@ -230,7 +230,7 @@ class TranscriptScene(LessonScene):
     example_ref = None    # a formula (MathTex string) kept in the corner during worked examples, e.g. the chain rule
 
     def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
-                follow=False, ref=None, cues=None):
+                follow=False, ref=None, cues=None, overlays=()):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
@@ -239,6 +239,11 @@ class TranscriptScene(LessonScene):
         rather than try, so no "Pause and try it" cue and no think pause (Adder, 2026-10-02).
         cues: {step index: function(scene)} run just before that step is written, e.g. to light up a table cell as the
         narration points at it.
+        overlays: things drawn on the figure's axes that a cue shows later (shaded regions, Riemann boxes, dots). The
+        figure is shrunk and moved into place here, so they are moved and scaled with it. Overlays a cue refers to
+        directly are found on their own (looked up in the cue functions' closures); list any others here. A cue may also
+        build its overlay when it runs, from the figure's axes, which are in place by then. After each cue, anything new
+        on screen that lands away from the figure is flagged in the layout audit ("cue-off-figure").
         text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
         ref = ref if ref is not None else self.example_ref
@@ -261,11 +266,20 @@ class TranscriptScene(LessonScene):
                 self.play(FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
             if figure is not None:
                 # below the problem, never on it: shrink to the room that's left
+                c0, w0 = figure.get_center().copy(), figure.width
+                riders = self._riders(figure, cues, overlays)
+                if riders and os.environ.get("CALC_DEBUG_RIDERS"):
+                    print(f"RIDERS {self.NUM} {beat_name!r}: {len(riders)}", file=sys.stderr)
                 room = min(head.get_bottom()[1], card.get_bottom()[1] if card else 9) - 0.35 - (-3.7)
                 figure.set_max_height(min(5.2, room)).set_max_width(6.2)
                 figure.next_to(head, DOWN, buff=0.35).to_edge(RIGHT, buff=0.4)
                 if card is not None:
                     figure.next_to(card, DOWN, buff=0.3).to_edge(RIGHT, buff=0.4)
+                # shading a cue fades in later was drawn on the figure where it stood before it was resized and moved:
+                # carry it along, or it lands off the graph (Adder, 6.1's rain example)
+                s = figure.width / w0 if w0 else 1.0
+                for r in riders:
+                    r.scale(s, about_point=c0).shift(figure.get_center() - c0)
                 if figure_at is None:
                     self.play(FadeIn(figure), run_time=0.8)
             # the think pause: a cue while the problem sits alone on screen, gone when the solving starts
@@ -289,7 +303,10 @@ class TranscriptScene(LessonScene):
                     self.play(FadeOut(cue), run_time=0.3)
                     cue = None
                 if cues and k in cues:
+                    before = {id(m) for m in self.mobjects}
                     cues[k](self)
+                    if figure is not None:
+                        self._check_cue(figure, [m for m in self.mobjects if id(m) not in before])
                 if isinstance(s, str) and s.startswith("PART:"):
                     # a multi-part question's next part, shown on its own (its [try it] pause follows) before its work
                     part = board.write(self, T(s[5:], 40, SECANT))
@@ -302,6 +319,57 @@ class TranscriptScene(LessonScene):
         self.wait(1.2)
         self.clear()
         self.wait(1.0)                                         # a real break before the next example
+
+    def _check_cue(self, figure, new):
+        """A cue's new mobjects should sit on the figure (6.1, 6.2: shading built before the figure moved landed beside it)."""
+        x0, x1 = figure.get_left()[0] - 0.4, figure.get_right()[0] + 0.4
+        y0, y1 = figure.get_bottom()[1] - 0.4, figure.get_top()[1] + 0.4
+        for m in new:
+            if isinstance(m, ValueTracker) or m.width == 0:
+                continue
+            l, r, b, t = m.get_left()[0], m.get_right()[0], m.get_bottom()[1], m.get_top()[1]
+            if l < x0 or r > x1 or b < y0 or t > y1:
+                self._note("cue-off-figure", round(self.renderer.time, 1), m)
+
+    def _riders(self, figure, cues, overlays=()):
+        """Mobjects that example cues will show on the figure: built beforehand on the figure's axes (a shaded region,
+        Riemann boxes), not part of the figure itself and not on screen yet. They must move and scale with the figure.
+        Found by looking inside the cue functions' closures; only things sitting over the figure count."""
+        fam = {id(m) for m in figure.get_family()}
+        on = {id(m) for top in self.mobjects for m in top.get_family()}
+        x0, x1 = figure.get_left()[0] - 0.3, figure.get_right()[0] + 0.3
+        y0, y1 = figure.get_bottom()[1] - 0.3, figure.get_top()[1] + 0.3
+        seen, out = set(), []
+
+        def walk(o, depth):
+            if id(o) in seen or depth > 5:
+                return
+            seen.add(id(o))
+            if isinstance(o, ValueTracker):
+                return                      # its value lives in its points: moving it would change the value
+            if isinstance(o, Mobject):
+                c = o.get_center()
+                if id(o) not in fam and id(o) not in on and x0 <= c[0] <= x1 and y0 <= c[1] <= y1:
+                    out.append(o)
+            elif isinstance(o, (list, tuple)):
+                for x in o:
+                    walk(x, depth + 1)
+            elif callable(o):
+                for cell in getattr(o, "__closure__", None) or ():
+                    try:
+                        walk(cell.cell_contents, depth + 1)
+                    except ValueError:
+                        pass
+                for d in getattr(o, "__defaults__", None) or ():       # lambda sc, m=box: ...
+                    walk(d, depth + 1)
+        for fn in (cues or {}).values():
+            walk(fn, 0)
+        for m in overlays:
+            if id(m) not in {id(o) for o in out}:
+                out.append(m)
+        # a group and its own parts can both turn up: move each thing once
+        inner = {id(q) for o in out for q in o.get_family()[1:]}
+        return [m for m in out if id(m) not in inner]
 
 
 def power_parts(step):

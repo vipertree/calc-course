@@ -143,7 +143,7 @@ def ground(width=7.0, depth=0.35):
 
 # ---------------------------------------------------------------- the water tank
 
-class Tank(VGroup):
+class Tank(Group):
     """A glass water tank on a stand, drawn as a short cylinder seen a little from above, with a gauge on its side and a
     drain pipe and valve at the bottom right. The water level is live: tank.level is a ValueTracker (0 = empty, 1 =
     full) and the water, its rippling surface and the gauge follow it, wherever the tank is moved or scaled.
@@ -152,10 +152,12 @@ class Tank(VGroup):
         tk.drain_on()                       # drops start falling from the pipe
         self.play(tk.level.animate.set_value(0.4), run_time=3)
 
-    inlet=True adds a faucet over the top left; tank.pour_on() runs a stream from it down to the water."""
+    inlet=True adds a faucet over the top left; tank.pour_on() runs a stream from it down to the water. tap=True draws that
+    faucet as the painted tap sprite (assets/faucet.png) on a supply pipe running up beside the tank, instead of a bent
+    pipe (Adder, 6.1: "a little fake image of a faucet ... rather than this rectangle")."""
 
     def __init__(self, level=0.6, width=2.4, height=3.0, gauge=("0", "20", "40", "60", "80"), unit="L", drain=True,
-                 inlet=False, color=FUNC):
+                 inlet=False, color=FUNC, tap=False):
         super().__init__()
         self.level = ValueTracker(level)
         self.wave = ValueTracker(0)
@@ -214,7 +216,23 @@ class Tank(VGroup):
             self.mouth = Dot([w / 2 + 0.55, y - 0.4, 0], radius=0.001).set_opacity(0)
             self.add(pipe, pipe_in, stem, wheel, self.mouth)
         self.faucet = None
-        if inlet:
+        if inlet and tap:
+            x0 = -0.25 * w
+            mouth_y = h / 2 + 0.5 * (w / 2.4)
+            fh = 1.35 * (w / 2.4)
+            spr = sprite("faucet", fh)
+            # the spout's mouth is 85% of the way across the sprite, at its bottom edge
+            spr.move_to([x0 - (0.851 - 0.5) * spr.width, mouth_y + fh / 2, 0])
+            fy = mouth_y + fh * 0.6                      # height of the wall flange's center
+            fl = spr.get_left()[0] + 0.04
+            px = fl - 0.3 * (w / 2.4)
+            supply = VGroup(Line([px, -h / 2 - 0.2, 0], [px, fy, 0]), Line([px, fy, 0], [fl, fy, 0]))
+            supply.set_stroke(DIM, 11)
+            supply_in = supply.copy().set_stroke(PANEL, 5)
+            elbow = Dot([px, fy, 0], radius=0.07, color=DIM)
+            self.faucet = Dot([x0, mouth_y, 0], radius=0.001).set_opacity(0)
+            self.add(supply, supply_in, elbow, spr, self.faucet)
+        elif inlet:
             x0 = -0.25 * w
             top = h / 2 + 0.75
             spout = VGroup(Line([-w / 2 - 0.7, top, 0], [x0, top, 0]), Line([x0, top, 0], [x0, top - 0.3, 0])).set_stroke(DIM, 11)

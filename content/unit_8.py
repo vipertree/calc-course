@@ -9,6 +9,7 @@ from calclib import FRQ, MCQ, Part, UnitTest, Variants, close, num, same, selfch
 from calclib.figs import region
 
 x, t, y = sp.symbols("x t y", real=True)
+from content.topic_6_2 import sum_work  # noqa: E402  (writes sums as f(x_k) terms first, then the numbers)
 I = lambda f, a, b, v=x: sp.simplify(sp.integrate(f, (v, a, b)))
 N = lambda f, a, b, v=x: float(sp.Integral(f, (v, a, b)).evalf())
 
@@ -155,7 +156,7 @@ def table_frq(title, intro, ts, rs, unit, start, out_rate, out_tex, total, avg, 
     pieces = " + ".join(rf"{q - p}\cdot\frac{{{u} + {v}}}{{2}}" for p, q, u, v in zip(ts, ts[1:], rs, rs[1:]))
     return FRQ(title, intro + tab, [
         Part("a", rf"Use a trapezoidal sum with the four subintervals indicated by the table to approximate $\displaystyle\int_{{0}}^{{{ts[-1]}}} R(t)\,dt$. Show the computations that lead to your answer.", num(total),
-             rf"${pieces} = {total}$.", [(1, "trapezoidal sum"), (1, "answer")], work="2.4cm"),
+             sum_work(dict(zip(ts, rs)), ts, "trap", "R", letter=rf"\int_0^{{{ts[-1]}}} R(t)\,dt \approx"), [(1, "trapezoidal sum"), (1, "answer")], work="2.4cm"),
         Part("b", rf"Use your answer from part (a) to approximate the average value of $R(t)$ over $0 \le t \le {ts[-1]}$. Indicate units of measure.", num(avg, tol=0.01),
              rf"$\frac{{1}}{{{ts[-1]}}}\int_0^{{{ts[-1]}}} R(t)\,dt \approx \frac{{{total}}}{{{ts[-1]}}} \approx {float(avg):.2f}$ {unit}.", [(1, "divides by the length"), (1, "answer with units")], work="1.8cm"),
         Part("c", rf"{what} at the rate ${out_tex}$ {unit}. At $t = 0$ there are ${start}$. Use your answer from part (a) to approximate the amount at $t = {ts[-1]}$.", num(amount),

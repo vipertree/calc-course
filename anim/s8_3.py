@@ -99,8 +99,9 @@ class Lesson(TranscriptScene):
                       r"TEXT:(b) At $t = 3$ hours, the leak rate is decreasing at $4$ gallons per hour per hour."], at=[1, 2])
         tab = table(["t", "0", "2", "5", "8"], [["P'(t)", "30", "40", "25", "10"]], size=34)
         self.example("Example 2: From a table of rates", VGroup(T(r"A town has $1200$ people at $t = 0$ (years). Use a trapezoidal sum to approximate $P(8)$.", 38), tab).arrange(DOWN, buff=0.3),
-                     [r"\int_0^8 P'(t)\,dt \approx 2\cdot\tfrac{30 + 40}{2} + 3\cdot\tfrac{40 + 25}{2} + 3\cdot\tfrac{25 + 10}{2}", r"= 70 + 97.5 + 52.5", r"= 220",
-                      r"P(8) \approx 1200 + 220 = 1420 \text{ people}"], at=[1, 1, 2, 3],
+                     [r"\int_0^8 P'(t)\,dt \approx 2\cdot\tfrac{P'(0) + P'(2)}{2} + 3\cdot\tfrac{P'(2) + P'(5)}{2} + 3\cdot\tfrac{P'(5) + P'(8)}{2}",
+                      r"= 2\cdot\tfrac{30 + 40}{2} + 3\cdot\tfrac{40 + 25}{2} + 3\cdot\tfrac{25 + 10}{2}", r"= 70 + 97.5 + 52.5", r"= 220",
+                      r"P(8) \approx 1200 + 220 = 1420 \text{ people}"], at=[1, 2, 2, 3, 4],
                      text=r"A town's population changes at $P'(t) = 30, 40, 25, 10$ people per year at $t = 0, 2, 5, 8$ years, and $P(0) = 1200$. Use a trapezoidal sum to approximate $P(8)$.")
         ch3 = staged_chart([4], ["+", "-"], words=["warming", "cooling"], name="H'", width=5)
         self.example("Example 3: The warmest moment", r"A room's temperature changes at $H'(t) = 4 - t$ degrees per minute for $0 \le t \le 6$, and $H(0) = 60$. Find the maximum temperature and when it occurs.",

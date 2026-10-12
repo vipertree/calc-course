@@ -11,6 +11,7 @@ import sympy as sp
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Text, Topic, Variants, Video, close, num, same, selfcheck)
 
 t = sp.symbols("t", real=True)
+from content.topic_6_2 import sum_work  # noqa: E402  (writes sums as f(x_k) terms first, then the numbers)
 
 
 def I(f, a, b):
@@ -60,7 +61,7 @@ PRACTICE = [
          r"A total of $850$ cars pass the toll booth from $t = 1$ to $t = 3$ hours (7 a.m. to 9 a.m.).", work="1.4cm"),
     Item(r"Rain falls at a rate $r(t)$ inches per hour, given by $0.2, 0.5, 0.4, 0.1$ at $t = 0, 1, 3, 4$. Use a trapezoidal sum to approximate the total rainfall on $0 \le t \le 4$.",
          num(trap([0, 1, 3, 4], [sp.Rational(1, 5), sp.Rational(1, 2), sp.Rational(2, 5), sp.Rational(1, 10)])),
-         r"$1\cdot\frac{0.2 + 0.5}{2} + 2\cdot\frac{0.5 + 0.4}{2} + 1\cdot\frac{0.4 + 0.1}{2} = 0.35 + 0.9 + 0.25 = 1.5$ inches.", work="2cm"),
+         sum_work({0: sp.Rational(1, 5), 1: sp.Rational(1, 2), 3: sp.Rational(2, 5), 4: sp.Rational(1, 10)}, [0, 1, 3, 4], "trap", "r", dec=True, unit="inches"), work="2cm"),
     Item(r"A bakery's profit grows at $P'(t) = 120\sqrt t$ dollars per month. Find the profit gained from $t = 1$ to $t = 4$.", num(I(120 * sp.sqrt(t), 1, 4)), r"$\left[80t^{3/2}\right]_1^4 = 640 - 80 = 560$ dollars.", work="1.6cm"),
     Item(r"$V(t)$ is the volume of water in a tank, and $V(0) = 200$. If $V'(t) = 10 - 2t$, find the volume at $t = 8$ and say whether it is increasing or decreasing then.", selfcheck(r"216;\ \text{decreasing}"),
          r"$V(8) = 200 + (80 - 64) = 216$; $V'(8) = -6 < 0$, decreasing.", work="1.8cm"),
@@ -86,9 +87,9 @@ QUIZ = [
         MCQ(r"$R(t)$ is in people per hour and $t$ is in hours. The units of $\int_2^6 R(t)\,dt$ are", [r"people per hour", r"hours", r"people", r"people per hour per hour"], "C", r"(people per hour)(hours)."),
     ),
     Variants(
-        Item(r"Rates of flow $F(t)$ in L/min are $4, 6, 9$ at $t = 0, 3, 5$. Use a trapezoidal sum to approximate the total flow on $0 \le t \le 5$.", num(trap([0, 3, 5], [4, 6, 9])), r"$15 + 15 = 30$ L.", work="1.6cm"),
-        Item(r"Rates of flow $F(t)$ in L/min are $8, 2, 4$ at $t = 0, 2, 6$. Use a left Riemann sum to approximate the total flow on $0 \le t \le 6$.", num(2 * 8 + 4 * 2), r"$16 + 8 = 24$ L.", work="1.6cm"),
-        Item(r"Rates of flow $F(t)$ in L/min are $5, 7, 3$ at $t = 0, 4, 6$. Use a right Riemann sum to approximate the total flow on $0 \le t \le 6$.", num(4 * 7 + 2 * 3), r"$28 + 6 = 34$ L.", work="1.6cm"),
+        Item(r"Rates of flow $F(t)$ in L/min are $4, 6, 9$ at $t = 0, 3, 5$. Use a trapezoidal sum to approximate the total flow on $0 \le t \le 5$.", num(trap([0, 3, 5], [4, 6, 9])), sum_work({0: 4, 3: 6, 5: 9}, [0, 3, 5], "trap", "F", unit="L"), work="1.6cm"),
+        Item(r"Rates of flow $F(t)$ in L/min are $8, 2, 4$ at $t = 0, 2, 6$. Use a left Riemann sum to approximate the total flow on $0 \le t \le 6$.", num(2 * 8 + 4 * 2), sum_work({0: 8, 2: 2, 6: 4}, [0, 2, 6], "left", "F", unit="L"), work="1.6cm"),
+        Item(r"Rates of flow $F(t)$ in L/min are $5, 7, 3$ at $t = 0, 4, 6$. Use a right Riemann sum to approximate the total flow on $0 \le t \le 6$.", num(4 * 7 + 2 * 3), sum_work({0: 5, 4: 7, 6: 3}, [0, 4, 6], "right", "F", unit="L"), work="1.6cm"),
     ),
     Variants(
         Item(r"A tank holds $40$ gallons at $t = 0$. Water enters at $5$ gal/hr and leaves at $t + 1$ gal/hr. Find the greatest amount on $0 \le t \le 10$.", num(40 + I(4 - t, 0, 4)),

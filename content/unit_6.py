@@ -9,6 +9,7 @@ from calclib import FRQ, MCQ, Part, UnitTest, Variants, close, num, same, selfch
 from calclib.figs import graph
 
 x, t = sp.symbols("x t", real=True)
+from content.topic_6_2 import sum_work  # noqa: E402  (writes sums as f(x_k) terms first, then the numbers)
 I = lambda f, a, b, v=x: sp.simplify(sp.integrate(f, (v, a, b)))
 exact = lambda e: sp.nsimplify(sp.N(e, 30), [sp.pi])
 
@@ -27,9 +28,9 @@ def pick(stem, right, wrong, letter, solution, why=None, calc=False):
 A = [
     Variants(
         pick(r"The left Riemann sum for $f(x) = x^2$ on $[0, 4]$ with $4$ equal subintervals is", r"$14$", [r"$30$", r"$\frac{64}{3}$", r"$22$"], "B",
-             r"$1(0 + 1 + 4 + 9) = 14$.", {r"$30$": "the right sum", r"$\frac{64}{3}$": "the exact area"}),
+             sum_work(x**2, [0, 1, 2, 3, 4], "left"), {r"$30$": "the right sum", r"$\frac{64}{3}$": "the exact area"}),
         pick(r"The right Riemann sum for $f(x) = x^2$ on $[0, 4]$ with $2$ equal subintervals is", r"$40$", [r"$8$", r"$\frac{64}{3}$", r"$24$"], "D",
-             r"$2(4 + 16) = 40$.", {r"$8$": "the left sum", r"$24$": "the trapezoidal sum"}),
+             sum_work(x**2, [0, 2, 4], "right"), {r"$8$": "the left sum", r"$24$": "the trapezoidal sum"}),
     ),
     Variants(
         pick(r"$f$ is positive, decreasing and concave up on $[a, b]$. Which sums overestimate $\int_a^b f(x)\,dx$?", r"the left sum and the trapezoidal sum",
@@ -136,7 +137,7 @@ F1A = FRQ("Water into a tank", (
     Part("a", r"Use the data in the table to approximate $R'(7)$. Show the computations that lead to your answer. Indicate units of measure.", num(1, display=r"1\ \text{gallon per hour per hour}"),
          r"$R'(7) \approx \dfrac{R(9) - R(5)}{9 - 5} = \dfrac{19 - 15}{4} = 1$ gallon per hour per hour.", [(1, "difference quotient and answer"), (1, "units")], work="2.2cm"),
     Part("b", r"Use a left Riemann sum with the four subintervals indicated by the table to approximate $\displaystyle\int_0^{12} R(t)\,dt$. Show the computations that lead to your answer.",
-         num(left(TA)), r"$2(10) + 3(14) + 4(15) + 3(19) = 20 + 42 + 60 + 57 = 179$.", [(1, "left Riemann sum setup"), (1, "answer")], work="2.4cm"),
+         num(left(TA)), sum_work(TA, sorted(TA), "left", "R", letter=r"\int_0^{12} R(t)\,dt \approx"), [(1, "left Riemann sum setup"), (1, "answer")], work="2.4cm"),
     Part("c", r"Using correct units, interpret the meaning of $\displaystyle\int_0^{12} R(t)\,dt$ in the context of the problem.",
          selfcheck(r"\text{the total gallons that flow in from } t = 0 \text{ to } t = 12"), r"$\int_0^{12} R(t)\,dt$ is the total number of gallons of water that flow into the tank from $t = 0$ to $t = 12$ hours.",
          [(1, "interpretation with units")], work="1.6cm"),
@@ -150,7 +151,7 @@ F1B = FRQ("Draining a tank", (
     Part("a", r"Use the data in the table to approximate $D'(6)$. Show the computations that lead to your answer. Indicate units of measure.", num(-sp.Rational(3, 2), display=r"-1.5\ \text{liters per minute per minute}"),
          r"$D'(6) \approx \dfrac{D(8) - D(4)}{8 - 4} = \dfrac{9 - 15}{4} = -1.5$ liters per minute per minute.", [(1, "difference quotient and answer"), (1, "units")], work="2.2cm"),
     Part("b", r"Use a trapezoidal sum with the four subintervals indicated by the table to approximate $\displaystyle\int_0^{10} D(t)\,dt$. Show the computations that lead to your answer.",
-         num(trap(TB)), r"$3 \cdot \frac{20 + 17}{2} + 1 \cdot \frac{17 + 15}{2} + 4 \cdot \frac{15 + 9}{2} + 2 \cdot \frac{9 + 8}{2} = 55.5 + 16 + 48 + 17 = 136.5$.",
+         num(trap(TB)), sum_work(TB, sorted(TB), "trap", "D", letter=r"\int_0^{10} D(t)\,dt \approx", dec=True),
          [(1, "trapezoidal sum setup"), (1, "answer")], work="2.6cm"),
     Part("c", r"Using correct units, interpret the meaning of $\displaystyle\int_0^{10} D(t)\,dt$ in the context of the problem.",
          selfcheck(r"\text{the total liters drained from } t = 0 \text{ to } t = 10"), r"$\int_0^{10} D(t)\,dt$ is the total number of liters of water that drain from the tank from $t = 0$ to $t = 10$ minutes.",

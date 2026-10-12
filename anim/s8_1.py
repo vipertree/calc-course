@@ -139,7 +139,7 @@ class Lesson(TranscriptScene):
                      at=[1, 2, 2, 3], figure=fig2, figure_at=3)
         tab = table(["t", "0", "2", "4", "6", "8"], [["T(t)", "60", "64", "70", "68", "62"]], size=34)
         self.example("Example 3: Average temperature from a table", VGroup(T(r"Use a trapezoidal sum with four subintervals to approximate the average temperature over $0 \le t \le 8$.", 38), tab).arrange(DOWN, buff=0.3),
-                     [r"\int_0^8 T\,dt \approx 2\cdot\tfrac{60 + 64}{2} + 2\cdot\tfrac{64 + 70}{2} + 2\cdot\tfrac{70 + 68}{2} + 2\cdot\tfrac{68 + 62}{2}", r"= 124 + 134 + 138 + 130", r"= 526",
-                      r"\text{average} \approx \frac{526}{8} = 65.75\ ^\circ\text{F}"], at=[1, 2, 2, 3],
+                     [r"\int_0^8 T\,dt \approx \tfrac22\left[T(0) + 2T(2) + 2T(4) + 2T(6) + T(8)\right]", r"= 1\left[60 + 2(64) + 2(70) + 2(68) + 62\right]",
+                      r"= 60 + 128 + 140 + 136 + 62", r"= 526", r"\text{average} \approx \frac{526}{8} = 65.75\ ^\circ\text{F}"], at=[1, 2, 3, 3, 4],
                      text=r"A table gives $T(t)$ in $^\circ$F at $t = 0, 2, 4, 6, 8$ hours: $60, 64, 70, 68, 62$. Use a trapezoidal sum with four subintervals to approximate the average temperature over $0 \le t \le 8$.")
         self.finish()

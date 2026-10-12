@@ -46,6 +46,9 @@ def sum_work(f, edges, kind, name="f", letter=None, dec=False, unit=""):
     val = (lambda s: f[s]) if isinstance(f, dict) else (lambda s: f.subs(x, s))
     shown = (lambda v: _l(v)) if dec else (lambda v: sp.latex(sp.nsimplify(v)))
     letter = letter or {"left": "L", "right": "R", "mid": "M", "trap": "T"}[kind]
+    rel = "="
+    if letter.endswith(r"\approx"):                      # an integral being approximated: "integral of R dt ~ ..."
+        letter, rel = letter[:-len(r"\approx")].rstrip(), r"\approx"
     pieces = list(zip(edges, edges[1:]))
     widths = [b - a for a, b in pieces]
     equal = len(set(widths)) == 1
@@ -57,12 +60,12 @@ def sum_work(f, edges, kind, name="f", letter=None, dec=False, unit=""):
             ev = " + ".join(("" if c == 1 else "2") + rf"{name}({_l(s)})" for c, s in zip(coef, edges))
             nv = " + ".join(("" if c == 1 else "2") + (rf"({shown(val(s))})" if c != 1 else shown(val(s))) for c, s in zip(coef, edges))
             lead = rf"\frac{{{_l(w)}}}{{2}}"
-            lines = [rf"{letter} &= {lead}\left[{ev}\right]", rf"&= {lead}\left[{nv}\right]", rf"&= {shown(total)}"]
+            lines = [rf"{letter} &{rel} {lead}\left[{ev}\right]", rf"&= {lead}\left[{nv}\right]", rf"&= {shown(total)}"]
         else:
             ev = " + ".join(rf"{_l(b - a)} \cdot \frac{{{name}({_l(a)}) + {name}({_l(b)})}}{{2}}" for a, b in pieces)
             nv = " + ".join(rf"{_l(b - a)} \cdot \frac{{{shown(val(a))} + {shown(val(b))}}}{{2}}" for a, b in pieces)
             each = " + ".join(shown((b - a) * (val(a) + val(b)) / sp.Integer(2)) for a, b in pieces)
-            lines = [rf"{letter} &= {ev}", rf"&= {nv}", rf"&= {each}", rf"&= {shown(total)}"]
+            lines = [rf"{letter} &{rel} {ev}", rf"&= {nv}", rf"&= {each}", rf"&= {shown(total)}"]
     else:
         pick = {"left": lambda a, b: a, "right": lambda a, b: b, "mid": lambda a, b: (a + b) / sp.Integer(2)}[kind]
         ss = [pick(a, b) for a, b in pieces]
@@ -71,12 +74,12 @@ def sum_work(f, edges, kind, name="f", letter=None, dec=False, unit=""):
             ev = " + ".join(rf"{name}({_l(s)})" for s in ss)
             nv = " + ".join(shown(val(s)) for s in ss)
             inner = sum(val(s) for s in ss)
-            lines = [rf"{letter} &= {_l(w)}\left[{ev}\right]", rf"&= {_l(w)}\left[{nv}\right]", rf"&= {_l(w)}\left({shown(inner)}\right) = {shown(total)}"]
+            lines = [rf"{letter} &{rel} {_l(w)}\left[{ev}\right]", rf"&= {_l(w)}\left[{nv}\right]", rf"&= {_l(w)}\left({shown(inner)}\right) = {shown(total)}"]
         else:
             ev = " + ".join(rf"{_l(w)} \cdot {name}({_l(s)})" for w, s in zip(widths, ss))
             nv = " + ".join(rf"{_l(w)}({shown(val(s))})" for w, s in zip(widths, ss))
             each = " + ".join(shown(w * val(s)) for w, s in zip(widths, ss))
-            lines = [rf"{letter} &= {ev}", rf"&= {nv}", rf"&= {each}", rf"&= {shown(total)}"]
+            lines = [rf"{letter} &{rel} {ev}", rf"&= {nv}", rf"&= {each}", rf"&= {shown(total)}"]
     lines[-1] += (rf"\ \text{{{unit}}}" if unit else "") + "."
     return r"\[ \begin{aligned} " + r" \\ ".join(lines) + r" \end{aligned} \]"
 

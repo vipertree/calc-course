@@ -12,6 +12,7 @@ from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part
 from calclib.figs import graph, region
 
 x = sp.symbols("x", real=True)
+from content.topic_6_2 import sum_work  # noqa: E402  (writes sums as f(x_k) terms first, then the numbers)
 
 
 def avg(f, a, b):
@@ -73,7 +74,7 @@ PRACTICE = [
     Item(r"$\int_2^7 f(x)\,dx = 30$. What is the average value of $f$ on $[2, 7]$?", num(6), r"$\frac{30}{5}$.", work="1cm"),
     Item(r"The average value of $f$ on $[1, 5]$ is $9$. Find $\int_1^5 f(x)\,dx$.", num(36), r"$9 \cdot 4$.", work="1cm"),
     Item(r"Velocity $v(t)$ in m/s is $10, 14, 12, 8$ at $t = 0, 3, 6, 9$ seconds. Use a trapezoidal sum to approximate the average velocity on $0 \le t \le 9$.",
-         num(trap([0, 3, 6, 9], [10, 14, 12, 8]) / 9, tol=1e-3), r"$\frac{3}{2}(10 + 2\cdot14 + 2\cdot12 + 8) = 105$; $\frac{105}{9} \approx 11.67$ m/s.", work="2cm"),
+         num(trap([0, 3, 6, 9], [10, 14, 12, 8]) / 9, tol=1e-3), sum_work({0: 10, 3: 14, 6: 12, 9: 8}, [0, 3, 6, 9], "trap", "v", letter=r"\int_0^9 v(t)\,dt \approx") + r"So the average is $\frac{105}{9} \approx 11.67$ m/s.", work="2cm"),
     Item(r"Find $k > 0$ so that the average value of $f(x) = 2x$ on $[0, k]$ is $5$.", num(5), r"$\frac1k\left[x^2\right]_0^k = k = 5$.", work="1.4cm"),
 ]
 same("p", [trap([0, 3, 6, 9], [10, 14, 12, 8])], [105])
@@ -133,7 +134,7 @@ FRQS = [
         r"Visitors arrive at a museum at a rate modeled by a differentiable function $R$, where $R(t)$ is measured in people per hour and $t$ is hours after the museum opens. Selected values are in the table."
         r"\par\smallskip\centerline{\begin{tabular}{c|ccccc} $t$ (hours) & 0 & 4 & 6 & 10 & 12 \\ \hline $R(t)$ (people per hour) & 30 & 42 & 48 & 40 & 36\end{tabular}}"), [
         Part("a", r"Use a trapezoidal sum with the four subintervals indicated by the table to approximate $\displaystyle\int_0^{12} R(t)\,dt$. Show the computations that lead to your answer.", num(486),
-             r"$4\cdot\frac{30 + 42}{2} + 2\cdot\frac{42 + 48}{2} + 4\cdot\frac{48 + 40}{2} + 2\cdot\frac{40 + 36}{2} = 144 + 90 + 176 + 76 = 486$.", [(1, "trapezoidal sum"), (1, "answer")], work="2.4cm"),
+             sum_work(dict(zip(TS, RS)), TS, "trap", "R", letter=r"\int_0^{12} R(t)\,dt \approx"), [(1, "trapezoidal sum"), (1, "answer")], work="2.4cm"),
         Part("b", r"Use your answer from part (a) to approximate the average rate at which visitors arrive over $0 \le t \le 12$. Indicate units of measure.", num(sp.Rational(81, 2), tol=0.01, display=r"40.5\ \text{people per hour}"),
              r"$\frac{1}{12}\int_0^{12} R(t)\,dt \approx \frac{486}{12} = 40.5$ people per hour.", [(1, "divides by $12$"), (1, "answer with units")], work="1.8cm"),
         Part("c", r"Must there be a time $t$, $4 < t < 10$, at which $R'(t) = -\frac13$? Justify your answer.", selfcheck(r"\text{Yes, by the Mean Value Theorem}"),

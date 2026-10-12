@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} · Mr Oaks Math{% endblock %}
+{% block crumbs %}{% if cat %}<a class="muted crumb" href="{% url 'frq' %}" style="font-family:var(--font-ui);font-size:.9rem">AP FRQ Archive</a>{% endif %}{% endblock %}
+{% block main %}
+<div class="frq-page">
+  <header class="frq-head">
+    {% if cat %}<p class="frq-kicker"><a href="{% url 'frq' %}">AP FRQ Archive</a></p><h1>{{ cat.2 }}</h1>
+    <p class="muted">{{ cat.3 }}</p>
+    {% else %}<h1>AP FRQ Archive</h1>
+    <p class="muted">Every released AP Calculus free-response question from 2002 to 2025, sorted by the kind of question it is.
+      Each one comes with its official scoring guidelines. Free, no account needed.</p>{% endif %}
+  </header>
+
+  <nav class="frq-cats" aria-label="Question types">
+    <a class="frq-cat{% if not cat %} on{% endif %}" href="{% url 'frq' %}{% if query %}?{{ query }}{% endif %}"{% if not cat %} aria-current="page"{% endif %}>
+      <strong>All types</strong><span class="frq-count">{{ total }}</span></a>
+    {% for c in cats %}<a class="frq-cat{% if c.on %} on{% endif %}" href="{% url 'frq_category' c.slug %}{% if query %}?{{ query }}{% endif %}"{% if c.on %} aria-current="page"{% endif %}>
+      <strong>{{ c.name }}</strong><span class="frq-count">{{ c.count }}</span></a>{% endfor %}
+  </nav>
+
+  <form class="frq-filter" method="get" role="search" aria-label="Filter the questions">
+    <label class="frq-search"><span>Search the questions</span>
+      <input type="text" name="q" value="{{ f.text }}" placeholder="tank, particle, slope field..." autocomplete="off"></label>
+    <label><span>Exam</span><select name="exam">
+      <option value="">AB and BC</option>
+      <option value="AB"{% if f.exam == "AB" %} selected{% endif %}>AB exam</option>
+      <option value="BC"{% if f.exam == "BC" %} selected{% endif %}>BC exam</option></select></label>
+    <label><span>From</span><select name="from"><option value="">{{ years|first }}</option>
+      {% for y in years %}<option{% if y == f.year_from %} selected{% endif %}>{{ y }}</option>{% endfor %}</select></label>
+    <label><span>To</span><select name="to"><option value="">{{ years|last }}</option>
+      {% for y in years %}<option{% if y == f.year_to %} selected{% endif %}>{{ y }}</option>{% endfor %}</select></label>
+    <div class="frq-go"><button class="btn primary" type="submit">Show questions</button>
+      {% if active %}<a class="btn" href="{{ request.path }}">Clear</a>{% endif %}</div>
+  </form>
+
+  <p class="frq-summary" role="status">{% if count %}{{ count }} question{{ count|pluralize }}{% if active %} match{{ count|pluralize:"es," }}{% endif %}, newest first.{% else %}No questions match.{% if active %} <a href="{{ request.path }}">Clear the filters</a>{% endif %}{% endif %}</p>
+
+  {% for g in groups %}
+  <section class="frq-group">
+    {% if not cat %}<h2><a href="{% url 'frq_category' g.slug %}{% if query %}?{{ query }}{% endif %}">{{ g.name }}</a> <span class="frq-count">{{ g.rows|length }}</span></h2>{% endif %}
+    <ol class="frq-list">
+      {% for q in g.rows %}<li><a class="topic ready frq-row" href="{% url 'frq_question' q.id %}">
+        <span class="n">{{ q.year }}</span>
+        <span class="frq-row-main"><strong>{{ q.label }}</strong>{% if q.also %} <span class="frq-also">{{ q.also }}</span>{% endif %}
+          <small>{{ q.snippet }}</small></span></a></li>{% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+
+  {% include "course/_frq_credit.html" %}
+</div>
+{% endblock %}

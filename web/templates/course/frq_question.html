@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ q.year }} {{ q.label }} · AP FRQ Archive{% endblock %}
+{% block crumbs %}<a class="muted crumb" href="{% url 'frq' %}" style="font-family:var(--font-ui);font-size:.9rem">AP FRQ Archive</a>{% endblock %}
+{% block main %}
+<article class="frq-page frq-one">
+  <header class="frq-head">
+    <p class="frq-kicker"><a href="{% url 'frq' %}">AP FRQ Archive</a>{% if cat %} / <a href="{% url 'frq_category' cat.0 %}">{{ cat.2 }}</a>{% endif %}</p>
+    <div class="lesson-head">
+      <span class="chip">{{ q.year }}</span>
+      <span class="unit">AP Calculus {{ q.exam }} · {{ calc }}{% if q.also %} · {{ q.also }}{% endif %}</span>
+      <h1>{{ q.label }}</h1>
+    </div>
+  </header>
+
+  <div class="frq-tools">
+    <a class="btn small" href="{% url 'frq_file' q.id q.pdf %}" target="_blank" rel="noopener">Open the PDF ({{ pdf_kb }} KB)</a>
+    {% if older %}<a class="btn small" href="{% url 'frq_question' older.id %}">Older: {{ older.year }} {{ older.exam }} {{ older.number }}</a>{% endif %}
+    {% if newer %}<a class="btn small" href="{% url 'frq_question' newer.id %}">Newer: {{ newer.year }} {{ newer.exam }} {{ newer.number }}</a>{% endif %}
+  </div>
+
+  <section class="frq-sheets" aria-label="The question">
+    {% for p in q.question_pages %}<img class="frq-sheet" src="{% url 'frq_file' q.id p.file %}" width="{{ p.w }}" height="{{ p.h }}"
+      alt="{{ q.year }} AP Calculus {{ q.exam }} free-response question {{ q.number }}, page {{ forloop.counter }} of {{ q.question_pages|length }}"{% if not forloop.first %} loading="lazy"{% endif %}>{% endfor %}
+  </section>
+
+  <details class="frq-sg">
+    <summary class="btn primary"><span class="when-closed">Show the scoring guidelines</span><span class="when-open">Hide the scoring guidelines</span></summary>
+    <p class="muted">Try the whole question first. Then score your work point by point, the way an AP reader would.</p>
+    <section class="frq-sheets" aria-label="Scoring guidelines">
+      {% for p in q.guideline_pages %}<img class="frq-sheet" src="{% url 'frq_file' q.id p.file %}" width="{{ p.w }}" height="{{ p.h }}" loading="lazy"
+        alt="Scoring guidelines for {{ q.year }} {{ q.exam }} question {{ q.number }}, page {{ forloop.counter }} of {{ q.guideline_pages|length }}">{% endfor %}
+    </section>
+  </details>
+
+  <details class="frq-text">
+    <summary>The question as text</summary>
+    <pre>{{ q.text }}</pre>
+    <p class="muted">Pulled straight from the PDF, so formulas and tables come out scrambled. It's here for searching and screen readers; the pages above are the real thing.</p>
+  </details>
+
+  {% if lessons %}
+  <section class="frq-lessons">
+    <h2>Lessons for this question</h2>
+    <div class="topics mathy">{% for l in lessons %}<a class="topic ready" href="{% url 'lesson' l.n %}"><span class="n">{{ l.label }}</span><span>{{ l.title }}</span></a>{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  {% include "course/_frq_credit.html" %}
+</article>
+{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">
+  // lesson titles carry TeX ($e^x$)
+  window.addEventListener("load", () => { const el = document.querySelector(".frq-lessons");
+    if (el && window.renderMathInElement) renderMathInElement(el, { throwOnError: false, delimiters: [{ left: "$", right: "$", display: false }] }); });
+</script>{% endblock %}

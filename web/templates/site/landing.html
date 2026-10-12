@@ -1,34 +1,173 @@
-{% extends "base.html" %}
-{% block title %}Mr Oaks Math · AP Calculus{% endblock %}
+{% extends "base.html" %}{% load static %}
+{% block title %}Mr Oaks Math · Calculus you can see{% endblock %}
+{% block head %}<meta name="description" content="Mr Oaks Math: short animated lessons for every topic in AP Calculus AB and BC, guided notes, practice that checks your answers, unit tests and full practice exams. Every video is free.">
+<link rel="preload" as="image" href="{% static 'img/landing/photo-whiteboard.webp' %}" fetchpriority="high">{% endblock %}
 {% block main %}
-<div class="landing mathy">
-  <section class="hero">
-    <h1>AP Calculus AB and BC, one topic at a time</h1>
-    <p class="lede">A short video for every topic in the College Board course, notes to fill in alongside it, practice that checks your answers, quizzes, unit tests and full practice exams.</p>
+<div class="lp mathy">
+
+  {# ------------------------------------------------------------ hero #}
+  <section class="lp-hero">
+    <div class="lp-hero-text">
+      <p class="lp-eyebrow">Mr Oaks Math · Calculus</p>
+      <h1>Calculus you can see.</h1>
+      <p class="lp-lede">Every topic in AP Calculus AB and BC starts with a short animated lesson that shows the idea before it names it. Then you work it: notes to fill in while you watch, practice that checks each answer as soon as you enter it, and AP-style questions to prove it stuck.</p>
+      <div class="lp-cta">
+        {% if start %}<a class="btn primary big" href="{% url 'lesson' start %}">Start the first lesson</a>{% endif %}
+        <a class="btn big" href="{% url 'for_teachers' %}">I teach calculus</a>
+      </div>
+      <p class="lp-fine">No account needed. Every video is free, and so are Units 1 to 3.</p>
+    </div>
+    <div class="lp-hero-art">
+      <img class="lp-hero-photo" src="{% static 'img/landing/photo-whiteboard.webp' %}" width="880" height="1100"
+           alt="A student at a whiteboard working a related rates problem" fetchpriority="high">
+      <figure class="lp-screen">
+        <video autoplay muted loop playsinline preload="auto" width="854" height="480"
+               poster="{% static 'img/landing/riemann-poster.webp' %}" aria-label="From a lesson: rectangles under a curve get thinner until their total area matches the area under the curve">
+          <source src="{% static 'img/landing/riemann-loop.mp4' %}" type="video/mp4">
+        </video>
+        <figcaption>From Topic 6.2: thinner rectangles, closer area.</figcaption>
+      </figure>
+    </div>
   </section>
 
-  <section class="doors" aria-label="Who is this for">
-    <a class="door card" href="{% url 'for_students' %}">
-      <span class="door-who">I'm a student</span>
-      <span class="door-what">Learn it, practice it, and keep track of what you've done.</span>
-      <span class="btn primary">Start here</span>
-    </a>
-    <a class="door card" href="{% url 'for_teachers' %}">
-      <span class="door-who">I'm a teacher</span>
-      <span class="door-what">Lessons, printable materials and slide decks for your class, with grading built in.</span>
-      <span class="btn primary">See what's included</span>
-    </a>
+  {# ------------------------------------------------------------ the numbers, all counted from the course itself #}
+  <section class="lp-facts" aria-label="What's in the course">
+    <div><b>{{ facts.lessons }}</b><span>lessons, AB and BC</span></div>
+    {% if facts.videos %}<div><b>{{ facts.videos }}</b><span>lesson videos</span></div>{% endif %}
+    <div><b>{{ facts.practice_str }}</b><span>practice problems</span></div>
+    <div><b>{{ facts.mcq }}</b><span>AP-style multiple choice</span></div>
+    <div><b>{{ facts.frq }}</b><span>free-response questions</span></div>
+    <div><b>{{ facts.unit_tests }}</b><span>unit tests</span></div>
   </section>
 
-  <section class="free-list">
-    <h2>Free for everyone</h2>
-    <ul>
-      <li>Every lesson video, in every unit</li>
-      {% for f in free %}<li>{% if f.first %}<a href="{% url 'lesson' f.first %}">{% endif %}{% if f.module %}The {{ f.title }} module{% else %}{{ f.name }}: {{ f.title }}{% endif %}{% if f.first %}</a>{% endif %}, all of it</li>{% endfor %}
-      <li><a href="{% url 'formulas' %}">Key ideas and formulas</a> for the whole course</li>
-      <li>A full-length <a href="{% url 'exams' %}">AP Calculus AB practice exam</a>, graded for you</li>
-    </ul>
-    <p class="muted">No account needed to read and practice. A free account saves your work and lets you take quizzes and tests.</p>
+  {# ------------------------------------------------------------ how a lesson works #}
+  <section class="lp-steps" aria-labelledby="lp-steps-h">
+    <h2 id="lp-steps-h" class="lp-h2">How every lesson works</h2>
+    <ol class="lp-panels">
+      <li class="lp-panel">
+        <img src="{% static 'img/landing/still-tangent.webp' %}" width="854" height="480" loading="lazy"
+             alt="Video frame: a secant line turning into the tangent line, next to the limit definition of the derivative">
+        <h3>Watch</h3>
+        <p>A short animated video for each topic. You see secant lines swing into a tangent, or rectangles fill an area, before the formula shows up.</p>
+      </li>
+      <li class="lp-panel">
+        <img src="{% static 'img/landing/sheet-notes.webp' %}" width="640" height="828" loading="lazy" class="lp-paper"
+             alt="A page of guided notes for Topic 2.1 with blanks to fill in and a graph">
+        <h3>Fill in the notes</h3>
+        <p>Guided notes follow the video beat by beat. Fill in the blanks on screen, or print the packet and use a pencil.</p>
+      </li>
+      <li class="lp-panel">
+        <img src="{% static 'img/landing/shot-practice.webp' %}" width="760" height="288" loading="lazy"
+             alt="A practice problem answered 12 and marked correct, with the worked solution shown below">
+        <h3>Practice and check</h3>
+        <p>Type an answer and press Check. Right away you learn whether you've got it, and when you do, you see the full solution.</p>
+      </li>
+    </ol>
+  </section>
+
+  {# ------------------------------------------------------------ features, picture and text in turn #}
+  <section class="lp-feature">
+    <div class="lp-feature-art lp-stack">
+      <img src="{% static 'img/landing/still-discs.webp' %}" width="854" height="480" loading="lazy"
+           alt="Video frame: a solid of revolution sliced into discs, one disc highlighted">
+      <img src="{% static 'img/landing/still-polar.webp' %}" width="854" height="480" loading="lazy"
+           alt="Video frame: the slope of a cardioid at a point, worked out beside its graph">
+    </div>
+    <div class="lp-feature-text">
+      <p class="lp-kicker">The course</p>
+      <h2>Pictures first, then rigor</h2>
+      <p>Each lesson opens with an idea you can see: discs stacking into a volume, a cardioid's slope, a limit closing in. The worked examples go slowly, every step on screen, and the practice that follows is the real thing, at the level of the AP exam.</p>
+      <p>The <a href="{% url 'map' %}">course map</a> lays out all ten units of AB and BC in the College Board's order.{% if trig %} If your trig is rusty, the <a href="{% url 'lesson' trig.first %}">Trig Review</a> module covers what calculus needs in {{ trig.count }} short lessons.{% endif %} The <a href="{% url 'formulas' %}">formula sheet</a> gathers every definition and theorem from the course on one page.</p>
+    </div>
+  </section>
+
+  <section class="lp-feature flip">
+    <div class="lp-feature-art">
+      <img class="lp-shot" src="{% static 'img/landing/shot-lesson.webp' %}" width="1100" height="688" loading="lazy"
+           alt="A lesson page: the topic title, tabs for lesson, practice, AP test prep and quiz, the notes and the video side by side">
+    </div>
+    <div class="lp-feature-text">
+      <p class="lp-kicker">Each topic</p>
+      <h2>Four steps, one page</h2>
+      <p>Lesson, practice, AP test prep and a quiz sit in tabs on the same page. A free account saves your answers and your progress, so you can stop on a laptop at school and pick up on your phone at home.</p>
+      <p>Units end with a unit test, and the test prep in every topic uses the AP exam's own question styles: multiple choice and free response, scored the way the College Board scores them.</p>
+    </div>
+  </section>
+
+  <section class="lp-feature">
+    <div class="lp-feature-art">
+      <img class="lp-shot" src="{% static 'img/landing/shot-exam.webp' %}" width="1100" height="446" loading="lazy"
+           alt="A practice exam question with a countdown clock reading 59:57 and four answer choices">
+    </div>
+    <div class="lp-feature-text">
+      <p class="lp-kicker">Exam practice</p>
+      <h2>A full exam, timed like the real one</h2>
+      <p>The <a href="{% url 'exams' %}">practice exams</a> run part by part with the clock the AP exam uses, a graphing calculator built in for the calculator sections, and no going back once a part ends. Multiple choice is graded the moment you finish. You score your own free response against the scoring guide and get an estimated AP score.</p>
+      <p>The first AB exam is free with an account.</p>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ teachers #}
+  <section class="lp-band lp-teach" aria-labelledby="lp-teach-h">
+    <div class="lp-teach-text">
+      <p class="lp-kicker">For teachers</p>
+      <h2 id="lp-teach-h">Teach it with your class</h2>
+      <p>Make a class, hand out the join code, and watch the progress come in: lessons finished, practice solved and quiz scores for every student. Quizzes come in parallel forms, and nobody sees results until you release them.</p>
+      <p>Every topic has printable notes, practice, quizzes and answer keys, plus a slide deck for teaching the lesson live. <a href="{% url 'for_teachers' %}">See what teachers get</a>.</p>
+    </div>
+    <figure class="lp-teach-shot">
+      <img class="lp-shot" src="{% static 'img/landing/shot-teacher.webp' %}" width="1100" height="517" loading="lazy"
+           alt="The teacher dashboard: one row per student with lesson progress bars, practice counts and quiz scores for each topic">
+      <figcaption>The class dashboard, shown with a demo class.</figcaption>
+    </figure>
+    <div class="lp-sheets">
+      <img src="{% static 'img/landing/sheet-key.webp' %}" width="640" height="828" loading="lazy" class="lp-paper"
+           alt="The answer key page for the Topic 2.1 notes, blanks filled in">
+      <img src="{% static 'img/landing/sheet-testprep.webp' %}" width="640" height="828" loading="lazy" class="lp-paper"
+           alt="A printable AP test prep page of multiple-choice questions">
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ what's free #}
+  <section class="lp-feature lp-free flip" aria-labelledby="lp-free-h">
+    <div class="lp-feature-art">
+      <img class="lp-photo" src="{% static 'img/landing/photo-chalkboard.webp' %}" width="720" height="900" loading="lazy"
+           alt="A student holding a notebook in front of a chalkboard full of integrals">
+    </div>
+    <div class="lp-feature-text">
+      <p class="lp-kicker">What it costs</p>
+      <h2 id="lp-free-h">A lot of it is free</h2>
+      <p>Every lesson video in the course is free to watch. So is everything in Units 1 to 3: notes, practice, test prep and quizzes. The Trig Review module, the formula sheet and one full-length AB practice exam are free too. You can read and practice without an account; a free account saves your work.</p>
+      <p>A student membership opens Units 4 to 10 and more practice exams. Teachers can buy the course materials to print and teach from, or get a class subscription that covers every student. <a href="{% url 'membership' %}">Compare the options</a>.</p>
+      <div class="lp-cta">
+        <a class="btn primary" href="{% url 'for_students' %}">For students</a>
+        <a class="btn" href="{% url 'for_teachers' %}">For teachers</a>
+      </div>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ the teacher behind it #}
+  <section class="lp-me" aria-labelledby="lp-me-h">
+    <img src="{% static 'img/adder-oaks.webp' %}" width="366" height="457" loading="lazy" alt="Adder Oaks, smiling, outdoors among trees">
+    <div>
+      <p class="lp-kicker">Who made this</p>
+      <h2 id="lp-me-h">Hi, I'm Mr Oaks</h2>
+      <p>I've taught math in central Virginia for over fifteen years. I built this course around how I teach calculus: a visual introduction to each idea, then rigorous practice to lock it in. <a href="{% url 'about' %}">More about me and the course</a>, or <a href="{% url 'contact' %}">send me a note</a>.</p>
+    </div>
+  </section>
+
+  {# ------------------------------------------------------------ last call #}
+  <section class="lp-band lp-last">
+    <div>
+      <h2>Start with limits</h2>
+      <p>Unit 1 is free from the first lesson to the last. Watch one video, then try the practice.</p>
+      <div class="lp-cta">
+        {% if start %}<a class="btn primary big" href="{% url 'lesson' start %}">Start Topic 1.1</a>{% endif %}
+        <a class="btn big" href="{% url 'map' %}">See the whole course</a>
+      </div>
+    </div>
+    <img class="lp-photo" src="{% static 'img/landing/photo-student.webp' %}" width="720" height="900" loading="lazy"
+         alt="A student with glasses smiling in front of a whiteboard">
   </section>
 </div>
 {% endblock %}

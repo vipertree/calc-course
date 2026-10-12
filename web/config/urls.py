@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth
 from django.urls import path, re_path
 
 from accounts import views as acc
+from course import site_pages
 from course import views as v
 
 NUM = r"(?P<num>\d{1,2}\.\d{1,2}|U\d{1,2})"
@@ -12,6 +13,8 @@ urlpatterns = [
     path("students/", v.for_students, name="for_students"),
     path("teachers/", v.for_teachers, name="for_teachers"),
     path("membership/", v.membership, name="membership"),
+    path("about/", site_pages.about, name="about"),
+    path("contact/", site_pages.contact, name="contact"),
     path("membership/<slug:plan>/", v.checkout, name="checkout"),
     path("login/", acc.LoginView.as_view(), name="login"),
     path("logout/", auth.LogoutView.as_view(), name="logout"),

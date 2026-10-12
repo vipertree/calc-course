@@ -180,3 +180,35 @@
   [data-design="textbook"] .topic .prog { position: static; width: 100%; margin-top: 4px; }
   [data-design="textbook"] .tabs a { padding: 8px 9px; }
 }
+
+/* ---------- landing, About, Contact: a book's front matter. Numbered sections, figures with captions, booktabs rules */
+[data-design="textbook"] .lp { counter-reset: sec fig; }
+[data-design="textbook"] .lp-eyebrow, [data-design="textbook"] .lp-kicker { font: italic 400 1rem var(--font-body); text-transform: none; letter-spacing: 0; color: var(--dim); }
+[data-design="textbook"] .lp-hero h1 { font-weight: 400; letter-spacing: -.01em; }
+[data-design="textbook"] .lp-lede { color: var(--ink); }
+[data-design="textbook"] .lp-fine { font: italic 400 1rem var(--font-body); }
+[data-design="textbook"] .lp-feature h2::before, [data-design="textbook"] .lp-teach h2::before, [data-design="textbook"] .lp-h2::before {
+  counter-increment: sec; content: counter(sec) "\2003"; }
+[data-design="textbook"] .lp-hero-photo, [data-design="textbook"] .lp-photo, [data-design="textbook"] .lp-shot,
+[data-design="textbook"] .lp-stack img, [data-design="textbook"] .lp-screen, [data-design="textbook"] .lp-screen video { border-radius: 0; box-shadow: none; }
+[data-design="textbook"] .lp-screen { border: 1px solid var(--ink); background: var(--bg); }
+[data-design="textbook"] .lp-shot, [data-design="textbook"] .lp-stack img { border: 1px solid var(--ink); }
+[data-design="textbook"] .lp-screen figcaption, [data-design="textbook"] .lp-teach-shot figcaption { font: 400 .92rem var(--font-body); color: var(--ink-2); }
+[data-design="textbook"] .lp-screen figcaption::before, [data-design="textbook"] .lp-teach-shot figcaption::before {
+  counter-increment: fig; content: "Figure " counter(fig) ". "; font-weight: 700; }
+[data-design="textbook"] .lp-facts { background: transparent; box-shadow: none; clip-path: none; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 18px 0; }
+[data-design="textbook"] .lp-facts b { font: 400 clamp(1.9rem, 3.6vw, 2.6rem)/1 var(--font-body); }
+[data-design="textbook"] .lp-facts span { font: italic 400 1rem var(--font-body); }
+[data-design="textbook"] .lp-panel { border: 0; border-top: 1px solid var(--ink); border-radius: 0; box-shadow: none; background: transparent; }
+[data-design="textbook"] .lp-panel img { border: 1px solid var(--soft); margin-top: 14px; }
+[data-design="textbook"] .lp-panel h3 { margin: 14px 0 4px; font-size: 1.15rem; }
+[data-design="textbook"] .lp-panel h3::before { content: "Step " counter(lp) "."; display: inline; width: auto; height: auto; background: none;
+  color: var(--ink); border-radius: 0; font: 700 1.15rem var(--font-body); }
+[data-design="textbook"] .lp-panel p { margin: 0 0 8px; }
+[data-design="textbook"] .lp-band { background: transparent; box-shadow: none; clip-path: none; border-block: 1px solid var(--ink); }
+[data-design="textbook"] .lp-paper { border: 1px solid var(--soft); box-shadow: none; }
+[data-design="textbook"] .about-photo img { border-radius: 0; }
+[data-design="textbook"] .about-ai { border: 0; border-left: 2px solid var(--ink); border-radius: 0; padding: 4px 0 4px 18px; background: transparent; }
+[data-design="textbook"] .about-ai h2 { font-size: 1.1rem; }
+[data-design="textbook"] .contact-card { border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; padding: 14px 0 6px; }
+[data-design="textbook"] .contact-form textarea { background: var(--panel-2); border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; }

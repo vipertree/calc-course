@@ -119,3 +119,26 @@ class ExamAttempt(models.Model):
 
     def __str__(self):
         return f"{self.exam} #{self.pk} ({self.user})"
+
+
+class ContactMessage(models.Model):
+    """A message from the contact page. Saved first, then emailed to Adder through Resend (course/site_pages.py);
+    `sent` and `error` record how the email went, so nothing is lost when sending is off or fails."""
+    QUESTION, SCHOOL, FEEDBACK, OTHER = "question", "school", "feedback", "other"
+    TOPICS = [(QUESTION, "A question"), (SCHOOL, "School or district"), (FEEDBACK, "Feedback"), (OTHER, "Something else")]
+    name = models.CharField(max_length=80)
+    email = models.EmailField()
+    topic = models.CharField(max_length=10, choices=TOPICS, default=QUESTION)
+    message = models.TextField(max_length=5000)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="contact_messages")
+    ip = models.CharField(max_length=64, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    sent = models.BooleanField(default=False, help_text="Resend accepted the email")
+    error = models.CharField(max_length=300, blank=True, help_text="Why the email wasn't sent, if it wasn't")
+    handled = models.BooleanField(default=False, help_text="Tick once you've answered it")
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.get_topic_display()} from {self.name} ({self.created:%Y-%m-%d})"

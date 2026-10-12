@@ -20,6 +20,7 @@ from accounts.ratelimit import ratelimit
 from . import content, grading
 from . import assess, exams, packets, slides
 from .context import THEMES
+from .site_pages import course_facts
 from .models import Draft, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
@@ -54,7 +55,11 @@ def home(request):
         return redirect("teacher")
     if request.user.is_authenticated:
         return course_map(request)
-    return render(request, "site/landing.html", {"free": _free_summary()})
+    free = _free_summary()
+    return render(request, "site/landing.html", {
+        "free": free, "facts": course_facts(),
+        "trig": next((f for f in free if f["module"] and f["first"]), None),
+        "start": next((f["first"] for f in free if not f["module"] and f["first"]), None)})
 
 
 def _free_summary():

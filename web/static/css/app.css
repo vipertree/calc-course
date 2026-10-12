@@ -702,3 +702,18 @@ details.unit > summary h2 { margin: 0; }
 .contact-form select { padding: 6px 8px; }
 .contact-done { max-width: 640px; }
 @media (min-width: 820px) { .contact-page:has(.contact-card) { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 48px; } }
+
+/* ---------- formula sheets: one card style for every item, two per row, a size smaller (Adder 2026-10-03) */
+.formula-sheet .sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
+.formula-sheet .sheet-card { display: grid; grid-template-rows: auto 1fr auto; gap: 6px; padding: 12px 14px; background: var(--panel);
+  border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); font-size: .92rem; min-width: 0; }
+.formula-sheet .sheet-card.ahead { opacity: .45; }
+.formula-sheet .sheet-card.ahead:hover { opacity: .85; }
+.formula-sheet .sheet-title { margin: 0; font: 600 .95rem/1.3 var(--font-ui); color: var(--ink); }
+.formula-sheet .sheet-body { overflow-x: auto; }
+.formula-sheet .sheet-body p { margin: .3em 0; }
+.formula-sheet .sheet-body .katex-display { margin: .4em 0; font-size: .95em; }
+.formula-sheet .sheet-from { font: 500 .78rem var(--font-ui); color: var(--dim); text-decoration: none; justify-self: start; }
+.formula-sheet .sheet-from:hover { color: var(--ink); text-decoration: underline; }
+.formula-sheet .unit-sheet h2 { margin-bottom: 4px; }
+@media (max-width: 760px) { .formula-sheet .sheet-grid { grid-template-columns: minmax(0, 1fr); } }

@@ -4,6 +4,7 @@ from manim import *
 
 from kit import *
 from style import *
+from props import Tank, face, person_walking
 
 
 def shade(ax, f, a, b, color=AREA, opacity=0.45):
@@ -15,81 +16,108 @@ class Lesson(TranscriptScene):
     NUM = "6.1"
 
     def construct(self):
-        tank, water = water_tank(2.2, 3.2)
-        tank.to_edge(LEFT, buff=1.0).shift(DOWN * 0.3)
-        ax, al = plot_axes([0, 5, 1], [0, 4, 1], w=6.4, h=4.2, xlabel="t\\ (\\text{min})", ylabel="\\text{rate (gal/min)}")
-        VGroup(ax, al).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.2)
+        # a glass tank with a tap over it (props.Tank): the water rises with the area under the rate graph
+        tk = Tank(0.0, width=2.2, height=2.8, gauge=("0", "4", "8", "12", "16"), unit="gal", drain=False, inlet=True, tap=True)
+        tk.to_edge(LEFT, buff=1.3).shift(DOWN * 0.5)
+        ax, al = plot_axes([0, 5, 1], [0, 4, 1], w=6.0, h=4.0, xlabel="t\\ (\\text{min})", ylabel="\\text{rate (gal/min)}")
+        VGroup(ax, al).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.4)
         T0 = ValueTracker(0.001)
         with self.beat("Filling a tank") as b:
-            self.play(FadeIn(tank), FadeIn(ax), FadeIn(al), Create(ax.plot(lambda t: 3, x_range=[0, 4.6], color=FUNC, stroke_width=5)), run_time=1.2)
-            wat = always_redraw(lambda: water(T0.get_value() * 3 / 16).move_to(tank[0], aligned_edge=DOWN).shift(UP * 0.04))
+            flat = ax.plot(lambda t: 3, x_range=[0, 4.6], color=FUNC, stroke_width=5)
+            self.play(FadeIn(tk), FadeIn(ax), FadeIn(al), Create(flat), run_time=1.2)
             rect = always_redraw(lambda: Rectangle(width=ax.c2p(T0.get_value(), 0)[0] - ax.c2p(0, 0)[0], height=ax.c2p(0, 3)[1] - ax.c2p(0, 0)[1],
                                                    stroke_width=0, fill_color=AREA, fill_opacity=0.45).move_to(ax.c2p(0, 0), aligned_edge=DL))
+            # the readout sits above the graph's right half, clear of the "rate (gal/min)" label over the y-axis
             read = always_redraw(lambda: M(rf"\text{{water added}} = 3 \times {T0.get_value():.1f} = {3 * T0.get_value():.1f}\ \text{{gal}}", 32, ACCUM)
-                                 .next_to(ax, UP, buff=0.3))
-            self.add(wat, rect, read)
-            self.play(T0.animate.set_value(4), run_time=4, rate_func=linear)
+                                 .to_edge(UP, buff=0.5).align_to(ax, RIGHT))
+            self.add(rect, read)
+            tk.pour_on(0.9)
+            self.play(T0.animate.set_value(4), tk.level.animate.set_value(0.75), run_time=4, rate_func=linear)
+            tk.still()
             b.line(1)
             self.play(Indicate(read, color=ACCUM), run_time=1)
             b.line(2)
             self.play(Circumscribe(rect, color=SECANT), run_time=1.2)
         # the title card sits between the opening and the next beat, which builds on the same graph
         opening = list(self.mobjects)
-        self.play(*[FadeOut(m) for m in opening], run_time=0.5)
+        self.play(*[FadeOut(m) for m in opening if not isinstance(m, ValueTracker)], run_time=0.5)
         self.title()
-        self.play(*[FadeIn(m) for m in opening], run_time=0.5)
+        self.play(*[FadeIn(m) for m in opening if not isinstance(m, ValueTracker)], run_time=0.5)
 
         with self.beat("Area means amount") as b:
-            self.play(FadeOut(tank), FadeOut(wat), FadeOut(read), run_time=0.5)
-            hl = M(r"3\ \text{gal/min}", 30, FUNC).next_to(ax.c2p(4, 1.5), RIGHT, buff=0.15)
-            wl = M(r"4\ \text{min}", 30, FUNC).next_to(ax.c2p(2, 0), DOWN, buff=0.45)
-            self.play(FadeIn(hl), FadeIn(wl), run_time=0.6)
+            self.play(FadeOut(tk), FadeOut(read), run_time=0.5)
+            # the rectangle's two sides, measured with double arrows just outside it
+            hv = DoubleArrow(ax.c2p(4, 0) + RIGHT * 0.25, ax.c2p(4, 3) + RIGHT * 0.25, buff=0, color=FUNC, stroke_width=3, tip_length=0.15)
+            hl = M(r"3\ \text{gal/min}", 30, FUNC).next_to(hv, RIGHT, buff=0.12)
+            wv = DoubleArrow(ax.c2p(0, 0) + UP * 0.35, ax.c2p(4, 0) + UP * 0.35, buff=0, color=FUNC, stroke_width=3, tip_length=0.15)
+            wl = M(r"4\ \text{min}", 30, FUNC).next_to(wv, UP, buff=0.1)
+            self.play(GrowFromCenter(hv), FadeIn(hl), GrowFromCenter(wv), FadeIn(wl), run_time=0.8)
             b.line(1)
-            prod = M(r"(3\ \tfrac{\text{gal}}{\text{min}})(4\ \text{min})", r"= 12\ \text{gal}", 40).to_edge(LEFT, buff=0.7).shift(UP * 1.6)
+            # the words live in a column left of the graph and its "rate (gal/min)" label
+            room = al[1].get_left()[0] - 0.4 - (-config.frame_width / 2 + 0.5)
+            prod = M(r"(3\ \tfrac{\text{gal}}{\text{min}})(4\ \text{min})", r"= 12\ \text{gal}", 40).set_max_width(room).to_edge(LEFT, buff=0.5).shift(UP * 1.6)
             self.play(Write(prod), run_time=1.2)
             cancel = T("the minutes cancel", 30, DIM).next_to(prod, DOWN, buff=0.25).align_to(prod, LEFT)
             self.play(FadeIn(cancel), run_time=0.6)
             b.line(2)
-            rule = VGroup(formula_box(T("area under a rate graph = amount of change", 32, ACCUM), ACCUM),
-                          T("units: (rate units) $\\times$ (time units)", 30, DIM)).arrange(DOWN, buff=0.3).next_to(cancel, DOWN, buff=0.6).to_edge(LEFT, buff=0.5)
-            rule[0].set_max_width(6.2)
+            rule = formula_box(VGroup(T("area under a rate graph", 32, ACCUM), T("= amount of change", 32, ACCUM)).arrange(DOWN, buff=0.15), ACCUM)
+            units = formula_box(T("units: (rate units) $\\times$ (time units)", 30, INK), DIM)
+            col = VGroup(rule, units).arrange(DOWN, buff=0.35, aligned_edge=LEFT).set_max_width(room)
+            col.next_to(cancel, DOWN, buff=0.5).to_edge(LEFT, buff=0.5)
             self.play(FadeIn(rule), run_time=0.8)
+            self.play(FadeIn(units), run_time=0.6)
         self.clear()
 
-        tank, water = water_tank(2.2, 3.2)
-        tank.to_edge(LEFT, buff=1.0).shift(DOWN * 0.3)
-        ax, al = plot_axes([0, 5, 1], [0, 7, 1], w=6.4, h=4.4, xlabel="t", ylabel="r")
-        VGroup(ax, al).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.2)
+        tk = Tank(0.0, width=2.2, height=2.8, gauge=("0", "5", "10", "15", "20"), unit="gal", drain=False, inlet=True, tap=True)
+        tk.to_edge(LEFT, buff=1.3).shift(DOWN * 0.5)
+        # x-axis numbers only: the heights 2 and 6 are labeled where they are, not crowded onto the y-axis numbers
+        ax, al = plot_axes([0, 5, 1], [0, 7, 1], w=6.0, h=4.4, coords=False, xlabel="t", ylabel="r")
+        ax.x_axis.add_numbers(font_size=26)
+        VGroup(ax, al).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.4)
         T1 = ValueTracker(0.001)
         with self.beat("When the rate changes") as b:
-            self.play(FadeIn(tank), FadeIn(ax), FadeIn(al), Create(ax.plot(lambda t: 2 + t, x_range=[0, 4.6], color=FUNC, stroke_width=5)), run_time=1.2)
-            self.add(always_redraw(lambda: water((2 * T1.get_value() + T1.get_value() ** 2 / 2) / 20).move_to(tank[0], aligned_edge=DOWN).shift(UP * 0.04)))
+            self.play(FadeIn(tk), FadeIn(ax), FadeIn(al), Create(ax.plot(lambda t: 2 + t, x_range=[0, 4], color=FUNC, stroke_width=5)), run_time=1.2)
             self.add(always_redraw(lambda: shade(ax, lambda t: 2 + t, 0, max(T1.get_value(), 0.01))))
             b.line(1)
+            # the flow speeds up: the stream thickens as the rate grows
+            tk.pour_on(0.5)
+
+            def flow(m):
+                # the stream thickens with the rate; the water in is the area so far, (2t + t^2/2) gallons of 20
+                t = T1.get_value()
+                m._inflow = 0.35 + 0.2 * t
+                m.level.set_value((2 * t + t * t / 2) / 20)
+            tk.add_updater(flow)
             self.play(T1.animate.set_value(4), run_time=3, rate_func=linear)
-            labs = VGroup(M("2", 30).next_to(ax.c2p(0, 2), LEFT, buff=0.15), M("6", 30).next_to(ax.c2p(4, 6), UR, buff=0.1),
+            tk.remove_updater(flow)
+            tk.still()
+            labs = VGroup(M("2", 30).next_to(ax.c2p(0, 2), LEFT, buff=0.15), M("6", 30).next_to(ax.c2p(4, 6), RIGHT, buff=0.15),
                           DashedLine(ax.c2p(4, 0), ax.c2p(4, 6), color=DIM))
             self.play(FadeIn(labs), run_time=0.6)
             b.line(2)
-            calc = M(r"\frac{2 + 6}{2} \cdot 4 = 16\ \text{gal}", 40, ACCUM).next_to(ax, UP, buff=0.2)
+            calc = M(r"\frac{2 + 6}{2} \cdot 4 = 16\ \text{gal}", 40, ACCUM).to_edge(UP, buff=0.5).align_to(ax, RIGHT)
             self.play(Write(calc), run_time=1.2)
         self.clear()
 
         ax, al = plot_axes([0, 8, 1], [-2, 3, 1], w=8, h=3.4, xlabel="t\\ (\\text{s})", ylabel="v\\ (\\text{m/s})")
         VGroup(ax, al).to_edge(UP, buff=0.5)
-        v = lambda t: 2 if t < 3 else -1
         with self.beat("Below the axis") as b:
             graph = VGroup(Line(ax.c2p(0, 2), ax.c2p(3, 2), color=FUNC, stroke_width=5), Line(ax.c2p(3, -1), ax.c2p(7, -1), color=FUNC, stroke_width=5))
             self.play(FadeIn(ax), FadeIn(al), Create(graph), run_time=1.2)
             b.line(1)
             up_r = Rectangle(width=ax.c2p(3, 0)[0] - ax.c2p(0, 0)[0], height=ax.c2p(0, 2)[1] - ax.c2p(0, 0)[1], stroke_width=0, fill_color=DERIV, fill_opacity=0.45).move_to(ax.c2p(0, 0), aligned_edge=DL)
             dn_r = Rectangle(width=ax.c2p(7, 0)[0] - ax.c2p(3, 0)[0], height=ax.c2p(0, 0)[1] - ax.c2p(0, -1)[1], stroke_width=0, fill_color=TANGENT, fill_opacity=0.45).move_to(ax.c2p(3, 0), aligned_edge=UL)
+            # a walker on the path: her position is the running total of the area
             nl = NumberLine(x_range=[0, 7, 1], length=7, color=DIM, include_numbers=True, font_size=24).to_edge(DOWN, buff=1.4)
             P = ValueTracker(0)
-            walker = always_redraw(lambda: Dot(nl.n2p(P.get_value()), color=SECANT, radius=0.12))
+            walker = person_walking(0.9)
+            walker.facing = 1
+            walker.add_updater(lambda m: m.move_to(nl.n2p(P.get_value()), aligned_edge=DOWN).shift(UP * 0.08))
             self.play(FadeIn(up_r), FadeIn(M("+6", 36, DERIV).move_to(up_r)), FadeIn(nl), FadeIn(walker), run_time=0.8)
             self.play(P.animate.set_value(6), run_time=1.6)
-            self.play(FadeIn(dn_r), FadeIn(M("-4", 36, TANGENT).move_to(dn_r)), run_time=0.6)
+            # "-4" goes under its rectangle: the t-axis numbers run through the inside of it
+            self.play(FadeIn(dn_r), FadeIn(M("-4", 36, TANGENT).next_to(dn_r, DOWN, buff=0.15)), run_time=0.6)
+            face(walker, -1)
             self.play(P.animate.set_value(2), run_time=1.6)
             b.line(2)
             net = M(r"\text{net change: } 6 - 4 = 2\ \text{m}", 36, ACCUM).to_edge(DOWN, buff=0.4).shift(LEFT * 3)

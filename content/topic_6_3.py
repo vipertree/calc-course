@@ -25,6 +25,7 @@ NOTES = [
     Video("s6_3.py::Lesson", "Sums and integrals", 5),
 
     Section("Sigma notation"),
+    Text(r"$\Sigma$ is sigma, the capital Greek letter S: S for sum. It means add up."),
     Formula("Summation notation", (
         r"\[ \sum_{k=1}^{n} a_k = a_1 + a_2 + \cdots + a_n. \] The \blank{counter} $k$ starts at the bottom number and goes up to the top number; "
         r"for each value, work out the expression and add.")),
@@ -36,12 +37,15 @@ NOTES = [
     Section("The definite integral"),
     Formula("Definite integral", (
         r"\[ \int_a^b f(x)\,dx = \lim_{n\to\infty} \sum_{k=1}^{n} f(x_k)\,\Delta x. \] "
+        r"The integral sign is a stretched-out S, for sum. $\Sigma$ is an S for sum too: $\Sigma$ adds up a certain number of rectangles, and $\int$ is "
+        r"what that sum becomes in the limit, with infinitely many. "
         r"$a$ and $b$ are the \blank{limits of integration}, $f(x)$ is the \blank{integrand}, and $dx$ stands for a tiny width. "
         r"If $f \ge 0$, the integral is the exact area under the graph from $a$ to $b$.")),
     Text(r"\textbf{From a limit to an integral.} Find $\Delta x$ (so $b - a$), read $a$ from $x_k = a + k\,\Delta x$, then see what is done to $x_k$: that's $f$."),
     VideoExample('From sum to integral', work="2.4cm"),
     Text(r"\textbf{Geometry.} When the region is a familiar shape, its area gives the integral: $\int_{-2}^{2} \sqrt{4 - x^2}\,dx$ is half a circle of radius $2$, so it equals $2\pi$."),
-    BigIdea(r"$\Sigma$ means add up. A Riemann sum adds $f(x_k)\,\Delta x$; the definite integral is the limit of those sums as $n \to \infty$."),
+    BigIdea(r"$\Sigma$, the Greek capital S, means add up. A Riemann sum adds $f(x_k)\,\Delta x$; the definite integral, a stretched-out S, is the limit "
+            r"of those sums as $n \to \infty$."),
     Check(r"Evaluate $\displaystyle\sum_{k=1}^{3} k^2$.", num(14), r"$1 + 4 + 9 = 14$."),
 ]
 

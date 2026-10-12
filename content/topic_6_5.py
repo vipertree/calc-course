@@ -2,7 +2,7 @@
 
 CED: FUN-5.A (FUN-5.A.1, FUN-5.A.2) with FUN-4.A applied to g(x) = integral_a^x f(t) dt: g' = f and g'' = f', so the sign
 of f gives where g increases, sign changes of f give g's relative extrema, f rising/falling gives g's concavity, and
-values of g are signed areas. Lesson example: a semicircle-and-segments graph of f (values, extrema, candidates test,
+values of g are areas, with area below the axis counted as negative. Lesson example: a semicircle-and-segments graph of f (values, extrema, candidates test,
 inflection points). Worked examples: g' from a formula with a sign chart, a tangent line to g, concavity from a graph.
 """
 import sympy as sp
@@ -42,10 +42,10 @@ NOTES = [
           r"$f$ increasing & $g$ concave \blank{up} \\ "
           r"$f$ decreasing & $g$ concave down \\ "
           r"$f$ has a relative max or min & $g$ has an \blank{inflection point}", "ll", header=r"Graph of $f$ & $g(x) = \int_a^x f(t)\,dt$"),
-    Text(r"\textbf{Values of $g$} are signed areas from $a$ to $x$. If $x < a$, the limits run backward: $g(x) = -\int_x^a f(t)\,dt$. "
+    Text(r"\textbf{Values of $g$} are areas from $a$ to $x$, with area below the axis counted as negative. If $x < a$, the limits run backward: $g(x) = -\int_x^a f(t)\,dt$. "
          r"\textbf{Absolute extrema} of $g$ on a closed interval: the candidates test (critical points, where $f$ changes sign, and the endpoints)."),
     VideoExample('Reading the graph of f', work="4cm"),
-    BigIdea(r"For an accumulation function, $f$ is the derivative: direction and extrema from the sign of $f$, concavity from whether $f$ rises or falls, values from signed areas."),
+    BigIdea(r"For an accumulation function, $f$ is the derivative: direction and extrema from the sign of $f$, concavity from whether $f$ rises or falls, values from the area above the axis minus the area below."),
     Check(r"$g(x) = \int_0^x f(t)\,dt$ and $f$ changes from negative to positive at $x = 3$. What does $g$ have at $x = 3$?", selfcheck(r"\text{a relative minimum}"),
           r"$g' = f$ changes from $-$ to $+$: a relative minimum."),
 ]

@@ -92,7 +92,7 @@ class Lesson(TranscriptScene):
         with self.beat("Close") as b:
             card = VGroup(T(r"$g' = f$: the sign of $f$ gives $g$'s direction; its sign changes give $g$'s extrema.", 32),
                           T(r"$g'' = f'$: $f$ rising or falling gives $g$'s concavity; peaks and valleys of $f$ give inflection points.", 32),
-                          T("Values of $g$: signed areas. Backward limits flip the sign.", 32, ACCUM)).arrange(DOWN, buff=0.5)
+                          T("Values of $g$: area above the axis minus area below. Backward limits flip the sign.", 32, ACCUM)).arrange(DOWN, buff=0.5)
             card.set_max_width(12.6)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()

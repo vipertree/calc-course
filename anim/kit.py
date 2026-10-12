@@ -291,6 +291,9 @@ class TranscriptScene(LessonScene):
                 self._voice_map[-1]["think_at"] = round(self.renderer.time, 3)     # the think pause cue goes up
                 self.play(FadeIn(cue), run_time=0.5)
             board = Board(left=figure is None).next_to(head, DOWN, buff=0.5)
+            if figure is not None:
+                # the board's lines stop short of the figure (they start 0.8 in from the left edge)
+                board.maxw = min(board.maxw, max(3.5, figure.get_left()[0] - 0.3 - (-config.frame_width / 2 + 0.8)))
             at = at or list(range(1, len(steps) + 1))
             for k, (s, i) in enumerate(zip(steps, at)):
                 if figure_at is not None and i >= figure_at and figure not in self.mobjects:

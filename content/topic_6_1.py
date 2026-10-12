@@ -16,12 +16,12 @@ t = sp.symbols("t", real=True)
 
 
 def area(pieces):
-    """Signed area under a piecewise rate given as [(expr in t, a, b), ...]."""
+    """Net area under a piecewise rate given as [(expr in t, a, b), ...]: area above the axis minus area below."""
     return sum(sp.integrate(e, (t, a, b)) for e, a, b in pieces)
 
 
 def total(pieces):
-    """Total (unsigned) area: integrate |rate|."""
+    """Total area, with area below the axis counted as positive: integrate |rate|."""
     return sum(sp.integrate(sp.Abs(e), (t, a, b)) for e, a, b in pieces)
 
 
@@ -55,7 +55,7 @@ NOTES = [
          r"$r(t) = 2 + t$ on $[0, 4]$ gives $\frac{2 + 6}{2} \cdot 4 = 16$ gallons."),
 
     Section("Net change and total distance"),
-    Text(r"For a velocity graph, the signed area is the \blank{displacement} (net change in position). Area above the axis is motion forward, "
+    Text(r"For a velocity graph, the area above the axis minus the area below is the \blank{displacement} (net change in position). Area above the axis is motion forward, "
          r"area below is motion back. The \blank{total distance} adds all the areas as positive numbers."),
     FIG_V,
     Text(r"Here the walker goes $6$ m forward, then $4$ m back: displacement $6 - 4 = 2$ m, total distance $6 + 4 = 10$ m."),

@@ -1,16 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Course map · AP Calculus{% endblock %}
+{% block title %}{{ page_title }} · Mr Oaks Math{% endblock %}
 {% block main %}
-<div class="mathy"><h1>Course map</h1>
-<p class="muted">One lesson per topic in the College Board course description. Lessons that are ready are highlighted.</p>
+<div class="mathy"><h1>{{ page_title }}</h1>
+<p class="muted">{{ page_intro }}</p>
 {% if exams %}<a class="topic ready exam-promo" href="{% url 'exams' %}"><span class="n">Exam</span>
-  <span style="flex:1"><strong>Full-length practice exam</strong><br><small class="muted">The whole AP Calculus AB exam, timed part by part, with an estimated AP score at the end. The first one is free.</small></span></a>{% endif %}
+  <span style="flex:1"><strong>Full-length practice exam</strong><br><small class="muted">The whole AP Calculus AB exam, timed part by part, with an estimated AP score at the end.</small></span></a>{% endif %}
 {% for group in groups %}
-{% if group.modules %}<h2 class="map-group">Free modules</h2>
-<p class="muted">Refreshers that stand on their own. Free for everyone.</p>{% else %}<h2 class="map-group">The course</h2>{% endif %}
 {% for u in group.units %}
 <details class="unit{% if u.module %} module{% endif %}" id="unit-{{ u.n }}" data-unit="{{ u.n }}"{% if u.n == current_unit %} open{% endif %}>
-  <summary><h2><span class="chev" aria-hidden="true"></span>{{ u.heading }}{% if u.free %}<span class="free-tag">Free</span>{% endif %} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
+  <summary><h2><span class="chev" aria-hidden="true"></span>{{ u.heading }}{% if u.locked %} <span class="lock">Members</span>{% endif %} {% if u.bc %}<span class="bc">BC ONLY</span>{% endif %}</h2></summary>
   <div class="topics">
   {% for t in u.topics %}
     {% if t.ready %}<a class="topic ready" href="{% url 'lesson' t.n %}">{% else %}<div class="topic soon">{% endif %}

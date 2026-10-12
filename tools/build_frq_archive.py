@@ -10,9 +10,11 @@ Writes, under build/frq/ (gitignored, rsynced to the server like build/pdf/):
     manifest.json        one record per question: category, year, exam(s), number, source files with size and
                          sha256, which PDF pages are the question and which the scoring guidelines, page images,
                          and the question text for search
-    pages/<id>/q1.webp   the question pages, rendered
-    pages/<id>/s1.webp   the scoring guideline pages, rendered
-    pdf/<id>.pdf         the original PDF (question and scoring guidelines), for download
+    files/<id>/q1.webp   the question pages, rendered
+    files/<id>/s1.webp   the scoring guideline pages, rendered
+    files/<id>/<id>.pdf  the original PDF (question and scoring guidelines), for download
+
+files/ is the only public part: the site serves it at /frq/file/ (nginx straight off disk in production).
 
 Every source PDF is the College Board question followed by its scoring guidelines. A page is a scoring guideline
 page when its header says "Scoring Guidelines" (every year 2002-2025 does). Anything that doesn't parse is listed
@@ -87,11 +89,9 @@ def main():
         if m.re is CAT_FILE:
             q["categories"].append(m["cat"])
     # 2. split each question's PDF into question pages and scoring-guideline pages, render, extract text
-    out_pages = FRQ / "pages"
-    out_pdf = FRQ / "pdf"
+    out_pages = FRQ / "files"
     shutil.rmtree(out_pages, ignore_errors=True)
     out_pages.mkdir(parents=True)
-    out_pdf.mkdir(exist_ok=True)
     for qid, q in sorted(qs.items()):
         shas = {s["sha256"] for s in q["sources"]}
         if len(shas) > 1:
@@ -125,7 +125,7 @@ def main():
         if len(q["text"]) < 80:
             problems.append(f"{qid}: little or no question text ({len(q['text'])} characters), search won't find it")
         q["pdf"] = f"{qid}.pdf"
-        shutil.copyfile(src, out_pdf / q["pdf"])
+        shutil.copyfile(src, d / q["pdf"])
         q["pdf_size"] = src.stat().st_size
         doc.close()
         print(f"  {qid:12} {','.join(q['categories']) or '-':22} {''.join(kinds)}  {'/'.join(q['exams'])}")

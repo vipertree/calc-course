@@ -54,7 +54,7 @@ def index(request, cat=None):
     query = request.GET.urlencode()
     return render(request, "course/frq.html", {
         "cats": cats, "cat": cat and frq.BY_SLUG[cat], "groups": groups, "count": len(rows),
-        "total": len(frq.questions()), "f": f, "active": active, "years": frq.years(), "query": query,
+        "matching": len(everything), "built": bool(frq.questions()), "f": f, "active": active, "years": frq.years(), "query": query,
         "page_title": frq.BY_SLUG[cat][2] if cat else "AP FRQ Archive"})
 
 
@@ -83,8 +83,7 @@ def file(request, qid, name):
     if not _FILE.fullmatch(name) or not frq.get(qid):
         raise Http404
     base = settings.FRQ_DIR.resolve()
-    path = (base / "pdf" / name) if name.endswith(".pdf") else (base / "pages" / qid / name)
-    path = path.resolve()
+    path = (base / "files" / qid / name).resolve()
     if base not in path.parents or not path.is_file() or (name.endswith(".pdf") and name != f"{qid}.pdf"):
         raise Http404
     ext = path.suffix

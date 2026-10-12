@@ -13,7 +13,7 @@
 
   <nav class="frq-cats" aria-label="Question types">
     <a class="frq-cat{% if not cat %} on{% endif %}" href="{% url 'frq' %}{% if query %}?{{ query }}{% endif %}"{% if not cat %} aria-current="page"{% endif %}>
-      <strong>All types</strong><span class="frq-count">{{ total }}</span></a>
+      <strong>All types</strong><span class="frq-count">{{ matching }}</span></a>
     {% for c in cats %}<a class="frq-cat{% if c.on %} on{% endif %}" href="{% url 'frq_category' c.slug %}{% if query %}?{{ query }}{% endif %}"{% if c.on %} aria-current="page"{% endif %}>
       <strong>{{ c.name }}</strong><span class="frq-count">{{ c.count }}</span></a>{% endfor %}
   </nav>
@@ -33,11 +33,11 @@
       {% if active %}<a class="btn" href="{{ request.path }}">Clear</a>{% endif %}</div>
   </form>
 
-  <p class="frq-summary" role="status">{% if count %}{{ count }} question{{ count|pluralize }}{% if active %} match{{ count|pluralize:"es," }}{% endif %}, newest first.{% else %}No questions match.{% if active %} <a href="{{ request.path }}">Clear the filters</a>{% endif %}{% endif %}</p>
+  <p class="frq-summary" role="status">{% if count %}{{ count }} question{{ count|pluralize }}{% if active %} match{{ count|pluralize:"es," }}{% endif %}, newest first.{% elif not built %}The archive is empty on this server for now.{% else %}No questions match.{% if active %} <a href="{{ request.path }}">Clear the filters</a>{% endif %}{% endif %}</p>
 
   {% for g in groups %}
   <section class="frq-group">
-    {% if not cat %}<h2><a href="{% url 'frq_category' g.slug %}{% if query %}?{{ query }}{% endif %}">{{ g.name }}</a> <span class="frq-count">{{ g.rows|length }}</span></h2>{% endif %}
+    {% if not cat %}<h2>{% if g.slug %}<a href="{% url 'frq_category' g.slug %}{% if query %}?{{ query }}{% endif %}">{{ g.name }}</a>{% else %}{{ g.name }}{% endif %} <span class="frq-count">{{ g.rows|length }}</span></h2>{% endif %}
     <ol class="frq-list">
       {% for q in g.rows %}<li><a class="topic ready frq-row" href="{% url 'frq_question' q.id %}">
         <span class="n">{{ q.year }}</span>

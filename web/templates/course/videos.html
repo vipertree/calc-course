@@ -1,0 +1,59 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Videos · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="videos-page mathy">
+  <h1>Videos</h1>
+  <p class="muted">Every lesson video. Pick one and it plays here; open the lesson for its notes and practice.</p>
+  <div class="vp-grid">
+    <section class="vp-player" aria-live="polite">
+      <video id="vp-video" controls preload="metadata" playsinline></video>
+      <div class="vp-now"><span class="chip-sm" id="vp-label"></span> <strong id="vp-title"></strong>
+        <a id="vp-lesson" href="#">Open the lesson</a></div>
+    </section>
+    <nav class="vp-list" aria-label="All videos">
+      {% for g in groups %}
+      <details class="vp-group"{% if forloop.counter <= 2 %} open{% endif %}><summary>{{ g.name }}</summary>
+        <ol>{% for v in g.items %}<li><button type="button" class="vp-item" data-n="{{ v.n }}" data-slug="{{ v.slug }}" data-label="{{ v.label }}"
+          data-title="{{ v.title }}" data-cc="{{ v.captions|yesno:'1,' }}" data-lesson="{% url 'lesson' v.n %}"><span class="chip-sm">{{ v.label }}</span> {{ v.title }}</button></li>{% endfor %}</ol>
+      </details>
+      {% empty %}<p>No videos are published yet.</p>
+      {% endfor %}
+    </nav>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">
+(function () {
+  // plays any lesson video in place; light or dark look like the lesson page; #2.1 in the address picks one
+  const base = "{% url 'video' 'X' %}";
+  const v = document.getElementById("vp-video");
+  const items = [...document.querySelectorAll(".vp-item")];
+  const dq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  const dark = () => { const t = document.documentElement.dataset.theme; return t === "slate" || (t !== "paper" && !!(dq && dq.matches)); };
+  const url = (name) => base.replace(/X$/, name);
+  function play(btn, start) {
+    items.forEach((b) => b.classList.toggle("on", b === btn));
+    v.querySelectorAll("track").forEach((t) => t.remove());
+    v.src = url(btn.dataset.slug + (dark() ? "-dark" : "") + ".mp4");
+    if (btn.dataset.cc) {
+      const t = document.createElement("track");
+      Object.assign(t, { kind: "captions", srclang: "en", label: "English", src: url(btn.dataset.slug + ".vtt"), default: true });
+      v.append(t);
+    }
+    document.getElementById("vp-label").textContent = btn.dataset.label;
+    document.getElementById("vp-title").textContent = btn.dataset.title;
+    document.getElementById("vp-lesson").href = btn.dataset.lesson;
+    const d = btn.closest("details"); if (d) d.open = true;
+    if (location.hash !== "#" + btn.dataset.n) history.replaceState(null, "", "#" + btn.dataset.n);
+    if (start) v.play().catch(() => {});
+    if (window.renderMathInElement) renderMathInElement(document.querySelector(".vp-now"), { throwOnError: false, delimiters: [{ left: "$", right: "$", display: false }] });
+  }
+  items.forEach((b) => b.addEventListener("click", () => { play(b, true); if (window.innerWidth < 900) v.scrollIntoView({ behavior: "smooth", block: "start" }); }));
+  const want = decodeURIComponent(location.hash.slice(1));
+  const first = items.find((b) => b.dataset.n === want) || items.find((b) => b.dataset.n === "1.1") || items[0];
+  if (first) play(first, false);
+  // lesson titles carry $...$ math; KaTeX loads deferred, so typeset once the page is ready
+  window.addEventListener("load", () => { if (window.renderMathInElement) renderMathInElement(document.querySelector(".videos-page"),
+    { throwOnError: false, delimiters: [{ left: "$", right: "$", display: false }] }); });
+})();
+</script>{% endblock %}

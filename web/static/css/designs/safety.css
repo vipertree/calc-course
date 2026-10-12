@@ -136,6 +136,18 @@
   [data-design="safety"] .tabs a::before { display: block; margin: 0 auto 4px; }
 }
 
+/* main navigation: links in the navy band are white; inside a dropdown or the folded menu they sit on a panel */
+[data-design="safety"] .top .site-nav a, [data-design="safety"] .top .nav-group > summary { color: #D2DAE8; }
+[data-design="safety"] .top .site-nav a.on, [data-design="safety"] .top .nav-group.on > summary { color: #FFFFFF; }
+[data-design="safety"] .top .nav-drop a { color: var(--ink); }
+@media (max-width: 1180px) {
+  [data-design="safety"] .top .nav-fold > .site-nav a { color: var(--ink); }
+  [data-design="safety"] .top .nav-fold .nav-group > summary { color: var(--dim); }
+  [data-design="safety"] .nav-fold .nav-drop { border: 0; padding: 0; }
+}
+[data-design="safety"] .nav-drop { border: 2px solid var(--rule); border-radius: 12px; }
+[data-design="safety"] .nav-drop a.on { background: var(--accent); color: #13294B; }
+
 /* ---------- landing, About, Contact: the card's numbered panels, a navy facts band, orange offset shadows */
 [data-design="safety"] .lp-eyebrow, [data-design="safety"] .lp-kicker { display: inline-block; background: var(--accent); color: #13294B;
   border-radius: 6px; padding: 3px 10px; letter-spacing: .04em; }

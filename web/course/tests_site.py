@@ -38,7 +38,7 @@ class Pages(TestCase):
 
     def test_landing_links_into_the_site(self):
         html = self.client.get("/").content.decode()
-        for href in ("/course/", "/formulas/", "/exams/", "/students/", "/teachers/", "/membership/", "/topic/0.1/"):
+        for href in ("/course/", "/formulas/", "/exams/", "/students/", "/teachers/", "/membership/", "/trig/", "/videos/"):
             self.assertIn(f'href="{href}"', html)
         self.assertIn("Mr Oaks Math", html)
         self.assertIn("autoplay muted loop playsinline", html)

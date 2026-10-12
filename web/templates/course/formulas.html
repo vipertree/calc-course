@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Key ideas and formulas · AP Calculus{% endblock %}
+{% block title %}{{ page_title }} · Mr Oaks Math{% endblock %}
 {% block main %}
-<div class="mathy formula-sheet"><h1>Key ideas and formulas</h1>
+<div class="mathy formula-sheet"><h1>{{ page_title }}</h1>
 <p class="muted">Every key idea, definition and formula from the lessons, in one place, each with the topic it comes from.{% if graying %}
   Topics you haven't reached yet are grayed out, but they're all here.{% endif %}</p>
 {% for u in units %}

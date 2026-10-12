@@ -695,3 +695,24 @@ class SitePages(TestCase):
         r = self.client.get("/membership/student/")
         self.assertContains(r, "isn't open yet")
         self.assertEqual(self.client.get("/membership/nonsense/").status_code, 404)
+
+    def test_new_navigation_pages(self):
+        """Adder 2026-10-12: separate calc and trig courses and formula sheets, an all-videos page, a student
+        dashboard, and a top bar in two layouts."""
+        calc = self.client.get("/course/").content.decode()
+        self.assertIn("AP Calc Course", calc)
+        self.assertNotIn("Right-Triangle Trigonometry", calc)            # the trig module has its own page now
+        self.assertIn("Right-Triangle Trigonometry", self.client.get("/trig/").content.decode())
+        self.assertContains(self.client.get("/trig/formulas/"), "Trig Formulas")
+        self.assertContains(self.client.get("/formulas/"), "Calc Formula Sheet")
+        self.assertEqual(self.client.get("/videos/").status_code, 200)
+        self.assertEqual(self.client.get("/me/").status_code, 302)       # sign in first
+        self.assertIn("Mr Oaks Math", calc)
+        self.assertNotIn(">Free<", calc)
+        self.client.get("/nav/menus/?next=/course/")
+        self.assertIn('class="nav-group', self.client.get("/course/").content.decode())
+        u = User.objects.create_user("lee", password="pw123456")
+        Profile.objects.create(user=u, display_name="Lee")
+        self.client.force_login(u)
+        self.assertRedirects(self.client.get("/"), "/me/")
+        self.assertContains(self.client.get("/me/"), "Student Dashboard")

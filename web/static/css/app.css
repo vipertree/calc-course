@@ -509,6 +509,80 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .plan h3 { margin: 4px 0; }
 .plan ul { padding-left: 1.1em; line-height: 1.6; }
 
+/* ---------- main navigation (Adder 2026-10-12): links or dropdowns; folds into a Menu button on narrow screens */
+.nav-fold > summary { display: none; list-style: none; cursor: pointer; font: 600 .9rem var(--font-ui); border: 1.5px solid currentColor; border-radius: 999px; padding: 3px 12px; }
+.nav-fold > summary::-webkit-details-marker { display: none; }
+.site-nav { display: flex; align-items: center; gap: 4px 14px; flex-wrap: wrap; font: 600 .88rem var(--font-ui); }
+.site-nav a { color: var(--ink-2); text-decoration: none; padding: 4px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.site-nav a:hover { color: var(--ink); }
+.site-nav a.on { color: var(--ink); border-bottom-color: var(--accent); }
+.nav-set { display: inline-flex; gap: 14px; }
+.nav-links .nav-set + .nav-set { padding-left: 14px; border-left: 1.5px solid var(--rule); }
+.nav-group { position: relative; }
+.nav-group > summary { list-style: none; cursor: pointer; color: var(--ink-2); padding: 4px 2px; border-bottom: 2px solid transparent; }
+.nav-group > summary::-webkit-details-marker { display: none; }
+.nav-group > summary::after { content: ""; display: inline-block; width: .38em; height: .38em; margin-left: .45em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-.15em) rotate(45deg); }
+.nav-group.on > summary { color: var(--ink); border-bottom-color: var(--accent); }
+.nav-drop { position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; display: grid; gap: 2px; padding: 8px; background: var(--panel); border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); box-shadow: 0 10px 28px rgba(0,0,0,.14); z-index: 30; }
+.nav-drop a { padding: 7px 10px; border: 0; border-radius: 6px; }
+.nav-drop a:hover, .nav-drop a.on { background: var(--panel-2); }
+.nav-dash { margin-left: 4px; }
+.menu-label { display: block; margin: 8px 0 2px; padding-top: 8px; border-top: 1px solid var(--rule); font: 600 .72rem var(--font-ui); color: var(--dim); }
+@media (max-width: 1180px) {
+  .nav-fold { position: relative; }
+  .nav-fold > summary { display: inline-block; }
+  .nav-fold > .site-nav { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; min-width: 240px; flex-direction: column; align-items: stretch;
+    padding: 10px; background: var(--panel); border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); box-shadow: 0 10px 28px rgba(0,0,0,.14); }
+  .nav-fold .nav-set { flex-direction: column; gap: 2px; }
+  .nav-links .nav-set + .nav-set { padding: 6px 0 0; border-left: 0; border-top: 1px solid var(--rule); }
+  .nav-fold .nav-group > summary { pointer-events: none; font-size: .72rem; color: var(--dim); border: 0; padding: 6px 2px 0; }
+  .nav-fold .nav-group > summary::after { display: none; }
+  .nav-fold .nav-drop { position: static; box-shadow: none; border: 0; padding: 0; min-width: 0; background: none; }
+}
+
+/* ---------- all-videos page */
+.videos-page { max-width: 1240px; margin: 0 auto; }
+.vp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.vp-player { position: sticky; top: 72px; }
+.vp-player video { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius, 8px); }
+.vp-now { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin-top: 10px; }
+.vp-now a { margin-left: auto; }
+.vp-list { max-height: calc(100vh - 110px); overflow: auto; border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); background: var(--panel); }
+.vp-group > summary { cursor: pointer; padding: 10px 14px; font: 600 .95rem var(--font-ui); position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--rule); }
+.vp-group ol { list-style: none; margin: 0; padding: 4px; }
+.vp-item { display: flex; gap: 8px; align-items: baseline; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 6px; background: none; color: var(--ink); font: inherit; font-size: .92rem; cursor: pointer; }
+.vp-item:hover { background: var(--panel-2); }
+.vp-item.on { background: var(--panel-2); box-shadow: inset 3px 0 0 var(--accent); }
+.vp-item .chip-sm { flex: none; min-width: 2.8em; }
+@media (max-width: 900px) {
+  .vp-grid { grid-template-columns: minmax(0, 1fr); }
+  .vp-player { position: static; }
+  .vp-list { max-height: none; }
+}
+
+/* ---------- student dashboard */
+.dash-resume { display: grid; gap: 6px; text-decoration: none; color: var(--ink); margin: 8px 0 18px; }
+.dash-resume:hover { border-color: var(--accent); }
+.dash-units { display: grid; gap: 6px; }
+.dash-unit { display: grid; grid-template-columns: minmax(0, 1fr) 160px 56px; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+.dash-unit:hover { background: var(--panel-2); }
+.dash-unit .prog { height: 6px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.dash-unit .prog i { display: block; height: 100%; background: var(--good); }
+.dash-unit.locked { color: var(--dim); }
+.dash-count { text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .dash-unit { grid-template-columns: minmax(0, 1fr) 70px 48px; } }
+/* dropdowns and the folded menu sit on a panel: their links always use the page's ink, whatever the header uses */
+.top .nav-drop a { color: var(--ink-2); }
+.top .nav-drop a.on, .top .nav-drop a:hover { color: var(--ink); }
+@media (max-width: 1180px) {
+  .top .nav-fold > .site-nav a { color: var(--ink-2); }
+  .top .nav-fold > .site-nav a.on { color: var(--ink); }
+  .top .nav-fold .nav-group > summary { color: var(--dim); }
+}
+.top .in { max-width: 1320px; }
+.brand span, .top .linkbtn, .site-nav a, .nav-group > summary { white-space: nowrap; }
+@media (min-width: 1181px) { .site-nav { flex-wrap: nowrap; } }
+
 /* ------------------------------------------------------------ landing page (.lp), About and Contact
    Colors and fonts are tokens only; safety.css and textbook.css add their own touches. Full-width bands use a
    spread box-shadow clipped to the band's height, which paints edge to edge without widening the page. */

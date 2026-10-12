@@ -77,7 +77,7 @@
       <p class="lp-kicker">The course</p>
       <h2>Pictures first, then rigor</h2>
       <p>Each lesson opens with an idea you can see, like discs stacking into a volume or the tangent line to a polar curve. The worked examples go slowly, with every step on screen. The practice that follows is at the level of the AP exam.</p>
-      <p>The <a href="{% url 'map' %}">course map</a> lays out all ten units of AB and BC in the College Board's order.{% if trig %} If your trig is rusty, the <a href="{% url 'lesson' trig.first %}">Trig Review</a> module covers what calculus needs in {{ trig.count }} short lessons.{% endif %} The <a href="{% url 'formulas' %}">formula sheet</a> gathers every definition and theorem from the course on one page.</p>
+      <p>The <a href="{% url 'map' %}">course map</a> lays out all ten units of AB and BC in the College Board's order.{% if trig %} If your trig is rusty, the <a href="{% url 'trig' %}">Trig Course</a> covers what calculus needs in {{ trig.count }} short lessons.{% endif %} The <a href="{% url 'formulas' %}">formula sheet</a> gathers every definition and theorem from the course on one page.</p>
     </div>
   </section>
 
@@ -137,7 +137,7 @@
     <div class="lp-feature-text">
       <p class="lp-kicker">What it costs</p>
       <h2 id="lp-free-h">A lot of it is free</h2>
-      <p>Every lesson video in the course is free to watch. So is everything in Units 1 to 3: notes, practice, test prep and quizzes. The Trig Review module, the formula sheet and one full-length AB practice exam are free too. You can read and practice without an account; a free account saves your work.</p>
+      <p><a href="{% url 'videos' %}">Every lesson video</a> in the course is free to watch. So is everything in Units 1 to 3: notes, practice, test prep and quizzes. The Trig Course, the formula sheet and one full-length AB practice exam are free too. You can read and practice without an account; a free account saves your work.</p>
       <p>A student membership opens Units 4 to 10 and more practice exams. Teachers can buy the course materials to print and teach from, or get a class subscription that covers every student. <a href="{% url 'membership' %}">Compare the options</a>.</p>
       <div class="lp-cta">
         <a class="btn primary" href="{% url 'for_students' %}">For students</a>

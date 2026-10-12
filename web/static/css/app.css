@@ -624,7 +624,10 @@ details.unit > summary h2 { margin: 0; }
 .lp-facts span { font: .92rem var(--font-ui); color: var(--ink-2); }
 
 .lp-panels { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; counter-reset: lp; }
-@media (min-width: 760px) { .lp-panels { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* four steps: four across on wide screens, two by two in between, one column on phones */
+@media (min-width: 640px) { .lp-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .lp-panels { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .lp-panel h3 { font-size: 1.2rem; margin: 16px 16px 6px; } .lp-panel p { margin: 0 16px 18px; font-size: .95rem; } }
 .lp-panel { counter-increment: lp; background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius);
   box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
 .lp-panel img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 0; background: var(--panel-2);

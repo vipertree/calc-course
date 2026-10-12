@@ -57,7 +57,7 @@
         <p>Guided notes follow the video beat by beat. Fill in the blanks on screen, or print the packet and use a pencil.</p>
       </li>
       <li class="lp-panel">
-        <img src="{% static 'img/landing/shot-practice.webp' %}" width="760" height="288" loading="lazy"
+        <img src="{% static 'img/landing/shot-practice.webp' %}" width="760" height="288" loading="lazy" class="lp-fit"
              alt="A practice problem answered 12 and marked correct, with the worked solution shown below">
         <h3>Practice and check</h3>
         <p>Type an answer and press Check. Right away you learn whether you've got it, and when you do, you see the full solution.</p>
@@ -76,7 +76,7 @@
     <div class="lp-feature-text">
       <p class="lp-kicker">The course</p>
       <h2>Pictures first, then rigor</h2>
-      <p>Each lesson opens with an idea you can see: discs stacking into a volume, a cardioid's slope, a limit closing in. The worked examples go slowly, every step on screen, and the practice that follows is the real thing, at the level of the AP exam.</p>
+      <p>Each lesson opens with an idea you can see, like discs stacking into a volume or the tangent line to a polar curve. The worked examples go slowly, with every step on screen. The practice that follows is at the level of the AP exam.</p>
       <p>The <a href="{% url 'map' %}">course map</a> lays out all ten units of AB and BC in the College Board's order.{% if trig %} If your trig is rusty, the <a href="{% url 'lesson' trig.first %}">Trig Review</a> module covers what calculus needs in {{ trig.count }} short lessons.{% endif %} The <a href="{% url 'formulas' %}">formula sheet</a> gathers every definition and theorem from the course on one page.</p>
     </div>
   </section>
@@ -102,7 +102,7 @@
     <div class="lp-feature-text">
       <p class="lp-kicker">Exam practice</p>
       <h2>A full exam, timed like the real one</h2>
-      <p>The <a href="{% url 'exams' %}">practice exams</a> run part by part with the clock the AP exam uses, a graphing calculator built in for the calculator sections, and no going back once a part ends. Multiple choice is graded the moment you finish. You score your own free response against the scoring guide and get an estimated AP score.</p>
+      <p>The <a href="{% url 'exams' %}">practice exams</a> run part by part on the AP exam's clock, with a graphing calculator built in for the calculator sections. Once a part ends, there's no going back. Multiple choice is graded the moment you finish. You score your own free response against the scoring guide and get an estimated AP score.</p>
       <p>The first AB exam is free with an account.</p>
     </div>
   </section>

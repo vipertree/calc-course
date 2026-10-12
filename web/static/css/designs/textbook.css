@@ -196,7 +196,8 @@
 [data-design="textbook"] .lp-screen figcaption, [data-design="textbook"] .lp-teach-shot figcaption { font: 400 .92rem var(--font-body); color: var(--ink-2); }
 [data-design="textbook"] .lp-screen figcaption::before, [data-design="textbook"] .lp-teach-shot figcaption::before {
   counter-increment: fig; content: "Figure " counter(fig) ". "; font-weight: 700; }
-[data-design="textbook"] .lp-facts { background: transparent; box-shadow: none; clip-path: none; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 18px 0; }
+[data-design="textbook"] .btn.big { padding: 8px 18px; font-size: 1.02rem; }
+[data-design="textbook"] .lp-facts { background: transparent; box-shadow: none; clip-path: none; border-image: none;border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 18px 0; }
 [data-design="textbook"] .lp-facts b { font: 400 clamp(1.9rem, 3.6vw, 2.6rem)/1 var(--font-body); }
 [data-design="textbook"] .lp-facts span { font: italic 400 1rem var(--font-body); }
 [data-design="textbook"] .lp-panel { border: 0; border-top: 1px solid var(--ink); border-radius: 0; box-shadow: none; background: transparent; }

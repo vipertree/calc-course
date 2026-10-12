@@ -679,9 +679,9 @@ class SitePages(TestCase):
 
     def test_landing_for_visitors(self):
         page = self.client.get("/").content.decode()
-        self.assertIn("I'm a student", page)
-        self.assertIn("I'm a teacher", page)
-        self.assertIn("Free for everyone", page)
+        self.assertIn('href="/students/"', page)
+        self.assertIn('href="/teachers/"', page)
+        self.assertIn("A lot of it is free", page)
         for url in ("/students/", "/teachers/", "/membership/"):
             self.assertEqual(self.client.get(url).status_code, 200, url)
 
@@ -689,7 +689,7 @@ class SitePages(TestCase):
         u = User.objects.create_user("kim", password="pw123456")
         Profile.objects.create(user=u, display_name="Kim")
         self.client.force_login(u)
-        self.assertNotIn("I'm a teacher", self.client.get("/").content.decode())
+        self.assertNotIn("A lot of it is free", self.client.get("/").content.decode())
 
     def test_checkout_is_a_placeholder(self):
         r = self.client.get("/membership/student/")

@@ -142,7 +142,8 @@
 [data-design="safety"] .lp-hero h1 { font-weight: 800; letter-spacing: -.015em; }
 [data-design="safety"] .lp-hero-photo, [data-design="safety"] .lp-photo { border: var(--line) solid var(--rule); border-radius: 14px; }
 [data-design="safety"] .lp-screen { border: var(--line) solid var(--rule); border-radius: 14px; box-shadow: 8px 8px 0 var(--accent); padding: 8px; }
-[data-design="safety"] .lp-facts { background: #13294B; box-shadow: 0 0 0 100vmax #13294B; border-block: 0; border-top: 6px solid var(--accent); padding: 34px 0; }
+[data-design="safety"] .lp-facts { background: #13294B; box-shadow: 0 0 0 100vmax #13294B; border-block: 0; border-top: 6px solid var(--accent); padding: 34px 0;
+  border-image: linear-gradient(var(--accent) 0 0) 1 / 6px 0 0 / 0 100vmax; }
 [data-design="safety"] .lp-facts b { color: #FFFFFF; }
 [data-design="safety"] .lp-facts span { color: #D2DAE8; }
 [data-design="safety"] .lp-panel { border: var(--line) solid var(--rule); border-radius: 14px; box-shadow: none; }
@@ -150,7 +151,8 @@
 [data-design="safety"] .lp-panel h3::before { background: #13294B; color: #FFFFFF; font: 800 1.05rem var(--font-head); border-radius: 8px; }
 [data-design="safety"] .lp-shot, [data-design="safety"] .lp-stack img { border: var(--line) solid var(--rule); border-radius: 12px; box-shadow: 6px 6px 0 var(--accent); }
 [data-design="safety"] .lp-paper { border: var(--line) solid var(--rule); box-shadow: 5px 5px 0 var(--soft); }
-[data-design="safety"] .lp-band { background: var(--panel); box-shadow: 0 0 0 100vmax var(--panel); border-block: var(--line) solid var(--rule); }
+[data-design="safety"] .lp-band { background: var(--panel); box-shadow: 0 0 0 100vmax var(--panel); border-block: var(--line) solid var(--rule);
+  border-image: linear-gradient(var(--rule) 0 0) 1 / var(--line) 0 / 0 100vmax; }
 [data-design="safety"] .lp-me img { border: 4px solid var(--accent); }
 [data-design="safety"] .about-photo img { border: var(--line) solid var(--rule); border-radius: 14px; box-shadow: 8px 8px 0 var(--accent); }
 [data-design="safety"] .about-ai { border-left-width: 8px; }

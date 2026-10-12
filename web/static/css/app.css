@@ -512,7 +512,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 /* ------------------------------------------------------------ landing page (.lp), About and Contact
    Colors and fonts are tokens only; safety.css and textbook.css add their own touches. Full-width bands use a
    spread box-shadow clipped to the band's height, which paints edge to edge without widening the page. */
-.lp { display: grid; gap: clamp(64px, 9vw, 112px); padding-bottom: 24px; }
+.lp { display: grid; gap: clamp(64px, 9vw, 112px); margin-bottom: -40px; }
 .lp img, .lp video { display: block; max-width: 100%; height: auto; }
 .lp h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); }
 .lp-eyebrow, .lp-kicker { font: 700 .82rem var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
@@ -539,7 +539,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 
 .lp-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 22px 18px; padding: 30px 0;
   background: var(--panel); box-shadow: 0 0 0 100vmax var(--panel); clip-path: inset(0 -100vmax);
-  border-block: 1px solid var(--rule); }
+  border-block: 1px solid var(--rule); border-image: linear-gradient(var(--rule) 0 0) 1 / 1px 0 / 0 100vmax; }
 .lp-facts div { display: grid; gap: 2px; }
 .lp-facts b { font: 800 clamp(2rem, 4vw, 2.8rem)/1 var(--font-head); color: var(--ink); }
 .lp-facts span { font: .92rem var(--font-ui); color: var(--ink-2); }
@@ -551,6 +551,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .lp-panel img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 0; background: var(--panel-2);
   border-bottom: 1px solid var(--rule); }
 .lp-panel img.lp-paper { object-position: 50% 6%; }
+.lp-panel img.lp-fit { object-fit: contain; padding: 14px; }
 .lp-panel h3 { display: flex; align-items: center; gap: 10px; font-size: 1.35rem; margin: 18px 20px 6px; }
 .lp-panel h3::before { content: counter(lp); display: inline-grid; place-items: center; width: 32px; height: 32px; flex: none;
   border-radius: 50%; background: var(--accent); color: var(--accent-ink); font: 700 1rem var(--font-ui); }
@@ -568,7 +569,8 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .lp-stack img { grid-area: 1 / 1; width: 78%; border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow); }
 .lp-stack img + img { margin: 30% 0 0 22%; }
 .lp-photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); }
-.lp-free .lp-photo { max-height: 560px; }
+.lp-free .lp-photo { max-height: 540px; }
+@media (min-width: 880px) { .lp-free .lp-feature-art, .lp-last .lp-photo { max-width: 440px; justify-self: end; } }
 @media (max-width: 879px) { .lp-free .lp-photo, .lp-last .lp-photo { aspect-ratio: 4 / 3; object-position: 50% 30%; } }
 
 .lp-band { background: var(--panel-2); box-shadow: 0 0 0 100vmax var(--panel-2); clip-path: inset(0 -100vmax); padding: clamp(40px, 6vw, 72px) 0; }
@@ -586,11 +588,11 @@ table.data.exam-units td:first-child { min-width: 9em; }
   .lp-sheets { grid-area: sheets; }
 }
 
-.lp-me { display: grid; grid-template-columns: minmax(0, 120px) minmax(0, 1fr); gap: 22px; align-items: center; max-width: 820px; }
+.lp-me { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 18px; align-items: start; max-width: 820px; }
 .lp-me img { border-radius: 50%; aspect-ratio: 1; object-fit: cover; object-position: 50% 30%; }
 .lp-me h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
 .lp-me p { color: var(--ink-2); margin: 0; }
-@media (min-width: 640px) { .lp-me { grid-template-columns: 170px minmax(0, 1fr); gap: 34px; } }
+@media (min-width: 640px) { .lp-me { grid-template-columns: 170px minmax(0, 1fr); gap: 34px; align-items: center; } }
 
 .lp-last { display: grid; gap: 30px; align-items: center; }
 .lp-last h2 { font-size: clamp(2rem, 5vw, 3.2rem); }
@@ -599,7 +601,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 
 /* About */
 .about-page { display: grid; gap: 28px; max-width: 1000px; margin: 12px auto 0; align-items: start; }
-.about-photo { margin: 0; max-width: 300px; }
+.about-photo { margin: 0; max-width: min(240px, 70%); }
 .about-photo img { width: 100%; height: auto; display: block; border-radius: var(--radius); }
 .about-text h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin-bottom: 18px; }
 .about-text .lede { font-size: clamp(1.08rem, 1.6vw, 1.2rem); color: var(--ink); line-height: 1.7; max-width: 38em; }
@@ -607,7 +609,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .about-ai h2 { font-size: 1.3rem; }
 .about-ai p { margin-bottom: 0; color: var(--ink-2); }
 .about-next { display: flex; flex-wrap: wrap; gap: 12px; }
-@media (min-width: 760px) { .about-page { grid-template-columns: 260px minmax(0, 1fr); gap: 52px; } .about-photo { position: sticky; top: 90px; } }
+@media (min-width: 760px) { .about-page { grid-template-columns: 260px minmax(0, 1fr); gap: 52px; } .about-photo { max-width: 100%; position: sticky; top: 90px; } }
 
 /* Contact */
 .contact-page { display: grid; gap: 26px; max-width: 980px; margin: 12px auto 0; align-items: start; }

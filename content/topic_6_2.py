@@ -154,8 +154,8 @@ NOTES = [
          r"the lowest point of its piece, so every rectangle sits below the graph and misses a little area."),
     Text(r"\textbf{$f$ is increasing, and we use a right Riemann sum?} An overestimate. Each height comes from the right end, the highest point of its piece, "
          r"so the rectangles poke up above the graph."),
-    Text(r"\textbf{$f$ is decreasing?} It's the reverse. Going downhill, the left end is the high point, so a left sum is an \blank{over}estimate, and a right "
-         r"sum is an underestimate."),
+    Text(r"\textbf{$f$ is decreasing?} It's the reverse. Going downhill, the left end is the high point, so a left sum \blank{overestimates}, and a right "
+         r"sum underestimates."),
     Formula("Over- and underestimates", (
         r"$f$ increasing: left sum \blank{under}estimates, right sum overestimates. \par "
         r"$f$ decreasing: left sum overestimates, right sum underestimates. \par "

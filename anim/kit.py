@@ -299,7 +299,7 @@ class TranscriptScene(LessonScene):
     example_ref = None    # a formula (MathTex string) kept in the corner during worked examples, e.g. the chain rule
 
     def example(self, beat_name, problem, steps, figure=None, at=None, text=None, notes_graph=None, figure_at=None,
-                follow=False, ref=None, cues=None, overlays=()):
+                follow=False, ref=None, cues=None, overlays=(), size=48):
         """A worked example: the problem across the top, then each step written in as its narration line starts.
 
         steps: list of MathTex/Tex strings or mobjects. at: narration line index for each step (default 1, 2, 3...).
@@ -313,6 +313,7 @@ class TranscriptScene(LessonScene):
         directly are found on their own (looked up in the cue functions' closures); list any others here. A cue may also
         build its overlay when it runs, from the figure's axes, which are in place by then. After each cue, anything new
         on screen that lands away from the figure is flagged in the layout audit ("cue-off-figure").
+        size: the board's math size (48); a step smaller keeps a long solution's first line on screen.
         text: the problem as LaTeX for the notes, when `problem` is a mobject
         (calclib/videx.py copies every worked example into the guided notes)."""
         ref = ref if ref is not None else self.example_ref
@@ -392,7 +393,7 @@ class TranscriptScene(LessonScene):
                     cue = T(r"Pause and try it.", 28, DIM).next_to(part, RIGHT, buff=0.5)
                     self.play(FadeIn(cue), run_time=0.4)
                 else:
-                    board.write(self, s)
+                    board.write(self, s, size=size)
             if cue is not None:
                 self.play(FadeOut(cue), run_time=0.3)
         self.wait(1.2)

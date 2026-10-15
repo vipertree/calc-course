@@ -177,9 +177,10 @@ class Lesson(TranscriptScene):
             curves, labs = VGroup(), VGroup()
             for c, col in cs:
                 g = (lambda s, c=c: s ** 3 / 3 + c)
-                curves.add(cax.plot(g, x_range=[0, 2.8], color=col, stroke_width=4))
+                curves.add(cax.plot(g, x_range=[0, 2.6], color=col, stroke_width=4))
                 txt = r"C = " + (str(c) if c >= 0 else r"-" + str(-c))
-                labs.add(M(txt, 26, col).move_to(cax.c2p(0.12, c + 0.5), aligned_edge=LEFT))
+                # at the right end of each curve, clear of the axes' numbers (C = -1 sat on them at the left)
+                labs.add(M(txt, 26, col).next_to(cax.c2p(2.6, g(2.6)), RIGHT, buff=0.15))
             self.play(Create(curves[0]), FadeIn(labs[0]), run_time=0.7)
             for k in range(1, 4):
                 self.play(Create(curves[k]), FadeIn(labs[k]), run_time=0.6)
@@ -324,10 +325,12 @@ class Lesson(TranscriptScene):
 
         # ---------------------------------------------------------------- the first full example: F, F(4), F(1), then brackets
         self.example("Evaluating an integral", r"Evaluate $\displaystyle\int_1^4 \left(3x^2 - 2x\right) dx$.",
-                     [r"F(x) = x^3 - x^2 \ \ \left(F'(x) = 3x^2 - 2x\right)", r"F(4) = 4^3 - 4^2 = 64 - 16 = 48", r"F(1) = 1^3 - 1^2 = 0",
-                      r"\int_1^4 \left(3x^2 - 2x\right) dx = F(4) - F(1) = 48 - 0 = 48",
+                     [r"F(x) = x^3 - x^2 \ \ \left(F'(x) = 3x^2 - 2x\right)", r"F(4) = 4^3 - 4^2 = 64 - 16 = 48",
+                      r"F(1) = 1^3 - 1^2 = 0", r"\int_1^4 \left(3x^2 - 2x\right) dx = F(4) - F(1) = 48 - 0 = 48",
                       r"\text{from now on: } \left[x^3 - x^2\right]_1^4", r"= \left(4^3 - 4^2\right) - \left(1^3 - 1^2\right) = 48 - 0 = 48"],
-                     at=[1, 2, 3, 4, 5, 6], ref=REF, follow=True)
+                     # one size smaller than the board's default, so all six lines fit and F(x) stays on screen to the end
+                     # (Adder: show F first; at full size the board scrolled F(x) off before the bracket notation)
+                     at=[1, 2, 3, 4, 5, 6], ref=REF, follow=True, size=38)
 
         with self.beat("Net change") as b:
             r1 = VGroup(M(r"\int_a^b f'(x)\,dx = f(b) - f(a)", 50, ACCUM), T("the integral of a rate of change is the net change", 32, DIM)).arrange(DOWN, buff=0.25).to_edge(UP, buff=0.6)

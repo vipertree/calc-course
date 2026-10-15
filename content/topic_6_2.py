@@ -133,7 +133,7 @@ NOTES = [
          r"\[ \begin{aligned} M &= 2\left[f(1) + f(3) + f(5) + f(7)\right] \\ &= 2\left[1.1 + 1.9 + 3.5 + 5.9\right] \\ &= 2(12.4) = 24.8. \end{aligned} \]"),
     FIG_M,
     Formula("Riemann sums", (
-        r"With $n$ equal pieces, $\Delta x = \frac{b - a}{n}$, and each sum is $\Delta x\left[\,\text{the } n \text{ heights added up}\,\right]$. \par "
+        r"With $n$ equal pieces, $\Delta x = \frac{b - a}{n}$, and each sum is \[ \Delta x\left[\,\text{the } n \text{ heights added up}\,\right]. \] "
         r"\textbf{Left Riemann sum}: each height is $f$ at the left end of its piece. \par "
         r"\textbf{Right Riemann sum}: each height is $f$ at the right end. \par "
         r"\textbf{Midpoint Riemann sum}: each height is $f$ at the middle of its piece. \par "
@@ -145,8 +145,8 @@ NOTES = [
          r"\[ \begin{aligned} T &= \frac{2}{2}\left[f(0) + 2f(2) + 2f(4) + 2f(6) + f(8)\right] \\ &= 1\left[1 + 2.8 + 5.2 + 9.2 + 7.4\right] = 25.6. \end{aligned} \] "
          r"With equal widths, $T = \frac{L + R}{2} = \frac{19.2 + 32}{2} = 25.6$. The true area is $\frac{376}{15} \approx 25.07$: the midpoint and "
          r"trapezoidal sums are much closer than the left and right sums."),
-    Text(r"\textbf{Uneven widths.} With a table, the pieces often have different widths, so the width can't be factored out. Give each rectangle its own width: "
-         r"$\sum (\text{width})(\text{height})$, with each height written as a function value first."),
+    Text(r"\textbf{Uneven widths.} With a table, the pieces often have different widths, so the width can't be factored out. Give each rectangle its own width "
+         r"and add up (width)(height), with each height written as a function value first."),
     VideoExample('Uneven widths', work="2.6cm"),
 
     Section("Over or under?"),

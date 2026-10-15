@@ -17,7 +17,7 @@ DEF = r"\int_a^\infty f(x)\,dx = \lim_{b\to\infty} \int_a^b f(x)\,dx"
 def hidden_asymptote():
     """y = 1/x^2 on [-1, 1]: both branches run up the y-axis. The region under it is clipped at the top of the window,
     so its edge follows the curve exactly; the asymptote at x = 0 and two arrows going up come in with a cue."""
-    ax, al = plot_axes([-1.25, 1.25, 0.5], [0, 12, 2], w=5.6, h=5.4, coords=False, ylabel="")
+    ax, al = plot_axes([-1.25, 1.25, 0.5], [0, 12, 2], w=5.6, h=5.4, coords=False)
     # x labels only: the y-axis is the asymptote, and numbers beside it would sit inside the shading
     ax.add_coordinates({-1: "-1", 1: "1"})
     f = lambda s: 1 / s**2
@@ -30,7 +30,7 @@ def hidden_asymptote():
     asym = DashedLine(ax.c2p(0, 0), ax.c2p(0, 12), color=TANGENT, stroke_width=4, dash_length=0.12)
     ups = VGroup(*[Arrow(ax.c2p(sx * 0.62, 7.5), ax.c2p(sx * 0.62, 11.6), buff=0, color=TANGENT, stroke_width=5, max_tip_length_to_length_ratio=0.25) for sx in (-1, 1)])
     inf = VGroup(*[M(r"\infty", 34, TANGENT).next_to(u, sx * RIGHT, buff=0.1).align_to(u, UP) for u, sx in zip(ups, (-1, 1))])
-    fig = VGroup(ax, al, curves)
+    fig = VGroup(ax, al[0], curves)                          # no "y" label: it sat between the branches at the top
     return fig, region, VGroup(asym, ups, inf)
 
 

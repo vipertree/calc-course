@@ -129,7 +129,7 @@ class Lesson(TranscriptScene):
         # ---------------------------------------------------------------- the long division, one move at a time
         ld = LongDivision()
         p = ld.build()
-        lst = steps_list().move_to([3.6, 2.0, 0])
+        lst = steps_list().move_to([4.3, 2.0, 0])
         with self.beat("Polynomial long division") as b:
             self.play(FadeIn(p["divisor"]), Create(p["frame"]), FadeIn(p["dividend"]), run_time=1.2)
             ghost = lst.copy().set_opacity(0.35)
@@ -141,7 +141,7 @@ class Lesson(TranscriptScene):
 
             def say(tex):
                 nonlocal side
-                new = M(tex, 40, DIM).move_to([3.6, -0.6, 0])
+                new = M(tex, 40, DIM).move_to([4.3, -0.6, 0])
                 anims = [FadeIn(new)] + ([FadeOut(side)] if side is not None else [])
                 side = new
                 return anims
@@ -174,9 +174,9 @@ class Lesson(TranscriptScene):
             self.play(Write(p["r"]), run_time=0.6)
             b.line(7)
             self.play(*[Transform(ghost[j], lst[j].copy().set_opacity(0.35)) for j in range(4)], FadeOut(side), run_time=0.5)
-            labq = T("quotient", 28, SECANT).next_to(VGroup(p["q1"], p["q2"]), RIGHT, buff=0.35)
+            labq = T("quotient", 28, SECANT).next_to(VGroup(p["q1"], p["q2"]), UP, buff=0.15)
             labr = T("remainder", 28, TANGENT).next_to(p["r"], RIGHT, buff=0.35)
-            stop = T("degree of 3 is lower than degree of $x + 1$: stop", 30).move_to([3.6, -1.4, 0]).set_max_width(5.6)
+            stop = T("degree of 3 is lower than degree of $x + 1$: stop", 30).set_max_width(5.0).move_to([4.3, -1.4, 0])
             self.play(FadeIn(stop), run_time=0.6)
             self.play(FadeIn(labq), FadeIn(labr), run_time=0.6)
         self.clear()
@@ -235,8 +235,7 @@ class Lesson(TranscriptScene):
             self.play(Indicate(p2["r"], color=TANGENT), Indicate(syn.bot[2], color=TANGENT), run_time=1)
             b.line(7)
             self.play(Circumscribe(only, color=DERIV), run_time=1)
-            nope = T(r"$x^2 + 1$ or $2x + 1$: use long division", 28, DIM).next_to(VGroup(p2["r"], p2["l2"]), DOWN, buff=0.5).align_to(lh, LEFT)
-            nope.set_max_width(4.6)
+            nope = T(r"dividing by $x^2 + 1$ or $2x + 1$: use long division", 30, DERIV).next_to(read, DOWN, buff=0.35)
             self.play(FadeIn(nope), run_time=0.6)
         self.clear()
 

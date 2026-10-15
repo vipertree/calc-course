@@ -27,10 +27,14 @@ def under(mob, color=DERIV):
     return Line(mob.get_corner(DL) + DOWN * 0.1, mob.get_corner(DR) + DOWN * 0.1, color=color, stroke_width=6)
 
 
-def when(xv, uv, size=36):
-    """'When x = 0' in words, then an arrow to the u value (Adder: not 'x = 0 : u = 1')."""
-    return VGroup(T("When", size - 2), M(xv, size), Arrow(LEFT * 0.35, RIGHT * 0.35, buff=0, color=DIM, stroke_width=4, max_tip_length_to_length_ratio=0.35),
-                  M(uv, size, SECANT)).arrange(RIGHT, buff=0.18)
+def when(xv, uv, size=40):
+    """'When x = 0' in words on one line, then an arrow to the u value under it (Adder: not 'x = 0 : u = 1').
+    Parts: [0] the word, [1] the x value, [2] the arrow, [3] the u value."""
+    words = VGroup(T("When", size - 2), M(xv, size)).arrange(RIGHT, buff=0.18)
+    arrow = Arrow(LEFT * 0.4, RIGHT * 0.4, buff=0, color=DIM, stroke_width=4, max_tip_length_to_length_ratio=0.35)
+    val = M(uv, size, SECANT)
+    VGroup(arrow, val).arrange(RIGHT, buff=0.18).next_to(words, DOWN, buff=0.15, aligned_edge=LEFT).shift(RIGHT * 0.5)
+    return VGroup(words[0], words[1], arrow, val)
 
 
 class Column:

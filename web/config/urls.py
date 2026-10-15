@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth
 from django.urls import path, re_path
 
 from accounts import views as acc
-from course import site_pages
+from course import frq_views, site_pages
 from course import views as v
 
 NUM = r"(?P<num>\d{1,2}\.\d{1,2}|U\d{1,2})"
@@ -55,6 +55,10 @@ urlpatterns = [
     re_path(rf"^api/{NUM}/frq/$", v.api_frq_score, name="api_frq"),
     re_path(r"^unit/(?P<num>U\d{1,2})/test/$", v.unit_test, name="unit_test"),
     re_path(r"^unit/(?P<num>U\d{1,2})/test/print/(?P<form>[A-Z])/(?P<kind>test|key)/$", v.test_pdf, name="test_pdf"),
+    path("frq/", frq_views.index, name="frq"),
+    re_path(r"^frq/q/(?P<qid>\d{4}-(?:ab|bc)-\d)/$", frq_views.question, name="frq_question"),
+    re_path(r"^frq/file/(?P<qid>\d{4}-(?:ab|bc)-\d)/(?P<name>[\w.-]+)$", frq_views.file, name="frq_file"),
+    path("frq/<slug:cat>/", frq_views.index, name="frq_category"),
     path("exams/", v.exam_list, name="exams"),
     path("exams/<slug:slug>/", v.exam_home, name="exam_home"),
     path("exams/<slug:slug>/start/", v.exam_start, name="exam_start"),

@@ -188,6 +188,31 @@ to teachers only. See `docs/teacher-slides.md` for the optional `SLIDES_ACCEL` s
 nginx location, which lets nginx stream the files after Django has checked the account. Decks get the site's
 CSP nonce added when served, so decks built before the policy work unchanged.
 
+## AP FRQ Archive (/calc/frq/)
+
+The released College Board free-response questions, rebuilt from Adder's old archive at `adderoaks.com/calcfrq/`.
+Not in git: everything lives in `build/frq/` (set `FRQ_DIR` to move it). Rebuild on the dev machine, then rsync:
+
+```bash
+python3 tools/fetch_frq_archive.py                         # mirror the PDFs into build/frq/raw/ (polite, skips unchanged files)
+~/opt/mamba/envs/calc/bin/python tools/build_frq_archive.py  # split question / scoring guidelines, render pages, write manifest.json
+rsync -a --delete build/frq/manifest.json build/frq/files deploy@91.98.21.156:calc-course/build/frq/
+```
+
+`build/frq/files/<id>/` holds the page images (`q1.webp`, `s1.webp`, ...) and the original PDF. That folder is
+public, so nginx serves it directly (`location ^~ /calc/frq/file/` in `deploy/nginx-calc.conf`), with
+`image/webp` and `application/pdf` types and a week's cache. nginx has to reach it without opening `build/pdf/`:
+
+```bash
+chmod o+x /home/deploy/calc-course/build /home/deploy/calc-course/build/frq
+chmod -R go+rX /home/deploy/calc-course/build/frq/files
+chmod go-rwx /home/deploy/calc-course/build/frq/manifest.json   # gunicorn reads it; nobody else needs to
+```
+
+`build/pdf/` keeps its own `go-rwx`, so `o+x` on `build/` exposes nothing else. The manifest is read by
+Django (`course/frq.py`) and picked up without a restart when it changes. With no manifest the archive pages
+say it's empty instead of failing. Size: 171 questions, about 90 MB of images and PDFs in `files/` (the raw mirror is another 100 MB and stays on the dev machine).
+
 ## Things that bite
 
 - **Source `.env` before any `manage.py` command.** Without `CALC_ENV=production` you get development settings:

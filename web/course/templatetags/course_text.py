@@ -38,3 +38,10 @@ def work_name(num):
         return f"{unit_name(num[1:])} test"
     lab = lesson_label(num)
     return f"Topic {lab} quiz" if lab == num else f"{lab} quiz"
+
+
+@register.inclusion_tag("course/_frq_links.html")
+def frq_links(num):
+    """On a lesson's AP test prep tab: the real AP questions of the kind this lesson prepares for."""
+    from course import frq
+    return {"cats": frq.categories_for_topic(str(num))}

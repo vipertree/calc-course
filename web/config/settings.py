@@ -174,4 +174,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # checks the account first. With SLIDES_ACCEL set (e.g. "/protected-slides/"), Django answers with X-Accel-Redirect
 # to that internal nginx location instead of streaming the file itself (docs/teacher-slides.md).
 SLIDES_DIR = Path(os.environ.get("SLIDES_DIR") or REPO / "build" / "slides")
+# The AP FRQ Archive (/frq/): College Board released questions mirrored from adderoaks.com/calcfrq/ and built by
+# tools/fetch_frq_archive.py + tools/build_frq_archive.py. Not in git. Public: Django serves it here, nginx in production.
+FRQ_DIR = Path(os.environ.get("FRQ_DIR") or REPO / "build" / "frq")
 SLIDES_ACCEL = os.environ.get("SLIDES_ACCEL", "")

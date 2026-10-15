@@ -1,4 +1,9 @@
-"""Topic 6.8: Antiderivatives and indefinite integrals. Narration comes from transcripts/6_8.md."""
+"""Topic 6.8: Antiderivatives and indefinite integrals. Narration comes from transcripts/6_8.md.
+
+Adder's 6.8 notes (2026-10-14): after the title, define the indefinite integral (the antiderivative function itself) before
+using it; infinitely many antiderivatives, any constant works, hence + C; "there's no simple product rule or quotient
+rule we can use", rewriting for now, more clever techniques soon.
+"""
 import numpy as np
 from manim import *
 
@@ -28,18 +33,54 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
+        # Adder (2026-10-14): define the indefinite integral before using it, then show the many antiderivatives and +C
         with self.beat("Indefinite integrals") as b:
-            eq = M(r"\int f(x)\,dx = F(x) + C, \quad F'(x) = f(x)", 54, ACCUM).to_edge(UP, buff=0.8)
-            self.play(Write(eq), run_time=1.2)
-            tags = VGroup(T("no limits: indefinite", 30, DIM).next_to(eq, DOWN, buff=0.3).align_to(eq, LEFT), T("$+\\,C$: the constant of integration", 30, DIM).next_to(eq, DOWN, buff=0.3).align_to(eq, RIGHT))
-            self.play(FadeIn(tags[0]), run_time=0.5)
+            recall = VGroup(T("From topic 6.7:", 28, DIM), M(r"\int_a^b f(x)\,dx = F(b) - F(a), \ \ \text{where } F'(x) = f(x)", 40)).arrange(RIGHT, buff=0.3)
+            recall.to_edge(UP, buff=0.5)
+            self.play(FadeIn(recall), run_time=0.8)
             b.line(1)
-            self.play(FadeIn(tags[1]), run_time=0.5)
+            self.play(Indicate(recall[1], color=ACCUM, scale_factor=1.05), run_time=1)
+            defn = formula_box(VGroup(T("The indefinite integral of $f$:", 34, ACCUM),
+                                      T("the antiderivative function itself, a function whose derivative is $f(x)$", 32)).arrange(DOWN, buff=0.2), ACCUM)
+            defn.set_max_width(12.5).next_to(recall, DOWN, buff=0.6)
+            self.play(FadeIn(defn), run_time=0.8)
             b.line(2)
-            cmp = VGroup(VGroup(M(r"\int_1^3 2x\,dx = 8", 44, AREA), T("a number", 30, DIM)).arrange(DOWN, buff=0.2),
-                         VGroup(M(r"\int 2x\,dx = x^2 + C", 44, ACCUM), T("a family of functions", 30, DIM)).arrange(DOWN, buff=0.2)).arrange(RIGHT, buff=1.6).shift(DOWN * 1.4)
+            eq = M(r"\int f(x)\,dx", 60, ACCUM).next_to(defn, DOWN, buff=0.6)
+            tag = T("no limits: indefinite", 30, DIM).next_to(eq, RIGHT, buff=0.5)
+            self.play(Write(eq), run_time=1)
+            self.play(FadeIn(tag), run_time=0.5)
+            b.line(3)
+            cmp = VGroup(VGroup(M(r"\int_0^2 3x^2\,dx = 8", 44, AREA), T("a number", 30, DIM)).arrange(DOWN, buff=0.2),
+                         VGroup(M(r"\int 3x^2\,dx", 44, ACCUM), T("a function", 30, DIM)).arrange(DOWN, buff=0.2)).arrange(RIGHT, buff=2.0)
+            cmp.next_to(eq, DOWN, buff=0.6)
             self.play(FadeIn(cmp[0]), run_time=0.6)
             self.play(FadeIn(cmp[1]), run_time=0.6)
+        self.clear()
+
+        with self.beat("Plus C") as b:
+            q = M(r"\int 3x^2\,dx = \ ?", 52).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.8)
+            self.play(FadeIn(q), run_time=0.6)
+            rows = VGroup(*[VGroup(M(F, 42, ACCUM), M(r"\frac{d}{dx}\left(" + F + r"\right) = 3x^2", 38, DIM)).arrange(RIGHT, buff=0.8)
+                            for F in (r"x^3", r"x^3 + 5", r"x^3 - 3", r"x^3 + \pi")])
+            for i, r in enumerate(rows):
+                y = q.get_bottom()[1] - 0.8 - i * 0.85
+                r[0].move_to([-5.6, y, 0], aligned_edge=LEFT)
+                r[1].move_to([-2.9, y, 0], aligned_edge=LEFT)
+            self.play(FadeIn(rows[0]), run_time=0.7)
+            b.line(1)
+            for r in rows[1:]:
+                self.play(FadeIn(r), run_time=0.6)
+            many = T("infinitely many antiderivatives", 32, SECANT).to_edge(RIGHT, buff=0.5).set_y(rows.get_center()[1])
+            self.play(FadeIn(many), run_time=0.6)
+            b.line(2)
+            res = VGroup(formula_box(M(r"\int 3x^2\,dx = x^3 + C", 50, ACCUM), ACCUM),
+                         T("$C$: any constant (the constant of integration)", 30, DIM)).arrange(DOWN, buff=0.25)
+            res.next_to(rows, DOWN, buff=0.55).set_x(0)
+            self.play(FadeIn(res[0]), run_time=0.8)
+            self.play(FadeIn(res[1]), run_time=0.5)
+            b.line(3)
+            gen = M(r"\int f(x)\,dx = F(x) + C, \quad \text{where } F'(x) = f(x)", 44).next_to(res, DOWN, buff=0.45)
+            self.play(Write(gen), run_time=1.2)
         self.clear()
 
         with self.beat("The basic rules") as b:
@@ -66,13 +107,20 @@ class Lesson(TranscriptScene):
         with self.beat("Rewrite first") as b:
             rows = VGroup(*[VGroup(M(a, 42), T(c, 30, DIM), M(r, 42, ACCUM)).arrange(RIGHT, buff=0.5) for a, c, r in (
                 (r"\int \frac{1}{\sqrt x}\,dx", "write as a power:", r"x^{-1/2}"), (r"\int \frac{x^3 - 2x}{x}\,dx", "split:", r"x^2 - 2"),
-                (r"\int (x + 1)^2\,dx", "expand:", r"x^2 + 2x + 1"))]).arrange(DOWN, aligned_edge=LEFT, buff=0.6).shift(UP * 0.6)
+                (r"\int (x + 1)^2\,dx", "expand:", r"x^2 + 2x + 1"))]).arrange(DOWN, aligned_edge=LEFT, buff=0.5).to_edge(UP, buff=0.6)
             b.line(1)
             for r in rows:
                 self.play(FadeIn(r), run_time=0.8)
             b.line(2)
-            no = T("No product rule or quotient rule for integrals: rewrite into sums of powers.", 32, SECANT).to_edge(DOWN, buff=0.6)
+            no = T("There's no simple product rule or quotient rule we can use.", 32, SECANT)
+            now = T("For now: rewrite into sums of powers.", 32)
+            no.next_to(rows, DOWN, buff=0.7).set_x(0)
+            now.next_to(no, DOWN, buff=0.3)
             self.play(FadeIn(no), run_time=0.8)
+            self.play(FadeIn(now), run_time=0.6)
+            b.line(3)
+            soon = T("Soon: more clever ways to rewrite.", 32, ACCUM).next_to(now, DOWN, buff=0.3)
+            self.play(FadeIn(soon), run_time=0.6)
         self.clear()
 
         self.example("Term by term", r"Find $\displaystyle\int \left(3\sqrt x - \frac{4}{x^2} + 2\cos x\right) dx$.",

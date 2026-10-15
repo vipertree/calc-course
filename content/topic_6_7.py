@@ -1,41 +1,82 @@
 """Topic 6.7: The Fundamental Theorem of Calculus and definite integrals.
 
 CED: FUN-6.A (FUN-6.A.1, FUN-6.A.2) with net change: if F' = f, then integral_a^b f(x) dx = F(b) - F(a) (FTC part
-2), proved from part 1 (F = A + C); antiderivatives by reversing derivative rules; the integral of a rate of change is
-the net change, f(b) = f(a) + integral_a^b f'(x) dx. Worked examples: sin x on [0, pi], sqrt(x) on [1, 9], a plant's
-height from its growth rate.
+2); antiderivatives by reversing derivative rules; the integral of a rate of change is the net change,
+f(b) = f(a) + integral_a^b f'(x) dx.
+Adder's notes (2026-10-14): picks up from 6.4's big F (no A(x)); "what is F here, where does it start, where does it
+end?" with a concrete integral beside the general notation; +C from plugging in constants (same derivative, C cancels);
+the power rule reversed as two steps; the first example with F(4) and F(1) before the bracket notation.
+Worked examples: sin x on [0, pi], sqrt(x) on [1, 9], a plant's height from its growth rate.
 """
 import sympy as sp
 
 from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, num, same,
                      selfcheck)
+from calclib.figs import graph
 
 x, t = sp.symbols("x t", real=True)
 I = lambda f, a, b, v=x: sp.simplify(sp.integrate(f, (v, a, b)))
+tex = lambda e: sp.latex(e).replace(r"\log{\left(x \right)}", r"\ln|x|")
 
 same("lesson", [I(x**2, 0, 3), I(3 * x**2 - 2 * x, 1, 4), I(sp.sin(x), 0, sp.pi), I(sp.sqrt(x), 1, 9), 10 + I(6 * t - 2, 1, 3, t)], [9, 48, 2, sp.Rational(52, 3), 30])
+# the opening's Riemann-sum limit, and +C: F(3) - F(0) for F = x^3/3 + C is 9 for every C
+n, k = sp.symbols("n k", positive=True, integer=True)
+same("riemann", [sp.limit(sp.summation((3 * k / n)**2 * 3 / n, (k, 1, n)), n, sp.oo)], [9])
+same("plus C", [(x**3 / 3 + c).subs(x, 3) - (x**3 / 3 + c).subs(x, 0) for c in (0, 2, -1, 5)], [9, 9, 9, 9])
+same("power rule reversed", [sp.diff(x**3 / 3, x), sp.diff(x**5 / 5, x), sp.diff(x**3 - x**2, x), (x**3 - x**2).subs(x, 4), (x**3 - x**2).subs(x, 1)],
+     [x**2, x**4, 3 * x**2 - 2 * x, 48, 0])
+
+FIG_C = graph("t6_7_plusc", [("x^3/3", 0, 3.1), ("x^3/3+2", 0, 3.1), ("x^3/3-1", 0, 3.1), ("x^3/3+5", 0, 3.1)], xr=(0, 3.6), yr=(-2, 15), ystep=5,
+              ylabel="F(x)", w="6cm", h="5cm",
+              labels=[(3.1, 9.9, "right", "$C = 0$"), (3.1, 11.9, "right", "$C = 2$"), (3.1, 8.0, "right", "$C = -1$"), (3.1, 14.9, "right", "$C = 5$")],
+              caption=r"$F(x) = \frac{x^3}{3} + C$ for four values of $C$: the same curve shifted up or down, so every one has derivative $x^2$.")
 
 NOTES = [
-    Video("s6_7.py::Lesson", "Evaluating integrals", 6),
+    Video("s6_7.py::Lesson", "Evaluating integrals", 11),
+
+    Section("How much F changes"),
+    Text(r"In topic 6.4, big $F$ was the accumulation function $F(x) = \int_a^x f(t)\,dt$, and the Fundamental Theorem said $F'(x) = f(x)$: "
+         r"each small change in $F$ is a thin sliver of area under $f$. Add up all the slivers from $a$ to $b$ and you get the area under $f$; "
+         r"add up all the small changes in $F$ and you get $F$'s total change, where $F$ ends minus where $F$ starts."),
+    Text(r"\textbf{The question to ask.} What is $F$ here? That is, what is the integrand the derivative of? Where does $F$ start, and where does it end?"),
+    Table(r"integrand & $f(x)$ & $x^2$ \\ "
+          r"$F$ & $F'(x) = f(x)$ & $F(x) = \blank{\dfrac{x^3}{3}}$ \\ "
+          r"where $F$ starts & $F(a)$ & $F(0) = \blank{0}$ \\ "
+          r"where $F$ ends & $F(b)$ & $F(3) = \blank{9}$ \\ "
+          r"the integral & $\int_a^b f(x)\,dx = F(b) - F(a)$ & $\int_0^3 x^2\,dx = \blank{9}$", "lll", header=r" & In general & For $\int_0^3 x^2\,dx$"),
+
+    Section(r"Where $+\,C$ comes from"),
+    Text(r"$\frac{x^3}{3}$ isn't the only function with derivative $x^2$. Adding any constant shifts the graph up or down without changing its slope, "
+         r"so $F(x) = \frac{x^3}{3} + C$ works for every $C$. The constant cancels when we subtract:"),
+    FIG_C,
+    Table(r"$0$ & $9$ & $0$ & $9$ \\ $2$ & $11$ & $2$ & $\blank{9}$ \\ $-1$ & $8$ & $-1$ & $\blank{9}$ \\ $5$ & $14$ & $5$ & $\blank{9}$", "cccc",
+          header=r"$C$ & $F(3)$ & $F(0)$ & $F(3) - F(0)$"),
+    Text(r"In general, $\left(F(b) + C\right) - \left(F(a) + C\right) = F(b) - F(a)$, so any $F$ with the right derivative gives the same answer."),
 
     Section("The Fundamental Theorem, part 2"),
-    Formula("FTC, part 2", (
-        r"If $F$ is an \blank{antiderivative} of $f$ ($F' = f$) on $[a, b]$, then \[ \int_a^b f(x)\,dx = F(b) - F(a) = F(x)\Big|_a^b. \]")),
-    Text(r"\textbf{Why.} $A(x) = \int_a^x f(t)\,dt$ has $A' = f$, so any antiderivative is $F = A + C$. Then $F(b) - F(a) = A(b) - A(a) = A(b) - 0$: the $C$'s cancel."),
-    Table(r"$x^n$ ($n \ne -1$) & $\dfrac{x^{n+1}}{n + 1}$ \\ "
-          r"$\cos x$ & $\sin x$ \\ "
-          r"$\sin x$ & $\blank{-\cos x}$ \\ "
-          r"$e^x$ & $e^x$ \\ "
-          r"$\dfrac1x$ & $\ln|x|$ \\ "
+    Formula("The Fundamental Theorem of Calculus, part 2", (
+        r"For a continuous function $f$: \[ \text{If } F'(x) = f(x) \text{ on } [a, b], \ \text{ then } \ \int_a^b f(x)\,dx = \blank{F(b) - F(a)}. \] "
+        r"In words: the area under $f$ from $a$ to $b$ is how much $F$ changes from $a$ to $b$.")),
+    BigIdea(r"To evaluate $\int_a^b f(x)\,dx$, no limit of Riemann sums is needed: find an antiderivative $F$, evaluate it at the two endpoints, and subtract."),
+
+    Section("Running derivative rules backward"),
+    Text(r"\textbf{The power rule reversed.} The power rule has two steps: multiply by the power, then subtract 1 from the exponent ($x^3 \to 3x^2$). "
+         r"Reverse them in reverse order: \blank{add 1 to the exponent}, then \blank{divide by the new exponent} ($x^2 \to x^3 \to \frac{x^3}{3}$). "
+         r"So $x^n$ has antiderivative $\dfrac{x^{n+1}}{n + 1}$ for every $n \ne -1$. Check with the power rule: $\frac{d}{dx}\left(\frac{x^3}{3}\right) = x^2$."),
+    Table(r"$x^n$ ($n \ne -1$) & $\dfrac{x^{n+1}}{n + 1}$ \\[6pt] "
+          r"$\cos x$ & $\sin x$ \\[4pt] "
+          r"$\sin x$ & $\blank{-\cos x}$ \\[4pt] "
+          r"$e^x$ & $e^x$ \\[4pt] "
+          r"$\dfrac1x$ & $\ln|x|$ \\[6pt] "
           r"$\sec^2 x$ & $\tan x$", "ll", header=r"$f(x)$ & an antiderivative $F(x)$"),
-    VideoExample('Evaluating an integral', work="2.6cm"),
+    Formula("Bracket notation", r"\[ \Big[F(x)\Big]_a^b = F(b) - F(a): \text{ the top value minus the bottom value.} \]"),
+    VideoExample('Evaluating an integral', work="3.2cm"),
 
     Section("Net change"),
     Formula("Net change", (
         r"\[ \int_a^b f'(x)\,dx = f(b) - f(a), \qquad f(b) = f(a) + \int_a^b f'(x)\,dx. \] "
         r"The integral of a rate of change is the \blank{net change} in the amount: where it ends equals where it starts plus how much it changed.")),
-    BigIdea(r"To evaluate $\int_a^b f(x)\,dx$, find an antiderivative, evaluate at the top and the bottom, and subtract."),
-    Check(r"Evaluate $\displaystyle\int_0^2 x^3\,dx$.", num(4), r"$\left[\frac{x^4}{4}\right]_0^2 = 4 - 0 = 4$."),
+    Check(r"Evaluate $\displaystyle\int_0^2 x^3\,dx$.", num(4), r"$F(x) = \frac{x^4}{4}$, so $\left[\frac{x^4}{4}\right]_0^2 = 4 - 0 = 4$."),
 ]
 
 # ---------------------------------------------------------------- practice
@@ -45,7 +86,7 @@ PRACTICE = []
 for f, a, b in P:
     F = sp.integrate(f, x)
     PRACTICE.append(Item(rf"Evaluate $\displaystyle\int_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} {sp.latex(f)}\,dx$.", num(I(f, a, b)),
-                         rf"$\left[{sp.latex(F)}\right]_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} = {sp.latex(I(f, a, b))}$.", work="2cm"))
+                         rf"$\left[{tex(F)}\right]_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} = {sp.latex(I(f, a, b))}$.", work="2cm"))
 PRACTICE += [
     Item(r"$f(2) = 5$ and $f'(x) = 3x^2$. Find $f(4)$.", num(5 + I(3 * x**2, 2, 4)), r"$f(4) = 5 + \left[x^3\right]_2^4 = 5 + 56 = 61$.", work="1.6cm"),
     Item(r"Water flows into a tank at $r(t) = 4 + 2t$ liters per minute. The tank holds $30$ liters at $t = 0$. How much does it hold at $t = 5$?", num(30 + I(4 + 2 * t, 0, 5, t)),
@@ -58,7 +99,7 @@ same("p net", [5 + I(3 * x**2, 2, 4), 30 + I(4 + 2 * t, 0, 5, t), 4 + I(3 * t**2
 # ---------------------------------------------------------------- quiz
 def q(f, a, b):
     return Item(rf"Evaluate $\displaystyle\int_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} {sp.latex(f)}\,dx$.", num(I(f, a, b)),
-                rf"$\left[{sp.latex(sp.integrate(f, x))}\right]_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} = {sp.latex(I(f, a, b))}$.", work="1.6cm")
+                rf"$\left[{tex(sp.integrate(f, x))}\right]_{{{sp.latex(a)}}}^{{{sp.latex(b)}}} = {sp.latex(I(f, a, b))}$.", work="1.6cm")
 
 
 QUIZ = [

@@ -1,5 +1,8 @@
 """Topic 6.8: Finding antiderivatives and indefinite integrals: basic rules and notation.
 
+Adder's notes (2026-10-14): define the indefinite integral (the antiderivative function itself) before using it; infinitely
+many antiderivatives (x^3 + any constant), hence + C; "no simple product rule or quotient rule we can use", rewrite for now.
+
 CED: FUN-6.B (FUN-6.B.1-FUN-6.B.3): the indefinite integral is the family of antiderivatives, F(x) + C; basic rules from
 reversing derivative rules (powers, constant multiples, sums, e^x, 1/x, the six trig derivatives, arctan and arcsin);
 rewrite (powers, split fractions, expand) before integrating; use a point to find C. Worked examples: expand first,
@@ -29,17 +32,23 @@ def plus_c(f, display=None):
     return expr(F + C, display=display or (tex(F) + " + C"))
 
 
+same("plus C", [sp.diff(x**3 + c, x) for c in (0, 5, -3, sp.pi)] + [sp.integrate(3 * x**2, (x, 0, 2))], [3 * x**2] * 4 + [8])
 same("lesson", [sp.simplify(sp.diff(2 * x**sp.Rational(3, 2) + 4 / x + 2 * sp.sin(x), x) - (3 * sp.sqrt(x) - 4 / x**2 + 2 * sp.cos(x))),
                 sp.expand(anti((x**2 + 1)**2)), sp.simplify(anti((x**3 - 2 * x + 5) / x) - (x**3 / 3 - 2 * x + 5 * sp.log(x)))], [0, x**5 / 5 + 2 * x**3 / 3 + x, 0])
 
 NOTES = [
-    Video("s6_8.py::Lesson", "Indefinite integrals", 5),
+    Video("s6_8.py::Lesson", "Indefinite integrals", 7),
 
-    Section("A family of antiderivatives"),
-    Text(r"$x^2$, $x^2 + 1$ and $x^2 - 7$ all have derivative $2x$: adding a constant never changes the derivative."),
+    Section("Indefinite integrals"),
+    Text(r"In topic 6.7 we found a definite integral by evaluating an antiderivative at the two endpoints: $\int_a^b f(x)\,dx = F(b) - F(a)$, where $F'(x) = f(x)$."),
     Formula("Indefinite integral", (
-        r"\[ \int f(x)\,dx = F(x) + C, \quad \text{where } F'(x) = f(x). \] $C$ is the \blank{constant of integration}. "
-        r"A definite integral (with limits) is a \blank{number}; an indefinite integral is a family of functions.")),
+        r"The \blank{indefinite integral} of $f$ is the antiderivative function itself: a function whose derivative is $f(x)$. "
+        r"It is written with no limits, \[ \int f(x)\,dx. \] A definite integral (with limits) is a \blank{number}; an indefinite integral is a function.")),
+    Text(r"\textbf{Infinitely many.} $x^3$, $x^3 + 5$, $x^3 - 3$ and $x^3 + \pi$ all have derivative $3x^2$, since the derivative of a constant is $0$. "
+         r"Any constant works, so we write all of them at once with $+\,C$: \[ \int 3x^2\,dx = x^3 + C. \]"),
+    Formula("The constant of integration", (
+        r"\[ \int f(x)\,dx = F(x) + C, \quad \text{where } F'(x) = f(x). \] $C$ stands for any constant and is called the \blank{constant of integration}. "
+        r"Leaving it off is the most common mistake.")),
 
     Section("The basic rules"),
     Table(r"$\int x^n\,dx = \dfrac{x^{n+1}}{n + 1} + C$ ($n \ne -1$) & $\int \dfrac1x\,dx = \blank{\ln|x|} + C$ \\ "
@@ -50,7 +59,9 @@ NOTES = [
           r"$\int \sec x\tan x\,dx = \sec x + C$ & $\int \csc x\cot x\,dx = -\csc x + C$ \\ "
           r"$\int \dfrac{1}{\sqrt{1 - x^2}}\,dx = \arcsin x + C$ & ", "ll"),
     Text(r"\textbf{Memory tip:} the minus signs belong to the co-functions' derivatives read backward: $\sin$, $\csc^2$ and $\csc\cot$ all pick up a negative."),
-    Text(r"\textbf{Rewrite first.} There is no product or quotient rule for integrals. Write roots as powers ($\frac{1}{\sqrt x} = x^{-1/2}$), split a fraction with one term on the bottom, and expand products."),
+    Text(r"\textbf{Rewrite first.} For integrals, there's no simple product rule or quotient rule we can use, so for now our trick is rewriting: "
+         r"write roots as powers ($\frac{1}{\sqrt x} = x^{-1/2}$), split a fraction with one term on the bottom, and expand products. "
+         r"Soon we'll learn other techniques, more clever ways of rewriting a function so we can evaluate its integral."),
     VideoExample('Term by term', work="2.6cm"),
     Text(r"\textbf{Finding $C$.} Given $f'$ and one value of $f$, integrate to get $F(x) + C$, then substitute the point to solve for $C$."),
     BigIdea(r"An indefinite integral is an antiderivative plus $C$. Read derivative rules backward, rewrite into powers first, and always add $C$."),

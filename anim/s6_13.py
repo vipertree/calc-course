@@ -126,6 +126,7 @@ class Lesson(TranscriptScene):
                       r"\int_0^1 x^{-2}\,dx = \lim_{a\to0^+} \left[-\frac1x\right]_a^1", r"= \lim_{a\to0^+} \left(-\frac11 - \left(-\frac1a\right)\right)",
                       r"= \lim_{a\to0^+} \left(-1 + \frac1a\right) = \infty", r"TEXT:That piece diverges, so the whole integral diverges."],
                      at=[1, 1, 2, 3, 4, 5, 6], figure=hfig, figure_at=1, size=40,
+                     notes_graph=dict(fns=[("1/x^2", -1.25, -0.29), ("1/x^2", 0.29, 1.25)], xr=(-1.25, 1.25), yr=(0, 12), vlines=(0,), xstep=0.5, ystep=2),
                      cues={1: lambda sc: (sc.play(FadeIn(hreg), run_time=0.8), sc.bring_to_front(hfig[2])),
                            2: lambda sc: sc.play(Create(hasym[0]), GrowArrow(hasym[1][0]), GrowArrow(hasym[1][1]), FadeIn(hasym[2]), run_time=1)})
 

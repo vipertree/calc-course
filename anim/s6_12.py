@@ -30,18 +30,17 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
-        LET = lambda v: r"\text{Let } x = " + v + r"\text{:} \quad "
         self.example("The method", r"Find $\displaystyle\int \frac{1}{x^2 - 1}\,dx$.",
                      [r"x^2 - 1 = (x - 1)(x + 1)", r"\frac{1}{(x - 1)(x + 1)} = \frac{A}{x - 1} + \frac{B}{x + 1}",
                       r"TEXT:Multiply both sides by $(x - 1)(x + 1)$.", r"1 = A(x + 1) + B(x - 1)",
                       r"TEXT:Pick $x$ values that make one term cancel.",
-                      LET("1") + r"1 = A(1 + 1) + B(1 - 1)", r"1 = 2A, \ \text{so } A = \tfrac12",
-                      LET("-1") + r"1 = A(-1 + 1) + B(-1 - 1)", r"1 = -2B, \ \text{so } B = -\tfrac12",
+                      r"\text{Let } x = 1\text{:} \quad 1 = A(1 + 1) + B(1 - 1)", r"1 = 2A, \ \text{so } A = \tfrac12",
+                      r"\text{Let } x = -1\text{:} \quad 1 = A(-1 + 1) + B(-1 - 1)", r"1 = -2B, \ \text{so } B = -\tfrac12",
                       r"\int \left(\frac{1/2}{x - 1} - \frac{1/2}{x + 1}\right) dx = \tfrac12\ln|x - 1| - \tfrac12\ln|x + 1| + C"],
                      at=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], follow=True, size=40)
         self.example("Using the method", r"Find $\displaystyle\int \frac{x + 7}{x^2 - x - 6}\,dx$.",
                      [r"x^2 - x - 6 = (x - 3)(x + 2)", r"\frac{x + 7}{(x - 3)(x + 2)} = \frac{A}{x - 3} + \frac{B}{x + 2}", r"x + 7 = A(x + 2) + B(x - 3)",
-                      LET("3") + r"10 = 5A, \ \text{so } A = 2", LET("-2") + r"5 = -5B, \ \text{so } B = -1",
+                      r"\text{Let } x = 3\text{:} \quad 10 = 5A, \ \text{so } A = 2", r"\text{Let } x = -2\text{:} \quad 5 = -5B, \ \text{so } B = -1",
                       r"\int \left(\frac{2}{x - 3} - \frac{1}{x + 2}\right) dx = 2\ln|x - 3| - \ln|x + 2| + C"], at=[1, 2, 3, 4, 5, 6], size=42)
 
         with self.beat("Close") as b:
@@ -54,11 +53,11 @@ class Lesson(TranscriptScene):
         self.examples_card()
         self.example("Example 1: Undo the addition", r"Find $\displaystyle\int \frac{5x + 1}{(x - 1)(x + 2)}\,dx$.",
                      [r"\frac{5x + 1}{(x - 1)(x + 2)} = \frac{A}{x - 1} + \frac{B}{x + 2}", r"5x + 1 = A(x + 2) + B(x - 1)",
-                      LET("1") + r"6 = 3A, \ \text{so } A = 2", LET("-2") + r"-9 = -3B, \ \text{so } B = 3",
+                      r"\text{Let } x = 1\text{:} \quad 6 = 3A, \ \text{so } A = 2", r"\text{Let } x = -2\text{:} \quad -9 = -3B, \ \text{so } B = 3",
                       r"\int \left(\frac{2}{x - 1} + \frac{3}{x + 2}\right) dx = 2\ln|x - 1| + 3\ln|x + 2| + C"],
                      at=[1, 1, 2, 2, 3], size=42)
         self.example("Example 2: A definite integral", r"Evaluate $\displaystyle\int_2^3 \frac{1}{x(x - 1)}\,dx$.",
-                     [r"\frac{1}{x(x - 1)} = \frac{A}{x} + \frac{B}{x - 1}", r"1 = A(x - 1) + Bx", LET("0") + r"1 = -A, \ \text{so } A = -1", LET("1") + r"1 = B, \ \text{so } B = 1",
+                     [r"\frac{1}{x(x - 1)} = \frac{A}{x} + \frac{B}{x - 1}", r"1 = A(x - 1) + Bx", r"\text{Let } x = 0\text{:} \quad 1 = -A, \ \text{so } A = -1", r"\text{Let } x = 1\text{:} \quad 1 = B, \ \text{so } B = 1",
                       r"\int_2^3 \left(\frac{-1}{x} + \frac{1}{x - 1}\right) dx = \left[\ln|x - 1| - \ln|x|\right]_2^3",
                       r"= (\ln 2 - \ln 3) - (\ln 1 - \ln 2) = 2\ln 2 - \ln 3 = \ln\tfrac43"],
                      at=[1, 1, 2, 2, 3, 4], size=42)

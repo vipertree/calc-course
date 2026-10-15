@@ -1,6 +1,5 @@
 import json
 import re
-from html import escape
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Q, Sum
@@ -937,15 +936,15 @@ def slides_page(request, num):
         v = m["versions"].get(key)
         if not v:
             continue
-        versions.append({"key": key, "label": label, "slides": v["slides"], "clips": v.get("clips", 0),
+        versions.append({"key": key, "label": label, "slides": v["slides"],
                          "html": reverse("slides_file", args=[num, v["html"]]),
                          "pptx": reverse("slides_file", args=[num, v["pptx"]]) if v.get("pptx") else None})
     return render(request, "teacher/slides.html", {"num": num, "title": (meta or {}).get("title") or m.get("title", ""),
-                                                   "versions": versions, "has_clips": any(v["clips"] for v in versions)})
+                                                   "versions": versions})
 
 
 def slides_file(request, num, name):
-    """A deck, its PowerPoint file, or one of its clips. Teachers only, whatever the file."""
+    """A deck, its PowerPoint file, or one of its stills. Teachers only, whatever the file."""
     if not _is_teacher(request.user):
         return forbidden(request)
     path = slides.path_for(num, name)
@@ -953,13 +952,11 @@ def slides_file(request, num, name):
         raise Http404
     ext = path.suffix
     if ext == ".html":
-        # the deck opens in the look the teacher picked on the site, and says whose copy it is
+        # the deck opens in the look the teacher picked on the site
         page = path.read_text()
         theme = request.COOKIES.get("theme", "")
         if theme in dict(THEMES):
             page = page.replace('<html lang="en">', f'<html lang="en" data-theme="{theme}">', 1)
-        name_line = f"<div class='for'>Prepared for {escape(packets.holder_name(request.user))}</div>"
-        page = page.replace("<!--slides-for-->", name_line, 1)
         page = _csp_ready(page, getattr(request, "csp_nonce", ""))
         resp = HttpResponse(page, content_type=slides.TYPES[ext])
         resp["Cache-Control"] = "private, no-cache"
@@ -967,8 +964,6 @@ def slides_file(request, num, name):
     if settings.SLIDES_ACCEL:
         resp = HttpResponse(content_type=slides.TYPES[ext])
         resp["X-Accel-Redirect"] = f"{settings.SLIDES_ACCEL.rstrip('/')}/{num}/{name}"
-    elif ext == ".mp4":
-        resp = _ranged(request, path, slides.TYPES[ext])
     else:
         resp = FileResponse(open(path, "rb"), content_type=slides.TYPES[ext])
     if ext == ".pptx":

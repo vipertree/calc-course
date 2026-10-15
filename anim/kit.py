@@ -25,6 +25,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from transcripts import parse  # noqa: E402
 
+# Teacher slide stills (tools/build_slides.py, Adder 2026-10-15: slides show crisp stills, not video clips). With
+# CALC_STILLS=<dir> a render (run with -s, so nothing is animated) saves, per beat, its fullest frame as a PNG, and per
+# worked example the posed problem (before the solving starts) and the solved figure, listed in <dir>/stills.json.
+STILLS = os.environ.get("CALC_STILLS")
+
 # Standalone free modules: numbered internally like units (0.3 is the trig module's third lesson) but never called a
 # unit anywhere a student sees. Adder, 2026-10-08: the trig review is its own free module, not Unit 0.
 MODULES = {0: "Trig Review"}
@@ -70,13 +75,62 @@ class TranscriptScene(LessonScene):
         self._marks = 0
         self._issues = {}
         self._beat_now = "start"
+        self._stills, self._best, self._still_box = [], None, None
 
     # ------------------------------------------------------------ layout audit
     # After every animation, look for text colliding with other text or pictures, and anything leaving the
     # visible frame. Findings go to media/layout_<slug>.json for the video-review skill; nothing is fixed here.
     def play(self, *args, **kwargs):
+        if STILLS and self._beat_now in getattr(self, "_open_beats", ()) and self._removes(args):
+            self._candidate()                  # the frame as it stands before this animation fades things out
         super().play(*args, **kwargs)
         self._audit()
+
+    # ------------------------------------------------------------ teacher slide stills
+    @classmethod
+    def _removes(cls, anims):
+        """Does this play take something off the screen (FadeOut, Uncreate, ...)? Only then can the beat's fullest
+        frame be lost, so only then is a frame worth rendering (rendering one before every play tripled the time)."""
+        for a in anims:
+            if getattr(a, "remover", False) or cls._removes(getattr(a, "animations", ())):
+                return True
+        return False
+
+    def _frame(self):
+        from PIL import Image
+        self.renderer.update_frame(self, ignore_skipping=True)
+        return Image.fromarray(self.renderer.get_frame()).convert("RGBA")       # transparent background (style.py)
+
+    def _ink(self, img):
+        """How much of the frame is drawn on (the background is transparent)."""
+        return float((np.asarray(img.resize((192, 108)))[:, :, 3] > 40).mean())
+
+    def _candidate(self):
+        img = self._frame()
+        ink = self._ink(img)
+        # the fullest frame of the beat; a later frame wins unless it has clearly less on it
+        if self._best is None or ink >= 0.9 * self._best[0]:
+            self._best = (max(ink, self._best[0]) if self._best else ink, img)
+
+    def _crop(self, img, box):
+        """Cut a scene-coordinate box (x0, x1, y0, y1) out of a frame, with a margin."""
+        f = self.camera.frame
+        fw, fh, (cx, cy) = f.width, f.height, f.get_center()[:2]
+        W, H = img.size
+        x0, x1, y0, y1 = box[0] - 0.25, box[1] + 0.25, box[2] - 0.25, box[3] + 0.25
+        px = lambda x: int(round((x - (cx - fw / 2)) / fw * W))
+        py = lambda y: int(round(((cy + fh / 2) - y) / fh * H))
+        return img.crop((max(0, px(x0)), max(0, py(y1)), min(W, px(x1)), min(H, py(y0))))
+
+    def _save_still(self, beat, kind, img):
+        slug = re.sub(r"[^a-z0-9]+", "-", beat.lower()).strip("-")[:60] or "beat"
+        name = f"{slug}-{kind}.png"
+        os.makedirs(STILLS, exist_ok=True)
+        img.save(os.path.join(STILLS, name), optimize=True)
+        self._stills.append({"beat": beat, "kind": kind, "file": name})
+
+    def _figure_box(self, figure):
+        return figure.get_left()[0], figure.get_right()[0], figure.get_bottom()[1], figure.get_top()[1]
 
     @staticmethod
     def _leaves(mob):
@@ -132,6 +186,11 @@ class TranscriptScene(LessonScene):
             vm = [dict(m, **self._voice_beats[m["beat"]]) for m in self._voice_map if m["beat"] in self._voice_beats]
         else:
             vm = getattr(self, "_voice_map", [])
+        if STILLS:
+            # a stills pass: don't overwrite the real render's voicemap and layout report
+            with open(os.path.join(STILLS, "stills.json"), "w") as f:
+                json.dump({"topic": self.NUM, "stills": self._stills}, f, indent=1)
+            return
         if vm:
             with open(os.path.join(config.media_dir, f"voicemap_{self.NUM.replace('.', '_')}.json"), "w") as f:
                 json.dump(vm, f, indent=1)
@@ -168,11 +227,21 @@ class TranscriptScene(LessonScene):
             raise KeyError(f"{self.NUM}: beat {name!r} is narrated twice")
         lines = self.beats[name]["say"]
         self._beat_now = name
+        self._open_beats = getattr(self, "_open_beats", set()) | {name}
+        self._best, self._still_box = None, None
         with self.voiceover(text=self._text(lines, think)) as tr:
             # where this beat's narration starts in the video (the caption builder maps Adder's words with it)
             entry = {"beat": name, "video_start": round(self.renderer.time, 3)}
             self._voice_map.append(entry)
             yield Beat(self, tr, len(lines))
+            if STILLS:
+                self._candidate()
+                img = self._best[1]
+                self._save_still(name, "end", img)
+                if self._still_box:              # a worked example's figure, solved
+                    self._save_still(name, "figure", self._crop(img, self._still_box))
+                self._best = None
+        self._open_beats.discard(name)
         entry["video_end"] = round(self.renderer.time, 3)          # its narration is over
         self.used.append(name)
 
@@ -284,6 +353,12 @@ class TranscriptScene(LessonScene):
                     self.play(FadeIn(figure), run_time=0.8)
             # the think pause: a cue while the problem sits alone on screen, gone when the solving starts
             cue = None
+            if STILLS:
+                posed = self._frame()
+                self._save_still(beat_name, "problem", posed)
+                if figure is not None and figure_at is None:
+                    self._still_box = self._figure_box(figure)
+                    self._save_still(beat_name, "figure-problem", self._crop(posed, self._still_box))
             if not follow:
                 cue = T(r"Pause and try it.", 32, DIM).next_to(head, DOWN, buff=0.6)
                 if figure is not None:
@@ -299,6 +374,7 @@ class TranscriptScene(LessonScene):
                 if figure_at is not None and i >= figure_at and figure not in self.mobjects:
                     b.line(figure_at)
                     self.play(FadeIn(figure), run_time=0.8)
+                    self._still_box = self._figure_box(figure)
                 b.line(i)
                 # the solving starts: a blank teacher slide's clip stops here (tools/build_slides.py)
                 self._voice_map[-1].setdefault("solve_at", round(self.renderer.time, 3))

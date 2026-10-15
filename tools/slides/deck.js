@@ -1,4 +1,4 @@
-// Teacher slide deck: keyboard and clicker navigation, fullscreen, light/dark looks, silent clips.
+// Teacher slide deck: keyboard and clicker navigation, fullscreen, light/dark looks (stills follow the look).
 // Clickers send PageDown/PageUp (or the arrow keys), and some send "b" or "." to black the screen.
 (function () {
   const stage = document.querySelector(".stage");
@@ -25,7 +25,7 @@
   function toggleTheme() {
     root.dataset.theme = look() === "dark" ? "paper" : "slate";
     store.set("deck-theme", root.dataset.theme);
-    loadClips(slides[cur]);
+    swapStills();
   }
 
   // ---------------------------------------------------------------- scaling
@@ -50,34 +50,25 @@
     });
   }
 
-  // ---------------------------------------------------------------- clips
-  function loadClips(slide) {
-    if (!slide) return;
-    slide.querySelectorAll("video[data-light]").forEach((v) => {
-      const want = (look() === "dark" && v.dataset.dark) ? v.dataset.dark : v.dataset.light;
-      const poster = (look() === "dark" && v.dataset.posterDark) ? v.dataset.posterDark : v.dataset.posterLight;
-      if (v.getAttribute("src") !== want) {
-        const t = v.currentTime || 0;
-        v.setAttribute("src", want);
-        if (poster) v.setAttribute("poster", poster);
-        if (t) v.addEventListener("loadedmetadata", () => { v.currentTime = t; }, { once: true });
-      }
+  // ---------------------------------------------------------------- stills: the light or dark render of each picture
+  function swapStills() {
+    const dark = look() === "dark";
+    document.querySelectorAll("img[data-light]").forEach((im) => {
+      const want = dark && im.dataset.dark ? im.dataset.dark : im.dataset.light;
+      if (im.getAttribute("src") !== want) im.setAttribute("src", want);
     });
   }
-  function stopClips(slide) {
-    if (slide) slide.querySelectorAll("video").forEach((v) => v.pause());
-  }
+  swapStills();
 
   // ---------------------------------------------------------------- navigation
   function go(n) {
     n = Math.max(0, Math.min(slides.length - 1, n));
     if (n === cur) return;
-    if (cur >= 0) { slides[cur].classList.remove("on"); stopClips(slides[cur]); }
+    if (cur >= 0) slides[cur].classList.remove("on");
     cur = n;
     const s = slides[cur];
     s.classList.add("on");
     fit(s);
-    if (!shot) loadClips(s);
     count.textContent = `${cur + 1} / ${slides.length}`;
     if (!shot) history.replaceState(null, "", "#" + (cur + 1));
   }
@@ -87,30 +78,21 @@
     if (document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen().catch(() => {});
   }
-  function playPause() {
-    const v = slides[cur].querySelector("video");
-    if (v) (v.paused ? v.play() : v.pause());
-  }
 
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    const inVideo = e.target instanceof HTMLVideoElement;
     if (!keys.hidden && e.key !== "?") { keys.hidden = true; e.preventDefault(); return; }
     switch (e.key) {
       case "ArrowRight": case "ArrowDown": case "PageDown": case "Enter": case "n": case "N":
-        if (inVideo && (e.key === "ArrowRight" || e.key === "ArrowLeft")) return;   // seeking inside a clip
         next(); break;
       case " ":
-        if (inVideo) return;
         e.shiftKey ? prev() : next(); break;
       case "ArrowLeft": case "ArrowUp": case "PageUp": case "Backspace": case "p": case "P":
-        if (inVideo && e.key === "ArrowLeft") return;
         prev(); break;
       case "Home": go(0); break;
       case "End": go(slides.length - 1); break;
       case "f": case "F": fullscreen(); break;
       case "t": case "T": toggleTheme(); break;
-      case "k": case "K": playPause(); break;
       case "b": case "B": case ".": black.hidden = !black.hidden; break;
       case "?": keys.hidden = !keys.hidden; break;
       default: return;
@@ -166,7 +148,7 @@
     const s = slides[cur];
     const r = (el) => { if (!el) return null; const b = el.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; };
     const title = s.querySelector(".title.plain");
-    return { title: r(title), titleText: title ? title.textContent.trim() : "", video: r(s.querySelector(".clip video")),
+    return { title: r(title), titleText: title ? title.textContent.trim() : "", video: null,
              errors: s.querySelectorAll(".katex-error").length, scale: (s.querySelector(".fit") || {}).style?.transform || "" };
   };
 })();

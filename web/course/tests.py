@@ -581,15 +581,14 @@ class SlideDecks(Assessments):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         d = Path(self.tmp.name) / "1.2"
-        (d / "clips").mkdir(parents=True)
+        (d / "stills").mkdir(parents=True)
         (d / "manifest.json").write_text(json.dumps({"topic": "1.2", "title": "Limits", "versions": {
-            "solutions": {"html": "deck-solutions.html", "slides": 30, "clips": 6, "pptx": "1.2-slides-solutions.pptx"},
-            "blank": {"html": "deck-blank.html", "slides": 25, "clips": 6, "pptx": "1.2-slides-blank.pptx"}}}))
+            "solutions": {"html": "deck-solutions.html", "slides": 30, "stills": 6, "pptx": "1.2-slides-solutions.pptx"},
+            "blank": {"html": "deck-blank.html", "slides": 25, "stills": 6, "pptx": "1.2-slides-blank.pptx"}}}))
         for v in ("solutions", "blank"):
-            (d / f"deck-{v}.html").write_text(f'<!doctype html><html lang="en"><body>{v} deck<div class="ver"><!--slides-for--></div></body></html>')
+            (d / f"deck-{v}.html").write_text(f'<!doctype html><html lang="en"><body>{v} deck<div class="ver"></div></body></html>')
             (d / f"1.2-slides-{v}.pptx").write_bytes(b"PK\x03\x04 not really a deck")
-        (d / "clips" / "ex1-full.mp4").write_bytes(bytes(range(256)) * 4)
-        (d / "clips" / "ex1-full.jpg").write_bytes(b"\xff\xd8\xff jpeg")
+        (d / "stills" / "secant-line-end.png").write_bytes(b"\x89PNG not really")
         (d / "notes.txt").write_text("not something a deck folder hands out")
         o = override_settings(SLIDES_DIR=Path(self.tmp.name), SLIDES_ACCEL="")
         o.enable()
@@ -597,9 +596,9 @@ class SlideDecks(Assessments):
 
     URLS = ["/teacher/slides/1.2/", "/teacher/slides/1.2/deck-solutions.html", "/teacher/slides/1.2/deck-blank.html",
             "/teacher/slides/1.2/1.2-slides-solutions.pptx", "/teacher/slides/1.2/1.2-slides-blank.pptx",
-            "/teacher/slides/1.2/clips/ex1-full.mp4", "/teacher/slides/1.2/clips/ex1-full.jpg"]
+            "/teacher/slides/1.2/stills/secant-line-end.png"]
 
-    def test_teacher_gets_page_decks_pptx_and_clips(self):
+    def test_teacher_gets_page_decks_pptx_and_stills(self):
         self.client.force_login(self.teacher)
         r = self.client.get("/teacher/slides/1.2/")
         self.assertEqual(r.status_code, 200)
@@ -608,15 +607,12 @@ class SlideDecks(Assessments):
         r = self.client.get("/teacher/slides/1.2/deck-solutions.html")
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "solutions deck")
-        self.assertContains(r, "Prepared for Ms. Teach")
+        self.assertNotContains(r, "Prepared for")                # Adder 2026-10-14: no name line on the slides
         r = self.client.get("/teacher/slides/1.2/1.2-slides-blank.pptx")
         self.assertEqual(r.status_code, 200)
         self.assertIn("attachment", r["Content-Disposition"])
         self.assertTrue(r["Content-Type"].startswith("application/vnd.openxmlformats-officedocument.presentationml"))
-        r = self.client.get("/teacher/slides/1.2/clips/ex1-full.mp4", HTTP_RANGE="bytes=0-99")
-        self.assertEqual(r.status_code, 206)                     # seekable
-        self.assertEqual(len(r.content), 100)
-        self.assertEqual(self.client.get("/teacher/slides/1.2/clips/ex1-full.jpg")["Content-Type"], "image/jpeg")
+        self.assertEqual(self.client.get("/teacher/slides/1.2/stills/secant-line-end.png")["Content-Type"], "image/png")
 
     def test_deck_opens_in_the_sites_look(self):
         self.client.force_login(self.teacher)
@@ -632,11 +628,10 @@ class SlideDecks(Assessments):
                 c.force_login(who)
             for u in self.URLS:
                 self.assertEqual(c.get(u).status_code, 403, (who, u))
-            self.assertEqual(c.get("/teacher/slides/1.2/clips/ex1-full.mp4", HTTP_RANGE="bytes=0-99").status_code, 403)
 
     def test_only_deck_files_are_served(self):
         self.client.force_login(self.teacher)
-        for name in ("manifest.json", "notes.txt", "deck-other.html", "clips/nope.mp4", "..%2Fmanifest.json",
+        for name in ("manifest.json", "notes.txt", "deck-other.html", "stills/nope.png", "clips/ex1-full.mp4", "..%2Fmanifest.json",
                      "1.3-slides-blank.pptx"):
             self.assertEqual(self.client.get(f"/teacher/slides/1.2/{name}").status_code, 404, name)
         self.assertEqual(self.client.get("/teacher/slides/1.4/").status_code, 404)      # no deck built
@@ -645,14 +640,14 @@ class SlideDecks(Assessments):
         from django.test import override_settings
         with override_settings(SLIDES_ACCEL="/protected-slides/"):
             self.client.force_login(self.teacher)
-            r = self.client.get("/teacher/slides/1.2/clips/ex1-full.mp4")
-            self.assertEqual(r["X-Accel-Redirect"], "/protected-slides/1.2/clips/ex1-full.mp4")
+            r = self.client.get("/teacher/slides/1.2/stills/secant-line-end.png")
+            self.assertEqual(r["X-Accel-Redirect"], "/protected-slides/1.2/stills/secant-line-end.png")
             self.assertEqual(r.content, b"")
             r = self.client.get("/teacher/slides/1.2/1.2-slides-solutions.pptx")
             self.assertEqual(r["X-Accel-Redirect"], "/protected-slides/1.2/1.2-slides-solutions.pptx")
             self.assertIn("attachment", r["Content-Disposition"])
             self.client.force_login(self.student("stu", in_class=False))
-            r = self.client.get("/teacher/slides/1.2/clips/ex1-full.mp4")
+            r = self.client.get("/teacher/slides/1.2/stills/secant-line-end.png")
             self.assertEqual(r.status_code, 403)
             self.assertNotIn("X-Accel-Redirect", r)
 

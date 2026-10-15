@@ -9,10 +9,10 @@ import re
 from django.conf import settings
 
 VERSIONS = (("solutions", "Solutions shown"), ("blank", "Blank, to work live"))
-# what a slide folder may hand out: the two decks, the PowerPoint files, and clips with their posters
-FILE_RE = re.compile(r"^(deck-(solutions|blank)\.html|\d{1,2}\.\d{1,2}-slides-(solutions|blank)\.pptx|clips/[\w-]+\.(mp4|jpg))$")
+# what a slide folder may hand out: the two decks, the PowerPoint files, and the stills from the lesson's animation
+FILE_RE = re.compile(r"^(deck-(solutions|blank)\.html|\d{1,2}\.\d{1,2}-slides-(solutions|blank)\.pptx|stills/[\w-]+\.png)$")
 TYPES = {".html": "text/html; charset=utf-8", ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-         ".mp4": "video/mp4", ".jpg": "image/jpeg"}
+         ".png": "image/png"}
 
 
 def folder(num):

@@ -393,7 +393,11 @@ class LessonScene(VoiceoverScene, MovingCameraScene):
         super().setup()
         extra = config.frame_height * (SAFE_SCALE - 1)
         self.camera.frame.scale(SAFE_SCALE).shift(DOWN * (extra / 2 - SAFE_TOP))
-        if THEME != "dark":
+        if os.environ.get("CALC_STILLS"):
+            # teacher slide stills (kit.py): no paper, border or logo, a transparent background so the slide's shows
+            self.camera.background_opacity = 0
+            self.camera.init_background()
+        elif THEME != "dark":
             # paper, border and logo are painted into the camera's background: behind everything, never faded or zoomed
             self.camera.background_image = _themes.background(THEME, self.camera.pixel_width, self.camera.pixel_height)
             self.camera.init_background()

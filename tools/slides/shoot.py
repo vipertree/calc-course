@@ -3,8 +3,8 @@
 Runs under the system python3, which has playwright:
     LD_LIBRARY_PATH=$HOME/chromium-libs/root/usr/lib/x86_64-linux-gnu python3 tools/slides/shoot.py deck.html outdir [--theme paper]
 
-Each slide is shot at 1920 x 1080 (times --scale) on a transparent page with its plain-text title and its video hidden:
-PowerPoint gets the title as editable text and the clip as a real movie, placed where the page put them.
+Each slide is shot at 1920 x 1080 (times --scale) on a transparent page with its plain-text title hidden:
+PowerPoint gets the title as editable text, placed where the page put it; stills are part of the picture.
 Writes outdir/slide-NN.png and outdir/shots.json ([{"png", "title", "titleText", "video", "errors"}, ...]).
 """
 import argparse
@@ -21,7 +21,7 @@ def main():
     ap.add_argument("outdir")
     ap.add_argument("--theme", default="paper")
     ap.add_argument("--scale", type=float, default=1.5)
-    ap.add_argument("--transparent", action="store_true", help="PowerPoint export: transparent page, title and video hidden")
+    ap.add_argument("--transparent", action="store_true", help="PowerPoint export: transparent page, title hidden")
     a = ap.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
     url = "file://" + os.path.abspath(a.deck) + f"?theme={a.theme}" + ("&shot=1" if a.transparent else "")

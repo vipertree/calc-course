@@ -3,21 +3,20 @@ the notes and the site use), so a deck can't drift from the notes.
 
     ~/opt/mamba/envs/calc/bin/python tools/build_slides.py 1.2 1.3
     ~/opt/mamba/envs/calc/bin/python tools/build_slides.py all --no-pptx
-    ... --media-root /workspace/repos/calc-course     # read videos and voicemaps from another checkout
+    ... --media-root /workspace/repos/calc-course     # read stills from another checkout
 
-Each topic gets two versions, "solutions" (every worked example revealed step by step, blanks filled in) and
-"blank" (problems only, with room to work them live):
+Each topic gets two versions. "solutions" reveals every worked example step by step; "blank" shows each problem with
+nothing worked, and the teacher works it on the board or over the slide. Both show every formula and definition in
+full: no fill-in blanks and no "work it out here" boxes (Adder 2026-10-14).
     build/slides/<num>/deck-solutions.html, deck-blank.html     the decks the site shows to teacher accounts
     build/slides/<num>/<num>-slides-solutions.pptx, ...-blank.pptx   for PowerPoint and Google Slides
-    build/slides/<num>/clips/*.mp4, *.jpg                         silent clips cut from the lesson video, and posters
-    build/slides/<num>/manifest.json                              what was built, and which clips were skipped and why
+    build/slides/<num>/stills/*.png                              pictures from the lesson's animation
+    build/slides/<num>/manifest.json                              what was built, and which stills were missing and why
 
-Clips: every worked example (and, where a notes section matches a transcript beat, that beat's animation) is cut out
-of web/static/video/<slug>.mp4 and <slug>-dark.mp4 with the audio removed. The cut points come from the render's
-anim/media/pub_<slug>_<look>/voicemap_<slug>.json. A topic with no voicemap, or one older than its video, gets no clips
-(logged); re-run this after the renders finish and the clips appear. The blank version's clip stops where the
-solving starts (the end of the example's think pause); the solutions version plays the whole example.
-Clips already cut from the same video at the same times are kept, so a re-run is quick.
+Stills (Adder 2026-10-15: no video in the slides, stills rendered by manim): anim/stills.sh <num> runs the lesson
+scene without animating and saves, per transcript beat, its fullest frame on a transparent background, plus each worked
+example's figure as posed and as solved (build/stills/<slug>/{light,dark}/, stills.json). A notes section's slide gets
+the still of its matching beat; an example gets its figure. A topic with no stills yet builds without pictures (logged).
 
 Output stays off git (build/ is ignored): the site serves it only to teachers (web/course/views.py, slides_*).
 """
@@ -50,8 +49,6 @@ OUT = ROOT / "build" / "slides"
 HERE = ROOT / "tools" / "slides"
 VERSIONS = ("solutions", "blank")
 LOOKS = ("light", "dark")
-FFMPEG = shutil.which("ffmpeg") or str(Path(sys.executable).parent / "ffmpeg")
-FFPROBE = shutil.which("ffprobe") or str(Path(sys.executable).parent / "ffprobe")
 CHROME_LIBS = Path.home() / "chromium-libs" / "root" / "usr" / "lib" / "x86_64-linux-gnu"
 PAPER_BG = (0xF7, 0xF2, 0xE8)          # the site's light look (app.css [data-theme="paper"] --bg)
 PAPER_INK = (0x22, 0x1D, 0x16)
@@ -67,17 +64,13 @@ def all_topics():
     return sorted((p.stem[6:].replace("_", ".") for p in (ROOT / "content").glob("topic_*_*.py")), key=key)
 
 
-def clock(t):
-    return f"{int(t // 60)}:{int(t % 60):02d}"
-
-
 # ------------------------------------------------------------------ text -> slide HTML
 _BLANK_SPAN = re.compile(r'<span class="blank(?: pick)?" data-blank="([^"]+)"([^>]*)></span>')
 
 
 def rich(s, version):
-    """The course's LaTeX subset as HTML (math stays for KaTeX, as on the site). Notes blanks are filled in and
-    underlined in the solutions version, and left as open lines in the blank version."""
+    """The course's LaTeX subset as HTML (math stays for KaTeX, as on the site). The notes' blanks are always filled in:
+    the teacher presents everything in full and the students fill in their own notes (Adder 2026-10-14)."""
     if not s:
         return ""
     blanks = W.Blanks("s")
@@ -91,12 +84,9 @@ def rich(s, version):
             right = a[5:].strip()
             opts = json.loads(H.unescape(re.search(r'data-options="([^"]*)"', attrs).group(1)))
             return "<span class='pick'>" + "".join(
-                f"<span class='{'yes' if version == 'solutions' and o == right else 'opt'}'><span class='box'></span>{W.html(o)}</span>"
+                f"<span class='{'yes' if o == right else 'opt'}'><span class='box'></span>{W.html(o)}</span>"
                 for o in opts) + "</span>"
-        if version == "solutions":
-            return f"<span class='fill'>{W.html(a)}</span>"
-        w = re.search(r"--w:(\d+)ch", attrs)
-        return f"<span class='gap' style='--w:{w.group(1) if w else 6}ch'></span>"
+        return W.html(a)
     return _BLANK_SPAN.sub(sub, out)
 
 
@@ -151,131 +141,87 @@ def fig_html(fig, extra_class="block"):
     return parts[0].replace("<figure>", f"<figure class='{extra_class}'>", 1)
 
 
-# ------------------------------------------------------------------ clip timing
-def probe_duration(path):
-    r = subprocess.run([FFPROBE, "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
-                       capture_output=True, text=True)
-    return float(r.stdout.strip())
+# ------------------------------------------------------------------ stills
+def still_slug(beat):
+    """The file-name form of a beat name; must match kit.py _save_still."""
+    return re.sub(r"[^a-z0-9]+", "-", beat.lower()).strip("-")[:60] or "beat"
 
 
-def video_path(media_root, slug, look):
-    return media_root / "web" / "static" / "video" / f"{slug}{'' if look == 'light' else '-dark'}.mp4"
+class Stills:
+    """The topic's manim stills (anim/stills.sh), copied into the deck folder as they're used."""
 
-
-def load_timing(num, look, media_root, log):
-    """{beat: {"start", "end", "next", "think", "solve"}} in seconds of the published video, or None."""
-    slug = num.replace(".", "_")
-    video = video_path(media_root, slug, look)
-    vm = media_root / "anim" / "media" / f"pub_{slug}_{look}" / f"voicemap_{slug}.json"
-    if not video.exists():
-        log(f"{num} {look}: no video at {video}; no {look} clips")
-        return None
-    if not vm.exists():
-        log(f"{num} {look}: no voicemap ({vm.relative_to(media_root)}); no {look} clips until the topic is re-rendered")
-        return None
-    if video.stat().st_mtime - vm.stat().st_mtime > 900:
-        log(f"{num} {look}: the voicemap is older than the video (a later render wrote none); no {look} clips")
-        return None
-    u, t = num.split(".")
-    aligned_path = media_root / "voice" / "aligned" / f"{int(u):02d}-{int(t):02d}.beats.json"
-    aligned = json.loads(aligned_path.read_text()) if aligned_path.exists() else {"beats": {}}
-    entries = json.loads(vm.read_text())
-    dur = probe_duration(video)
-    out = {}
-    for i, e in enumerate(entries):
-        s = e["video_start"]
-        nxt = entries[i + 1]["video_start"] if i + 1 < len(entries) else dur - 9.5      # the outro card is ~9 s
-        end = e.get("video_end")
-        if end is None and "rec_start" in e:
-            # Adder's recording: his slice of audio plus the think pauses inserted into it
-            end = s + (e["rec_end"] - e["rec_start"]) + e.get("think", 5.0) * len(e.get("inserts", []))
-        if end is None:
-            end = nxt - 2.0
-        end = min(end, nxt)
-        think, solve = e.get("think_at"), e.get("solve_at")
-        if solve is None and e.get("inserts"):
-            think = s + e["inserts"][0]
-            solve = think + e.get("think", 5.0)
-        if solve is None and "rec_start" in e:
-            lines = aligned["beats"].get(e["beat"], {}).get("lines", [])
-            if len(lines) > 1:
-                solve = s + lines[1] - e["rec_start"]           # a follow-along example: the first solving line
-        out[e["beat"]] = {"start": s, "end": end, "next": nxt, "think": think, "solve": solve}
-    return {"video": video, "beats": out, "duration": dur}
-
-
-def span_times(b, span):
-    """(start, stop, poster time) of a clip, or None when the timing can't place it."""
-    if span == "full":
-        stop = min(b["end"] + 1.2, b["next"])
-        poster = b["solve"] - 0.3 if b["solve"] else b["start"] + 3.0
-        return b["start"], stop, min(max(poster, b["start"] + 0.5), stop - 0.1)
-    if span == "blank":
-        if not b["solve"]:
-            return None
-        stop = b["solve"] - 0.1
-        return b["start"], stop, max(stop - 0.3, b["start"] + 0.2)
-    stop = min(b["end"] + 0.5, b["next"])                        # "anim": a lesson beat's animation
-    return b["start"], stop, max(stop - 0.4, b["start"] + 0.2)
-
-
-class Clips:
-    """Cuts and remembers the silent clips for one topic (both looks)."""
-
-    def __init__(self, num, media_root, outdir, log, enabled=True):
+    def __init__(self, num, media_root, outdir, log):
         self.num, self.outdir, self.log = num, outdir, log
-        self.timing = {look: load_timing(num, look, media_root, log) for look in LOOKS} if enabled else {}
-        self.made = {}
-        mpath = outdir / "manifest.json"
-        self.previous = json.loads(mpath.read_text()).get("clips", {}) if mpath.exists() else {}
+        slug = num.replace(".", "_")
+        self.src = {look: media_root / "build" / "stills" / slug / look for look in LOOKS}
+        self.have = {}
+        for look, d in self.src.items():
+            j = d / "stills.json"
+            self.have[look] = {(e["beat"], e["kind"]) for e in json.loads(j.read_text())["stills"]} if j.exists() else set()
+        if not self.have["light"]:
+            log(f"{num}: no stills yet (run anim/stills.sh {num}); the deck has no pictures")
         self.used = set()
 
-    def get(self, cid, beat, span):
-        """{"light": {...}, "dark": {...}} for a clip of `beat`, cutting it if needed, or None."""
+    def _mask(self, beat):
+        from PIL import Image
+        import numpy as np
+        f = self.src["light"] / f"{still_slug(beat)}-end.png"
+        with Image.open(f) as im:
+            return np.asarray(im.getchannel("A").resize((192, 108))) > 24
+
+    def distinct(self, beats):
+        """Drop a beat's still when the next one only adds to it (the same graph a step later): an animation builds
+        up over several beats, and the slides need the built-up picture once, not every stage of it."""
+        beats = [b for b in beats if (b, "end") in self.have["light"]]
+        masks = [self._mask(b) for b in beats]
+        keep = []
+        for i, b in enumerate(beats):
+            if i + 1 < len(beats):
+                m, n = masks[i], masks[i + 1]
+                if m.sum() and (m & n).sum() / m.sum() > 0.85:
+                    continue
+            keep.append(b)
+        return keep
+
+    def get(self, beat, kind):
+        """{"light": "stills/x.png", "dark": "stills/x-dark.png"} for a beat's still, or None."""
+        if not beat or (beat, kind) not in self.have["light"]:
+            return None
         res = {}
         for look in LOOKS:
-            tm = self.timing.get(look)
-            if not tm:
+            if (beat, kind) not in self.have[look]:
                 continue
-            b = tm["beats"].get(beat)
-            if b is None:
-                self.log(f"{self.num} {look}: beat {beat!r} is not in the voicemap; no clip")
-                continue
-            times = span_times(b, span)
-            if times is None:
-                self.log(f"{self.num} {look}: {beat!r} has no think-pause time, so the blank version gets no clip")
-                continue
-            a, z, poster_t = times
-            if z - a < 1.0 or z > tm["duration"]:
-                self.log(f"{self.num} {look}: {beat!r} clip {a:.1f}-{z:.1f} s doesn't fit the video; skipped")
-                continue
-            name = f"{cid}-{span}{'' if look == 'light' else '-dark'}"
-            mp4, jpg = self.outdir / "clips" / f"{name}.mp4", self.outdir / "clips" / f"{name}.jpg"
-            key = {"src": str(tm["video"]), "src_mtime": tm["video"].stat().st_mtime, "start": round(a, 3),
-                   "stop": round(z, 3), "poster": round(poster_t, 3)}
-            if self.previous.get(name) != key or not mp4.exists() or not jpg.exists():
-                cut(tm["video"], a, z, mp4)
-                poster(tm["video"], poster_t, jpg)
-            self.made[name] = key
-            res[look] = {"mp4": f"clips/{name}.mp4", "jpg": f"clips/{name}.jpg", "start": a, "stop": z}
-        if not res:
-            return None
-        res.setdefault("light", res.get("dark"))
+            name = f"{still_slug(beat)}-{kind}{'' if look == 'light' else '-dark'}.png"
+            dest = self.outdir / "stills" / name
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            srcf = self.src[look] / f"{still_slug(beat)}-{kind}.png"
+            if not dest.exists() or dest.stat().st_mtime < srcf.stat().st_mtime:
+                crop_to_drawing(srcf, dest)
+            self.used.add(name)
+            res[look] = f"stills/{name}"
+            if look == "light":
+                from PIL import Image
+                with Image.open(dest) as im:
+                    res["size"] = im.size      # so the slide lays out before the image has loaded
+        res.setdefault("dark", res["light"])
         return res
 
 
-def cut(src, a, z, dest):
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    tmp = dest.with_suffix(".part.mp4")
-    subprocess.run([FFMPEG, "-y", "-v", "error", "-ss", f"{a:.3f}", "-i", str(src), "-t", f"{z - a:.3f}", "-an",
-                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-pix_fmt", "yuv420p",
-                    "-movflags", "+faststart", str(tmp)], check=True)
-    tmp.replace(dest)
+def crop_to_drawing(src, dest, margin=36):
+    """A still on a transparent background, cut down to what is drawn on it (plus a margin)."""
+    from PIL import Image
+    im = Image.open(src)
+    box = im.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox() if im.mode == "RGBA" else None
+    if box:
+        x0, y0, x1, y1 = box
+        im = im.crop((max(0, x0 - margin), max(0, y0 - margin), min(im.width, x1 + margin), min(im.height, y1 + margin)))
+    im.save(dest, optimize=True)
 
 
-def poster(src, t, dest):
-    subprocess.run([FFMPEG, "-y", "-v", "error", "-ss", f"{t:.3f}", "-i", str(src), "-frames:v", "1", "-q:v", "3",
-                    str(dest)], check=True)
+def img_html(still, cls):
+    w, h = still.get("size", (1920, 1080))
+    return (f"<img class='{cls}' src='{still['light']}' data-light='{still['light']}' data-dark='{still['dark']}' "
+            f"width='{w}' height='{h}' alt=''>")
 
 
 # ------------------------------------------------------------------ which beat animates which notes section
@@ -287,24 +233,26 @@ def _words(s):
     return {w[:5] for w in re.findall(r"[a-z]+", re.sub(r"\$[^$]*\$", " ", s.lower())) if w not in _STOP and len(w) > 2}
 
 
-def match_sections(section_titles, beats):
-    """{section title: beat name}: each notes section's best-matching transcript beat (by shared words, in order)."""
-    out, last = {}, -1
-    for title in section_titles:
-        tw = _words(title)
-        best, score = None, 0.0
-        for i, name in enumerate(beats):
-            if i <= last:
-                continue
-            bw = _words(name)
-            if not tw or not bw:
-                continue
-            sc = len(tw & bw) / (len(tw) * len(bw)) ** 0.5
-            if sc > score:
-                best, score = i, sc
-        if best is not None and score >= 0.3:
-            out[title] = beats[best]
-            last = best
+def assign_beats(section_titles, beats):
+    """{section title: [beat, ...]}: every animation beat placed in a notes section, keeping both in order. A beat goes
+    to the best-matching section (by shared words) at or after the previous beat's section; a beat that matches
+    nothing stays with the section before it."""
+    out = {t: [] for t in section_titles}
+    if not section_titles:
+        return out
+    cur = 0
+    for name in beats:
+        bw = _words(name)
+        best, score = cur, 0.0
+        for i in range(cur, len(section_titles)):
+            tw = _words(section_titles[i])
+            if tw and bw:
+                sc = len(tw & bw) / (len(tw) * len(bw)) ** 0.5
+                if sc > score + 1e-9:
+                    best, score = i, sc
+        if score >= 0.3:
+            cur = best
+        out[section_titles[cur]].append(name)
     return out
 
 
@@ -314,7 +262,7 @@ def slide(kind, kicker, title, body, clip=None, clip_cap="", notes="", math_titl
             "notes": notes, "plain_title": not math_title and "$" not in title}
 
 
-def build_deck(t, version, clips, log):
+def build_deck(t, version, stills, log):
     slug = t.number.replace(".", "_")
     num = label(t.number)                  # what students and teachers see on the slides
     tpath = ROOT / "transcripts" / f"{slug}.md"
@@ -325,8 +273,8 @@ def build_deck(t, version, clips, log):
     unit_line = t.unit
     S = [slide("title", "", t.title, f"<span class='chip'>{num}</span><div class='unit'>{W.html(unit_line)}</div>"
                f"<h1>{W.html(t.title)}</h1><div class='goals'>{W.html(t.goals)}</div><div class='ver'>"
-               + ("Teacher slides, solutions shown" if version == "solutions" else "Teacher slides, blank for working live")
-               + "<!--slides-for--></div>", notes=plain(t.goals))]
+               + ("Teacher slides, solutions shown" if version == "solutions" else "Teacher slides, problems only")
+               + "</div>", notes=plain(t.goals))]
 
     # group the notes into sections
     sections, cur = [], {"title": "", "blocks": []}
@@ -343,7 +291,7 @@ def build_deck(t, version, clips, log):
 
     example_beats = set(end_examples.values()) | body_examples | {b.beat for b in t.notes if isinstance(b, Example) and b.beat}
     anim_beats = [n for n in beat_names if n not in example_beats and n not in ("Title", "Close")]
-    sec_beat = match_sections([s["title"] for s in sections if s["title"] and s["title"] != "Worked examples"], anim_beats)
+    sec_beats = assign_beats([s["title"] for s in sections if s["title"] and s["title"] != "Worked examples"], anim_beats)
 
     n_ex = n_chk = 0
     recap = []
@@ -364,20 +312,11 @@ def build_deck(t, version, clips, log):
                         break
         fig_for = {j: blocks[i] for i, j in attach.items()}
         pending = []
-        sec_clip_beat = sec_beat.get(sec["title"])
-        first = [True]
+        # the section's animation stills, in video order: one beside each notes slide, the rest on slides of their own
+        queue = [x for x in (stills.get(bt, "end") for bt in stills.distinct(sec_beats.get(sec["title"], []))) if x]
 
         def take_clip():
-            """The section's lesson animation goes on the section's first slide."""
-            if not first[0]:
-                return None, ""
-            first[0] = False
-            if not sec_clip_beat:
-                return None, ""
-            c = clips.get(f"s{sections.index(sec) + 1}", sec_clip_beat, "anim")
-            if c:
-                return c, f"Silent clip from the lesson video ({clock(c['light']['start'])} to {clock(c['light']['stop'])})."
-            return None, ""
+            return (queue.pop(0) if queue else None), ""
 
         def flush():
             if not pending:
@@ -393,8 +332,9 @@ def build_deck(t, version, clips, log):
             if cur_chunk:
                 chunks.append(cur_chunk)
             for chunk in chunks:
-                clip, cap = take_clip()
                 figs = [b for b in chunk if isinstance(b, Figure)]
+                # a slide that already has the notes' graph gets no second picture
+                clip, cap = (None, "") if any(isinstance(b, (Figure, FigureRow)) for b in chunk) else take_clip()
                 rest = [b for b in chunk if not isinstance(b, Figure)]
                 if len(figs) == 1 and rest and clip is None:
                     body = f"<div class='with-fig'><div class='problem' style='font-size:inherit'>{''.join(block_html(b, version) for b in rest)}</div>{fig_html(figs[0], 'side')}</div>"
@@ -419,7 +359,7 @@ def build_deck(t, version, clips, log):
                 n_ex += 1
                 beat = b.beat or (b.title if b.title in body_examples else end_examples.get(b.title) if in_worked else None)
                 steps = raw_steps.get(beat, (None, None))[1] if beat else None
-                S.extend(example_slides(num, n_ex, b, steps, fig_for.get(i), beat, version, clips, take_clip))
+                S.extend(example_slides(num, n_ex, b, steps, fig_for.get(i), beat, version, stills, take_clip))
             elif isinstance(b, Check):
                 flush()
                 n_chk += 1
@@ -432,6 +372,8 @@ def build_deck(t, version, clips, log):
             else:
                 pending.append(b)
         flush()
+        while queue:
+            S.append(slide("picture", f"{num} · From the lesson", title, img_html(queue.pop(0), "big still")))
 
     # close: what to remember, and what's next
     items = []
@@ -468,41 +410,30 @@ def block_html(b, version):
     raise TypeError(b)
 
 
-def example_slides(num, k, ex, steps, fig, beat, version, clips, take_clip):
-    """A worked example: the problem (with its silent clip), then the solution one step at a time (solutions version)
-    or a slide with room to work it (blank version)."""
+def example_slides(num, k, ex, steps, fig, beat, version, stills, take_clip):
+    """A worked example: the problem, then (solutions version) the solution one step at a time. The blank version is
+    the problem alone; the teacher works it on the board or over the slide. The picture is the video's own figure
+    (a manim still, as posed and then solved) when there is one, else the notes' figure."""
     kicker = f"{num} · Example {k}"
     problem = W.html(ex.body)
     # restated above the work, the problem stays compact: its displayed formulas go back inline
     compact = W.html(re.sub(r"\\\[(.+?)\\\]", lambda m: "$\\displaystyle " + m.group(1).strip() + "$", ex.body, flags=re.S))
-    fig_h = fig_html(fig, "side") if fig is not None else ""
-    take_clip()                                    # an example is never a section's animation slot
-    clip = cap = None
-    if beat:
-        span = "full" if version == "solutions" else "blank"
-        clip = clips.get(f"ex{k}", beat, span)
-        if clip:
-            a, z = clip["light"]["start"], clip["light"]["stop"]
-            cap = (f"Silent clip from the lesson video ({clock(a)} to {clock(z)})." if span == "full" else
-                   "Silent clip from the lesson video. It stops before the solving starts.")
+    take_clip()                                    # an example never takes its section's picture
+    posed, solved = stills.get(beat, "figure-problem"), stills.get(beat, "figure")
+    if posed:
+        fig_h = img_html(posed, "side still")
+        fig_done = img_html(solved or posed, "side still")
+    else:
+        fig_h = fig_done = fig_html(fig, "side") if fig is not None else ""
     sol_lines = [step_plain(s) for s in steps] if steps else [plain(ex.solution)]
     notes = "Problem: " + plain(ex.body)
     if version == "solutions":
         notes += "\n\nSolution:\n" + "\n".join(sol_lines)
-    if clip:
-        notes += f"\n\nClip: {cap}"
-    out = []
     main = f"<div class='problem'>{problem}</div>"
-    if fig_h and not clip:
+    if fig_h:
         main = f"<div class='with-fig'>{main}{fig_h}</div>"
-    elif fig_h:
-        main += fig_h
-    out.append(slide("problem", kicker, W.html(ex.title), main, clip, cap or "", notes=notes))
+    out = [slide("problem", kicker, W.html(ex.title), main, notes=notes)]
     if version == "blank":
-        body = f"<div class='problem small'>{compact}</div>"
-        body = f"<div class='with-fig'><div style='flex:1;display:flex;flex-direction:column'>{body}<div class='workroom'>Work it out here</div></div>{fig_h}</div>" \
-            if fig_h else body + "<div class='workroom'>Work it out here</div>"
-        out.append(slide("work", kicker, W.html(ex.title), body, notes="Problem: " + plain(ex.body)))
         return out
     if steps:
         lines = [step_html(s) for s in steps]
@@ -510,14 +441,15 @@ def example_slides(num, k, ex, steps, fig, beat, version, clips, take_clip):
             shown = [ln.replace("class='st ", "class='st now " if i == j - 1 else "class='st ", 1) if i < j
                      else ln.replace("class='st ", "class='st later ", 1) for i, ln in enumerate(lines)]
             body = f"<div class='problem small'>{compact}</div><div class='steps'>{''.join(shown)}</div>"
-            if fig_h:
-                body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{fig_h}</div>"
+            f = fig_done if j == len(lines) else fig_h
+            if f:
+                body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{f}</div>"
             out.append(slide("step", f"{kicker} · Step {j} of {len(lines)}", W.html(ex.title), body,
                              notes="\n".join(sol_lines[:j])))
     else:
         body = f"<div class='problem small'>{compact}</div><div class='answer'><div class='tag'>SOLUTION</div><div class='prose'>{W.html(ex.solution)}</div></div>"
-        if fig_h:
-            body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{fig_h}</div>"
+        if fig_done:
+            body = f"<div class='with-fig'><div style='flex:1;min-width:0'>{body}</div>{fig_done}</div>"
         out.append(slide("step", f"{kicker} · Solution", W.html(ex.title), body, notes=plain(ex.solution)))
     return out
 
@@ -533,8 +465,6 @@ def check_slides(num, k, c, version):
                 + (f"<div class='prose'>$\\displaystyle {ans}$</div>" if ans else "")
                 + (f"<div class='prose'>{W.html(c.solution)}</div>" if c.solution else "") + "</div>")
         out.append(slide("answer", kicker, "Quick check: answer", body, notes=plain(c.solution)))
-    else:
-        out[0]["body"] += "<div class='workroom'>Work it out here</div>"
     return out
 
 
@@ -568,13 +498,7 @@ def deck_html(t, version, slides):
             continue
         head = (f"<header class='sh'><div class='kicker'>{s['kicker']}</div>"
                 f"<h2 class='title{' plain' if s['plain_title'] else ''}'>{s['title']}</h2></header>")
-        aside = ""
-        if s["clip"]:
-            c = s["clip"]
-            lt, dk = c["light"], c.get("dark") or c["light"]
-            aside = (f"<aside class='clip'><video muted controls playsinline preload='metadata' poster='{lt['jpg']}' "
-                     f"data-light='{lt['mp4']}' data-dark='{dk['mp4']}' data-poster-light='{lt['jpg']}' data-poster-dark='{dk['jpg']}'>"
-                     f"</video><p class='cap'>{H.escape(s['clip_cap'])}</p></aside>")
+        aside = f"<aside class='clip'>{img_html(s['clip'], 'still')}</aside>" if s["clip"] else ""
         parts.append(f"<section class='slide k-{s['kind']}' id='s{i}'>{head}<div class='sb'><div class='main mathy'><div class='fit'>"
                      f"{s['body']}</div></div>{aside}</div><footer class='sf'><span>{label(t.number)} {W.html(t.title)}</span>"
                      f"<span>{i} / {n}</span></footer></section>")
@@ -612,7 +536,6 @@ def deck_html(t, version, slides):
   <tr><td><kbd>&larr;</kbd> <kbd>Page Up</kbd></td><td>Previous slide</td></tr>
   <tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>First or last slide</td></tr>
   <tr><td><kbd>F</kbd></td><td>Fullscreen</td></tr>
-  <tr><td><kbd>K</kbd></td><td>Play or pause the clip</td></tr>
   <tr><td><kbd>T</kbd></td><td>Light or dark</td></tr>
   <tr><td><kbd>B</kbd></td><td>Black screen</td></tr>
 </table></div></div>
@@ -629,8 +552,8 @@ def deck_html(t, version, slides):
 
 # ------------------------------------------------------------------ PowerPoint
 def build_pptx(t, version, slides, deck, outdir, log):
-    """Each slide's picture (math rendered by KaTeX at 1.5x of 1080p), its title as editable text, its clip as an
-    embedded movie, and the slide's text (and, in the solutions version, the solution) in the speaker notes."""
+    """Each slide's picture (math and stills rendered at 1.5x of 1080p), its title as editable text, and the slide's
+    text (and, in the solutions version, the solution) in the speaker notes."""
     from pptx import Presentation
     from pptx.dml.color import RGBColor
     from pptx.util import Emu, Pt
@@ -665,10 +588,6 @@ def build_pptx(t, version, slides, deck, outdir, log):
             run.text = shot["titleText"]
             run.font.size, run.font.name, run.font.bold = Pt(31), "Georgia", True
             run.font.color.rgb = RGBColor(*PAPER_INK)
-        if shot["video"] and s["clip"]:
-            v, c = shot["video"], s["clip"]["light"]
-            sl.shapes.add_movie(str(outdir / c["mp4"]), px(v["x"]), px(v["y"]), px(v["w"]), px(v["h"]),
-                                poster_frame_image=str(outdir / c["jpg"]), mime_type="video/mp4")
         if s["notes"]:
             sl.notes_slide.notes_text_frame.text = s["notes"]
     dest = outdir / f"{t.number}-slides-{version}.pptx"
@@ -677,7 +596,7 @@ def build_pptx(t, version, slides, deck, outdir, log):
 
 
 # ------------------------------------------------------------------ main
-def build(num, media_root, pptx=True, clips_on=True):
+def build(num, media_root, pptx=True):
     log_lines = []
 
     def log(msg):
@@ -687,13 +606,13 @@ def build(num, media_root, pptx=True, clips_on=True):
     t = load_topic(num)
     outdir = OUT / num
     outdir.mkdir(parents=True, exist_ok=True)
-    clips = Clips(num, media_root, outdir, log, enabled=clips_on)
+    stills = Stills(num, media_root, outdir, log)
     made = {"topic": num, "title": t.title, "versions": {}}
     for version in VERSIONS:
-        slides = build_deck(t, version, clips, log)
+        slides = build_deck(t, version, stills, log)
         deck = outdir / f"deck-{version}.html"
         deck.write_text(deck_html(t, version, slides))
-        entry = {"html": deck.name, "slides": len(slides), "clips": sum(1 for s in slides if s["clip"])}
+        entry = {"html": deck.name, "slides": len(slides), "stills": sum(1 for s in slides if s["clip"] or "class='side still'" in s["body"])}
         if pptx:
             p = build_pptx(t, version, slides, deck, outdir, log)
             if p:
@@ -701,14 +620,15 @@ def build(num, media_root, pptx=True, clips_on=True):
         elif (outdir / f"{num}-slides-{version}.pptx").exists():
             entry["pptx"] = f"{num}-slides-{version}.pptx"          # kept from an earlier run
         made["versions"][version] = entry
-        print(f"  {deck.relative_to(ROOT)}: {len(slides)} slides, {entry['clips']} with clips"
+        print(f"  {deck.relative_to(ROOT)}: {len(slides)} slides, {entry['stills']} with stills"
               + (f", {entry['pptx']}" if entry.get("pptx") else ""))
-    # clips no deck uses any more (an example was removed) are deleted
-    for f in (outdir / "clips").glob("*") if (outdir / "clips").exists() else []:
-        if f.stem not in clips.made:
+    # stills no deck uses any more, and the video clips of the older decks, are deleted
+    for f in (outdir / "stills").glob("*") if (outdir / "stills").exists() else []:
+        if f.name not in stills.used:
             f.unlink()
+    shutil.rmtree(outdir / "clips", ignore_errors=True)
     shutil.rmtree(outdir / "_shots", ignore_errors=True)
-    made["clips"] = clips.made
+    made["stills"] = sorted(stills.used)
     made["log"] = log_lines
     (outdir / "manifest.json").write_text(json.dumps(made, indent=1))
     return made
@@ -719,12 +639,11 @@ def main():
     ap.add_argument("topics", nargs="+", help="topic numbers like 1.2, or 'all'")
     ap.add_argument("--media-root", default=str(ROOT), help="checkout whose anim/media and web/static/video to read")
     ap.add_argument("--no-pptx", action="store_true")
-    ap.add_argument("--no-clips", action="store_true")
     a = ap.parse_args()
     nums = all_topics() if a.topics == ["all"] else a.topics
     for num in nums:
         print(num)
-        build(num, Path(a.media_root).resolve(), pptx=not a.no_pptx, clips_on=not a.no_clips)
+        build(num, Path(a.media_root).resolve(), pptx=not a.no_pptx)
 
 
 if __name__ == "__main__":

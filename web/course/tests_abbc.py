@@ -141,6 +141,9 @@ class Pages(TestCase):
         r = self.client.get("/topic/6.15/")
         self.assertContains(r, 'href="/unit/U6BC/test/"')
         self.assertContains(self.client.get("/topic/6.14/"), 'href="/unit/U6/test/"')
+        # each version's header links the other
+        self.assertContains(self.client.get("/topic/6.14/"), '<a href="/topic/6.15/">BC version</a>')
+        self.assertContains(self.client.get("/topic/6.15/quiz/"), '<a href="/topic/6.14/">AB version</a>')
 
     def test_class_course_picks_the_version(self):
         self.client.force_login(self.student("ana", self.ab))

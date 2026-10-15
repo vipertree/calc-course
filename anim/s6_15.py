@@ -36,9 +36,8 @@ class Lesson(TranscriptScene):
     NUM = "6.15"
 
     def construct(self):
-        names = ["basic rules", "rewrite: expand, split, powers", "substitution", "long division", "complete the square",
-                 "integration by parts", "partial fractions"]
-        later = ["integration by parts", "partial fractions"]
+        names = ["basic|rules", "rewrite|first", "substitution", "long|division", "complete|the square", "integration|by parts", "partial|fractions"]
+        later = ["integration|by parts", "partial|fractions"]
         with self.beat("A full toolkit") as b:
             tray = tool_tray(names, accent=later).to_edge(DOWN, buff=0.6)
             pile = VGroup(*[M(s, 34).move_to(p) for s, p in ((r"\int x e^{x^2}\,dx", UP * 2.4 + LEFT * 4.4), (r"\int x\ln x\,dx", UP * 2.8 + LEFT * 0.9),
@@ -47,10 +46,10 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(tray[0]), LaggedStart(*[FadeIn(c, shift=DOWN * 0.3) for c in tray[1]], lag_ratio=0.12), run_time=2)
             self.play(LaggedStart(*[FadeIn(p) for p in pile], lag_ratio=0.2), run_time=1.4)
             b.line(1)
-            self.play(Indicate(tray[1][2], color=SECANT), pile[0].animate.set_color(SECANT), run_time=1)
-            self.play(Indicate(tray[1][5], color=ACCUM), pile[1].animate.set_color(ACCUM), run_time=1)
+            self.play(Circumscribe(tray[1][2], color=SECANT, buff=0.06), pile[0].animate.set_color(SECANT), run_time=1)
+            self.play(Circumscribe(tray[1][5], color=ACCUM, buff=0.06), pile[1].animate.set_color(ACCUM), run_time=1)
             b.line(2)
-            self.play(Indicate(tray[1][6], color=ACCUM), pile[2].animate.set_color(ACCUM), run_time=1)
+            self.play(Circumscribe(tray[1][6], color=ACCUM, buff=0.06), pile[2].animate.set_color(ACCUM), run_time=1)
         self.clear()
         self.title()
 
@@ -83,7 +82,7 @@ class Lesson(TranscriptScene):
         with self.beat("Close") as b:
             tray = tool_tray(names, accent=later).shift(DOWN * 0.6)
             self.play(FadeIn(tray), run_time=1)
-            self.play(Indicate(tray[1][2], color=SECANT), run_time=0.8)
+            self.play(Circumscribe(tray[1][2], color=SECANT, buff=0.06), run_time=0.8)
             self.play(FadeIn(T("Check substitution first. Notice the features. Pick the tool.", 36, SECANT).next_to(tray, UP, buff=0.8)), run_time=0.8)
         self.clear()
 

@@ -45,6 +45,15 @@ def _class_course(user):
     return c.course if c is not None else None
 
 
+def _twin(num):
+    """For a topic taught in two versions (6.14 AB and 6.14 BC), the other version, for a link in the lesson head."""
+    meta = content.topic_meta(num)[1]
+    if not meta or not meta["twin"] or meta["twin"] not in content.available():
+        return None
+    other = content.topic_meta(meta["twin"])[1]
+    return {"n": other["n"], "label": other["label"], "course": other["tag"], "mine": meta["tag"]}
+
+
 def _lesson(num, course=None):
     pub = content.public(num)
     if not pub:
@@ -278,13 +287,13 @@ def lesson(request, num, area="notes"):
         state = {"steps_done": [], "correct": [], "frq": {}, "quiz": [], "full": False}
         return render(request, f"course/{area}.html", {
             "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": False})
+            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": False, "twin": _twin(num)})
     if not request.user.is_authenticated:
         # a free lesson for a visitor: everything to read and check, nothing saved (answers stay in this browser)
         state = {"full": True, "visitor": True, "steps_done": [], "correct": [], "frq": {}, "quiz": []}
         return render(request, f"course/{area}.html", {
             "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": True})
+            "lesson_json": pub, "state_json": state, "packet": False, "OPEN": True, "twin": _twin(num)})
     info = None
     if area == "quiz":
         pub, info = assess.draw(request, num, _lesson(num)[0])
@@ -307,7 +316,7 @@ def lesson(request, num, area="notes"):
     return render(request, f"course/{area}.html", {
         "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
         "lesson_json": pub, "state_json": state, "packet": packets.available(num), "OPEN": True,
-        "slides": _is_teacher(request.user) and slides.manifest(num) is not None,
+        "slides": _is_teacher(request.user) and slides.manifest(num) is not None, "twin": _twin(num),
     })
 
 

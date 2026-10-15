@@ -833,7 +833,7 @@ details.unit > summary h2 { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .ts-knob, .ts-track svg { transition: none; } }
 
 /* a unit test that comes in an AB and a BC version (Units 6-8): the version switch above the test */
-.test-versions { margin: 0 0 18px; }
+.test-versions { max-width: 760px; margin: 0 auto 18px; }
 .test-versions p { margin: 0; }
 .test-versions .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
 .test-versions .small { font-size: .9rem; }

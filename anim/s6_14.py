@@ -16,8 +16,10 @@ def tool_tray(names, bc_names=(), width=13, accent=()):
     cards = VGroup()
     for k, name in enumerate(list(names) + list(bc_names)):
         bc = k >= len(names) or name in accent
+        # "|" breaks a label onto two lines, so seven cards still read at 480p
+        label = VGroup(*[T(part, 28, ACCUM if bc else INK) for part in name.split("|")]).arrange(DOWN, buff=0.12)
         card = VGroup(RoundedRectangle(width=w - 0.15, height=1.5, corner_radius=0.12, stroke_color=ACCUM if bc else SECANT, stroke_width=3, fill_color=PANEL, fill_opacity=1),
-                      T(name, 24, ACCUM if bc else INK))
+                      label)
         card[1].set_max_width(w - 0.35).move_to(card[0])
         cards.add(card)
     cards.arrange(RIGHT, buff=0.15)
@@ -33,7 +35,7 @@ class Lesson(TranscriptScene):
     NUM = "6.14"
 
     def construct(self):
-        names = ["basic rules", "rewrite: expand, split, powers", "substitution", "long division", "complete the square"]
+        names = ["basic|rules", "rewrite|first", "substitution", "long|division", "complete|the square"]
         with self.beat("A toolkit") as b:
             tray = tool_tray(names).to_edge(DOWN, buff=0.6)
             pile = VGroup(*[M(s, 34).move_to(p) for s, p in ((r"\int x e^{x^2}\,dx", UP * 2.4 + LEFT * 4), (r"\int \frac{dx}{x^2 + 9}", UP * 2.8 + LEFT * 0.6),
@@ -42,9 +44,9 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(tray[0]), LaggedStart(*[FadeIn(c, shift=DOWN * 0.3) for c in tray[1]], lag_ratio=0.15), FadeIn(tray[2]), FadeIn(tray[3]), run_time=2)
             self.play(LaggedStart(*[FadeIn(p) for p in pile], lag_ratio=0.2), run_time=1.4)
             b.line(1)
-            self.play(Indicate(tray[1][2], color=SECANT), pile[0].animate.set_color(SECANT), run_time=1)
+            self.play(Circumscribe(tray[1][2], color=SECANT, buff=0.06), pile[0].animate.set_color(SECANT), run_time=1)
             b.line(2)
-            self.play(Indicate(tray[1][4], color=SECANT), pile[1].animate.set_color(SECANT), run_time=1)
+            self.play(Circumscribe(tray[1][4], color=SECANT, buff=0.06), pile[1].animate.set_color(SECANT), run_time=1)
         self.clear()
         self.title()
 

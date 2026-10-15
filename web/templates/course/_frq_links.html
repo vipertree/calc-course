@@ -1,5 +1,5 @@
 {% if cats %}<aside class="frq-links narrow">
   <h2>Real AP questions on this</h2>
-  <p>Free-response questions from past AP exams, each with the College Board's scoring guidelines. Free in the AP FRQ Archive.</p>
+  <p>Free-response questions from past AP exams, with the College Board's scoring guidelines. Free in the AP FRQ Archive.</p>
   <div class="frq-tools">{% for c in cats %}<a class="btn small" href="{% url 'frq_category' c.slug %}">{{ c.name }} ({{ c.count }})</a>{% endfor %}</div>
 </aside>{% endif %}

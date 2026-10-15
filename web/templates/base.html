@@ -17,11 +17,12 @@
 <header class="top"><div class="in">
   <a class="brand" href="{% url 'home' %}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 26 C 10 26, 12 8, 29 5" fill="none" stroke="var(--func)" stroke-width="3" stroke-linecap="round"/><path d="M4 21 L 26 9" stroke="var(--tangent)" stroke-width="2.5" stroke-linecap="round"/><circle cx="15" cy="15" r="3" fill="var(--ink)"/></svg><span>Mr Oaks Math</span></a>
   {# the main navigation: plain links or three dropdowns (NAV_STYLE); on a phone either one folds into a Menu button #}
+  {# the two course links open flyouts on hover: units, then a unit's lessons (_nav_sub.html, site.js) #}
   <details class="nav-fold" open><summary>Menu</summary>
   <nav class="site-nav nav-{{ NAV_STYLE }}" aria-label="Main">
     {% for g in NAV %}
-      {% if NAV_STYLE == "menus" %}<details class="nav-group{% if g.on %} on{% endif %}"><summary>{{ g.name }}</summary><div class="nav-drop">{% for i in g.items %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}>{{ i.label }}</a>{% endfor %}</div></details>
-      {% else %}<span class="nav-set" aria-label="{{ g.name }}">{% for i in g.items %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}>{% if g.name == "Videos" %}Videos{% else %}{{ i.label }}{% endif %}</a>{% endfor %}</span>{% endif %}
+      {% if NAV_STYLE == "menus" %}<details class="nav-group{% if g.on %} on{% endif %}"><summary>{{ g.name }}</summary><div class="nav-drop">{% for i in g.items %}{% if i.children %}<div class="nav-item has-sub">{% endif %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}{% if i.children %} aria-haspopup="true" aria-expanded="false"{% endif %}>{{ i.label }}</a>{% if i.children %}{% include "_nav_sub.html" with items=i.children %}</div>{% endif %}{% endfor %}</div></details>
+      {% else %}<span class="nav-set" aria-label="{{ g.name }}">{% for i in g.items %}{% if i.children %}<span class="nav-item has-sub">{% endif %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}{% if i.children %} aria-haspopup="true" aria-expanded="false"{% endif %}>{% if g.name == "Videos" %}Videos{% else %}{{ i.label }}{% endif %}</a>{% if i.children %}{% include "_nav_sub.html" with items=i.children %}</span>{% endif %}{% endfor %}</span>{% endif %}
     {% endfor %}
     {% if NAV_DASH %}<a class="nav-dash{% if NAV_DASH.on %} on{% endif %}" href="{{ NAV_DASH.url }}">{{ NAV_DASH.label }}</a>{% endif %}
   </nav></details>

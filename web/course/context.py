@@ -27,11 +27,34 @@ NAV = [
 ]
 
 
-def _nav(request, profile):
+def _course_tree(module, full):
+    """The flyout under AP Calc Course (units, each with its lessons and unit test) or Trig Course (its lessons).
+    Adder 2026-10-15: hover a course, then a unit, to reach any lesson."""
+    from django.urls import reverse
+    from . import content
+    have, tests = content.available(), content.unit_tests()
+    base = reverse("trig" if module else "map")
+
+    def lessons(u):
+        out = [{"label": t["label"], "title": t["title"], "url": reverse("lesson", args=[t["n"]]) if t["n"] in have else ""}
+               for t in u["topics"]]
+        if u["n"] in tests:
+            out.append({"label": "Test", "title": f"{u['short']} test", "url": reverse("unit_test", args=[f"U{u['n']}"])})
+        return out
+
+    units = [u for u in content.syllabus() if u["module"] == module]
+    if module:
+        return [l for u in units for l in lessons(u)]
+    return [{"label": u["short"], "title": u["title"], "url": f"{base}#unit-{u['n']}", "bc": u["bc"],
+             "locked": not u["free"] and not full, "children": lessons(u)} for u in units]
+
+
+def _nav(request, profile, full=False):
     from django.urls import reverse
     here = getattr(getattr(request, "resolver_match", None), "url_name", "")
-    from django.conf import settings
-    groups = [{"name": g, "items": [{"label": l, "url": reverse(n), "on": n == here} for l, n in items
+    trees = {"map": lambda: _course_tree(False, full), "trig": lambda: _course_tree(True, full)}
+    groups = [{"name": g, "items": [{"label": l, "url": reverse(n), "on": n == here,
+                                     "children": trees[n]() if n in trees else []} for l, n in items
                                     if n != "frq" or settings.FRQ_ARCHIVE]}
               for g, items in NAV]
     for g in groups:
@@ -67,13 +90,14 @@ def site(request):
     nav_style = request.COOKIES.get("nav", "links")
     if nav_style not in dict(NAV_STYLES):
         nav_style = "links"
-    nav_groups, nav_dash = _nav(request, profile)
+    full = has_full_access(request.user)
+    nav_groups, nav_dash = _nav(request, profile, full)
     return {"ASSET_V": _asset_version(), "THEME": theme, "THEMES": THEMES,
             "DESIGN": design, "DESIGNS": DESIGNS, "NAV": nav_groups, "NAV_DASH": nav_dash,
             "NAV_STYLE": nav_style, "NAV_STYLES": NAV_STYLES, "FRQ_ARCHIVE": settings.FRQ_ARCHIVE, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),
-            "FULL_ACCESS": has_full_access(request.user),
+            "FULL_ACCESS": full,
             "CSP_NONCE": getattr(request, "csp_nonce", ""),
             "LEGAL_REVIEWED": settings.LEGAL_PAGES_REVIEWED, "CONTACT_EMAIL": settings.CONTACT_EMAIL,
             "BACKUP_DAYS": settings.BACKUP_DAYS, "UNVERIFIED_DAYS": settings.UNVERIFIED_ACCOUNT_DAYS}

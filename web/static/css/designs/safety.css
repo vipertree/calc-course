@@ -150,6 +150,13 @@
 [data-design="safety"] .top.nav-tight .nav-fold .nav-drop { border: 0; padding: 0; }
 [data-design="safety"] .nav-drop { border: 2px solid var(--rule); border-radius: 12px; }
 [data-design="safety"] .nav-drop a.on { background: var(--accent); color: #13294B; }
+/* course flyouts: card panels, the open unit in navy with an orange number */
+[data-design="safety"] .nav-sub { border: 2px solid var(--rule); border-radius: 12px; }
+[data-design="safety"] .top .site-nav .nav-sub a { color: var(--ink); }
+[data-design="safety"] .top .site-nav .nav-sub .nav-item.open > a { background: #13294B; color: #FFFFFF; box-shadow: inset 4px 0 0 var(--accent); }
+[data-design="safety"] .top .site-nav .nav-sub .nav-item.open > a b { color: var(--accent); }
+[data-design="safety"] .top .site-nav .nav-sub .nav-item.open > a::after { color: #D2DAE8; }
+[data-design="safety"] .top .site-nav .nav-sub .nav-item.open > a i { color: #D2DAE8; }
 
 /* units: the box's padding moves into the summary, so the whole top strip of the box is clickable */
 [data-design="safety"] details.unit { padding: 0; }

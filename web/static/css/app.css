@@ -812,3 +812,35 @@ details.unit > summary h2 { margin: 0; }
 .frq-links h2 { font-size: 1.1rem; margin: 0 0 4px; }
 .frq-links p { margin: 0 0 8px; color: var(--ink-2); font-size: .95rem; }
 .frq-links .frq-tools { margin: 0; }
+
+/* ---------- course flyouts in the top bar (Adder 2026-10-15): hover AP Calc Course for its units, a unit for its
+   lessons. site.js opens them (.open) with a short delay so a diagonal move toward the lessons doesn't flip units.
+   Each nested panel is placed against the panel it sits in, so a unit's lessons always start at the top. */
+.nav-item { position: relative; display: inline-flex; }
+.nav-drop .nav-item, .nav-sub .nav-item { position: static; display: block; }
+.nav-sub { display: none; position: absolute; z-index: 31; top: calc(100% + 6px); left: 0; width: 320px; padding: 8px;
+  background: var(--panel); border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); box-shadow: 0 10px 28px rgba(0,0,0,.14);
+  font: 500 .86rem/1.3 var(--font-ui); }
+.nav-drop .nav-sub, .nav-sub .nav-sub { top: -1.5px; left: calc(100% - 2px); min-height: calc(100% + 3px); }
+.nav-sub .nav-sub { width: 380px; max-height: calc(100vh - 90px); overflow-y: auto; }
+.nav-item.open > .nav-sub { display: grid; align-content: start; gap: 1px; }
+.site-nav .nav-sub a, .nav-sub .soon { display: grid; grid-template-columns: 3.9em minmax(0, 1fr); gap: 8px; align-items: baseline;
+  white-space: normal; padding: 6px 8px; border: 0; border-radius: 6px; color: var(--ink-2); text-decoration: none; }
+.nav-sub b { font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.nav-sub .soon { color: var(--dim); }
+.nav-sub .soon b { color: var(--dim); font-weight: 600; }
+.nav-sub i { font-style: normal; font: 700 .68rem var(--font-ui); letter-spacing: .04em; text-transform: uppercase; color: var(--dim);
+  border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
+.site-nav .nav-sub a:hover, .site-nav .nav-sub a:focus-visible, .nav-sub .nav-item.open > a { background: var(--panel-2); color: var(--ink); }
+.nav-sub .has-sub > a::after { content: "›"; grid-column: 3; color: var(--dim); font-weight: 700; }
+.nav-sub .has-sub > a { grid-template-columns: 3.9em minmax(0, 1fr) auto; }
+.nav-sub b { white-space: nowrap; }
+/* no room on the right (site.js measures): a nested panel opens to the left of its parent instead */
+.nav-sub.flip { left: auto; right: calc(100% - 2px); }
+.top .nav-sub a { color: var(--ink-2); }
+.top .nav-sub a:hover, .top .nav-sub .nav-item.open > a { color: var(--ink); }
+.nav-drop .has-sub > a::after { content: "›"; float: right; margin-left: 12px; color: var(--dim); }
+/* phones and the folded Menu: plain links, no flyouts */
+@media (max-width: 1180px) { .nav-sub { display: none !important; } .nav-drop .has-sub > a::after { content: none; } }
+.top.nav-tight .nav-sub { display: none !important; }
+.top.nav-tight .nav-drop .has-sub > a::after { content: none; }

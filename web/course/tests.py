@@ -696,13 +696,25 @@ class SitePages(TestCase):
         self.assertContains(r, "isn't open yet")
         self.assertEqual(self.client.get("/membership/nonsense/").status_code, 404)
 
+    def test_course_flyouts(self):
+        """Adder 2026-10-15: hover AP Calc Course for its units, a unit for its lessons; Trig Course lists its lessons."""
+        for style in ("links", "menus"):
+            self.client.get(f"/nav/{style}/?next=/")
+            page = self.client.get("/videos/").content.decode()
+            self.assertIn('href="/course/#unit-6" aria-haspopup="true"', page)
+            self.assertIn('href="/topic/6.4/"', page)                      # a lesson, two levels down
+            self.assertIn('href="/unit/U1/test/"', page)
+            self.assertIn("Right-Triangle Trigonometry", page)             # the trig lessons under Trig Course
+            self.assertIn('Unit 4</b><span>Contextual Applications of Differentiation <i class="lock">Members</i>', page)
+            self.assertNotIn('Unit 1</b><span>Limits and Continuity <i class="lock">', page)
+
     def test_new_navigation_pages(self):
         """Adder 2026-10-12: separate calc and trig courses and formula sheets, an all-videos page, a student
         dashboard, and a top bar in two layouts."""
         calc = self.client.get("/course/").content.decode()
         self.assertIn("AP Calc Course", calc)
-        self.assertNotIn("Right-Triangle Trigonometry", calc)            # the trig module has its own page now
-        self.assertIn("Right-Triangle Trigonometry", self.client.get("/trig/").content.decode())
+        self.assertNotIn('<details class="unit module"', calc)          # the trig module has its own page now
+        self.assertIn('<details class="unit module"', self.client.get("/trig/").content.decode())
         self.assertContains(self.client.get("/trig/formulas/"), "Trig Formulas")
         self.assertContains(self.client.get("/formulas/"), "Calc Formula Sheet")
         self.assertEqual(self.client.get("/videos/").status_code, 200)
@@ -724,6 +736,6 @@ class UnitEndNext(TestCase):
     def test_last_lesson_points_to_the_unit_test(self):
         from . import content
         last = [t["n"] for u in content.syllabus() if u["n"] == 1 for t in u["topics"] if t["n"] in content.available()][-1]
-        page = self.client.get(f"/topic/{last}/").content.decode()
+        page = self.client.get(f"/topic/{last}/").content.decode().split("</header>", 1)[1]   # not the top-bar flyouts
         self.assertIn('href="/unit/U1/test/"', page)
         self.assertNotIn('href="/topic/2.1/"', page)

@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}About · Mr Oaks Math{% endblock %}
+{% block head %}<meta name="description" content="Adder Oaks teaches math in central Virginia and made the Mr Oaks Math calculus course.">{% endblock %}
+{% block main %}
+<article class="about-page">
+  <figure class="about-photo">
+    <img src="{% static 'img/adder-oaks.webp' %}" width="366" height="457" alt="Adder Oaks, smiling, outdoors among trees">
+  </figure>
+  <div class="about-text">
+    <p class="lp-kicker">About</p>
+    <h1>Hi, I'm Adder Oaks!</h1>
+    <p class="lede">I live in central Virginia, where I've been teaching math to students of all ages for over fifteen years. For quite a while, I have been searching for the perfect calculus course for my students. There are many great resources out there, but none that quite match my teaching style, focused on visual conceptual introductions with rigorous practice problems to reinforce core ideas. I decided to make such a course myself and share it with the world. I hope this is just the course you were looking for!</p>
+
+    <section class="about-ai card">
+      <h2>A note about AI</h2>
+      <p>I used generative artificial intelligence heavily for the technical aspects of producing this course. I made sure to produce a series of lessons according to my personal teaching style and expertise as a calculus teacher. The website engineering, animation, and individual problem sets were developed by AI, subject to my review. If you have any questions about my use of AI, don't hesitate to <a href="{% url 'contact' %}">reach out</a>.</p>
+    </section>
+
+    <p class="about-next"><a class="btn primary" href="{% url 'map' %}">Browse the course</a> <a class="btn" href="{% url 'contact' %}">Get in touch</a></p>
+  </div>
+</article>
+{% endblock %}

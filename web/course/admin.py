@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Response, StepDone
+from .models import ContactMessage, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Response, StepDone
 
 for m in (StepDone, Response, QuizAttempt, FRQScore):
     admin.site.register(m)
@@ -20,3 +20,13 @@ class ExamAttemptAdmin(admin.ModelAdmin):
     list_display = ("exam", "user", "started", "part", "finished", "mc_score")
     list_filter = ("exam",)
     search_fields = ("user__username", "user__profile__display_name")
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    """Messages from the contact page. Each was also emailed if Resend is set up; `sent` and `error` say how that went."""
+    list_display = ("created", "name", "email", "topic", "sent", "handled")
+    list_filter = ("topic", "sent", "handled")
+    search_fields = ("name", "email", "message")
+    readonly_fields = ("name", "email", "topic", "message", "user", "ip", "created", "sent", "error")
+    list_editable = ("handled",)

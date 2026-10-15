@@ -463,11 +463,9 @@ def glue_punct(s):
 
 
 # ------------------------------------------------------------------ full-length practice exams
-# The AP Calculus exam's layout (College Board, 2024 onward): Section I is multiple choice, Section II free response.
-EXAM_FORMAT = {
-    "AB": {"counts": (30, 15, 2, 4), "minutes": (60, 45, 30, 60)},
-    "BC": {"counts": (30, 15, 2, 4), "minutes": (60, 45, 30, 60)},
-}
+# The AP Calculus exam's layout (College Board, from May 2027): Section I is multiple choice, Section II free response.
+_AP_LAYOUT = {"counts": (29, 13, 2, 4), "minutes": (62, 38, 30, 60)}
+EXAM_FORMAT = {"AB": _AP_LAYOUT, "BC": _AP_LAYOUT}
 
 
 @dataclass
@@ -476,7 +474,7 @@ class Exam:
       Section I Part A: multiple choice, no calculator    Section I Part B: multiple choice, graphing calculator
       Section II Part A: free response, calculator        Section II Part B: free response, no calculator
     Each FRQ is worth 9 points. The composite weights both sections equally: multiple choice raw x mc_weight
-    (45 x 1.2 = 54) plus free response raw (6 x 9 = 54) = 108. cutoffs turn a composite into an estimated AP score;
+    (42 x 9/7 = 54) plus free response raw (6 x 9 = 54) = 108. cutoffs turn a composite into an estimated AP score;
     they are an estimate, since the College Board sets the real curve each year."""
     slug: str              # "ab1": the URL and file name
     title: str

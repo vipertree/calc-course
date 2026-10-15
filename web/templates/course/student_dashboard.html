@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard · Mr Oaks Math{% endblock %}
+{% block main %}
+<div class="narrow mathy dash">
+  <h1>Student Dashboard</h1>
+  {% if klass %}<p class="muted">Class: {{ klass.name }}</p>{% endif %}
+
+  {% if resume %}
+  <a class="card dash-resume" href="{% url 'lesson' resume.n %}">
+    <span class="tag">Pick up where you left off</span>
+    <span><span class="chip-sm">{{ resume.label }}</span> <strong>{{ resume.title }}</strong></span>
+  </a>
+  {% else %}
+  <p>Nothing started yet. Begin with <a href="{% url 'lesson' '1.1' %}">Topic 1.1</a>, or brush up first with the <a href="{% url 'trig' %}">Trig Course</a>.</p>
+  {% endif %}
+
+  <h2>Progress</h2>
+  <div class="dash-units">
+    {% for u in units %}
+    <a class="dash-unit{% if not u.open %} locked{% endif %}" href="{{ u.url }}">
+      <span class="dash-name">{{ u.name }}{% if not u.open %} <span class="lock">Members</span>{% endif %}</span>
+      <span class="prog" aria-label="{{ u.done }} of {{ u.total }} steps"><i style="width: {{ u.pct }}%"></i></span>
+      <span class="muted dash-count">{{ u.done }}/{{ u.total }}</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <h2>Recent quizzes</h2>
+  {% if quizzes %}
+  <table class="data dash-table"><thead><tr><th>Lesson</th><th>Score</th><th>When</th></tr></thead><tbody>
+    {% for q in quizzes %}<tr><td><a href="{% if q.n|slice:':1' == 'U' %}{% url 'unit_test' q.n %}{% else %}{% url 'lesson_area' q.n 'quiz' %}{% endif %}">{{ q.label }}</a></td><td>{{ q.score }}/{{ q.total }}</td><td>{{ q.at|date:"M j" }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p class="muted">No quizzes yet. Each lesson ends with a short one.</p>{% endif %}
+
+  <h2>Practice exams</h2>
+  {% if exam_attempts %}
+  <ul>{% for a in exam_attempts %}<li><a href="{% url 'exam_home' a.exam %}">{{ a.exam|upper }}</a>, started {{ a.started|date:"M j" }}</li>{% endfor %}</ul>
+  {% else %}<p class="muted">You haven't taken one yet. <a href="{% url 'exams' %}">See the practice exams</a>.</p>{% endif %}
+
+  {% if not full %}<p class="muted dash-more">Units 4 to 10 and more practice exams come with a <a href="{% url 'membership' %}">membership</a>. In a class? <a href="{% url 'join' %}">Join with your class code</a>.</p>{% endif %}
+</div>
+{% endblock %}

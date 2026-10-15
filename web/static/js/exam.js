@@ -359,8 +359,8 @@
         h("dt", {}, "Free response"), h("dd", {}, `${s.frq} / ${s.frq_total}`),
         h("dt", {}, "Composite"), h("dd", {}, `${fmtNum(s.composite)} / ${s.composite_total}`)),
       h("details", { class: "exam-how" }, h("summary", {}, "How the estimate works"),
-        h("p", {}, `The composite counts the two sections equally: multiple-choice points times ${fmtNum(s.composite_total / 2 / s.mc_total)}, plus free-response points. `
-          + "The cutoffs below are close to those of past AP Calculus AB exams, but the College Board sets new ones every year, so read the result as a range."),
+        h("p", {}, `The composite counts the two sections equally: your multiple-choice points are scaled to ${fmtNum(s.composite_total / 2)} (each question is worth ${(Math.round(s.composite_total / 2 / s.mc_total * 100) / 100).toString()}), plus your free-response points. `
+          + `The cutoffs below are close to those of past AP Calculus ${META.course} exams, but the College Board sets new ones every year, so read the result as a range.`),
         h("p", { class: "muted" }, cut.join("; ") + ".")));
   }
   const fmtNum = (v) => (Math.round(v * 10) / 10).toString();

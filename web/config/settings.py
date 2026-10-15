@@ -129,6 +129,13 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "AP Calculus <noreply@
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 ADMINS = [("Admin", a) for a in env_list("ADMIN_EMAILS")]
 
+# Contact page (course/site_pages.py): every message is saved, then emailed to CONTACT_TO through Resend's HTTP API.
+# An empty RESEND_API_KEY (development) skips the email and logs it; the message is still in the admin.
+# CONTACT_FROM is a bare address on a domain verified in Resend (contact@adderoaks.com); the sender name is added.
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+CONTACT_TO = os.environ.get("CONTACT_TO", "")
+CONTACT_FROM = os.environ.get("CONTACT_FROM", "")
+
 # Bot checks on public forms: a hidden honeypot field plus a minimum time between page load and submit.
 HUMAN_MIN_SECONDS = 3
 HUMAN_MAX_SECONDS = 60 * 60 * 24

@@ -20,6 +20,7 @@ from accounts.ratelimit import ratelimit
 from . import content, grading
 from . import assess, exams, packets, slides
 from .context import THEMES
+from .site_pages import course_facts
 from .models import Draft, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
@@ -53,8 +54,12 @@ def home(request):
     if is_teacher(request.user):
         return redirect("teacher")
     if request.user.is_authenticated:
-        return course_map(request)
-    return render(request, "site/landing.html", {"free": _free_summary()})
+        return redirect("student_dashboard")
+    free = _free_summary()
+    return render(request, "site/landing.html", {
+        "free": free, "facts": course_facts(),
+        "trig": next((f for f in free if f["module"] and f["first"]), None),
+        "start": next((f["first"] for f in free if not f["module"] and f["first"]), None)})
 
 
 def _free_summary():
@@ -92,7 +97,7 @@ def checkout(request, plan):
     return render(request, "site/checkout_soon.html", {"plan": payments.PLANS[plan]})
 
 
-def course_map(request):
+def course_map(request, module=False):
     have = content.available()
     done, best = {}, {}
     if request.user.is_authenticated:
@@ -111,14 +116,91 @@ def course_map(request):
         tests = content.unit_tests()
         best_u = best.get(f"U{u['n']}")
         units.append({**u, "topics": topics, "test": u["n"] in tests, "test_num": f"U{u['n']}", "test_best": best_u})
-    groups = [{"modules": True, "units": [u for u in units if u["module"]]},
-              {"modules": False, "units": [u for u in units if not u["module"]]}]
-    return render(request, "course/map.html", {"groups": [g for g in groups if g["units"]],
+    full = has_full_access(request.user)
+    for u in units:
+        u["locked"] = not u["free"] and not full          # paid units are tagged; free ones carry no tag
+    if module:
+        page = {"page_title": "Trig Course", "page_intro": "A refresher on everything from trigonometry that calculus "
+                "uses, from right triangles to inverse trig functions. Each lesson has a video, notes, practice and a quiz."}
+    else:
+        page = {"page_title": "AP Calc Course", "page_intro": "One lesson per topic in the College Board course "
+                "description, AB and BC. Lessons that are ready are highlighted."}
+    groups = [{"modules": module, "units": [u for u in units if u["module"] == module]}]
+    return render(request, "course/map.html", {**page, "groups": groups,
                                                "current_unit": _current_unit(request.user),
-                                               "exams": exams.available()})
+                                               "exams": [] if module else exams.available()})
 
 
-def formulas(request):
+def trig_course(request):
+    return course_map(request, module=True)
+
+
+def videos(request):
+    """Every lesson video in one place (Adder 2026-10-12): pick one and it plays here, without the lesson's notes.
+    The trig module first, then Units 1-10; only lessons whose video is published are listed."""
+    have = {p.name for p in settings.VIDEO_DIR.glob("*.mp4")} if settings.VIDEO_DIR.exists() else set()
+    groups = []
+    for u in sorted(content.syllabus(), key=lambda u: (not u["module"], u["n"])):
+        items = [{"n": t["n"], "label": t["label"], "title": t["title"], "slug": content.slug(t["n"]),
+                  "captions": (settings.VIDEO_DIR / f"{content.slug(t['n'])}.vtt").exists()}
+                 for t in u["topics"] if f"{content.slug(t['n'])}.mp4" in have]
+        if items:
+            groups.append({"name": u["heading"], "n": u["n"], "items": items})
+    return render(request, "course/videos.html", {"groups": groups})
+
+
+@login_required
+def student_dashboard(request):
+    """A student's own page: where they left off, progress by unit, recent quiz and exam scores, their class."""
+    if is_teacher(request.user):
+        return redirect("teacher")
+    steps = dict(StepDone.objects.filter(user=request.user).values("topic").annotate(n=Count("id")).values_list("topic", "n"))
+    have = content.available()
+    units = []
+    for u in sorted(content.syllabus(), key=lambda u: (not u["module"], u["n"])):
+        total = done = 0
+        for t in u["topics"]:
+            if t["n"] in have:
+                c = content.counts(t["n"])
+                total += c.get("steps", 0)
+                done += min(steps.get(t["n"], 0), c.get("steps", 0))
+        if total:
+            units.append({"name": u["heading"], "n": u["n"], "module": u["module"], "done": done, "total": total,
+                          "pct": round(100 * done / total), "open": can_open(request.user, f"{u['n']}.1"),
+                          "url": reverse("trig") if u["module"] else f"{reverse('map')}#unit-{u['n']}"})
+    last = (StepDone.objects.filter(user=request.user).order_by("-id").values_list("topic", flat=True).first()
+            or Response.objects.filter(user=request.user).order_by("-id").values_list("topic", flat=True).first())
+    resume = None
+    if last and last in have and not last.startswith("U"):
+        meta = content.topic_meta(last)[1]
+        resume = {"n": last, "label": content.label(last), "title": meta["title"] if meta else last}
+    quizzes = [{"n": a.topic, "label": content.label(a.topic) if not a.topic.startswith("U") else a.topic,
+                "score": a.score, "total": a.total, "at": a.at}
+               for a in QuizAttempt.objects.filter(user=request.user).order_by("-at")[:8]]
+    tries = ExamAttempt.objects.filter(user=request.user).order_by("-id")[:5]
+    return render(request, "course/student_dashboard.html", {
+        "units": units, "resume": resume, "quizzes": quizzes, "exam_attempts": tries,
+        "klass": class_for(request.user), "full": has_full_access(request.user)})
+
+
+def set_nav_style(request, style):
+    from django.utils.http import url_has_allowed_host_and_scheme
+    from .context import NAV_STYLES
+    nxt = request.GET.get("next") or ""
+    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+        nxt = "home"
+    resp = redirect(nxt)
+    if style in dict(NAV_STYLES):
+        resp.set_cookie("nav", style, max_age=365 * 24 * 3600, samesite="Lax", path=settings.COOKIE_PATH,
+                        secure=settings.SESSION_COOKIE_SECURE)
+    return resp
+
+
+def trig_formulas(request):
+    return formulas(request, module=True)
+
+
+def formulas(request, module=False):
     """Key ideas and formulas (the course formula sheet): every formula box and definition from every lesson, filled in, by unit, each
     tagged with its topic. A student sees it all, with the topics past the furthest one they've reached grayed."""
     order = [t["n"] for u in content.syllabus() for t in u["topics"]]
@@ -131,6 +213,8 @@ def formulas(request):
         reached = max(idx) if idx else -1
     units = []
     for u in content.syllabus():
+        if u["module"] != module:
+            continue
         rows = []
         for t in u["topics"]:
             pub = content.public(t["n"]) if t["n"] in content.available() else None
@@ -140,7 +224,8 @@ def formulas(request):
             rows.append({"n": t["n"], "label": t["label"], "title": t["title"], "ahead": ahead, "items": pub["formulas"]})
         if rows:
             units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows})
-    return render(request, "course/formulas.html", {"units": units, "graying": reached is not None})
+    title = "Trig Formulas" if module else "Calc Formula Sheet"
+    return render(request, "course/formulas.html", {"units": units, "graying": reached is not None, "page_title": title})
 
 
 def _current_unit(user):
@@ -739,9 +824,11 @@ def exam_list(request):
     rows = []
     for slug in exams.available():
         pub = exams.public(slug)
-        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"],
+        rows.append({"slug": slug, "title": pub["title"], "course": pub["course"], "members_only": pub["members_only"], "outline": exams.outline(pub),
                      "open": exams.can_take(request.user, pub) if request.user.is_authenticated else not pub["members_only"]})
-    return render(request, "course/exams.html", {"exams": rows})
+    free = sorted({r["course"] for r in rows if not r["members_only"]})
+    note = (f"The {' and '.join(free)} exam{'s are' if len(free) > 1 else ' is'} open to any account." if free else "")
+    return render(request, "course/exams.html", {"exams": rows, "free_note": note})
 
 
 def exam_home(request, slug):
@@ -757,7 +844,7 @@ def exam_home(request, slug):
     past = [{"id": a.pk, "started": a.started, "summary": exams.summary(a, pub)} for a in attempts if a.finished]
     live = next((a for a in attempts if not a.finished), None)
     return render(request, "course/exam_home.html", {
-        "E": pub, "slug": slug, "live": live, "past": past,
+        "E": pub, "slug": slug, "live": live, "past": past, "outline": exams.outline(pub),
         "live_part": live and exams.parts(pub)[live.part],
         "print_ready": {k: (PDF_DIR / f"exam-{slug}" / f"exam-{slug}-exam{'-key' if k == 'key' else ''}-classic.pdf").is_file() for k in ("exam", "key")}})
 

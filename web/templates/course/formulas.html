@@ -1,20 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Key ideas and formulas · AP Calculus{% endblock %}
+{% block title %}{{ page_title }} · Mr Oaks Math{% endblock %}
 {% block main %}
-<div class="mathy formula-sheet"><h1>Key ideas and formulas</h1>
+<div class="mathy formula-sheet"><h1>{{ page_title }}</h1>
 <p class="muted">Every key idea, definition and formula from the lessons, in one place, each with the topic it comes from.{% if graying %}
   Topics you haven't reached yet are grayed out, but they're all here.{% endif %}</p>
 {% for u in units %}
 <section class="unit-sheet" id="unit-{{ u.n }}">
   <h2>{{ u.heading }}</h2>
-  {% for r in u.rows %}
-  <div class="sheet-topic{% if r.ahead %} ahead{% endif %}">
-    <a class="sheet-tag" href="{% url 'lesson' r.n %}"><span class="chip-sm">{{ r.label }}</span> {{ r.title }}</a>
-    {% for f in r.items %}
-    <div class="block {{ f.type }}">{% if f.type == "formula" %}<span class="tag">{{ f.title|safe }}</span>{% else %}<div class="tag">{{ f.title|safe }}</div>{% endif %}<div>{{ f.html|safe }}</div></div>
-    {% endfor %}
+  {# every item, whether it came from a formula box or a definition, gets the same card; two to a row (Adder 2026-10-03) #}
+  <div class="sheet-grid">
+  {% for r in u.rows %}{% for f in r.items %}
+    <article class="sheet-card{% if r.ahead %} ahead{% endif %}">
+      <h3 class="sheet-title">{{ f.title|safe }}</h3>
+      <div class="sheet-body">{{ f.html|safe }}</div>
+      <a class="sheet-from" href="{% url 'lesson' r.n %}"><span class="chip-sm">{{ r.label }}</span> {{ r.title }}</a>
+    </article>
+  {% endfor %}{% endfor %}
   </div>
-  {% endfor %}
 </section>
 {% endfor %}
 </div>

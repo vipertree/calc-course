@@ -40,7 +40,6 @@ check("A4 asymptote at -1", sp.limit((x - 1) / (x**2 - 1), x, -1, "+") == sp.oo)
 same("A5", sp.limit((sp.sin(sp.pi / 3 + h) - sp.sin(sp.pi / 3)) / h, h, 0), sp.Rational(1, 2))
 same("A6", sp.diff(x**2 * sp.exp(x), x).subs(x, 1), 3 * sp.E)
 same("A7", sp.diff((2 * x + 1) / (x - 1), x).subs(x, 2), -3)
-same("A8", sp.diff(sp.sin(2 * x)**3, x), 6 * sp.sin(2 * x)**2 * sp.cos(2 * x))
 # A9 table: f(1)=4, f'(1)=2, g(1)=3, g'(1)=-2; f(3)=7, f'(3)=5, g(3)=1, g'(3)=6
 TAB9 = {1: (4, 2, 3, -2), 3: (7, 5, 1, 6)}
 same("A9", TAB9[TAB9[1][2]][1] * TAB9[1][3], -10)
@@ -74,6 +73,10 @@ same("A28", sp.diff(sp.atan(x + 2), x), 1 / (x**2 + 4 * x + 5))
 same("A29", [sp.diff(3 * sp.exp(x**2 / 2), x) - x * 3 * sp.exp(x**2 / 2), 3 * sp.exp(0)], [0, 3])
 same("A30", [sp.solve(sp.Eq(4 - x**2, x + 2), x), I(4 - x**2 - (x + 2), -2, 1)], [[-2, 1], sp.Rational(9, 2)])
 
+FIG20 = graph("exam_ab1_a20", [("x*(x-2)^2", -0.5, 3)], (-1.2, 3.4), (-3.6, 3.6), closed=[(-0.5, -3.125), (3, 3)], ylabel="y",
+              caption=r"The graph of $f'$.", w="6.4cm", h="5.6cm", samples=160)
+same("A20 graph endpoints", [fpA20.subs(x, -sp.Rational(1, 2)), fpA20.subs(x, 3)], [-sp.Rational(25, 8), 3])
+check("A20 f' graph: below on (-1, 0), above on (0, 2) and (2, 3)", fpA20.subs(x, -0.5) < 0 and fpA20.subs(x, 1) > 0 and fpA20.subs(x, 2.5) > 0)
 TABLE9 = (r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & $f(x)$ & $f'(x)$ & $g(x)$ & $g'(x)$ \\ \hline "
           + r" \\ ".join(f"${k}$ & ${a}$ & ${b}$ & ${c}$ & ${d}$" for k, (a, b, c, d) in TAB9.items()) + r"\end{tabular}}")
 TABLE23 = (r"\par\smallskip\centerline{\begin{tabular}{c|cccc} $x$ & " + " & ".join(f"${v}$" for v in XS23)
@@ -109,16 +112,12 @@ PART_A = [
     pick(r"If $f(x) = \dfrac{2x + 1}{x - 1}$, then $f'(2) = $", r"$-3$", [r"$3$", r"$2$", r"$-\frac13$"], "B",
          r"By the quotient rule, $f'(x) = \frac{2(x - 1) - (2x + 1)(1)}{(x - 1)^2} = \frac{-3}{(x - 1)^2}$, so $f'(2) = \frac{-3}{1} = -3$.",
          {r"$3$": "subtracted in the wrong order in the numerator", r"$2$": "divided the derivative of the top by the derivative of the bottom"}, topic="2.9"),
-    pick(r"$\dfrac{d}{dx}\left[\sin^3(2x)\right] = $", r"$6\sin^2(2x)\cos(2x)$",
-         [r"$3\sin^2(2x)\cos(2x)$", r"$3\sin^2(2x)$", r"$6\cos^2(2x)$"], "D",
-         r"The chain rule, twice: $\frac{d}{dx}\left[(\sin 2x)^3\right] = 3(\sin 2x)^2 \cdot \cos(2x) \cdot 2 = 6\sin^2(2x)\cos(2x)$.",
-         {r"$3\sin^2(2x)\cos(2x)$": "left out the factor $2$ from the inside function $2x$"}, topic="3.1"),
     pick(r"The table gives values of the differentiable functions $f$ and $g$ and their derivatives. If $h(x) = f(g(x))$, then $h'(1) = $" + TABLE9,
          r"$-10$", [r"$-4$", r"$-14$", r"$30$"], "A",
          r"By the chain rule, $h'(1) = f'(g(1)) \cdot g'(1) = f'(3) \cdot (-2) = 5(-2) = -10$.",
          {r"$-4$": "used $f'(1)$ instead of $f'(g(1)) = f'(3)$", r"$-14$": "used $f(3)$ instead of $f'(3)$"}, topic="3.1"),
     pick(r"Let $f(x) = x^3 + 2x + 1$, and let $g$ be the inverse function of $f$. What is the value of $g'(4)$?",
-         r"$\frac15$", [r"$\frac{1}{50}$", r"$5$", r"$50$"], "C",
+         r"$\frac15$", [r"$\frac{1}{50}$", r"$5$", r"$50$"], "A",
          r"$f(1) = 1 + 2 + 1 = 4$, so $g(4) = 1$. Then $g'(4) = \frac{1}{f'(g(4))} = \frac{1}{f'(1)} = \frac{1}{3 + 2} = \frac15$.",
          {r"$\frac{1}{50}$": "evaluated $f'$ at $4$ instead of at $g(4) = 1$", r"$5$": "gave $f'(1)$ without taking the reciprocal"}, topic="3.3"),
     pick(r"If $y = \arctan(3x)$, what is the value of $\dfrac{dy}{dx}$ at $x = \frac13$?", r"$\frac32$", [r"$\frac12$", r"$\frac{3}{10}$", r"$\frac\pi4$"], "B",
@@ -154,12 +153,12 @@ PART_A = [
     pick(r"What is the absolute maximum value of $f(x) = x^3 - 3x$ on the closed interval $[0, 2]$?", r"$2$", [r"$0$", r"$-2$", r"$1$"], "C",
          r"$f'(x) = 3x^2 - 3 = 0$ at $x = 1$ in the interval. Candidates: $f(0) = 0$, $f(1) = -2$, $f(2) = 2$. The absolute maximum value is $2$.",
          {r"$-2$": "gave the value at the critical point, which is the minimum", r"$1$": "gave the $x$-value of the critical point"}, topic="5.5"),
-    pick(r"The derivative of a function $f$ is $f'(x) = x(x - 2)^2$. Which of the following is true?",
+    pick(r"The graph of $f'$, the derivative of a function $f$, is shown for $-\frac12 \le x \le 3$. Which of the following is true about $f$ on the open interval $-\frac12 < x < 3$?",
          r"$f$ has a relative minimum at $x = 0$ and no other relative extrema.",
          [r"$f$ has a relative maximum at $x = 0$ and a relative minimum at $x = 2$.", r"$f$ has relative minima at $x = 0$ and $x = 2$.", r"$f$ has a relative maximum at $x = 2$ and no other relative extrema."], "B",
-         r"$f'(x) = 0$ at $x = 0$ and $x = 2$. Since $(x - 2)^2 \ge 0$, $f'$ has the sign of $x$: negative for $x < 0$ and positive for $x > 0$ (except at $x = 2$). "
+         r"$f'(x) = 0$ at $x = 0$ and $x = 2$. The graph of $f'$ is below the $x$-axis for $x < 0$ and above it for $0 < x < 2$ and $x > 2$, where it only touches the axis at $x = 2$. "
          r"So $f'$ changes from negative to positive at $x = 0$, a relative minimum, and does not change sign at $x = 2$, so there is no extremum there.",
-         {r"$f$ has relative minima at $x = 0$ and $x = 2$.": "treated every zero of $f'$ as an extremum without checking for a sign change"}, topic="5.4"),
+         topic="5.4", figure=FIG20),
     pick(r"On which interval is the graph of $f(x) = x^4 - 6x^2$ concave down?", r"$(-1, 1)$",
          [r"$\left(-\sqrt3, \sqrt3\right)$", r"$(-\infty, -1)$ and $(1, \infty)$", r"$\left(0, \sqrt3\right)$"], "A",
          r"$f'(x) = 4x^3 - 12x$ and $f''(x) = 12x^2 - 12 = 12(x - 1)(x + 1)$. $f''(x) < 0$ for $-1 < x < 1$, so the graph is concave down on $(-1, 1)$.",
@@ -221,8 +220,6 @@ def r3(label, v):
 H1 = 20 + 70 * sp.exp(-sp.Rational(4, 100) * t)
 b1 = r3("B1", float(sp.diff(H1, t).subs(t, 10)))
 b1avg = float((H1.subs(t, 10) - H1.subs(t, 0)) / 10)
-R2 = 2 + sp.sin(t**2 / 4)
-b2 = r3("B2", 12 + N(R2, 0, 4, t))
 fp3 = lambda v: v * sp.cos(v**2)
 crit3 = [sp.sqrt(k * sp.pi / 2) for k in (1, 3, 5)]
 check("B3 three zeros of f' in (0, 3)", all(0 < float(c) < 3 for c in crit3) and float(sp.sqrt(7 * sp.pi / 2)) > 3)
@@ -232,8 +229,6 @@ V4 = sp.log(t**2 + 1) - sp.Rational(6, 5)
 turn4 = float(sp.nsolve(V4, t, 1.5))
 b4 = r3("B4", abs(N(V4, 0, turn4, t)) + abs(N(V4, turn4, 3, t)))
 disp4 = N(V4, 0, 3, t)
-V5 = sp.exp(sp.sin(t)) - t / 2
-b5 = r3("B5", float(sp.diff(V5, t).subs(t, 2)))
 F6 = sp.sqrt(1 + x**3)
 b6 = r3("B6", N(F6, 0, 2) / 2)
 TOP7, BOT7 = 2 - x**2, sp.exp(x)
@@ -268,11 +263,6 @@ PART_B = [
             b1, [b1avg, -b1, -2.8],
             rf"$H'(t) = 70(-0.04)e^{{-0.04t}} = -2.8e^{{-0.04t}}$, so $H'(10) = -2.8e^{{-0.4}} \approx {b1:.3f}$ degrees Celsius per minute.",
             {b1avg: "the average rate of change over the first $10$ minutes", -2.8: "used $H'(0)$"}, topic="4.3"),
-    numpick(r"Rainwater flows into Tariq's rain barrel at a rate of $r(t) = 2 + \sin\left(\frac{t^2}{4}\right)$ liters per hour, where $t$ is in hours. "
-            r"At time $t = 0$ the barrel holds $12$ liters. How many liters of water are in the barrel at time $t = 4$?",
-            b2, [b2 - 12, 12 + 4 * float(R2.subs(t, 4)), 12 + float(R2.subs(t, 4))],
-            rf"The amount at $t = 4$ is the starting amount plus the total that flows in: $12 + \int_0^4 r(t)\,dt \approx 12 + {b2 - 12:.3f} = {b2:.3f}$ liters.",
-            {b2 - 12: "left out the $12$ liters already in the barrel", 12 + 4 * float(R2.subs(t, 4)): "multiplied the rate at $t = 4$ by $4$ hours instead of integrating"}, topic="8.3"),
     numpick(r"The derivative of a function $f$ is $f'(x) = x\cos\left(x^2\right)$. How many relative maxima does $f$ have on the interval $0 < x < 3$?",
             2, [1, 3, 4],
             r"$f'(x) = 0$ in $(0, 3)$ where $\cos(x^2) = 0$, so at $x = \sqrt{\pi/2} \approx 1.253$, $\sqrt{3\pi/2} \approx 2.171$, and $\sqrt{5\pi/2} \approx 2.802$. "
@@ -283,10 +273,6 @@ PART_B = [
             b4, [disp4, abs(disp4), turn4],
             rf"Total distance traveled is $\int_0^3 |v(t)|\,dt \approx {b4:.3f}$. (The velocity changes sign at $t \approx {turn4:.3f}$, so the displacement $\int_0^3 v(t)\,dt \approx {disp4:.3f}$ is not the distance.)",
             {disp4: "gave the displacement", abs(disp4): "took the absolute value of the displacement instead of integrating the speed", turn4: "gave the time at which the particle changes direction"}, topic="8.2"),
-    numpick(r"A particle moves along the $x$-axis with velocity $v(t) = e^{\sin t} - \frac{t}{2}$. What is the acceleration of the particle at time $t = 2$?",
-            b5, [-b5, float(V5.subs(t, 2)), float((V5.subs(t, 2) - V5.subs(t, 0)) / 2)],
-            rf"$a(t) = v'(t) = \cos t \cdot e^{{\sin t}} - \frac12$, so $a(2) = \cos 2 \cdot e^{{\sin 2}} - \frac12 \approx {b5:.3f}$.",
-            {float(V5.subs(t, 2)): "gave the velocity $v(2)$", float((V5.subs(t, 2) - V5.subs(t, 0)) / 2): "gave the average acceleration on $[0, 2]$"}, topic="4.2"),
     numpick(r"What is the average value of $f(x) = \sqrt{1 + x^3}$ on the interval $[0, 2]$?",
             b6, [2 * b6, 1.0, float(sp.sqrt(2))],
             rf"$\frac{{1}}{{2 - 0}}\int_0^2 \sqrt{{1 + x^3}}\,dx \approx \frac{{{2 * b6:.4f}}}{{2}} \approx {b6:.3f}$.",

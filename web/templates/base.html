@@ -15,12 +15,20 @@
 </head>
 <body>
 <header class="top"><div class="in">
-  <a class="brand" href="{% url 'home' %}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 26 C 10 26, 12 8, 29 5" fill="none" stroke="var(--func)" stroke-width="3" stroke-linecap="round"/><path d="M4 21 L 26 9" stroke="var(--tangent)" stroke-width="2.5" stroke-linecap="round"/><circle cx="15" cy="15" r="3" fill="var(--ink)"/></svg><span>AP Calculus</span></a>
-  <a class="nav-key" href="{% url 'formulas' %}">Key ideas &amp; formulas</a>
+  <a class="brand" href="{% url 'home' %}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 26 C 10 26, 12 8, 29 5" fill="none" stroke="var(--func)" stroke-width="3" stroke-linecap="round"/><path d="M4 21 L 26 9" stroke="var(--tangent)" stroke-width="2.5" stroke-linecap="round"/><circle cx="15" cy="15" r="3" fill="var(--ink)"/></svg><span>Mr Oaks Math</span></a>
+  {# the main navigation: plain links or three dropdowns (NAV_STYLE); on a phone either one folds into a Menu button #}
+  <details class="nav-fold" open><summary>Menu</summary>
+  <nav class="site-nav nav-{{ NAV_STYLE }}" aria-label="Main">
+    {% for g in NAV %}
+      {% if NAV_STYLE == "menus" %}<details class="nav-group{% if g.on %} on{% endif %}"><summary>{{ g.name }}</summary><div class="nav-drop">{% for i in g.items %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}>{{ i.label }}</a>{% endfor %}</div></details>
+      {% else %}<span class="nav-set" aria-label="{{ g.name }}">{% for i in g.items %}<a href="{{ i.url }}"{% if i.on %} class="on" aria-current="page"{% endif %}>{% if g.name == "Videos" %}Videos{% else %}{{ i.label }}{% endif %}</a>{% endfor %}</span>{% endif %}
+    {% endfor %}
+    {% if NAV_DASH %}<a class="nav-dash{% if NAV_DASH.on %} on{% endif %}" href="{{ NAV_DASH.url }}">{{ NAV_DASH.label }}</a>{% endif %}
+  </nav></details>
   {% block crumbs %}{% endblock %}
   <span class="grow"></span>
   <nav class="themes" aria-label="Color theme">{% for k, label in THEMES %}<a href="{% url 'theme' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == THEME %}on{% endif %}">{{ label }}</a>{% endfor %}</nav>
-  <details class="design-pick"><summary>Design</summary><nav class="design-menu" aria-label="Site design">{% for k, label in DESIGNS %}<a href="{% url 'design' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == DESIGN %}on{% endif %}">{{ label }}</a>{% endfor %}</nav></details>
+  <details class="design-pick"><summary>Design</summary><nav class="design-menu" aria-label="Site design">{% for k, label in DESIGNS %}<a href="{% url 'design' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == DESIGN %}on{% endif %}">{{ label }}</a>{% endfor %}<span class="menu-label">Top bar</span>{% for k, label in NAV_STYLES %}<a href="{% url 'nav_style' k %}?next={{ request.get_full_path|urlencode }}" class="{% if k == NAV_STYLE %}on{% endif %}">{{ label }}</a>{% endfor %}</nav></details>
   {% if user.is_authenticated %}<a class="who" href="{% url 'account' %}" title="Account settings">{{ PROFILE.display_name|default:user.get_username }}</a>
   <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="linkbtn">Sign out</button></form>
   {% else %}<a class="linkbtn" href="{% url 'login' %}">Sign in</a>{% endif %}
@@ -29,7 +37,7 @@
 {% if messages %}<div class="flash" role="status">{% for m in messages %}<p class="fb {% if m.level_tag == 'error' %}bad{% else %}good{% endif %}">{{ m }}</p>{% endfor %}</div>{% endif %}
 {% if user.is_authenticated and PROFILE and PROFILE.teacher_requested and not IS_TEACHER %}<p class="notice">Your teacher account request is waiting for approval{% if not PROFILE.email_verified %}. First, confirm your email with the link we sent{% endif %}. Until then you can look around as a student.</p>{% endif %}
 {% block main %}{% endblock %}</main>
-<footer class="foot"><div class="in"><a href="{% url 'privacy' %}">Privacy</a><a href="{% url 'terms' %}">Terms</a>{% if user.is_authenticated %}<a href="{% url 'account' %}">Account</a>{% endif %}</div></footer>
+<footer class="foot"><div class="in"><a href="{% url 'about' %}">About</a><a href="{% url 'contact' %}">Contact</a><a href="{% url 'privacy' %}">Privacy</a><a href="{% url 'terms' %}">Terms</a>{% if user.is_authenticated %}<a href="{% url 'account' %}">Account</a>{% endif %}</div></footer>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
 <script defer src="{% static 'js/site.js' %}{% if ASSET_V %}?v={{ ASSET_V }}{% endif %}"></script>

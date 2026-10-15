@@ -17,8 +17,9 @@ DEF = r"\int_a^\infty f(x)\,dx = \lim_{b\to\infty} \int_a^b f(x)\,dx"
 def hidden_asymptote():
     """y = 1/x^2 on [-1, 1]: both branches run up the y-axis. The region under it is clipped at the top of the window,
     so its edge follows the curve exactly; the asymptote at x = 0 and two arrows going up come in with a cue."""
-    ax, al = plot_axes([-1.25, 1.25, 0.5], [0, 12, 2], w=5.6, h=5.4, coords=False)
-    ax.add_coordinates({-1: "-1", 1: "1"}, {4: "4", 8: "8", 12: "12"})
+    ax, al = plot_axes([-1.25, 1.25, 0.5], [0, 12, 2], w=5.6, h=5.4, coords=False, ylabel="")
+    # x labels only: the y-axis is the asymptote, and numbers beside it would sit inside the shading
+    ax.add_coordinates({-1: "-1", 1: "1"})
     f = lambda s: 1 / s**2
     xc = 1 / np.sqrt(12)                                      # where the curve leaves the window
     curves = VGroup(ax.plot(f, x_range=[-1.25, -xc], color=FUNC, stroke_width=5), ax.plot(f, x_range=[xc, 1.25], color=FUNC, stroke_width=5))

@@ -7,7 +7,7 @@ x/(x + 1) on [0, 1].
 """
 import sympy as sp
 
-from calclib import (VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, expr, num, same)
+from calclib import (Example, VideoExample, MCQ, BigIdea, Check, Formula, Item, Section, Text, Topic, Variants, Video, expr, num, same)
 
 x = sp.symbols("x", real=True)
 C = sp.Symbol("C")
@@ -26,19 +26,36 @@ def plus_c(f, F):
 
 same("lesson", [sp.div(x**2 + 3 * x + 5, x + 1), sp.div(x**3 + 1, x - 1), sp.integrate(x / (x + 1), (x, 0, 1))], [(x + 2, 3), (x**2 + x + 1, 2), 1 - sp.log(2)])
 
+LONGDIV = (r"Divide $x^2 + 3x + 5$ by $x + 1$, with the powers in order from highest to lowest. "
+           r"\textbf{1.} Divide the leading terms: $x^2 \div x = x$. \textbf{2.} Multiply: $x(x + 1) = x^2 + x$. "
+           r"\textbf{3.} Subtract: $\left(x^2 + 3x\right) - \left(x^2 + x\right) = 2x$. \textbf{4.} Bring down the $+\,5$: $2x + 5$. "
+           r"Repeat: $2x \div x = 2$, $2(x + 1) = 2x + 2$, $(2x + 5) - (2x + 2) = 3$. The remainder $3$ has a lower degree than $x + 1$, so stop.")
+SYNTH = (r"\par\smallskip\centerline{\begin{tabular}{r|rrr} $-1$ & $1$ & $3$ & $5$ \\ & & $-1$ & $-2$ \\ \hline & $1$ & $2$ & $3$ \end{tabular}}\par\smallskip ")
+
 NOTES = [
     Video("s6_10.py::Lesson", "Long division and completing the square", 5),
 
     Section("Divide first"),
-    Text(r"If the degree of the numerator is at least the degree of the denominator, use long division: \[ \frac{x^2 + 3x + 5}{x + 1} = x + 2 + \frac{3}{x + 1}, \] "
-         r"so $\int \frac{x^2 + 3x + 5}{x + 1}\,dx = \frac{x^2}{2} + 2x + \blank{3\ln|x + 1|} + C$."),
+    Text(r"If the degree of the numerator is at least the degree of the denominator, divide first. Like $\frac{17}{5} = 3 + \frac25$, the result is "
+         r"\[ \text{quotient} + \frac{\text{remainder}}{\text{divisor}}. \]"),
+    Example("Polynomial long division", r"Divide $x^2 + 3x + 5$ by $x + 1$.",
+            LONGDIV + r" \[ \frac{x^2 + 3x + 5}{x + 1} = x + 2 + \frac{3}{x + 1} \] Check: $(x + 1)(x + 2) + 3 = x^2 + 3x + 5$.",
+            work="3.4cm", beat="Polynomial long division"),
+    Formula("Synthetic division", (
+        r"A shortcut that works \blank{only} when dividing by $x - c$. Write $c$, then the coefficients of the top (a $0$ for any missing power). "
+        r"Bring down the first coefficient; multiply by $c$, write it under the next coefficient, and add; repeat. The last number is the remainder, and the others "
+        r"are the quotient's coefficients, one degree lower than the top. For $x + 1 = x - (-1)$, $c = -1$:" + SYNTH +
+        r"so the quotient is $x + 2$ and the remainder is $3$. To divide by something such as $x^2 + 1$ or $2x + 1$, use long division.")),
+    Text(r"So $\displaystyle\int \frac{x^2 + 3x + 5}{x + 1}\,dx = \int \left(x + 2 + \frac{3}{x + 1}\right) dx = \frac{x^2}{2} + 2x + \blank{3\ln|x + 1|} + C$."),
 
     Section("Complete the square"),
     Formula("Two forms", (
-        r"\[ \int \frac{du}{a^2 + u^2} = \frac1a\arctan\frac ua + C \qquad \int \frac{du}{\sqrt{a^2 - u^2}} = \blank{\arcsin\frac ua} + C \] "
-        r"For a quadratic denominator that won't factor, complete the square to reach one of these forms.")),
-    VideoExample('Complete the square', work="2.8cm"),
-    BigIdea(r"Top degree at least bottom degree: divide first. Quadratic bottom that won't factor: complete the square, then arctangent or arcsine."),
+        r"\[ \int \frac{du}{a^2 + u^2} = \frac1a\arctan\frac ua + C \qquad \int \frac{du}{\sqrt{a^2 - u^2}} = \arcsin\frac ua + C \] "
+        r"For a quadratic denominator that won't factor, complete the square to reach one of these forms: take \blank{half} the $x$ coefficient, square it, "
+        r"and split the constant around that perfect square.")),
+    VideoExample('Complete the square', work="2.6cm"),
+    VideoExample('An arctangent', work="2.8cm"),
+    BigIdea(r"Top degree at least bottom degree: divide first (long division, or synthetic division for $x - c$). Quadratic bottom that won't factor: complete the square, then arctangent or arcsine."),
     Check(r"Find $\displaystyle\int \frac{1}{x^2 + 9}\,dx$.", plus_c(1 / (x**2 + 9), sp.atan(x / 3) / 3), r"$a = 3$: $\frac13\arctan\frac x3 + C$."),
 ]
 

@@ -7,7 +7,7 @@ Worked examples: e^(3x), (ln x)/x, cos^2 x sin x on [0, pi/2].
 """
 import sympy as sp
 
-from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num, same)
+from calclib import (Example, VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num, same)
 
 x = sp.symbols("x", positive=True)
 C = sp.Symbol("C")
@@ -28,23 +28,41 @@ def plus_c(f, F=None):
     return expr(F + C, display=tex(F) + " + C")
 
 
-same("lesson", [sp.integrate(x * (x**2 + 1)**3, (x, 0, 2)), sp.integrate(sp.cos(x)**2 * sp.sin(x), (x, 0, sp.pi / 2))], [78, sp.Rational(1, 3)])
+same("lesson", [sp.integrate(x * (x**2 + 1)**3, (x, 0, 2)), sp.Rational(1, 2) * sp.integrate(x**3, (x, 1, 5)),
+                sp.simplify(sp.integrate(2 * x * sp.cos(x**2), x) - sp.sin(x**2)), sp.simplify(sp.diff((x**2 + 4)**sp.Rational(3, 2) / 3, x) - x * sp.sqrt(x**2 + 4)), sp.integrate(sp.cos(x)**2 * sp.sin(x), (x, 0, sp.pi / 2))], [78, 78, 0, 0, sp.Rational(1, 3)])
 
 NOTES = [
     Video("s6_9.py::Lesson", "Substitution", 5),
 
     Section("The chain rule, backward"),
     Text(r"$\frac{d}{dx}\sin\left(x^2\right) = \cos\left(x^2\right) \cdot 2x$, so $\int 2x\cos\left(x^2\right) dx = \sin\left(x^2\right) + C$. "
-         r"The clue: an \blank{inside function} whose derivative is a factor of the integrand."),
+         r"The integrand has an \blank{inside function}, $x^2$, and its derivative, $2x$, is a factor. Substitution is essentially a reverse chain rule."),
+
+    Section("Substitution"),
+    Text(r"\textbf{Substitution} (often called \textbf{$u$-substitution}, since $u$ is the usual letter): rewrite the integral as a simple function of $u$, "
+         r"one we know how to integrate. Every integral keeps its $dx$, and the $dx$ gets substituted too."),
+    Text(r"If $u = x^2$, then $\dfrac{du}{dx} = 2x$: a slight change in $u$ for every slight change in $x$. So a slight change in $u$ is $2x$ times a slight "
+         r"change in $x$: \[ du = 2x\,dx. \]"),
+    Example("Call the inside u", r"Find $\displaystyle\int 2x\cos\left(x^2\right) dx$.",
+            r"Let $u = x^2$. Substituting right away gives $\int 2x\cos u\,dx$, a mix of $x$'s and $u$'s, so we're not done. "
+            r"$du = 2x\,dx$, so the $2x$ and the $dx$ together become $du$: \[ \int \cos u\,du = \sin u + C = \sin\left(x^2\right) + C. \]",
+            work="2.6cm", beat="Rewrite in u"),
     Formula("Substitution", (
         r"\textbf{1.} Choose $u$: an inside function. \par \textbf{2.} Find $du = u'(x)\,dx$; if a constant is missing, divide by it. \par "
-        r"\textbf{3.} Rewrite the \blank{whole} integral in $u$ (no $x$ left). \par \textbf{4.} Integrate, then put $x$ back.")),
-    VideoExample('Fixing a constant', work="3cm"),
+        r"\textbf{3.} Rewrite the \blank{whole} integral in $u$, including the $dx$ (no $x$ left). \par \textbf{4.} Integrate, then put $x$ back.")),
+    Example("Fixing a constant", r"Find $\displaystyle\int x\sqrt{x^2 + 4}\,dx$.",
+            r"$u = x^2 + 4$, $du = 2x\,dx$. We have $x\,dx$, not $2x\,dx$, so divide by $2$: $\frac12\,du = x\,dx$. "
+            r"\[ \int \sqrt u \cdot \tfrac12\,du = \tfrac12\int u^{1/2}\,du = \tfrac12 \cdot \frac{u^{3/2}}{3/2} + C = \tfrac13\left(x^2 + 4\right)^{3/2} + C \]",
+            work="3cm", beat="Fixing a constant"),
     Formula("Definite integrals", (
-        r"Change the limits to $u$ values: \[ \int_a^b f\left(g(x)\right)g'(x)\,dx = \int_{\blank{g(a)}}^{g(b)} f(u)\,du, \] "
-        r"and don't go back to $x$.")),
-    VideoExample('Definite integrals: change the limits', work="3cm"),
-    BigIdea(r"Substitution reverses the chain rule: $u$ is an inside function, $du$ is its derivative times $dx$, and everything gets rewritten in $u$."),
+        r"Change the limits of integration to $u$ values by plugging each $x$ limit into the definition of $u$: "
+        r"when $x = a$, $u = \mblank{g(a)}$; when $x = b$, $u = g(b)$. \[ \int_a^b f\left(g(x)\right)g'(x)\,dx = \int_{g(a)}^{g(b)} f(u)\,du \] "
+        r"Then integrate in $u$. There is no need to go back to $x$.")),
+    Example("Definite integrals: change the limits", r"Evaluate $\displaystyle\int_0^2 x\left(x^2 + 1\right)^3 dx$.",
+            r"$u = x^2 + 1$, $\frac12\,du = x\,dx$. When $x = 0$, $u = 0^2 + 1 = 1$. When $x = 2$, $u = 2^2 + 1 = 5$. "
+            r"\[ \tfrac12\int_1^5 u^3\,du = \tfrac12\left[\frac{u^4}{4}\right]_1^5 = \tfrac18\left(625 - 1\right) = 78 \]",
+            work="3cm", beat="Definite integrals: change the limits"),
+    BigIdea(r"Substitution reverses the chain rule: $u$ is an inside function, $du$ is its derivative times $dx$, and everything gets rewritten in $u$, even the $dx$."),
     Check(r"Find $\displaystyle\int 3x^2\left(x^3 + 1\right)^4 dx$.", plus_c(3 * x**2 * (x**3 + 1)**4, (x**3 + 1)**5 / 5), r"$u = x^3 + 1$, $du = 3x^2\,dx$: $\frac{u^5}{5} + C$."),
 ]
 

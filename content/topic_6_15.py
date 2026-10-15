@@ -37,14 +37,15 @@ NOTES = [
 
     Section("A toolkit, not a flowchart"),
     Table(r"a basic form (power, trig, $e^x$, $\frac1x$) & basic rules \\ "
-          r"a product, a power of a sum, or a sum over one term & \blank{rewrite first} \\ "
-          r"an inside function whose derivative is a factor & \blank{substitution} \\ "
+          r"a product, a power of a sum, or a sum over one term & rewrite first \\ "
+          r"an inside function whose derivative is a factor & substitution \\ "
           r"a fraction, top degree $\ge$ bottom degree & long division \\ "
           r"$1$ over a quadratic that won't factor & complete the square \\ "
-          r"a product of two kinds of functions, no inside derivative & \blank{integration by parts} \\ "
-          r"a fraction whose bottom factors into different lines & \blank{partial fractions}", "ll", header=r"Notice & Tool"),
-    Text(r"Check for substitution first: it is quick to spot, and it is often faster than parts or partial fractions. The same pieces can need different tools: "
-         r"$\int x\ln x\,dx$ (parts) and $\int \frac{\ln x}{x}\,dx$ (substitution); $\int \frac{2}{x^2 - 1}\,dx$ (partial fractions) and $\int \frac{2x}{x^2 - 1}\,dx$ (substitution)."),
+          r"a product of two kinds of functions, no inside derivative & integration by parts \\ "
+          r"a fraction whose bottom factors into different lines & partial fractions", "ll", header=r"Notice & Tool"),
+    Text(r"Check for substitution first: it is quick to spot, and it is often faster than parts or partial fractions. The same pieces can need different tools:"
+         r"\[ \int x\ln x\,dx \text{ by parts}, \]\[ \int \frac{\ln x}{x}\,dx \text{ by substitution}, \]"
+         r"\[ \int \frac{2}{x^2 - 1}\,dx \text{ by partial fractions}, \]\[ \int \frac{2x}{x^2 - 1}\,dx \text{ by substitution}. \]"),
     VideoExample('Choosing the tool', work="3.4cm"),
     BigIdea(r"Check for substitution first, then notice the integrand's other features, choose the tool they call for, and switch tools if the first doesn't work."),
     Check(r"Which tool fits $\int x^2\ln x\,dx$?", selfcheck(r"\text{integration by parts, } u = \ln x,\ dv = x^2\,dx"),

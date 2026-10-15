@@ -77,7 +77,9 @@ class Lesson(TranscriptScene):
                      [r"\text{(a) a product, no inside derivative: parts, } u = x, \ dv = e^{2x}\,dx",
                       r"\text{(b) } u = x^2 \text{ (}2x \text{ is a factor): substitution, } \tfrac12 e^{x^2} + C",
                       r"\text{(c) the bottom factors: partial fractions, } 2\ln|x - 1| - \ln|x + 2| + C",
-                      r"\text{(d) } (x + 2)^2 + 1: \ \arctan(x + 2) + C"], at=[1, 2, 3, 4], follow=True, size=40)
+                      r"\text{(d) } (x + 2)^2 + 1: \ \arctan(x + 2) + C"], at=[1, 2, 3, 4], follow=True, size=40,
+                     text=r"Choose a technique for each. \[ \text{(a) } \int x e^{2x}\,dx \]\[ \text{(b) } \int x e^{x^2}\,dx \]"
+                          r"\[ \text{(c) } \int \frac{x + 5}{(x - 1)(x + 2)}\,dx \]\[ \text{(d) } \int \frac{dx}{x^2 + 4x + 5} \]")
 
         with self.beat("Close") as b:
             tray = tool_tray(names, accent=later).shift(DOWN * 0.6)

@@ -496,7 +496,9 @@ def check_slides(num, k, c, version):
 
 def next_topic(num):
     syl = json.loads((ROOT / "web" / "course" / "syllabus.json").read_text())
-    flat = [(t["n"], t["title"]) for u in syl for t in u["topics"]]
+    # a topic taught in an AB and a BC version (docs/ab-bc-versions.md): neither version's deck points at the other
+    twin = next((t.get("twin") for u in syl for t in u["topics"] if t["n"] == num), None)
+    flat = [(t["n"], t["title"]) for u in syl for t in u["topics"] if t["n"] != twin]
     nums = [n for n, _ in flat]
     if num in nums and nums.index(num) + 1 < len(flat):
         return flat[nums.index(num) + 1]

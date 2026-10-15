@@ -34,12 +34,13 @@ NOTES = [
 
     Section("A toolkit, not a flowchart"),
     Table(r"a basic form (power, trig, $e^x$, $\frac1x$) & basic rules \\ "
-          r"a product, a power of a sum, or a sum over one term & \blank{rewrite first} \\ "
-          r"an inside function whose derivative is a factor & \blank{substitution} \\ "
+          r"a product, a power of a sum, or a sum over one term & rewrite first \\ "
+          r"an inside function whose derivative is a factor & substitution \\ "
           r"a fraction, top degree $\ge$ bottom degree & long division \\ "
-          r"$1$ over a quadratic that won't factor & \blank{complete the square}", "ll", header=r"Notice & Tool"),
-    Text(r"Look at the features, pick the tool, and try another if it fails. The same pieces can need different tools: $\int \frac{x + 1}{x^2 + 2x + 5}\,dx$ (substitution), "
-         r"$\int \frac{1}{x^2 + 2x + 5}\,dx$ (complete the square), $\int \frac{x^2 + 2x + 5}{x + 1}\,dx$ (long division)."),
+          r"$1$ over a quadratic that won't factor & complete the square", "ll", header=r"Notice & Tool"),
+    Text(r"Look at the features, pick the tool, and try another if it fails. The same pieces can need different tools:"
+         r"\[ \int \frac{x + 1}{x^2 + 2x + 5}\,dx \text{ by substitution}, \]\[ \int \frac{1}{x^2 + 2x + 5}\,dx \text{ by completing the square}, \]"
+         r"\[ \int \frac{x^2 + 2x + 5}{x + 1}\,dx \text{ by long division}. \]"),
     VideoExample('Choosing the tool', work="3cm"),
     BigIdea(r"Notice the integrand's features, choose the tool they call for, and switch tools if the first doesn't work."),
     Check(r"Which tool fits $\int x^2 e^{x^3}\,dx$?", selfcheck(r"\text{substitution, } u = x^3"), r"$x^3$ is inside and $3x^2$, its derivative, is a factor up to a constant."),

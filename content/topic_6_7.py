@@ -26,9 +26,9 @@ same("plus C", [(x**3 / 3 + c).subs(x, 3) - (x**3 / 3 + c).subs(x, 0) for c in (
 same("power rule reversed", [sp.diff(x**3 / 3, x), sp.diff(x**5 / 5, x), sp.diff(x**3 - x**2, x), (x**3 - x**2).subs(x, 4), (x**3 - x**2).subs(x, 1)],
      [x**2, x**4, 3 * x**2 - 2 * x, 48, 0])
 
-FIG_C = graph("t6_7_plusc", [("x^3/3", 0, 3.1), ("x^3/3+2", 0, 3.1), ("x^3/3-1", 0, 3.1), ("x^3/3+5", 0, 3.1)], xr=(0, 3.6), yr=(-2, 15), ystep=5,
-              ylabel="F(x)", w="6cm", h="5cm",
-              labels=[(3.1, 9.9, "right", "$C = 0$"), (3.1, 11.9, "right", "$C = 2$"), (3.1, 8.0, "right", "$C = -1$"), (3.1, 14.9, "right", "$C = 5$")],
+FIG_C = graph("t6_7_plusc", [("x^3/3", 0, 2.8), ("x^3/3+2", 0, 2.8), ("x^3/3-1", 0, 2.8), ("x^3/3+5", 0, 2.8)], xr=(0, 3.6), yr=(-2, 13), ystep=2,
+              ylabel="F(x)", w="6cm", h="5.6cm",
+              labels=[(2.8, 7.32, "right", "$C = 0$"), (2.8, 9.32, "right", "$C = 2$"), (2.8, 6.32, "right", "$C = -1$"), (2.8, 12.32, "right", "$C = 5$")],
               caption=r"$F(x) = \frac{x^3}{3} + C$ for four values of $C$: the same curve shifted up or down, so every one has derivative $x^2$.")
 
 NOTES = [
@@ -46,7 +46,7 @@ NOTES = [
           r"the integral & $\int_a^b f(x)\,dx = F(b) - F(a)$ & $\int_0^3 x^2\,dx = \blank{9}$", "lll", header=r" & In general & For $\int_0^3 x^2\,dx$"),
 
     Section(r"Where $+\,C$ comes from"),
-    Text(r"$\frac{x^3}{3}$ isn't the only function with derivative $x^2$. Adding any constant shifts the graph up or down without changing its slope, "
+    Text(r"The function $\frac{x^3}{3}$ isn't the only one with derivative $x^2$. Adding any constant shifts the graph up or down without changing its slope, "
          r"so $F(x) = \frac{x^3}{3} + C$ works for every $C$. The constant cancels when we subtract:"),
     FIG_C,
     Table(r"$0$ & $9$ & $0$ & $9$ \\ $2$ & $11$ & $2$ & $\blank{9}$ \\ $-1$ & $8$ & $-1$ & $\blank{9}$ \\ $5$ & $14$ & $5$ & $\blank{9}$", "cccc",

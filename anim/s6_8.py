@@ -60,32 +60,32 @@ class Lesson(TranscriptScene):
         with self.beat("Plus C") as b:
             q = M(r"\int 3x^2\,dx = \ ?", 52).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.8)
             self.play(FadeIn(q), run_time=0.6)
-            rows = VGroup(*[VGroup(M(F, 42, ACCUM), M(r"\frac{d}{dx}\left(" + F + r"\right) = 3x^2", 38, DIM)).arrange(RIGHT, buff=0.8)
+            rows = VGroup(*[VGroup(M(F, 42, ACCUM), M(r"\tfrac{d}{dx}\left(" + F + r"\right) = 3x^2", 38, DIM))
                             for F in (r"x^3", r"x^3 + 5", r"x^3 - 3", r"x^3 + \pi")])
             for i, r in enumerate(rows):
-                y = q.get_bottom()[1] - 0.8 - i * 0.85
+                y = q.get_bottom()[1] - 0.8 - i * 1.0
                 r[0].move_to([-5.6, y, 0], aligned_edge=LEFT)
-                r[1].move_to([-2.9, y, 0], aligned_edge=LEFT)
+                r[1].move_to([-3.2, y, 0], aligned_edge=LEFT)
             self.play(FadeIn(rows[0]), run_time=0.7)
             b.line(1)
             for r in rows[1:]:
                 self.play(FadeIn(r), run_time=0.6)
-            many = T("infinitely many antiderivatives", 32, SECANT).to_edge(RIGHT, buff=0.5).set_y(rows.get_center()[1])
+            many = T("infinitely many antiderivatives", 32, SECANT).move_to([3.6, rows[0].get_y(), 0])
             self.play(FadeIn(many), run_time=0.6)
             b.line(2)
             res = VGroup(formula_box(M(r"\int 3x^2\,dx = x^3 + C", 50, ACCUM), ACCUM),
-                         T("$C$: any constant (the constant of integration)", 30, DIM)).arrange(DOWN, buff=0.25)
-            res.next_to(rows, DOWN, buff=0.55).set_x(0)
+                         T("$C$: any constant", 30, DIM), T("(the constant of integration)", 30, DIM)).arrange(DOWN, buff=0.2)
+            res.next_to(many, DOWN, buff=0.5)
             self.play(FadeIn(res[0]), run_time=0.8)
-            self.play(FadeIn(res[1]), run_time=0.5)
+            self.play(FadeIn(res[1:]), run_time=0.5)
             b.line(3)
-            gen = M(r"\int f(x)\,dx = F(x) + C, \quad \text{where } F'(x) = f(x)", 44).next_to(res, DOWN, buff=0.45)
+            gen = M(r"\int f(x)\,dx = F(x) + C, \quad \text{where } F'(x) = f(x)", 44).set_max_width(12).to_edge(DOWN, buff=0.6)
             self.play(Write(gen), run_time=1.2)
         self.clear()
 
         with self.beat("The basic rules") as b:
             g1 = VGroup(M(r"\int x^n\,dx = \frac{x^{n+1}}{n + 1} + C \ \ (n \ne -1)", 32), M(r"\int k\,f(x)\,dx = k\int f(x)\,dx", 32),
-                        M(r"\int \left[f \pm g\right] dx = \int f\,dx \pm \int g\,dx", 32)).arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+                        M(r"\int \left[f \pm g\right] dx = \int f\,dx \pm \int g\,dx", 32)).arrange(DOWN, aligned_edge=LEFT, buff=0.34)
             g2 = VGroup(M(r"\int e^x\,dx = e^x + C", 32), M(r"\int \frac1x\,dx = \ln|x| + C", 32)).arrange(DOWN, aligned_edge=LEFT, buff=0.25)
             g3 = VGroup(M(r"\int \cos x\,dx = \sin x + C", 32), M(r"\int \sin x\,dx = -\cos x + C", 32, TANGENT), M(r"\int \sec^2 x\,dx = \tan x + C", 32),
                         M(r"\int \csc^2 x\,dx = -\cot x + C", 32, TANGENT), M(r"\int \sec x\tan x\,dx = \sec x + C", 32), M(r"\int \csc x\cot x\,dx = -\csc x + C", 32, TANGENT)).arrange(DOWN, aligned_edge=LEFT, buff=0.22)

@@ -117,17 +117,18 @@ class Lesson(TranscriptScene):
             b.line(1)
             Fa, Fb = F(a), F(bb)
             da, db = Dot(top.c2p(a, Fa), color=ACCUM, radius=0.08), Dot(top.c2p(bb, Fb), color=ACCUM, radius=0.08)
-            la = DashedLine(top.c2p(a, Fa), top.c2p(6.4, Fa), color=DIM, stroke_width=2)
-            lb = DashedLine(top.c2p(bb, Fb), top.c2p(6.4, Fb), color=DIM, stroke_width=2)
+            la = DashedLine(top.c2p(a, Fa), top.c2p(6.2, Fa), color=DIM, stroke_width=2)
+            lb = DashedLine(top.c2p(bb, Fb), top.c2p(6.2, Fb), color=DIM, stroke_width=2)
             links = VGroup(DashedLine(bot.c2p(a, 0), top.c2p(a, Fa), color=DIM, stroke_width=1.5),
                            DashedLine(bot.c2p(bb, 0), top.c2p(bb, Fb), color=DIM, stroke_width=1.5))
-            ta = VGroup(M("F(a)", 32, ACCUM), T("where $F$ starts", 26, DIM)).arrange(RIGHT, buff=0.2).next_to(la, RIGHT, buff=0.15)
-            tb = VGroup(M("F(b)", 32, ACCUM), T("where $F$ ends", 26, DIM)).arrange(RIGHT, buff=0.2).next_to(lb, RIGHT, buff=0.15)
+            ta = VGroup(M("F(a)", 32, ACCUM).next_to(la, RIGHT, buff=0.15), T("where $F$ starts", 26, DIM).next_to(top.c2p(a, Fa), DR, buff=0.12).shift(DOWN * 0.08))
+            tb = VGroup(M("F(b)", 32, ACCUM).next_to(lb, RIGHT, buff=0.15), T("where $F$ ends", 26, DIM).next_to(top.c2p(bb, Fb), UL, buff=0.15))
             self.play(Create(links), run_time=0.6)
             self.play(FadeIn(da), Create(la), FadeIn(ta), run_time=0.8)
             self.play(FadeIn(db), Create(lb), FadeIn(tb), run_time=0.8)
             b.line(2)
-            arr = DoubleArrow(top.c2p(6.4, Fa) + RIGHT * 0.25, top.c2p(6.4, Fb) + RIGHT * 0.25, buff=0, color=SECANT, stroke_width=5,
+            xr = max(ta[0].get_right()[0], tb[0].get_right()[0]) + 0.3
+            arr = DoubleArrow([xr, top.c2p(0, Fa)[1], 0], [xr, top.c2p(0, Fb)[1], 0], buff=0, color=SECANT, stroke_width=5,
                               tip_length=0.2, max_tip_length_to_length_ratio=0.2)
             chg = VGroup(M(r"F(b) - F(a)", 34, SECANT), T("how much $F$ changed", 26, DIM)).arrange(DOWN, buff=0.12).next_to(arr, RIGHT, buff=0.2)
             self.play(GrowFromCenter(arr), FadeIn(chg), run_time=0.8)
@@ -169,16 +170,16 @@ class Lesson(TranscriptScene):
 
         # ---------------------------------------------------------------- where + C comes from
         cs = [(0, ACCUM), (2, FUNC), (-1, TANGENT), (5, DERIV)]
-        cax, cal = plot_axes([0, 3.4, 1], [-2, 15, 5], w=5.0, h=5.4, coords=True)
+        cax, cal = plot_axes([0, 3.0, 1], [-2, 12, 2], w=5.4, h=5.6, coords=True)
         VGroup(cax, cal).to_edge(LEFT, buff=0.6).shift(DOWN * 0.3)
         with self.beat("Where plus C comes from") as b:
             self.play(FadeIn(cax), FadeIn(cal), run_time=0.5)
             curves, labs = VGroup(), VGroup()
             for c, col in cs:
                 g = (lambda s, c=c: s ** 3 / 3 + c)
-                curves.add(cax.plot(g, x_range=[0, 3.15], color=col, stroke_width=4))
+                curves.add(cax.plot(g, x_range=[0, 2.8], color=col, stroke_width=4))
                 txt = r"C = " + (str(c) if c >= 0 else r"-" + str(-c))
-                labs.add(M(txt, 24, col).next_to(cax.c2p(3.15, g(3.15)), RIGHT, buff=0.1))
+                labs.add(M(txt, 26, col).move_to(cax.c2p(0.12, c + 0.5), aligned_edge=LEFT))
             self.play(Create(curves[0]), FadeIn(labs[0]), run_time=0.7)
             for k in range(1, 4):
                 self.play(Create(curves[k]), FadeIn(labs[k]), run_time=0.6)
@@ -325,9 +326,8 @@ class Lesson(TranscriptScene):
         self.example("Evaluating an integral", r"Evaluate $\displaystyle\int_1^4 \left(3x^2 - 2x\right) dx$.",
                      [r"F(x) = x^3 - x^2 \ \ \left(F'(x) = 3x^2 - 2x\right)", r"F(4) = 4^3 - 4^2 = 64 - 16 = 48", r"F(1) = 1^3 - 1^2 = 0",
                       r"\int_1^4 \left(3x^2 - 2x\right) dx = F(4) - F(1) = 48 - 0 = 48",
-                      "TEXT:How we write it from now on:", r"\left[x^3 - x^2\right]_1^4", r"= \left(4^3 - 4^2\right) - \left(1^3 - 1^2\right)",
-                      r"= 48 - 0 = 48"],
-                     at=[1, 2, 3, 4, 5, 5, 6, 7], ref=REF, follow=True)
+                      r"\text{from now on: } \left[x^3 - x^2\right]_1^4", r"= \left(4^3 - 4^2\right) - \left(1^3 - 1^2\right) = 48 - 0 = 48"],
+                     at=[1, 2, 3, 4, 5, 6], ref=REF, follow=True)
 
         with self.beat("Net change") as b:
             r1 = VGroup(M(r"\int_a^b f'(x)\,dx = f(b) - f(a)", 50, ACCUM), T("the integral of a rate of change is the net change", 32, DIM)).arrange(DOWN, buff=0.25).to_edge(UP, buff=0.6)
@@ -357,8 +357,8 @@ class Lesson(TranscriptScene):
                      at=[1, 2, 3, 4], ref=REF)
         self.example("Example 2: A root", r"Evaluate $\displaystyle\int_1^9 \sqrt x\,dx$.",
                      [r"\sqrt x = x^{1/2}", r"\text{add 1: } x^{3/2}, \ \ \text{divide by } \tfrac32\text{: } \frac{x^{3/2}}{3/2} = \tfrac23 x^{3/2}",
-                      r"\left[\tfrac23 x^{3/2}\right]_1^9 = \tfrac23\left(9^{3/2}\right) - \tfrac23\left(1^{3/2}\right)", r"= \tfrac23(27) - \tfrac23", r"= 18 - \tfrac23 = \tfrac{52}{3}"],
-                     at=[1, 2, 3, 4, 5], ref=REF)
+                      r"\left[\tfrac23 x^{3/2}\right]_1^9 = \tfrac23\left(9^{3/2}\right) - \tfrac23\left(1^{3/2}\right)", r"= \tfrac23(27) - \tfrac23 = 18 - \tfrac23 = \tfrac{52}{3}"],
+                     at=[1, 2, 3, 4], ref=REF)
         self.example("Example 3: Net change", r"A plant is $10$ cm tall at $t = 1$ week and grows at $h'(t) = 6t - 2$ cm per week. How tall is it at $t = 3$?",
                      [r"h(3) = h(1) + \int_1^3 h'(t)\,dt", r"\int_1^3 (6t - 2)\,dt = \left[3t^2 - 2t\right]_1^3", r"= (27 - 6) - (3 - 2) = 21 - 1 = 20", r"h(3) = 10 + 20 = 30 \text{ cm}"],
                      at=[1, 2, 3, 4], ref=REF)

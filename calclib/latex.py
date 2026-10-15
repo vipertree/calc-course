@@ -272,9 +272,16 @@ def _count(n, word):
     return f"{n}~{word}{'' if n == 1 else 's'}"         # ~: the number never ends a line
 
 
+def _weight_tex(w):
+    """The multiple-choice weight as printed: 1.2, or a fraction such as \\frac{9}{7} when the decimal doesn't end."""
+    from fractions import Fraction
+    q = Fraction(w).limit_denominator(100)
+    return f"{float(q):g}" if q.denominator in (1, 2, 4, 5, 10) else rf"\frac{{{q.numerator}}}{{{q.denominator}}}"
+
+
 def exam_tex(e, key, theme):
     """A full practice exam as one printable booklet: a cover with the timing table and directions, Section I
-    (multiple choice, numbered 1 to 45 straight through), then Section II with each free-response question on its own
+    (multiple choice, numbered straight through), then Section II with each free-response question on its own
     page. The key adds the answer grid up front, solutions under every question, the scoring guide under every
     FRQ part, and a page for working out the composite and the estimated AP score."""
     na, nb = len(e.mcq_a), len(e.mcq_b)
@@ -324,7 +331,7 @@ def exam_tex(e, key, theme):
                              for (s, lo), hi in zip(e.cutoffs, [None] + [c[1] - 1 for c in e.cutoffs[:-1]]))
         cut += rf" \\ 1 & 0 to {e.cutoffs[-1][1] - 1}"
         out += [r"\clearpage", r"\sect{Your score}",
-                rf"Multiple-choice points (out of {mc_total}) $\times\ {e.mc_weight:g}$ \hfill \rule{{2.2cm}}{{0.4pt}}\par",
+                rf"Multiple-choice points (out of {mc_total}) $\times\ {_weight_tex(e.mc_weight)}$ \hfill \rule{{2.2cm}}{{0.4pt}}\par",
                 rf"Free-response points (out of {frq_pts}) \hfill \rule{{2.2cm}}{{0.4pt}}\par",
                 rf"Composite score (out of {round(mc_total * e.mc_weight + frq_pts)}): the sum of the two lines above \hfill \rule{{2.2cm}}{{0.4pt}}\par",
                 r"\medskip Estimated AP score from the composite:",

@@ -68,6 +68,23 @@ def can_take(user, pub):
     return not pub.get("members_only") or has_full_access(user)
 
 
+def _duration(minutes):
+    h, m = divmod(minutes, 60)
+    hours = f"{h} hour{'' if h == 1 else 's'}" if h else ""
+    mins = f"{m} minute{'' if m == 1 else 's'}" if m else ""
+    return " ".join(s for s in (hours, mins) if s)
+
+
+def outline(pub):
+    """The exam at a glance, from its parts (never hard-coded, so a format change is one edit in calclib):
+    question counts per kind and the total time, e.g. "3 hours 10 minutes"."""
+    ps = parts(pub)
+    minutes = sum(p["minutes"] for p in ps)
+    return {"mcq": sum(len(p["items"]) for p in ps if p["kind"] == "mcq"),
+            "frq": sum(len(p["items"]) for p in ps if p["kind"] == "frq"),
+            "minutes": minutes, "duration": _duration(minutes)}
+
+
 # ------------------------------------------------------------------ the clock
 def parts(pub):
     return pub["parts"]

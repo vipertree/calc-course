@@ -10,14 +10,14 @@
   {% if e.open %}<a class="topic ready exam-card" href="{% url 'exam_home' e.slug %}">{% else %}<div class="topic exam-card locked-card">{% endif %}
     <span class="n">{{ e.course }}</span>
     <span style="flex:1"><strong>{{ e.title }}</strong><br>
-      <small class="muted">3 hours 15 minutes · 45 multiple choice · 6 free response</small>
+      <small class="muted">{{ e.outline.duration }} · {{ e.outline.mcq }} multiple choice · {{ e.outline.frq }} free response</small>
       {% if e.members_only and not e.open %} <span class="lock">Members</span>{% endif %}</span>
   {% if e.open %}</a>{% else %}</div>{% endif %}
 {% empty %}
   <p>No practice exams are available yet.</p>
 {% endfor %}
 </div>
-{% if not user.is_authenticated %}<p class="muted">Sign in to take an exam. The AB exam is open to any account.</p>{% endif %}
+{% if not user.is_authenticated %}<p class="muted">Sign in to take an exam.{% if free_note %} {{ free_note }}{% endif %}</p>{% endif %}
 <p>For more free response, the <a href="{% url 'frq' %}">AP FRQ Archive</a> has questions from past AP Calculus exams, 2002 to 2025,
   sorted by type, with scoring guidelines. Free, no account needed.</p>
 </div>

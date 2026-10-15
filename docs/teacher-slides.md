@@ -50,8 +50,11 @@ logo), into `build/stills/<slug>/{light,dark}/`:
   `<beat>-figure-problem.png` and `<beat>-figure.png`: the figure cropped out, as posed and as solved.
 - `stills.json` lists them.
 
-The builder puts a section's matching beat still beside its first slide, and an example's figure beside the problem
-(posed) and the last solution step (solved); a notes figure is the fallback when the video has none. The deck swaps
+The builder shares a section's beat stills out over its text slides, in video order. A slide that gets several is
+repeated ("1 of 3", "2 of 3", ...), its text held still while the picture steps through the animation (Adder
+2026-10-15); a section with no text slide shows them on picture slides. A slide that already has the notes' graph
+gets none. An example's figure goes beside the problem (posed) and the last solution step (solved); a notes figure is
+the fallback when the video has none. The deck swaps
 light and dark stills with its look. Re-run `stills.sh` after a scene changes.
 
 ## Who can open them

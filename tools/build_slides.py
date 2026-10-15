@@ -315,8 +315,10 @@ def build_deck(t, version, stills, log):
         # the section's animation stills, in video order: one beside each notes slide, the rest on slides of their own
         queue = [x for x in (stills.get(bt, "end") for bt in stills.distinct(sec_beats.get(sec["title"], []))) if x]
 
+        slots = []          # this section's slides that can carry a picture: notes text or a formula box, no graph
+
         def take_clip():
-            return (queue.pop(0) if queue else None), ""
+            return None, ""     # pictures are placed once the section's slides are known (below)
 
         def flush():
             if not pending:
@@ -340,6 +342,8 @@ def build_deck(t, version, stills, log):
                     body = f"<div class='with-fig'><div class='problem' style='font-size:inherit'>{''.join(block_html(b, version) for b in rest)}</div>{fig_html(figs[0], 'side')}</div>"
                 else:
                     body = "".join(block_html(b, version) for b in chunk)
+                if not any(isinstance(b, (Figure, FigureRow)) for b in chunk):
+                    slots.append(len(S))
                 S.append(slide("notes", f"{num} · Notes", title, body, clip, cap,
                                notes="\n\n".join(plain(getattr(b, "body", "") or getattr(b, "caption", "") or "") for b in chunk)))
             pending.clear()
@@ -351,6 +355,7 @@ def build_deck(t, version, stills, log):
                 flush()
                 clip, cap = take_clip()
                 kicker = {Formula: "Key formula", Definition: "Definition", BigIdea: "Big idea"}[type(b)]
+                slots.append(len(S))
                 S.append(slide("idea", f"{num} · {kicker}", title, block_html(b, version), clip, cap,
                                notes=plain(b.body)))
                 recap.append(b)
@@ -372,8 +377,7 @@ def build_deck(t, version, stills, log):
             else:
                 pending.append(b)
         flush()
-        while queue:
-            S.append(slide("picture", f"{num} · From the lesson", title, img_html(queue.pop(0), "big still")))
+        place_stills(S, slots, queue, num, title)
 
     # close: what to remember, and what's next
     items = []
@@ -387,6 +391,28 @@ def build_deck(t, version, stills, log):
         (f"<div class='upnext'>Up next: {label(nxt[0])} {W.html(nxt[1])}</div>" if nxt else "")
     S.append(slide("close", f"{num} · Close", "What to remember", body, notes=plain(t.goals)))
     return S
+
+
+def place_stills(S, slots, queue, num, title):
+    """Put a section's animation stills (in video order) beside its slides. They are shared out over the section's
+    text slides in order; a slide that gets more than one is repeated, its text held still while the picture steps
+    through the animation (Adder 2026-10-15). A section with no text slide shows them on picture slides."""
+    if not queue:
+        return
+    if not slots:
+        S.extend(slide("picture", f"{num} · From the lesson", title, img_html(q, "big still")) for q in queue)
+        return
+    n, m = len(slots), len(queue)
+    share = [queue[i * m // n:(i + 1) * m // n] for i in range(n)] if m >= n else [[q] for q in queue] + [[]] * (n - m)
+    for pos, pics in sorted(zip(slots, share), reverse=True):      # from the end, so earlier positions stay put
+        if not pics:
+            continue
+        base = S[pos]
+        copies = [dict(base, clip=q) for q in pics]
+        if len(copies) > 1:
+            for j, c in enumerate(copies, 1):
+                c["kicker"] = f"{base['kicker']} · {j} of {len(copies)}"
+        S[pos:pos + 1] = copies
 
 
 def block_html(b, version):

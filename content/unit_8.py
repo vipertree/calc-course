@@ -1,5 +1,6 @@
 """Unit 8 test: Applications of Integration. AP format: 12 MCQ (no calculator), 4 MCQ (calculator), 3 FRQ.
-Two forms (A and B) for every slot. Covers the AB topics 8.1-8.12 (8.13, arc length, is BC-only and left out).
+Two forms (A and B) for every slot. Covers the AB topics 8.1-8.12 (8.13, arc length, is BC-only and left out;
+the BC test, content/unit_8bc.py, covers it).
 
 Choices are built by `pick`, which puts the keyed answer at a planned letter. Every keyed value is checked with sympy.
 """
@@ -222,5 +223,5 @@ F3B = FRQ("Area and volume", (r"Let $R$ be the region bounded by the graphs of $
          r"$\frac\pi8\int_0^2 \left(x - \frac{x^2}{2}\right)^2 dx = \frac\pi8\left(\frac83 - 4 + \frac85\right) = \frac\pi8 \cdot \frac{4}{15} = \frac{\pi}{30}$.", [(1, "semicircle area"), (1, "answer")], work="2.2cm"),
 ], frq_type="Area and volume", figure=FIG3B)
 
-TEST = UnitTest(unit=8, title="Applications of Integration", mcq_a=A, mcq_b=B,
+TEST = UnitTest(unit=8, ab=True, title="Applications of Integration", mcq_a=A, mcq_b=B,
                 frq=[Variants(F1A, F1B), Variants(F2A, F2B), Variants(F3A, F3B)])

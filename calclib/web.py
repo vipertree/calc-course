@@ -568,7 +568,7 @@ def export_test(u: UnitTest, outdir, figdir):
                      "points": f.points, "parts": parts,
                      "figure": {"src": figure_svg(f.figure, figdir), "caption": html(f.figure.caption)} if f.figure else None})
       frq_rows.append(frqs)
-    pub = {"number": u.number, "unit": u.unit, "version": u.version, "title": u.title, "minutes": u.minutes, "quiz": qs,
+    pub = {"number": u.number, "unit": u.unit, "version": u.course, "title": u.title, "minutes": u.minutes, "quiz": qs,
            "frq": [row[0] for row in frq_rows], "quiz_variants": qv, "frq_variants": frq_rows,
            "steps": [], "practice": [], "mcq": []}
     os.makedirs(outdir, exist_ok=True)

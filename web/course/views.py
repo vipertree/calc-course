@@ -13,7 +13,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from . import payments
-from accounts.models import Classroom, Enrollment, Profile, can_open, can_save, class_for, has_full_access, is_free
+from accounts.models import Classroom, Enrollment, Profile, can_open, can_save, class_for, has_full_access, is_free, unit_of
 from accounts.permissions import forbidden, is_teacher, teacher_required
 from accounts.ratelimit import ratelimit
 from . import content, grading
@@ -38,12 +38,19 @@ def _preview(pub):
             "practice": pub["practice"][:FREE_PRACTICE], "quiz": [], "mcq": [], "frq": [], "preview": True}
 
 
-def _lesson(num):
+def _class_course(user):
+    """ "AB" or "BC" for a student in a class (the class's course), else None: it picks which version of a two-version
+    topic or unit test their Next links lead to (docs/ab-bc-versions.md)."""
+    c = class_for(user)
+    return c.course if c is not None else None
+
+
+def _lesson(num, course=None):
     pub = content.public(num)
     if not pub:
         raise Http404("That lesson isn't written yet.")
     unit, meta = content.topic_meta(num)
-    prev, nxt = content.neighbours(num)
+    prev, nxt = content.neighbours(num, course)
     return pub, unit, prev, nxt
 
 
@@ -112,9 +119,9 @@ def course_map(request, module=False):
             topics.append({**t, "ready": t["n"] in have,
                            "steps": c.get("steps", 0), "done": done.get(t["n"], 0),
                            "quiz": best.get(t["n"])})
-        tests = content.unit_tests()
-        best_u = best.get(f"U{u['n']}")
-        units.append({**u, "topics": topics, "test": u["n"] in tests, "test_num": f"U{u['n']}", "test_best": best_u})
+        # a unit's test, or its AB and BC tests (Units 6-8), each with the student's best multiple-choice score
+        tests = [{**v, "label": content.test_label(v["num"]), "best": best.get(v["num"])} for v in content.test_versions(u["n"])]
+        units.append({**u, "topics": topics, "tests": tests})
     full = has_full_access(request.user)
     for u in units:
         u["locked"] = not u["free"] and not full          # paid units are tagged; free ones carry no tag
@@ -173,7 +180,7 @@ def student_dashboard(request):
     if last and last in have and not last.startswith("U"):
         meta = content.topic_meta(last)[1]
         resume = {"n": last, "label": content.label(last), "title": meta["title"] if meta else last}
-    quizzes = [{"n": a.topic, "label": content.label(a.topic) if not a.topic.startswith("U") else a.topic,
+    quizzes = [{"n": a.topic, "label": content.label(a.topic) if not a.topic.startswith("U") else content.test_label(a.topic),
                 "score": a.score, "total": a.total, "at": a.at}
                for a in QuizAttempt.objects.filter(user=request.user).order_by("-at")[:8]]
     tries = ExamAttempt.objects.filter(user=request.user).order_by("-id")[:5]
@@ -228,10 +235,7 @@ def _current_unit(user):
     if not latest:
         return 1
     topic = max(latest)[1]
-    try:
-        return int(topic.lstrip("U").split(".")[0])
-    except ValueError:
-        return 1
+    return unit_of(topic) or 1
 
 
 def unit_test(request, num):
@@ -254,13 +258,20 @@ def unit_test(request, num):
     else:
         state["print"] = {"forms": [{"form": f, "test": reverse("test_pdf", args=[num, f, "test"]),
                                      "key": reverse("test_pdf", args=[num, f, "key"])} for f in _paper_forms(num)]}
-    return render(request, "course/unittest.html", {"L": pub, "num": num, "lesson_json": pub, "state_json": state})
+    # Units 6-8 come in an AB and a BC version: the page names this one and links the other (docs/ab-bc-versions.md)
+    unit = content.unit_of_test(num)
+    course, mine = content.test_course(num), _class_course(request.user)
+    versions = [{**v, "label": content.test_label(v["num"]), "on": v["num"] == num, "url": reverse("unit_test", args=[v["num"]])}
+                for v in content.test_versions(unit)] if course else []
+    return render(request, "course/unittest.html", {"L": pub, "num": num, "lesson_json": pub, "state_json": state,
+                                                    "test_label": content.test_label(num), "course": course,
+                                                    "versions": versions, "class_course": mine if course else None})
 
 
 def lesson(request, num, area="notes"):
     if area not in AREAS:
         raise Http404
-    pub, unit, prev, nxt = _lesson(num)
+    pub, unit, prev, nxt = _lesson(num, _class_course(request.user))
     pub = assess.strip(pub)
     if not can_open(request.user, num):
         pub = _preview(pub)
@@ -516,7 +527,7 @@ def teacher(request):
                               "frq": frq.get(k)})
             rows.append({"id": s.id, "name": s.profile.display_name, "username": s.username, "cells": cells})
         assessments = []
-        for n in have + [f"U{u}" for u in sorted(content.unit_tests())]:
+        for n in have + [v["num"] for u in sorted(content.unit_tests()) for v in content.test_versions(u)]:
             got = QuizAttempt.objects.filter(classroom=c, topic=n)
             k = got.count()
             if not k:
@@ -714,7 +725,7 @@ _KINDS = [("packet", "Packet"), ("packetcompact", "Compact packet (trial)"), ("n
           ("unittest-formC", "Unit test C")]
 
 
-def _handout_rows(num, title):
+def _handout_rows(num, title, course=""):
     d = PDF_DIR / num
     docs = []
     for kind, label in _KINDS:
@@ -723,7 +734,7 @@ def _handout_rows(num, title):
             docs.append({"label": label, "student": reverse("handout_pdf", args=[num, student]),
                          "key": reverse("handout_pdf", args=[num, key]) if (d / key).is_file() else None})
     deck = reverse("slides", args=[num]) if not num.startswith("U") and slides.manifest(num) else None
-    return {"num": num, "title": title, "docs": docs, "slides": deck}
+    return {"num": num, "title": title, "docs": docs, "slides": deck, "course": course}
 
 
 @teacher_required
@@ -733,9 +744,12 @@ def handouts(request):
     for u in content.syllabus():
         rows = [_handout_rows(t["n"], t["title"]) for t in u["topics"]]
         rows = [r for r in rows if r["docs"] or r["slides"]]
-        test = _handout_rows(f"U{u['n']}", "Unit test") if u["n"] in tests else None
-        if rows or (test and test["docs"]):
-            units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows, "test": test})
+        # the unit test, or both versions of it for Units 6-8 (AB without the BC-only topics, BC the whole unit)
+        test_rows = [_handout_rows(v["num"], f"Unit test, {v['course']} version" if v["course"] else "Unit test", v["course"])
+                     for v in content.test_versions(u["n"])] if u["n"] in tests else []
+        test_rows = [r for r in test_rows if r["docs"]]
+        if rows or test_rows:
+            units.append({"n": u["n"], "title": u["title"], "heading": u["heading"], "rows": rows, "tests": test_rows})
     lookup = None
     if request.GET.get("packet"):
         lookup = {"code": request.GET["packet"].strip()[:20], "found": _find_packet(request.user, request.GET["packet"])}

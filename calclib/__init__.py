@@ -374,6 +374,7 @@ class UnitTest:
     frq: list
     minutes: str = "90 minutes"
     version: str = ""      # "BC" for the whole-unit BC test of a unit that also has an AB test (U6BC; docs/ab-bc-versions.md)
+    ab: bool = False       # the AB test of a unit that also has a BC test: its number stays U6, its name says AB
 
     @property
     def number(self):
@@ -385,9 +386,14 @@ class UnitTest:
         return f"u{self.unit}{self.version.lower()}"
 
     @property
+    def course(self):
+        """ "AB" or "BC" for a unit tested in two versions, "" for a unit with one test."""
+        return self.version or ("AB" if self.ab else "")
+
+    @property
     def name(self):
-        """ "Unit 6 Test", or "Unit 6 BC Test" for the BC version."""
-        return f"{unit_label(self.unit)}{' ' + self.version if self.version else ''} Test"
+        """ "Unit 4 Test", or "Unit 6 AB Test" and "Unit 6 BC Test" for a unit tested in two versions."""
+        return f"{unit_label(self.unit)}{' ' + self.course if self.course else ''} Test"
 
 
 def validate_test(u: UnitTest):

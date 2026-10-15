@@ -1,5 +1,6 @@
 """Unit 7 test: Differential Equations. AP format: 12 MCQ (no calculator), 4 MCQ (calculator), 3 FRQ.
-Two forms (A and B) for every slot. Covers the AB topics 7.1-7.4 and 7.6-7.8 (the BC-only topics 7.5 and 7.9 are left out).
+Two forms (A and B) for every slot. Covers the AB topics 7.1-7.4 and 7.6-7.8 (the BC-only topics 7.5 and 7.9 are left out;
+the BC test, content/unit_7bc.py, covers them).
 
 Choices are built by `pick`, which puts the keyed answer at a planned letter. Every keyed value is checked with sympy.
 """
@@ -275,5 +276,5 @@ F3B = FRQ("A medication", (
          r"$40\left(\frac34\right)^{t/2} = 10$, $\frac t2\ln\frac34 = \ln\frac14$, $t = \dfrac{2\ln 4}{\ln\frac43} \approx 9.64$ hours.", [(1, "sets up the equation"), (1, "answer")], work="2cm"),
 ], frq_type="Differential equation")
 
-TEST = UnitTest(unit=7, title="Differential Equations", mcq_a=A, mcq_b=B,
+TEST = UnitTest(unit=7, ab=True, title="Differential Equations", mcq_a=A, mcq_b=B,
                 frq=[Variants(F1A, F1B), Variants(F2A, F2B), Variants(F3A, F3B)])

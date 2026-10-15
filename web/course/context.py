@@ -51,10 +51,13 @@ def _course_tree(module, full):
     base = reverse("trig" if module else "map")
 
     def lessons(u):
-        out = [{"label": t["label"], "title": t["title"], "url": reverse("lesson", args=[t["n"]]) if t["n"] in have else ""}
+        # a BC-only lesson in a mixed unit carries a BC tag, and 6.14's two versions an AB or a BC tag beside the
+        # plain number (docs/ab-bc-versions.md); Units 6-8 list an AB and a BC test
+        out = [{"label": t["short"], "title": t["title"], "tag": t["tag"], "url": reverse("lesson", args=[t["n"]]) if t["n"] in have else ""}
                for t in u["topics"]]
         if u["n"] in tests:
-            out.append({"label": "Test", "title": f"{u['short']} test", "url": reverse("unit_test", args=[f"U{u['n']}"])})
+            out += [{"label": "Test", "title": f"{u['short']} test", "tag": v["course"], "url": reverse("unit_test", args=[v["num"]])}
+                    for v in content.test_versions(u["n"])]
         return out
 
     units = [u for u in content.syllabus() if u["module"] == module]

@@ -1,5 +1,6 @@
 """Unit 6 test: Integration and Accumulation of Change. AP format: 12 MCQ (no calculator), 4 MCQ (calculator), 3 FRQ.
-Two forms (A and B) for every slot. Covers the AB topics 6.1-6.10 and 6.14 (the BC-only topics 6.11-6.13 are left out).
+Two forms (A and B) for every slot. Covers the AB topics 6.1-6.10 and 6.14 (the BC-only topics 6.11-6.13 are left out;
+the BC test, content/unit_6bc.py, covers them).
 
 Choices are built by `pick`, which puts the keyed answer at a planned letter. Every keyed value is checked with sympy.
 """
@@ -227,5 +228,5 @@ F3B = FRQ("A particle on a line", (
          r"$v(2.5) = -0.75 < 0$ and $a(2.5) = v'(2.5) = 2(2.5) - 4 = 1 > 0$. They have opposite signs, so the speed is decreasing.", [(1, "decreasing with reason")], work="1.8cm"),
 ], frq_type="Particle motion")
 
-TEST = UnitTest(unit=6, title="Integration and Accumulation of Change", mcq_a=A, mcq_b=B,
+TEST = UnitTest(unit=6, ab=True, title="Integration and Accumulation of Change", mcq_a=A, mcq_b=B,
                 frq=[Variants(F1A, F1B), Variants(F2A, F2B), Variants(F3A, F3B)])

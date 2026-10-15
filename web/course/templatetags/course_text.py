@@ -33,11 +33,12 @@ def unit_name(n):
 @register.filter
 def work_name(num):
     """What a quiz or test row is called: "Topic 2.1 quiz", "T3 quiz", "Unit 4 test", "Trig Review test"."""
+    from course import content
     num = str(num)
     if num.startswith("U"):
-        return f"{unit_name(num[1:])} test"
+        return content.test_label(num)
     lab = lesson_label(num)
-    return f"Topic {lab} quiz" if lab == num else f"{lab} quiz"
+    return f"Topic {lab} quiz" if lab[:1].isdigit() else f"{lab} quiz"      # "Topic 6.14 BC quiz", "T3 quiz"
 
 
 @register.inclusion_tag("course/_frq_links.html")

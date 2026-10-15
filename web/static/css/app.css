@@ -831,3 +831,9 @@ details.unit > summary h2 { margin: 0; }
 .theme-switch[aria-checked="false"] .ts-sun, .theme-switch[aria-checked="true"] .ts-moon { color: var(--ink); }
 .theme-switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 999px; }
 @media (prefers-reduced-motion: reduce) { .ts-knob, .ts-track svg { transition: none; } }
+
+/* a unit test that comes in an AB and a BC version (Units 6-8): the version switch above the test */
+.test-versions { margin: 0 0 18px; }
+.test-versions p { margin: 0; }
+.test-versions .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.test-versions .small { font-size: .9rem; }

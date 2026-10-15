@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load course_text %}
 {% block title %}Transcripts · AP Calculus{% endblock %}
 {% block main %}
 <div class="layout">
   <aside class="rail" style="max-height:80vh;overflow:auto">
     <div class="muted" style="font-weight:700;margin-bottom:6px">{{ items|length }} transcripts · ~{{ total }} min</div>
     <ol style="counter-reset:none">{% for t in items %}
-      <li style="counter-increment:none" class="{% if cur and cur.num == t.num %}cur{% endif %}"><a href="?t={{ t.num }}" style="color:inherit;text-decoration:none">{{ t.num }} · {{ t.title|slice:"4:" }}</a></li>
+      <li style="counter-increment:none" class="{% if cur and cur.num == t.num %}cur{% endif %}"><a href="?t={{ t.num }}" style="color:inherit;text-decoration:none">{{ t.num|lesson_label }} · {{ t.title|slice:"4:" }}</a></li>
     {% endfor %}</ol>
   </aside>
   <div class="narrow" style="margin:0">

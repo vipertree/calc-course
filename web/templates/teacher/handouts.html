@@ -30,12 +30,12 @@
       <td>{% if r.slides %}<span class="doc"><a href="{{ r.slides }}"><strong>Slides</strong></a></span>{% endif %}{% for d in r.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
     </tr>
     {% endfor %}
-    {% if u.test %}
+    {% for t in u.tests %}
     <tr class="unit-test-row">
-      <th><span class="chip-sm">U{{ u.n }}</span> Unit test</th>
-      <td>{% for d in u.test.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
+      <th><span class="chip-sm">U{{ u.n }}{% if t.course %} {{ t.course }}{% endif %}</span> {{ t.title }}</th>
+      <td>{% for d in t.docs %}<span class="doc">{{ d.label }}: <a href="{{ d.student }}" target="_blank" rel="noopener">student</a>{% if d.key %} · <a href="{{ d.key }}" target="_blank" rel="noopener">key</a>{% endif %}</span>{% endfor %}</td>
     </tr>
-    {% endif %}
+    {% endfor %}
   </table>
 </section>
 {% endfor %}

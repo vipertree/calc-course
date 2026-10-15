@@ -38,7 +38,7 @@
   {% endif %}
   {% if r.rows %}
   <div class="roster" style="margin-top:14px"><table>
-    <thead><tr><th>Student</th>{% for t in topics %}<th colspan="4">Topic {{ t }}</th>{% endfor %}</tr>
+    <thead><tr><th>Student</th>{% for t in topics %}<th colspan="4">Topic {{ t|lesson_label }}</th>{% endfor %}</tr>
     <tr class="muted"><th></th>{% for t in topics %}<th>Lesson</th><th>Practice</th><th>Quiz</th><th>FRQ</th>{% endfor %}</tr></thead>
     <tbody>{% for s in r.rows %}<tr><td>{{ s.name }}</td>
       {% for c in s.cells %}

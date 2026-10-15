@@ -1,9 +1,14 @@
 {% extends "base.html" %}{% load static course_text %}
-{% block title %}{{ L.unit|unit_name }} test · AP Calculus{% endblock %}
+{% block title %}{{ test_label|capfirst }} · AP Calculus{% endblock %}
 {% block head %}<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.105.3/mathlive.min.js"></script>
 {% if DESMOS_API_KEY %}<script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey={{ DESMOS_API_KEY }}"></script>{% endif %}{% endblock %}
 {% block main %}
-<div class="lesson-head" data-unit="{{ L.unit }}"><span class="chip">U{{ L.unit }}</span><span class="unit">{{ L.unit|unit_name }} test · {{ L.minutes }}</span><h1>{{ L.title }}</h1></div>
+<div class="lesson-head" data-unit="{{ L.unit }}"><span class="chip">U{{ L.unit }}{% if course %} {{ course }}{% endif %}</span><span class="unit">{{ test_label|capfirst }} · {{ L.minutes }}</span><h1>{{ L.title }}</h1></div>
+{% if versions %}<nav class="card test-versions mathy" aria-label="Test versions">
+  <p><strong>This unit's test comes in two versions.</strong>{% if class_course %} Your class takes the {{ class_course }} version.{% endif %}</p>
+  <div class="row">{% for v in versions %}<a class="btn small{% if v.on %} primary{% endif %}" href="{{ v.url }}"{% if v.on %} aria-current="page"{% endif %}>{{ v.course }} version</a>{% endfor %}</div>
+  <p class="muted small">{% if course == "AB" %}The AB version leaves out the BC-only topics. BC students take the BC version, which covers the whole unit.{% else %}The BC version covers the whole unit, BC-only topics included. AB students take the AB version.{% endif %}</p>
+</nav>{% endif %}
 <div id="app" data-area="unittest" data-num="{{ num }}"
      data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-draft="{% url 'api_draft' num %}" data-step=""
      data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>

@@ -71,9 +71,9 @@ FREE_UNITS = {0, 1, 2, 3}
 
 
 def unit_of(num):
-    """The unit a lesson ("2.1") or unit test ("U2") belongs to, or None."""
+    """The unit a lesson ("2.1") or unit test ("U2", or "U6BC" for a BC version) belongs to, or None."""
     s = str(num)
-    s = s[1:] if s.startswith("U") else s.split(".")[0]
+    s = s[1:].removesuffix("BC") if s.startswith("U") else s.split(".")[0]
     return int(s) if s.isdigit() else None
 
 

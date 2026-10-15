@@ -6,7 +6,7 @@ from accounts import views as acc
 from course import frq_views, site_pages
 from course import views as v
 
-NUM = r"(?P<num>\d{1,2}\.\d{1,2}|U\d{1,2})"
+NUM = r"(?P<num>\d{1,2}\.\d{1,2}|U\d{1,2}(?:BC)?)"     # U6BC: the BC version of a unit test (docs/ab-bc-versions.md)
 
 urlpatterns = [
     path("", v.home, name="home"),
@@ -52,8 +52,8 @@ urlpatterns = [
     re_path(rf"^api/{NUM}/draft/$", v.api_draft, name="api_draft"),
     re_path(rf"^api/{NUM}/quiz/$", v.api_quiz, name="api_quiz"),
     re_path(rf"^api/{NUM}/frq/$", v.api_frq_score, name="api_frq"),
-    re_path(r"^unit/(?P<num>U\d{1,2})/test/$", v.unit_test, name="unit_test"),
-    re_path(r"^unit/(?P<num>U\d{1,2})/test/print/(?P<form>[A-Z])/(?P<kind>test|key)/$", v.test_pdf, name="test_pdf"),
+    re_path(r"^unit/(?P<num>U\d{1,2}(?:BC)?)/test/$", v.unit_test, name="unit_test"),
+    re_path(r"^unit/(?P<num>U\d{1,2}(?:BC)?)/test/print/(?P<form>[A-Z])/(?P<kind>test|key)/$", v.test_pdf, name="test_pdf"),
     path("frq/", frq_views.index, name="frq"),
     re_path(r"^frq/q/(?P<qid>\d{4}-(?:ab|bc)-\d)/$", frq_views.question, name="frq_question"),
     re_path(r"^frq/file/(?P<qid>\d{4}-(?:ab|bc)-\d)/(?P<name>[\w.-]+)$", frq_views.file, name="frq_file"),

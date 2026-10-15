@@ -542,7 +542,7 @@ def export_test(u: UnitTest, outdir, figdir):
     for i, vs in enumerate(slots(u.mcq_a) + slots(u.mcq_b)):
         row = []
         for v, q in enumerate(vs):
-            iid = f"u{u.unit}-{i + 1}" + (f"v{v + 1}" if v else "")
+            iid = f"{u.ids}-{i + 1}" + (f"v{v + 1}" if v else "")
             row.append({"id": iid, "type": "mcq", "html": para(q.stem), "calc": q.calc,
                         "choices": [html(c) for c in q.choices],
                         "figure": {"src": figure_svg(q.figure, figdir), "caption": html(q.figure.caption)} if q.figure else None,
@@ -555,7 +555,7 @@ def export_test(u: UnitTest, outdir, figdir):
     for i, vs in enumerate(slots(u.frq)):
       frqs = []
       for v, f in enumerate(vs):
-        fid = f"u{u.unit}f{i + 1}" + (f"v{v + 1}" if v else "")
+        fid = f"{u.ids}f{i + 1}" + (f"v{v + 1}" if v else "")
         parts = []
         for p in f.parts:
             pid = f"{fid}{p.label}"
@@ -568,11 +568,11 @@ def export_test(u: UnitTest, outdir, figdir):
                      "points": f.points, "parts": parts,
                      "figure": {"src": figure_svg(f.figure, figdir), "caption": html(f.figure.caption)} if f.figure else None})
       frq_rows.append(frqs)
-    pub = {"number": f"U{u.unit}", "unit": u.unit, "title": u.title, "minutes": u.minutes, "quiz": qs,
+    pub = {"number": u.number, "unit": u.unit, "version": u.version, "title": u.title, "minutes": u.minutes, "quiz": qs,
            "frq": [row[0] for row in frq_rows], "quiz_variants": qv, "frq_variants": frq_rows,
            "steps": [], "practice": [], "mcq": []}
     os.makedirs(outdir, exist_ok=True)
-    path = os.path.join(outdir, f"U{u.unit}.json")
+    path = os.path.join(outdir, f"{u.number}.json")
     with open(path, "w") as fh:
         _no_leftover(pub.get("number") or pub.get("title"))
         json.dump({"public": pub, "private": priv}, fh, indent=1)

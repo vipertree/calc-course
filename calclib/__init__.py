@@ -283,16 +283,26 @@ def n_forms(*lists):
 MODULES = {0: "Trig Review"}
 
 
+def syllabus_labels():
+    """Lesson numbers whose display label differs from the number: a topic taught in an AB and a BC version
+    (docs/ab-bc-versions.md). 6.14 shows as "6.14 AB" and its BC twin, 6.15 internally, as "6.14 BC"."""
+    import json
+    p = Path(__file__).resolve().parent.parent / "web" / "course" / "syllabus.json"
+    return {t["n"]: t["label"] for u in json.loads(p.read_text()) for t in u["topics"] if t.get("label")}
+
+
 def label(number):
-    """What a student sees for a lesson number: "2.1", or "T3" for the third lesson of the trig module."""
+    """What a student sees for a lesson: "2.1", "T3" for the third lesson of the trig module, or "6.14 BC"."""
     u, t = number.split(".")
-    return f"{MODULES[int(u)][0]}{t}" if int(u) in MODULES else number
+    if int(u) in MODULES:
+        return f"{MODULES[int(u)][0]}{t}"
+    return syllabus_labels().get(number, number)
 
 
 def topic_name(number):
-    """ "Topic 2.1", or "Trig Review, Lesson 3" for a module lesson."""
+    """ "Topic 2.1", "Topic 6.14 BC", or "Trig Review, Lesson 3" for a module lesson."""
     u, t = number.split(".")
-    return f"{MODULES[int(u)]}, Lesson {t}" if int(u) in MODULES else f"Topic {number}"
+    return f"{MODULES[int(u)]}, Lesson {t}" if int(u) in MODULES else f"Topic {label(number)}"
 
 
 def unit_label(unit):
@@ -363,29 +373,40 @@ class UnitTest:
     mcq_b: list
     frq: list
     minutes: str = "90 minutes"
+    version: str = ""      # "BC" for the whole-unit BC test of a unit that also has an AB test (U6BC; docs/ab-bc-versions.md)
 
     @property
     def number(self):
-        return f"U{self.unit}"
+        return f"U{self.unit}{self.version}"
+
+    @property
+    def ids(self):
+        """This test's item-id prefix ("u6", "u6bc"): unique across tests, since FRQ scores are keyed by part id."""
+        return f"u{self.unit}{self.version.lower()}"
+
+    @property
+    def name(self):
+        """ "Unit 6 Test", or "Unit 6 BC Test" for the BC version."""
+        return f"{unit_label(self.unit)}{' ' + self.version if self.version else ''} Test"
 
 
 def validate_test(u: UnitTest):
     qs = every(u.mcq_a) + every(u.mcq_b)
     for q in qs:
-        check(f"U{u.unit} MCQ letters", q.correct in "ABCD", q.stem[:40])
+        check(f"{u.number} MCQ letters", q.correct in "ABCD", q.stem[:40])
     for q in every(u.mcq_b):
-        check(f"U{u.unit} Part B marked calc", q.calc, q.stem[:40])
+        check(f"{u.number} Part B marked calc", q.calc, q.stem[:40])
     for q in every(u.mcq_a):
-        check(f"U{u.unit} Part A not calc", not q.calc, q.stem[:40])
+        check(f"{u.number} Part A not calc", not q.calc, q.stem[:40])
     from collections import Counter
     for k in range(n_forms(u.mcq_a, u.mcq_b)):
         fq = form(u.mcq_a, k) + form(u.mcq_b, k)
         counts = Counter(q.correct for q in fq)
-        check(f"U{u.unit} form {'ABCDEF'[k]} answer balance", max(counts.values()) <= len(fq) // 2, str(dict(counts)))
+        check(f"{u.number} form {'ABCDEF'[k]} answer balance", max(counts.values()) <= len(fq) // 2, str(dict(counts)))
     import re
     for q in qs:
         for blk in [q.stem, q.solution] + list(q.choices) + list(q.why_not.values()):
-            check(f"U{u.unit} no em dashes", "\u2014" not in blk, blk[:50])
+            check(f"{u.number} no em dashes", "\u2014" not in blk, blk[:50])
 
 
 def validate(t: Topic):

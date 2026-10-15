@@ -410,7 +410,17 @@
    {
     "n": "6.14",
     "title": "Selecting Techniques for Antidifferentiation",
-    "bc": false
+    "bc": false,
+    "ab": true,
+    "label": "6.14 AB",
+    "twin": "6.15"
+   },
+   {
+    "n": "6.15",
+    "title": "Selecting Techniques for Antidifferentiation",
+    "bc": true,
+    "label": "6.14 BC",
+    "twin": "6.14"
    }
   ]
  },

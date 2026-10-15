@@ -27,7 +27,7 @@ def load(num):
     if num.lower().startswith("exam-"):          # a full practice exam: exam-ab1 -> content/exams/ab1.py
         return importlib.import_module("content.exams." + num[5:].lower()).EXAM
     if num.upper().startswith("U"):
-        return importlib.import_module("content.unit_" + num[1:]).TEST
+        return importlib.import_module("content.unit_" + num[1:].lower()).TEST     # U6 -> unit_6, U6BC -> unit_6bc
     mod = importlib.import_module("content.topic_" + num.replace(".", "_"))
     return mod.TOPIC
 

@@ -1,9 +1,11 @@
-"""Topic 6.14: Selecting techniques for antidifferentiation.
+"""Topic 6.14 AB: Selecting techniques for antidifferentiation, the AB version.
 
-CED: FUN-6.D/FUN-6.E/FUN-6.F (selection): choose among basic rules, rewriting, substitution, long division, completing
-the square, and (BC) integration by parts and partial fractions, by noticing the integrand's features: a toolkit, not a
-decision tree (Adder, 1.7). Lesson example: choose a tool for four integrals. Worked examples: three integrals from the
-same pieces needing substitution, completing the square, and long division.
+CED 6.14 (skill 1.C, selecting a procedure) over FUN-6.C/FUN-6.D: choose among basic rules, rewriting, substitution, long division and completing the
+square by noticing the integrand's features: a toolkit, not a decision tree (Adder, 1.7). The BC version of this
+topic, which adds integration by parts and partial fractions, is content/topic_6_15.py ("6.14 BC" on the site;
+docs/ab-bc-versions.md). Nothing here uses a BC-only technique.
+Lesson example: choose a tool for four integrals. Worked examples: three integrals from the same pieces needing
+substitution, completing the square, and long division, then substitution or arcsine for a square root.
 """
 import sympy as sp
 
@@ -25,8 +27,7 @@ def plus_c(f, F):
     return expr(F + C, display=tex(F) + " + C")
 
 
-TOOL = {"sub": "substitution", "basic": "basic rules", "rewrite": "rewrite first", "div": "long division", "square": "complete the square", "parts": "integration by parts (BC)",
-        "pf": "partial fractions (BC)"}
+TOOL = {"sub": "substitution", "basic": "basic rules", "rewrite": "rewrite first", "div": "long division", "square": "complete the square"}
 
 NOTES = [
     Video("s6_14.py::Lesson", "Choosing a technique", 4),
@@ -36,9 +37,7 @@ NOTES = [
           r"a product, a power of a sum, or a sum over one term & \blank{rewrite first} \\ "
           r"an inside function whose derivative is a factor & \blank{substitution} \\ "
           r"a fraction, top degree $\ge$ bottom degree & long division \\ "
-          r"$1$ over a quadratic that won't factor & \blank{complete the square} \\ "
-          r"a product of two different kinds of functions & integration by parts (BC) \\ "
-          r"a fraction whose bottom factors into lines & partial fractions (BC)", "ll", header=r"Notice & Tool"),
+          r"$1$ over a quadratic that won't factor & \blank{complete the square}", "ll", header=r"Notice & Tool"),
     Text(r"Look at the features, pick the tool, and try another if it fails. The same pieces can need different tools: $\int \frac{x + 1}{x^2 + 2x + 5}\,dx$ (substitution), "
          r"$\int \frac{1}{x^2 + 2x + 5}\,dx$ (complete the square), $\int \frac{x^2 + 2x + 5}{x + 1}\,dx$ (long division)."),
     VideoExample('Choosing the tool', work="3cm"),
@@ -50,7 +49,8 @@ NOTES = [
 P = [((x + 1) / (x**2 + 2 * x + 5), sp.log(x**2 + 2 * x + 5) / 2, "sub"), (1 / (x**2 + 2 * x + 5), sp.atan((x + 1) / 2) / 2, "square"),
      ((x**2 + 2 * x + 5) / (x + 1), x**2 / 2 + x + 4 * sp.log(sp.Abs(x + 1)), "div"), ((3 * x - 2)**2, (3 * x - 2)**3 / 9, "sub"), (sp.cos(x) * sp.exp(sp.sin(x)), sp.exp(sp.sin(x)), "sub"),
      ((x**3 + 2 * x) / x**2, x**2 / 2 + 2 * sp.log(sp.Abs(x)), "rewrite"), (1 / sp.sqrt(9 - x**2), sp.asin(x / 3), "basic"), (sp.sec(x)**2 / sp.tan(x), sp.log(sp.Abs(sp.tan(x))), "sub"),
-     (x**2 / (x + 2), x**2 / 2 - 2 * x + 4 * sp.log(sp.Abs(x + 2)), "div"), (1 / (x**2 - 4 * x + 8), sp.atan((x - 2) / 2) / 2, "square")]
+     (x**2 / (x + 2), x**2 / 2 - 2 * x + 4 * sp.log(sp.Abs(x + 2)), "div"), (1 / (x**2 - 4 * x + 8), sp.atan((x - 2) / 2) / 2, "square"),
+     (x / sp.sqrt(16 - x**2), -sp.sqrt(16 - x**2), "sub"), (1 / sp.sqrt(16 - x**2), sp.asin(x / 4), "basic")]
 PRACTICE = [Item(rf"Find $\displaystyle\int {sp.latex(f)}\,dx$.", plus_c(f, F), rf"Tool: {TOOL[k]}. ${tex(F)} + C$.", work="2.4cm") for f, F, k in P]
 
 # ---------------------------------------------------------------- quiz
@@ -89,6 +89,7 @@ FRQS = []
 
 TOPIC = Topic(
     number="6.14", title="Selecting Techniques for Antidifferentiation",
-    unit="Unit 6: Integration and Accumulation of Change", ced=["FUN-6.D", "FUN-6.E", "FUN-6.F"],
+    unit="Unit 6: Integration and Accumulation of Change", ced=["FUN-6.C", "FUN-6.D", "skill 1.C"],
     goals=r"Choose an appropriate technique (basic rules, rewriting, substitution, long division, completing the square) by noticing the features of an integrand.",
+    bc_only=False,
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

@@ -241,11 +241,11 @@ def packet_tex(t, key, theme, compact=False):
 
 
 def unittest_tex(u, key, theme, k=0):
-    title = f"{unit_label(u.unit)} Test" + (f", Form {'ABCDEF'[k]}" if n_forms(u.mcq_a, u.mcq_b, u.frq) > 1 else "")
+    title = u.name + (f", Form {'ABCDEF'[k]}" if n_forms(u.mcq_a, u.mcq_b, u.frq) > 1 else "")
     mcq_a, mcq_b, frqs = form(u.mcq_a, k), form(u.mcq_b, k), form(u.frq, k)
     na, nb, fpts = len(mcq_a), len(mcq_b), sum(f.points for f in frqs)
     out = [preamble(theme, key, title),
-           rf"\topictitle{{U{u.unit}}}{{{u.title}}}{{{unit_label(u.unit)} Test\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}",
+           rf"\topictitle{{{u.number}}}{{{u.title}}}{{{u.name}\enspace\textperiodcentered\enspace {u.minutes}}}{{AP format}}",
            # the scoring, up front: every multiple-choice question is 1 point; each FRQ shows its own points
            r"{\small\hfont\textbf{Scoring}\enspace "
            + rf"Part A: {_count(na, 'question')}, 1 point each ({_count(na, 'point')}).\enspace "

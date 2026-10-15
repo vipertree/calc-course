@@ -35,10 +35,21 @@ STILLS = os.environ.get("CALC_STILLS")
 MODULES = {0: "Trig Review"}
 
 
+def _syllabus():
+    import json
+    return json.load(open(os.path.join(ROOT, "web", "course", "syllabus.json")))
+
+
+def shown_number(num):
+    """The number a lesson shows: "2.1", or "6.14 BC" for a topic taught in two versions (6.15 internally; the
+    syllabus's "label", docs/ab-bc-versions.md)."""
+    return next((t.get("label", num) for u in _syllabus() for t in u["topics"] if t["n"] == num), num)
+
+
 def topic_label(num):
     """How a lesson is named on screen: "Topic 2.1", or "Trig Review · Lesson 3" for a module lesson."""
     u, t = num.split(".")
-    return f"{MODULES[int(u)]} \\textperiodcentered{{}} Lesson {t}" if int(u) in MODULES else f"Topic {num}"
+    return f"{MODULES[int(u)]} \\textperiodcentered{{}} Lesson {t}" if int(u) in MODULES else f"Topic {shown_number(num)}"
 
 
 UNIT_NAMES = {0: "Trig Review", 1: "Limits and Continuity", 2: "Differentiation: Definition and Fundamental Properties",
@@ -281,7 +292,7 @@ class TranscriptScene(LessonScene):
         if unit in MODULES:
             card = title_card(f"Lesson {self.NUM.split('.')[1]}", title, f"{MODULES[unit]} \\textperiodcentered{{}} a free module")
         else:
-            card = title_card(self.NUM, title, f"Unit {unit} \\textperiodcentered{{}} {UNIT_NAMES[unit]}")
+            card = title_card(shown_number(self.NUM), title, f"Unit {unit} \\textperiodcentered{{}} {UNIT_NAMES[unit]}")
         # no narration on the title card: just the card and the intro music (Adder, 2026-10-01)
         self.add_sound(os.path.join(ASSETS, "intro_guitar.wav"), gain=-4)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=1.2)
@@ -463,6 +474,9 @@ def next_topic(num):
     key = lambda n: tuple(int(k) for k in n.split("."))
     nums = sorted((p.stem.replace("_", ".") for p in TRANSCRIPTS.glob("*_*.md")), key=key)
     later = [n for n in nums if key(n) > key(num)]
+    # a topic taught in an AB and a BC version: each version's outro skips the other one
+    twins = {t["n"] for u in _syllabus() for t in u["topics"] if t.get("twin") in (num,)}
+    later = [n for n in later if n not in twins]
     if key(num)[0] in MODULES or (later and key(later[0])[0] in MODULES):
         # a module stands alone: its lessons point to each other, and nothing leads into or out of it
         later = [n for n in later if key(n)[0] == key(num)[0]]

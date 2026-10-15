@@ -72,7 +72,7 @@ class Lesson(TranscriptScene):
         A3 = Polygon(ga.c2p(4, 0), ga.c2p(6, 0), ga.c2p(6, 2), stroke_width=0, fill_color=DERIV, fill_opacity=0.45)
         A0 = ga.get_area(ga.plot(semi, x_range=[-4, 0, 0.01]), x_range=[-4, 0], color=DERIV, opacity=0.45)
         sh = lambda m: (lambda sc: sc.play(FadeIn(m), run_time=0.5))
-        mark = lambda xv, yv, w: (lambda sc: sc.play(FadeIn(VGroup(Dot(ga.c2p(xv, yv), color=SECANT), T(w, 24, SECANT).next_to(ga.c2p(xv, yv), UP, buff=0.12))), run_time=0.5))
+        mark = lambda xv, yv, w: (lambda sc: sc.play(FadeIn(VGroup(Dot(ga.c2p(xv, yv), color=SECANT), T(w, 24, SECANT).next_to(ga.c2p(xv, yv), UR, buff=0.08))), run_time=0.5))
         self.example("Reading the graph of f",
                      r"The graph of $f$ on $[-4, 6]$ is a semicircle and two segments. Let $g(x) = \int_0^x f(t)\,dt$. (a) Find $g(2)$, $g(4)$, $g(6)$, $g(-4)$.",
                      [r"g(2) = -\tfrac12(2)(2) = -2", r"g(4) = -2 - 2 = -4", r"g(6) = -4 + 2 = -2", r"g(-4) = -\int_{-4}^{0} f(t)\,dt = -\tfrac12\pi(2)^2 = -2\pi",

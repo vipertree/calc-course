@@ -94,7 +94,8 @@ class Lesson(TranscriptScene):
                             VGroup(T("Integrals", 44, ACCUM), T("the other core concept", 30, DIM)).arrange(DOWN, buff=0.2)).arrange(RIGHT, buff=2.2).shift(DOWN * 1.2)
             self.play(FadeIn(halves[0]), run_time=0.8)
             self.wait(0.6)
-            self.play(FadeIn(halves[1]), Indicate(halves[1][0], color=ACCUM), run_time=1.2)
+            self.play(FadeIn(halves[1]), run_time=0.8)
+            self.play(Indicate(halves[1][0], color=ACCUM), run_time=0.8)
         self.clear()
 
         with self.beat("From delta x to dx") as b:

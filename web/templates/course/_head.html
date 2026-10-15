@@ -13,7 +13,7 @@
 <nav class="lesson-nav mathy" aria-label="Lessons">
   {% if prev %}<a class="prev" href="{% url 'lesson' prev.n %}"><span class="dir">← Previous</span> <span class="mathy">{{ prev.label }}</span> {{ prev.title }}</a>{% else %}<span></span>{% endif %}
   <a class="up" href="{% url 'map' %}#unit-{{ unit.n }}">{{ unit.short }}</a>
-  {% if next %}<a class="next" href="{% url 'lesson' next.n %}"><span class="dir">Next →</span> <span class="mathy">{{ next.label }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
+  {% if next %}<a class="next" href="{% if next.test %}{% url 'unit_test' next.n %}{% else %}{% url 'lesson' next.n %}{% endif %}"><span class="dir">Next →</span> <span class="mathy">{{ next.label }}</span> {{ next.title }}</a>{% else %}<span></span>{% endif %}
 </nav>
 {% if slides %}<p class="packet-dl"><a class="btn small" href="{% url 'slides' num %}">Teacher slides for this topic</a></p>{% endif %}
 {% if packet %}<form class="packet-dl" method="post" action="{% url 'packet' num %}">{% csrf_token %}

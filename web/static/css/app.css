@@ -720,3 +720,8 @@ details.unit > summary h2 { margin: 0; }
 .formula-sheet .sheet-from:hover { color: var(--ink); text-decoration: underline; }
 .formula-sheet .unit-sheet h2 { margin-bottom: 4px; }
 @media (max-width: 760px) { .formula-sheet .sheet-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* two cards stacked one after the other always get a little space between them (Adder 2026-10-14: in Safety card a
+   unit test's print panel sat right on its scoring panel). Grids and rows space their cards with gap instead. */
+.card + .card { margin-top: 16px; }
+:is(.sheet-grid, .lp-panels, .plans, .exam-cards, .doors, .topics, .vp-grid, .exam-grid, .exam-part-row, .lesson-grid, .row, .figrow) > .card + .card { margin-top: 0; }

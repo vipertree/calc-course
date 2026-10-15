@@ -85,7 +85,11 @@ def neighbours(num):
             if (t["n"] in have or t["n"] == num) and (u["module"] == (unit or {}).get("module", False))
             and (not u["module"] or u["n"] == unit["n"])]
     i = [t["n"] for t in flat].index(num)
-    return (flat[i - 1] if i > 0 else None), (flat[i + 1] if i + 1 < len(flat) else None)
+    prev, nxt = (flat[i - 1] if i > 0 else None), (flat[i + 1] if i + 1 < len(flat) else None)
+    # the last lesson of a unit leads to that unit's test, not into the next unit (Adder 2026-10-14)
+    if unit and (nxt is None or nxt["n"].split(".")[0] != num.split(".")[0]) and unit["n"] in unit_tests():
+        nxt = {"n": f"U{unit['n']}", "title": f"{unit['short']} test", "label": "Test", "test": True}
+    return prev, nxt
 
 
 def counts(num):

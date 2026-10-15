@@ -82,6 +82,9 @@ CONSTRUCTIONS = [
     ("med", "whether-youre", r"\bwhether you're\b[^.\n]{1,60}\bor\b"),
     ("low", "despite-challenges", r"\bdespite (?:these|its|the|some) (?:challenges|hurdles|setbacks)\b"),
     ("low", "ready-to", r"\b(?:ready to|get ready to|are you ready)\b"),
+    # "like" introducing examples, where Adder wants "such as" (2026-10-14): "an initial condition like y(1) = 2",
+    # "functions like sin x", ", like the chain rule". Comparisons ("looks like", "a bit like") are left alone.
+    ("high", "like-for-such-as", r"(?:,\s+like|\b(?:things|ones|functions?|values?|terms?|examples?|problems?|questions?|conditions?|shapes?|words?|series|numbers?|cases?|rules?|methods?|tools?|formulas?|equations?|expressions?|integrals?|limits?|graphs?|curves?|units?|topics?|skills?|situations?|contexts?|ideas?)\s+like)\s+(?=[\w$\\(])"),
 ]
 
 

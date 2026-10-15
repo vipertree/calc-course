@@ -30,6 +30,8 @@ def _filters(request):
 
 
 def index(request, cat=None):
+    if not settings.FRQ_ARCHIVE:
+        raise Http404
     if cat and cat not in frq.BY_SLUG:
         raise Http404("There's no question type by that name.")
     f = _filters(request)
@@ -59,6 +61,8 @@ def index(request, cat=None):
 
 
 def question(request, qid):
+    if not settings.FRQ_ARCHIVE:
+        raise Http404
     q = frq.get(qid)
     if not q:
         raise Http404("That question isn't in the archive.")
@@ -80,6 +84,8 @@ def question(request, qid):
 
 
 def file(request, qid, name):
+    if not settings.FRQ_ARCHIVE:
+        raise Http404
     """A page image or the original PDF. Public, cacheable; nginx serves the same tree in production."""
     if not _FILE.fullmatch(name) or not frq.get(qid):
         raise Http404

@@ -18,7 +18,7 @@
 {% endfor %}
 </div>
 {% if not user.is_authenticated %}<p class="muted">Sign in to take an exam.{% if free_note %} {{ free_note }}{% endif %}</p>{% endif %}
-<p>For more free response, the <a href="{% url 'frq' %}">AP FRQ Archive</a> has questions from past AP Calculus exams, 2002 to 2025,
-  sorted by type, with scoring guidelines. Free, no account needed.</p>
+{% if FRQ_ARCHIVE %}<p>For more free response, the <a href="{% url 'frq' %}">AP FRQ Archive</a> has questions from past AP Calculus exams, 2002 to 2025,
+  sorted by type, with scoring guidelines. Free, no account needed.</p>{% endif %}
 </div>
 {% endblock %}

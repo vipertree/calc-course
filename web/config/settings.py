@@ -177,4 +177,7 @@ SLIDES_DIR = Path(os.environ.get("SLIDES_DIR") or REPO / "build" / "slides")
 # The AP FRQ Archive (/frq/): College Board released questions mirrored from adderoaks.com/calcfrq/ and built by
 # tools/fetch_frq_archive.py + tools/build_frq_archive.py. Not in git. Public: Django serves it here, nginx in production.
 FRQ_DIR = Path(os.environ.get("FRQ_DIR") or REPO / "build" / "frq")
+# Off for now (Adder 2026-10-15): the College Board's terms don't allow posting their questions, and some files came
+# from archived copies. The code stays and its tests run with this switched on; adderoaks.com/calcfrq has the design.
+FRQ_ARCHIVE = os.environ.get("FRQ_ARCHIVE", "").lower() in ("1", "true", "yes")
 SLIDES_ACCEL = os.environ.get("SLIDES_ACCEL", "")

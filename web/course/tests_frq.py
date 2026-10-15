@@ -27,6 +27,7 @@ QUESTIONS = [
 ]
 
 
+@override_settings(FRQ_ARCHIVE=True)
 class FRQArchive(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -163,6 +164,7 @@ class FRQArchive(TestCase):
         self.assertEqual(self.client.get("/frq/q/2025-ab-3/").status_code, 404)
 
 
+@override_settings(FRQ_ARCHIVE=True)
 class FRQLessonLinks(TestCase):
     def test_categories_for_topic(self):
         from course import frq

@@ -21,7 +21,7 @@ DESIGN_FONTS = {
 NAV_STYLES = [("links", "Links"), ("menus", "Dropdowns")]
 NAV = [
     ("Calculus", [("AP Calc Course", "map"), ("Calc Formula Sheet", "formulas"), ("AP Calc Practice Exams", "exams"),
-                  ("AP FRQ Archive", "frq")]),
+                  ("AP FRQ Archive", "frq")]),     # shown only when settings.FRQ_ARCHIVE is on
     ("Trigonometry", [("Trig Course", "trig"), ("Trig Formulas", "trig_formulas")]),
     ("Videos", [("All videos", "videos")]),
 ]
@@ -30,7 +30,9 @@ NAV = [
 def _nav(request, profile):
     from django.urls import reverse
     here = getattr(getattr(request, "resolver_match", None), "url_name", "")
-    groups = [{"name": g, "items": [{"label": l, "url": reverse(n), "on": n == here} for l, n in items]}
+    from django.conf import settings
+    groups = [{"name": g, "items": [{"label": l, "url": reverse(n), "on": n == here} for l, n in items
+                                    if n != "frq" or settings.FRQ_ARCHIVE]}
               for g, items in NAV]
     for g in groups:
         g["on"] = any(i["on"] for i in g["items"])
@@ -68,7 +70,7 @@ def site(request):
     nav_groups, nav_dash = _nav(request, profile)
     return {"ASSET_V": _asset_version(), "THEME": theme, "THEMES": THEMES,
             "DESIGN": design, "DESIGNS": DESIGNS, "NAV": nav_groups, "NAV_DASH": nav_dash,
-            "NAV_STYLE": nav_style, "NAV_STYLES": NAV_STYLES, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
+            "NAV_STYLE": nav_style, "NAV_STYLES": NAV_STYLES, "FRQ_ARCHIVE": settings.FRQ_ARCHIVE, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),
             "FULL_ACCESS": has_full_access(request.user),

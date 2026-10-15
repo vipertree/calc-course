@@ -4,10 +4,13 @@ CED: FUN-5.A (FUN-5.A.1, FUN-5.A.2) with FUN-4.A applied to g(x) = integral_a^x 
 of f gives where g increases, sign changes of f give g's relative extrema, f rising/falling gives g's concavity, and
 values of g are areas, with area below the axis counted as negative. Lesson example: a semicircle-and-segments graph of f (values, extrema, candidates test,
 inflection points). Worked examples: g' from a formula with a sign chart, a tangent line to g, concavity from a graph.
+Adder (2026-10-14): no "f is the derivative" summary box (the integrand isn't always called f); the chart reads like 5.9's,
+the function on the left and the graph of its derivative on the right; every tangent line states the point and the slope
+m, labeled, before point-slope form; examples say what they look for (g' > 0, a sign change, g'' > 0) before computing.
 """
 import sympy as sp
 
-from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, num, same,
+from calclib import (VideoExample, FRQ, MCQ, Check, Formula, Item, Part, Section, Table, Text, Topic, Variants, Video, num, same,
                      selfcheck)
 from calclib.figs import graph
 
@@ -35,17 +38,16 @@ NOTES = [
 
     Section("$g' = f$"),
     Text(r"For $g(x) = \int_a^x f(t)\,dt$, the Fundamental Theorem gives $g' = f$ and $g'' = f'$. So reading $g$ from the graph of $f$ is reading a function from the graph of its derivative (Topic 5.9's chart, one level up)."),
-    Table(r"$f$ positive & $g$ \blank{increasing} \\ "
-          r"$f$ negative & $g$ decreasing \\ "
-          r"$f$ changes sign, $+$ to $-$ & $g$ has a relative \blank{maximum} \\ "
-          r"$f$ changes sign, $-$ to $+$ & $g$ has a relative minimum \\ "
-          r"$f$ increasing & $g$ concave \blank{up} \\ "
-          r"$f$ decreasing & $g$ concave down \\ "
-          r"$f$ has a relative max or min & $g$ has an \blank{inflection point}", "ll", header=r"Graph of $f$ & $g(x) = \int_a^x f(t)\,dt$"),
+    Table(r"$g$ \blank{increasing} & $f$ positive \\ "
+          r"$g$ decreasing & $f$ negative \\ "
+          r"$g$ has a relative \blank{maximum} & $f$ changes sign, $+$ to $-$ \\ "
+          r"$g$ has a relative minimum & $f$ changes sign, $-$ to $+$ \\ "
+          r"$g$ concave \blank{up} & $f$ increasing \\ "
+          r"$g$ concave down & $f$ decreasing \\ "
+          r"$g$ has an \blank{inflection point} & $f$ has a relative max or min", "ll", header=r"$g(x) = \int_a^x f(t)\,dt$ & Graph of $f$ (which is $g'$)"),
     Text(r"\textbf{Values of $g$} are areas from $a$ to $x$, with area below the axis counted as negative. If $x < a$, the limits run backward: $g(x) = -\int_x^a f(t)\,dt$. "
          r"\textbf{Absolute extrema} of $g$ on a closed interval: the candidates test (critical points, where $f$ changes sign, and the endpoints)."),
     VideoExample('Reading the graph of f', work="4cm"),
-    BigIdea(r"For an accumulation function, $f$ is the derivative: direction and extrema from the sign of $f$, concavity from whether $f$ rises or falls, values from the area above the axis minus the area below."),
     Check(r"$g(x) = \int_0^x f(t)\,dt$ and $f$ changes from negative to positive at $x = 3$. What does $g$ have at $x = 3$?", selfcheck(r"\text{a relative minimum}"),
           r"$g' = f$ changes from $-$ to $+$: a relative minimum."),
 ]
@@ -65,10 +67,14 @@ PRACTICE = [
     Item(r"$g(x) = \int_0^x \left(t^2 - 2t - 3\right) dt$. At what $x$ does $g$ have a relative minimum?", num(3),
          r"$g'(x) = (x - 3)(x + 1)$ changes from negative to positive at $x = 3$.", work="1.8cm"),
     Item(r"$g(x) = \int_2^x \frac{1}{t}\,dt$ for $x > 0$. Write an equation for the line tangent to $g$ at $x = 2$.", selfcheck(r"y = \tfrac12(x - 2)"),
-         r"$g(2) = 0$ and $g'(2) = \frac12$: $y = \frac12(x - 2)$.", work="1.6cm"),
+         r"Point: $g(2) = \int_2^2 \frac1t\,dt = 0$, so the point is $(2, 0)$. Slope: $g'(x) = \frac1x$, so $m = g'(2) = \frac12$. "
+         r"Point-slope form: $y - 0 = \frac12(x - 2)$, so $y = \frac12(x - 2)$.", work="1.8cm"),
     Item(r"$g(x) = \int_0^x e^{-t^2}\,dt$. On what interval is $g$ concave up?", selfcheck(r"(-\infty, 0)"), r"$g''(x) = -2xe^{-x^2} > 0$ for $x < 0$.", work="1.6cm"),
 ]
 same("p2", [sp.solve(t**2 - 2 * t - 3, t)], [[-1, 3]])
+# tangent lines: the slope m = g'(a) for each tangent-line problem (practice, quiz, the video's example 2)
+same("tangent", [(1 / t).subs(t, 2), (3 * t**2 + 1).subs(t, 1), sp.cos(t).subs(t, 0), sp.sqrt(t).subs(t, 4), sp.sqrt(t + 3).subs(t, 1)],
+     [sp.Rational(1, 2), 4, 1, 2, 2])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
@@ -94,9 +100,12 @@ QUIZ = [
         Item(r"$g(x) = \int_2^x f(t)\,dt$, and the area between $f$ and the $t$-axis on $[0, 2]$ is $4$, above the axis. Find $g(0)$.", num(-4), r"Backward limits: $g(0) = -\int_0^2 f(t)\,dt = -4$.", work="1cm"),
     ),
     Variants(
-        Item(r"$g(x) = \int_1^x \left(3t^2 + 1\right) dt$. Write the line tangent to $g$ at $x = 1$.", selfcheck(r"y = 4(x - 1)"), r"$g(1) = 0$, $g'(1) = 4$.", work="1.2cm"),
-        Item(r"$g(x) = \int_0^x \cos t\,dt$. Write the line tangent to $g$ at $x = 0$.", selfcheck(r"y = x"), r"$g(0) = 0$, $g'(0) = 1$.", work="1.2cm"),
-        Item(r"$g(x) = \int_4^x \sqrt t\,dt$. Write the line tangent to $g$ at $x = 4$.", selfcheck(r"y = 2(x - 4)"), r"$g(4) = 0$, $g'(4) = 2$.", work="1.2cm"),
+        Item(r"$g(x) = \int_1^x \left(3t^2 + 1\right) dt$. Write the line tangent to $g$ at $x = 1$.", selfcheck(r"y = 4(x - 1)"),
+             r"Point: $g(1) = 0$, so $(1, 0)$. Slope: $m = g'(1) = 3 + 1 = 4$. $y - 0 = 4(x - 1)$, so $y = 4(x - 1)$.", work="1.4cm"),
+        Item(r"$g(x) = \int_0^x \cos t\,dt$. Write the line tangent to $g$ at $x = 0$.", selfcheck(r"y = x"),
+             r"Point: $g(0) = 0$, so $(0, 0)$. Slope: $m = g'(0) = \cos 0 = 1$. $y - 0 = 1(x - 0)$, so $y = x$.", work="1.4cm"),
+        Item(r"$g(x) = \int_4^x \sqrt t\,dt$. Write the line tangent to $g$ at $x = 4$.", selfcheck(r"y = 2(x - 4)"),
+             r"Point: $g(4) = 0$, so $(4, 0)$. Slope: $m = g'(4) = \sqrt4 = 2$. $y - 0 = 2(x - 4)$, so $y = 2(x - 4)$.", work="1.4cm"),
     ),
 ]
 

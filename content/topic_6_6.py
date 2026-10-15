@@ -25,6 +25,8 @@ NOTES = [
     Video("s6_6.py::Lesson", "Properties of integrals", 5),
 
     Section("The properties"),
+    Text(r"A definite integral is the area under the curve, with area above the $x$-axis counted as positive and area below it counted as negative. "
+         r"So integrals follow the rules areas follow."),
     Formula("Properties of definite integrals", (
         r"\[ \int_a^a f(x)\,dx = \blank{0} \qquad \int_b^a f(x)\,dx = \blank{-}\int_a^b f(x)\,dx \] "
         r"\[ \int_a^b k\,f(x)\,dx = k\int_a^b f(x)\,dx \qquad \int_a^b \left[f(x) \pm g(x)\right] dx = \int_a^b f(x)\,dx \pm \int_a^b g(x)\,dx \] "

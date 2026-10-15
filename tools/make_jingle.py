@@ -1,7 +1,7 @@
 """Synthesize the course jingle: a short mallet motif for the title card and a resolving version for the outro.
 
 Pure numpy, no samples or services, so it costs nothing and can be regenerated or retuned at will.
-Writes anim/assets/jingle_intro.wav and anim/assets/jingle_outro.wav (44.1 kHz, 16-bit, stereo).
+Writes anim/assets/jingle_intro.wav, anim/assets/jingle_outro.wav and anim/assets/fanfare.wav (44.1 kHz, 16-bit, stereo).
 
     ~/opt/mamba/envs/calc/bin/python tools/make_jingle.py
 """
@@ -71,9 +71,13 @@ def main():
     # outro: the same opening, resolved home to C
     outro = render([(0.00, "C5", 0.9), (0.16, "E5", 0.8), (0.32, "G5", 0.85), (0.56, "B5", 0.7), (0.80, "C6", 0.9)],
                    2.8, chord=["C4", "E4", "G4", "C5"], chord_at=0.80)
+    # fanfare: a quick rising major arpeggio onto a full chord, for a big moment such as the Fundamental Theorem (6.4)
+    fanfare = render([(0.00, "C5", 0.8), (0.11, "E5", 0.8), (0.22, "G5", 0.85), (0.36, "C6", 1.0), (0.36, "G5", 0.6)],
+                     1.9, chord=["C4", "E4", "G4", "C5"], chord_at=0.36)
     write(OUT / "jingle_intro.wav", intro)
     write(OUT / "jingle_outro.wav", outro)
-    print("wrote", OUT / "jingle_intro.wav", OUT / "jingle_outro.wav")
+    write(OUT / "fanfare.wav", fanfare)
+    print("wrote", OUT / "jingle_intro.wav", OUT / "jingle_outro.wav", OUT / "fanfare.wav")
 
 
 if __name__ == "__main__":

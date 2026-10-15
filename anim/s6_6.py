@@ -46,8 +46,11 @@ class Lesson(TranscriptScene):
         with self.beat("Using given values") as b:
             given = VGroup(M(r"\int_1^4 f(x)\,dx = 6", 42, FUNC), M(r"\int_1^4 g(x)\,dx = -2", 42, ACCUM)).arrange(RIGHT, buff=1.2).to_edge(UP, buff=0.6)
             self.play(FadeIn(given), run_time=0.8)
+            # the question on its own first (Adder): the breaking up comes after a pause
+            ask = VGroup(T("Find", 40), M(r"\int_1^4 \left[3f(x) - 2g(x)\right] dx.", 42)).arrange(RIGHT, buff=0.25).next_to(given, DOWN, buff=0.6)
+            self.play(FadeIn(ask, shift=DOWN * 0.2), run_time=0.8)
             rows = VGroup(M(r"\int_1^4 \left[3f(x) - 2g(x)\right] dx = 3\int_1^4 f(x)\,dx - 2\int_1^4 g(x)\,dx", 38), M(r"= 3(6) - 2(-2)", 40), M(r"= 18 + 4 = 22", 42, AREA),
-                          M(r"\int_4^1 f(x)\,dx = -6", 42, SECANT)).arrange(DOWN, aligned_edge=LEFT, buff=0.45).next_to(given, DOWN, buff=0.6)
+                          M(r"\int_4^1 f(x)\,dx = -6", 42, SECANT)).arrange(DOWN, aligned_edge=LEFT, buff=0.45).next_to(ask, DOWN, buff=0.55)
             rows.set_max_width(12.8)
             for k, m in zip((1, 2, 3, 4), rows):
                 b.line(k)

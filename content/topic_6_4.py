@@ -1,13 +1,15 @@
 """Topic 6.4: The Fundamental Theorem of Calculus and accumulation functions.
 
-CED: FUN-5.A (FUN-5.A.1-FUN-5.A.4): g(x) = integral from a to x of f(t) dt is an accumulation function; if f is
-continuous, g'(x) = f(x) (FTC part 1); with an inside function on top, d/dx integral_a^{u(x)} f(t) dt = f(u(x)) u'(x).
-Worked examples: FTC directly, sin x on top (chain rule), x on the bottom (swap the limits).
+CED: FUN-5.A (FUN-5.A.1-FUN-5.A.4): F(x) = integral from a to x of f(t) dt is an accumulation function; if f is
+continuous, F'(x) = f(x) (the Fundamental Theorem of Calculus); with a function of x on top, d/dx F(g(x)) = F'(g(x)) g'(x).
+Adder's rewrite (2026-10-14): big F; F(1), F(2) as triangle areas for f(t) = 2t; the theorem stated as "If F(x) = ...,
+then F'(x) = f(x)"; plain substitution before the chain rule; problems read "F(x) = ..., find F'(x)" with varied names.
+Worked examples: the chain rule with the inner function named, x on the bottom, x at both ends (split the integral).
 """
 import sympy as sp
 
-from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num, same,
-                     selfcheck)
+from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, FigureRow, Formula, Item, Part, Section, Text, Topic, Variants, Video, expr, num,
+                     same, selfcheck)
 from calclib.figs import graph
 
 x, t = sp.symbols("x t", real=True)
@@ -18,7 +20,11 @@ def d_acc(f, lo, hi):
     return sp.simplify(f.subs(t, hi) * sp.diff(hi, x) - f.subs(t, lo) * sp.diff(lo, x))
 
 
-same("ftc", [d_acc(t**2 - 3 * t, 2, x).subs(x, 4), d_acc(sp.cos(t), 1, x**2), d_acc(t**4 + 1, x, 5)], [4, 2 * x * sp.cos(x**2), -(x**4 + 1)])
+# the lesson's video: F(1), F(2), F(3) for f(t) = 2t; F'(2) = 3; g'(4) = 4; the chain-rule examples; x at both ends
+same("ftc", [sp.integrate(2 * t, (t, 0, v)) for v in (1, 2, 3)] + [sp.diff(sp.integrate(2 * t, (t, 0, x)), x)], [1, 4, 9, 2 * x])
+same("video", [d_acc(sp.sqrt(1 + t**3), 1, x).subs(x, 2), d_acc(t**2 - 3 * t, 2, x).subs(x, 4), d_acc(sp.cos(t), 1, x**2), d_acc(sp.exp(t**2), 3, sp.sin(x)),
+               d_acc(t**4 + 1, x, 5), d_acc(sp.sqrt(t**4 + 1), 3 * x, x**2)],
+     [3, 4, 2 * x * sp.cos(x**2), sp.exp(sp.sin(x)**2) * sp.cos(x), -(x**4 + 1), 2 * x * sp.sqrt(x**8 + 1) - 3 * sp.sqrt(81 * x**4 + 1)])
 
 FP = sp.Piecewise((2, t < 2), (2 - 2 * (t - 2), t < 4), (-2 + (t - 4), True))
 FIG_F = graph("t6_4_f", [("2+0*x", 0, 2), ("2-2*(x-2)", 2, 4), ("-2+(x-4)", 4, 6)], xr=(0, 6), yr=(-3, 3), ylabel="f(t)", xlabel="t",
@@ -26,49 +32,94 @@ FIG_F = graph("t6_4_f", [("2+0*x", 0, 2), ("2-2*(x-2)", 2, 4), ("-2+(x-4)", 4, 6
 G = lambda v: sp.integrate(FP, (t, 0, v))
 same("frq", [G(2), G(3), G(4), G(6), FP.subs(t, 3), FP.subs(t, 5)], [4, 5, 4, 2, 0, -1])
 
+# F(1) and F(2) as triangles under f(t) = 2t, and F(x) = x^2 graphed as a function of its own
+FIG_TRI = graph("t6_4_tri", [("2*x", 0, 3.2)], xr=(0, 3.5), yr=(0, 7), xlabel="t", ylabel="f(t)", w="5.4cm", h="4.6cm",
+                under=r"\fill[ink!12] (axis cs:0,0) -- (axis cs:2,0) -- (axis cs:2,4) -- cycle;"
+                      r"\fill[ink!30] (axis cs:0,0) -- (axis cs:1,0) -- (axis cs:1,2) -- cycle;",
+                caption=r"The graph of $f(t) = 2t$. $F(1)$ is the dark triangle; $F(2)$ is the whole shaded triangle.")
+FIG_SQ = graph("t6_4_sq", [("x^2", 0, 3.1)], xr=(0, 3.5), yr=(0, 10), ystep=2, xlabel="x", ylabel="F(x)", w="5.4cm", h="4.6cm",
+               closed=[(0, 0), (1, 1), (2, 4), (3, 9)], caption=r"The graph of $F(x) = \int_0^x 2t\,dt = x^2$.")
+
 NOTES = [
-    Video("s6_4.py::Lesson", "Accumulation functions", 5),
+    Video("s6_4.py::Lesson", "The Fundamental Theorem of Calculus", 11),
 
     Section("Accumulation functions"),
     Formula("Accumulation function", (
-        r"\[ A(x) = \int_a^x f(t)\,dt \] is the running total of the area under $f$ from a fixed start $a$ to a moving end $x$. "
-        r"The variable inside is $t$, so it doesn't get mixed up with the input $x$. At the start, $A(a) = \blank{0}$.")),
+        r"\[ F(x) = \int_a^x f(t)\,dt \] We integrate $f(t)$ from a fixed start $a$ up to a moving end $x$, so $F(x)$ is the area under $f$ "
+        r"from $a$ to $x$: a running total. The variable inside is $t$, so it doesn't get mixed up with the input $x$. At the start, $F(a) = \blank{0}$.")),
+    Text(r"\textbf{Example.} Let $f(t) = 2t$ and $F(x) = \int_0^x 2t\,dt$. Each value of $F$ is a triangle's area: "
+         r"$F(1) = \frac12(1)(2) = \blank{1}$, $F(2) = \frac12(2)(4) = \blank{4}$, and $F(3) = \frac12(3)(6) = 9$. "
+         r"So $F(x) = x^2$. $F$ is a function of its own, with its own graph, so it has a derivative."),
+    FigureRow([FIG_TRI, FIG_SQ]),
 
-    Section("The Fundamental Theorem of Calculus, part 1"),
-    Text(r"Move $x$ to $x + h$: the area grows by a sliver about $f(x)$ tall and $h$ wide, so $\frac{A(x + h) - A(x)}{h} \approx f(x)$. As $h \to 0$, this becomes exact."),
-    Formula("FTC, part 1", (
-        r"If $f$ is continuous, then \[ \frac{d}{dx}\int_a^x f(t)\,dt = \blank{f(x)}. \] "
-        r"With a function of $x$ on top: \[ \frac{d}{dx}\int_a^{u(x)} f(t)\,dt = f\left(u(x)\right) \cdot \blank{u'(x)}. \]")),
-    Text(r"\textbf{$x$ on the bottom.} Swap the limits first, which changes the sign: $\int_x^b f(t)\,dt = -\int_b^x f(t)\,dt$."),
+    Section("The Fundamental Theorem of Calculus"),
+    Text(r"Nudge $x$ by $\Delta x$. $F$ grows by $\Delta F$, which is the thin sliver of area under $f$ from $x$ to $x + \Delta x$. The sliver is almost a "
+         r"rectangle, $f(x)$ tall and $\Delta x$ wide, so $\Delta F \approx f(x) \cdot \Delta x$ and $\frac{\Delta F}{\Delta x} \approx f(x)$. "
+         r"As $\Delta x \to 0$ this becomes exact: \[ F'(x) = \lim_{\Delta x \to 0} \frac{\Delta F}{\Delta x} = f(x). \]"),
+    Formula("The Fundamental Theorem of Calculus", (
+        r"If $f$ is continuous and \[ F(x) = \int_a^x f(t)\,dt, \] then \[ F'(x) = \blank{f(x)}. \]")),
+    Text(r"\textbf{Check it.} For $f(t) = 2t$ we found $F(x) = x^2$, and $F'(x) = 2x = f(x)$."),
+    BigIdea(r"Integrating and taking a derivative undo each other: integrate $f$ up to $x$, take the derivative, and you get $f$ back. "
+            r"The Fundamental Theorem joins the two halves of calculus, derivatives (slopes and rates) and integrals (Riemann sums and areas)."),
+    VideoExample('Just substitute', work="1.6cm"),
     VideoExample('Using the theorem', work="2.2cm"),
-    BigIdea(r"An accumulation function is a running total. Its derivative is the function being added up: $\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$."),
-    Check(r"Find $\dfrac{d}{dx}\displaystyle\int_1^x \frac{1}{1 + t^2}\,dt$.", expr(1 / (1 + x**2)), r"By the FTC: $\frac{1}{1 + x^2}$."),
+
+    Section("With the chain rule"),
+    Formula("A function of $x$ on top", (
+        r"If $F(x) = \int_a^x f(t)\,dt$, then $\int_a^{g(x)} f(t)\,dt = F(g(x))$, and by the chain rule "
+        r"\[ \frac{d}{dx}F(g(x)) = F'(g(x)) \cdot g'(x) = f(g(x)) \cdot \blank{g'(x)}. \]")),
+    VideoExample('With the chain rule', work="3cm"),
+    Text(r"\textbf{$x$ on the bottom.} Swap the limits first, which changes the sign: $\int_x^b f(t)\,dt = -\int_b^x f(t)\,dt$. "
+         r"\textbf{$x$ at both ends.} Split the integral at a fixed number $c$, so each piece has one moving limit: "
+         r"\[ \int_{u(x)}^{v(x)} f(t)\,dt = -\int_c^{u(x)} f(t)\,dt + \int_c^{v(x)} f(t)\,dt. \]"),
+    Check(r"$F(x) = \int_1^x \frac{1}{1 + t^2}\,dt$. Find $F'(x)$.", expr(1 / (1 + x**2)), r"By the Fundamental Theorem: $F'(x) = \frac{1}{1 + x^2}$."),
 ]
 
-# ---------------------------------------------------------------- practice
-P = [(sp.sqrt(t**2 + 5), 0, x), (sp.exp(-t**2), 2, x), (t * sp.sin(t), sp.pi, x), (sp.cos(t), 0, 3 * x), (t**3, 1, x**2), (sp.log(t), 1, sp.exp(x)),
-     (1 + t**2, x, 4), (t**2 + 1, x**3, 2)]
-PRACTICE = [Item(rf"Find $\dfrac{{d}}{{dx}}\displaystyle\int_{{{sp.latex(lo)}}}^{{{sp.latex(hi)}}} {sp.latex(f)}\,dt$.", expr(d_acc(f, lo, hi)),
-                 rf"$= {sp.latex(d_acc(f, lo, hi))}$" + (r" (chain rule on the top limit)" if hi != x and sp.sympify(hi).has(x) else "") + (r" (swap the limits: the sign changes)" if sp.sympify(lo).has(x) else ""),
-                 work="1.6cm") for f, lo, hi in P]
+# ---------------------------------------------------------------- practice: "F(x) = ..., find F'(x)", with varied names
+P = [("F", sp.sqrt(t**2 + 5), 0, x), ("G", sp.exp(-t**2), 2, x), ("h", t * sp.sin(t), sp.pi, x), ("k", sp.cos(t), 0, 3 * x), ("P", t**3, 1, x**2),
+     ("Q", sp.log(t), 1, sp.exp(x)), ("r", 1 + t**2, x, 4), ("S", t**2 + 1, x**3, 2), ("W", 1 / (1 + t**2), 2 * x, x**3)]
+
+
+def how(lo, hi):
+    """The note after a practice answer: which move the problem needed."""
+    lo, hi = sp.sympify(lo), sp.sympify(hi)
+    if lo.has(x) and hi.has(x):
+        return r" (split at a fixed number, then the chain rule on each limit)"
+    if lo.has(x):
+        return r" (swap the limits: the sign changes)" + (r", then the chain rule" if lo != x else "")
+    if hi != x:
+        return r" (chain rule: the inner function is $" + sp.latex(hi) + r"$)"
+    return r" (the Fundamental Theorem: put $x$ in for $t$)"
+
+
+PRACTICE = [Item(rf"${n}(x) = \displaystyle\int_{{{sp.latex(lo)}}}^{{{sp.latex(hi)}}} {sp.latex(f)}\,dt$. Find ${n}'(x)$.", expr(d_acc(f, lo, hi)),
+                 rf"${n}'(x) = {sp.latex(d_acc(f, lo, hi))}$" + how(lo, hi), work="1.8cm" if sp.sympify(lo).has(x) and sp.sympify(hi).has(x) else "1.6cm")
+            for n, f, lo, hi in P]
 PRACTICE += [
     Item(r"$g(x) = \displaystyle\int_1^x \left(t^3 - 4t\right) dt$. Find $g'(2)$.", num(0), r"$g'(x) = x^3 - 4x$, so $g'(2) = 8 - 8 = 0$.", work="1.4cm"),
-    Item(r"$g(x) = \displaystyle\int_5^x \cos(\pi t)\,dt$. Find $g(5)$ and $g'(5)$. Enter $g'(5)$.", num(-1), r"$g(5) = 0$; $g'(5) = \cos 5\pi = -1$.", work="1.4cm"),
+    Item(r"$H(x) = \displaystyle\int_5^x \cos(\pi t)\,dt$. Find $H(5)$ and $H'(5)$. Enter $H'(5)$.", num(-1), r"$H(5) = 0$; $H'(5) = \cos 5\pi = -1$.", work="1.4cm"),
+    Item(r"Jordan sets out a rain barrel. Rain collects in it at a rate of $r(t) = \frac{6t}{t + 1}$ liters per hour, $t$ hours after they set it out. "
+         r"$V(x) = \displaystyle\int_0^x r(t)\,dt$ is the water collected in the first $x$ hours. Find $V'(3)$ and give its units.", num(sp.Rational(9, 2)),
+         r"By the Fundamental Theorem, $V'(x) = r(x)$, so $V'(3) = \frac{18}{4} = 4.5$ liters per hour: 3 hours in, the water in the barrel is rising at $4.5$ liters per hour.",
+         work="1.6cm"),
     Item(r"$g(x) = \displaystyle\int_0^x f(t)\,dt$ with $f$ as shown. Find $g(4)$.", num(4), r"Area: $(2)(2) = 4$, then $+1$ and $-1$ from the triangles on $[2, 3]$ and $[3, 4]$: $g(4) = 4$.",
          work="1.6cm", figure=FIG_F),
     Item(r"With the same $f$ and $g(x) = \displaystyle\int_0^x f(t)\,dt$, find $g'(5)$.", num(-1), r"$g'(5) = f(5) = -1$.", work="1.2cm"),
 ]
-same("p", [d_acc(t**3 - 4 * t, 1, x).subs(x, 2), d_acc(sp.cos(sp.pi * t), 5, x).subs(x, 5)], [0, -1])
+same("p", [d_acc(t**3 - 4 * t, 1, x).subs(x, 2), d_acc(sp.cos(sp.pi * t), 5, x).subs(x, 5), d_acc(6 * t / (t + 1), 0, x).subs(x, 3),
+           d_acc(1 / (1 + t**2), 2 * x, x**3)],
+     [0, -1, sp.Rational(9, 2), 3 * x**2 / (1 + x**6) - 2 / (1 + 4 * x**2)])
 
 # ---------------------------------------------------------------- quiz
-def q(f, lo, hi):
-    return Item(rf"Find $\dfrac{{d}}{{dx}}\displaystyle\int_{{{sp.latex(lo)}}}^{{{sp.latex(hi)}}} {sp.latex(f)}\,dt$.", expr(d_acc(f, lo, hi)), rf"$= {sp.latex(d_acc(f, lo, hi))}$.", work="1.4cm")
+def q(n, f, lo, hi):
+    return Item(rf"${n}(x) = \displaystyle\int_{{{sp.latex(lo)}}}^{{{sp.latex(hi)}}} {sp.latex(f)}\,dt$. Find ${n}'(x)$.", expr(d_acc(f, lo, hi)),
+                rf"${n}'(x) = {sp.latex(d_acc(f, lo, hi))}$.", work="1.4cm")
 
 
 QUIZ = [
-    Variants(q(t**2 + 1, 0, x), q(sp.sin(t**2), 1, x), q(sp.sqrt(1 + t), 3, x)),
-    Variants(q(sp.cos(t), 0, x**2), q(sp.exp(t), 0, 2 * x), q(t**2, 1, sp.sin(x))),
-    Variants(q(t**3, x, 2), q(sp.exp(t), x, 0), q(sp.sqrt(t), x, 4)),
+    Variants(q("F", t**2 + 1, 0, x), q("G", sp.sin(t**2), 1, x), q("H", sp.sqrt(1 + t), 3, x)),
+    Variants(q("P", sp.cos(t), 0, x**2), q("Q", sp.exp(t), 0, 2 * x), q("R", t**2, 1, sp.sin(x))),
+    Variants(q("k", t**3, x, 2), q("m", sp.exp(t), x, 0), q("n", sp.sqrt(t), x, 4)),
     Variants(
         Item(r"$g(x) = \displaystyle\int_2^x (3t - 1)\,dt$. Find $g'(3)$.", num(8), r"$g'(3) = 9 - 1 = 8$.", work="1cm"),
         Item(r"$g(x) = \displaystyle\int_0^x \left(t^2 + t\right) dt$. Find $g'(2)$.", num(6), r"$g'(2) = 4 + 2 = 6$.", work="1cm"),
@@ -83,14 +134,14 @@ QUIZ = [
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
-    MCQ(r"$\dfrac{d}{dx}\displaystyle\int_0^{x^3} \sqrt{1 + t^2}\,dt = $", [r"$\sqrt{1 + x^6}$", r"$3x^2\sqrt{1 + x^6}$", r"$3x^2\sqrt{1 + x^2}$", r"$\sqrt{1 + x^2}$"], "B",
-        r"$f(x^3) \cdot 3x^2 = \sqrt{1 + x^6} \cdot 3x^2$.", why_not={"A": "missing the chain rule factor"}),
+    MCQ(r"If $H(x) = \displaystyle\int_0^{x^3} \sqrt{1 + t^2}\,dt$, then $H'(x) = $", [r"$\sqrt{1 + x^6}$", r"$3x^2\sqrt{1 + x^6}$", r"$3x^2\sqrt{1 + x^2}$", r"$\sqrt{1 + x^2}$"], "B",
+        r"The inner function is $g(x) = x^3$: $H'(x) = \sqrt{1 + \left(x^3\right)^2} \cdot 3x^2 = 3x^2\sqrt{1 + x^6}$.", why_not={"A": "missing the chain rule factor"}),
     MCQ(r"If $F(x) = \displaystyle\int_2^x \frac{1}{t^2 + 1}\,dt$, then $F'(2) = $", [r"$0$", r"$\frac15$", r"$\frac{1}{4}$", r"$-\frac{4}{25}$"], "B", r"$F'(2) = \frac{1}{4 + 1} = \frac15$.",
         why_not={"A": "that's $F(2)$"}),
-    MCQ(r"$\dfrac{d}{dx}\displaystyle\int_x^1 \cos\left(t^2\right) dt = $", [r"$\cos\left(x^2\right)$", r"$2x\cos\left(x^2\right)$", r"$\cos 1 - \cos\left(x^2\right)$", r"$-\cos\left(x^2\right)$"], "D",
-        r"Swap the limits: $-\int_1^x \cos(t^2)\,dt$, derivative $-\cos(x^2)$."),
+    MCQ(r"If $G(x) = \displaystyle\int_x^1 \cos\left(t^2\right) dt$, then $G'(x) = $", [r"$\cos\left(x^2\right)$", r"$2x\cos\left(x^2\right)$", r"$\cos 1 - \cos\left(x^2\right)$", r"$-\cos\left(x^2\right)$"], "D",
+        r"Swap the limits: $G(x) = -\int_1^x \cos(t^2)\,dt$, so $G'(x) = -\cos(x^2)$."),
     MCQ(r"$g(x) = \displaystyle\int_0^x f(t)\,dt$, where $f$ is continuous. Which is true?", [r"$g'(x) = f'(x)$", r"$g(x) = f(x)$", r"$g'(x) = f(x)$", r"$g'(x) = f(x) - f(0)$"], "C",
-        r"FTC part 1."),
+        r"The Fundamental Theorem of Calculus."),
 ]
 same("m", [d_acc(sp.sqrt(1 + t**2), 0, x**3), d_acc(1 / (t**2 + 1), 2, x).subs(x, 2), d_acc(sp.cos(t**2), x, 1)],
      [3 * x**2 * sp.sqrt(x**6 + 1), sp.Rational(1, 5), -sp.cos(x**2)])

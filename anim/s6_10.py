@@ -228,7 +228,7 @@ class Lesson(TranscriptScene):
             self.play(Write(syn.bot[2]), run_time=0.7)
             b.line(5)
             self.play(Create(syn.rbox), run_time=0.5)
-            read = M(r"1x + 2, \ \ \text{remainder } 3", 36, SECANT).next_to(syn, DOWN, buff=0.35)
+            read = M(r"1x + 2 = x + 2, \ \ \text{remainder } 3", 36, SECANT).next_to(syn, DOWN, buff=0.35)
             self.play(Write(read), run_time=0.9)
             b.line(6)
             self.play(Indicate(VGroup(p2["q1"], p2["q2"]), color=SECANT), Indicate(syn.bot[0:2], color=SECANT), run_time=1)

@@ -211,7 +211,7 @@ chmod go-rwx /home/deploy/calc-course/build/frq/manifest.json   # gunicorn reads
 
 `build/pdf/` keeps its own `go-rwx`, so `o+x` on `build/` exposes nothing else. The manifest is read by
 Django (`course/frq.py`) and picked up without a restart when it changes. With no manifest the archive pages
-say it's empty instead of failing. Size: about 170 questions, roughly 60 MB of images and PDFs.
+say it's empty instead of failing. Size: 171 questions, about 90 MB of images and PDFs in `files/` (the raw mirror is another 100 MB and stays on the dev machine).
 
 ## Things that bite
 

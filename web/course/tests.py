@@ -247,31 +247,23 @@ class Flow(TestCase):
 
 
 class Designs(TestCase):
-    def test_design_switch(self):
-        from pathlib import Path
-        from django.conf import settings
-        from .context import DESIGNS
+    def test_safety_card_is_the_only_design(self):
+        """Adder 2026-10-15: Safety card everywhere; the Design menu and the other looks are mothballed."""
         page = self.client.get("/course/").content.decode()
-        self.assertNotIn("data-design", page)                 # classic renders the original markup
-        self.assertNotIn("css/designs/", page)
-        for key, _ in DESIGNS[1:]:
-            css = Path(settings.BASE_DIR) / "static" / "css" / "designs" / f"{key}.css"
-            self.assertTrue(css.exists(), key)
-            text = css.read_text()
-            for bad in ("alert(", "confirm(", "prompt("):
-                self.assertNotIn(bad, text)
-            r = self.client.get(f"/design/{key}/?next=/course/")
-            self.assertEqual(r.status_code, 302)
-            page = self.client.get("/course/").content.decode()
-            self.assertIn(f'data-design="{key}"', page)
-            self.assertIn(f"css/designs/{key}.css", page)
-        self.client.get("/design/nonsense/?next=/course/")     # unknown names are ignored
-        self.assertIn(f'data-design="{DESIGNS[-1][0]}"', self.client.get("/course/").content.decode())   # still the last pick
-        self.client.cookies["design"] = "../evil"
-        self.assertNotIn("data-design", self.client.get("/course/").content.decode())
+        self.assertIn('data-design="safety"', page)
+        self.assertIn("css/designs/safety.css", page)
+        self.assertNotIn("design-pick", page)
+        self.assertEqual(self.client.get("/design/transit/?next=/course/").status_code, 404)
+        self.client.cookies["design"] = "transit"
+        self.assertIn('data-design="safety"', self.client.get("/course/").content.decode())
+
+    def test_theme_switch(self):
+        page = self.client.get("/course/").content.decode()
+        self.assertIn('class="theme-switch" role="switch"', page)
+        self.client.get("/theme/slate/?next=/course/")
+        self.assertIn('data-theme="slate"', self.client.get("/course/").content.decode())
 
     def test_transit_map_columns(self):
-        self.client.get("/design/transit/?next=/course/")
         page = self.client.get("/course/").content.decode()
         self.assertNotIn("map-layout", page)                     # one layout, no toggle
         self.assertNotIn("data-layout", page)
@@ -698,15 +690,13 @@ class SitePages(TestCase):
 
     def test_course_flyouts(self):
         """Adder 2026-10-15: hover AP Calc Course for its units, a unit for its lessons; Trig Course lists its lessons."""
-        for style in ("links", "menus"):
-            self.client.get(f"/nav/{style}/?next=/")
-            page = self.client.get("/videos/").content.decode()
-            self.assertIn('href="/course/#unit-6" aria-haspopup="true"', page)
-            self.assertIn('href="/topic/6.4/"', page)                      # a lesson, two levels down
-            self.assertIn('href="/unit/U1/test/"', page)
-            self.assertIn("Right-Triangle Trigonometry", page)             # the trig lessons under Trig Course
-            self.assertIn('Unit 4</b><span>Contextual Applications of Differentiation <i class="lock">Members</i>', page)
-            self.assertNotIn('Unit 1</b><span>Limits and Continuity <i class="lock">', page)
+        page = self.client.get("/videos/").content.decode()
+        self.assertIn('href="/course/#unit-6" aria-haspopup="true"', page)
+        self.assertIn('href="/topic/6.4/"', page)                      # a lesson, two levels down
+        self.assertIn('href="/unit/U1/test/"', page)
+        self.assertIn("Right-Triangle Trigonometry", page)             # the trig lessons under Trig Course
+        self.assertIn('Unit 4</b><span>Contextual Applications of Differentiation <i class="lock">Members</i>', page)
+        self.assertNotIn('Unit 1</b><span>Limits and Continuity <i class="lock">', page)
 
     def test_new_navigation_pages(self):
         """Adder 2026-10-12: separate calc and trig courses and formula sheets, an all-videos page, a student
@@ -721,8 +711,8 @@ class SitePages(TestCase):
         self.assertEqual(self.client.get("/me/").status_code, 302)       # sign in first
         self.assertIn("Mr Oaks Math", calc)
         self.assertNotIn(">Free<", calc)
-        self.client.get("/nav/menus/?next=/course/")
-        self.assertIn('class="nav-group', self.client.get("/course/").content.decode())
+        self.assertIn('class="nav-group', calc)                         # dropdowns, no layout choice any more
+        self.assertEqual(self.client.get("/nav/links/?next=/course/").status_code, 404)
         u = User.objects.create_user("lee", password="pw123456")
         Profile.objects.create(user=u, display_name="Lee")
         self.client.force_login(u)

@@ -3,8 +3,10 @@ from django.conf import settings
 from accounts.models import has_full_access
 
 THEMES = [("slate", "Dark"), ("paper", "Light")]
-# Alternate front-end designs (see web/design/BRIEFS.md). "classic" is the original look.
-DESIGNS = [("classic", "Classic"), ("transit", "Transit"), ("drafting", "Drafting"),
+# The site design. Adder 2026-10-15: Safety card it is; the Design menu is gone and the other looks are mothballed
+# (their stylesheets stay in static/css/designs/ and web/design/BRIEFS.md; add one back here to revive it).
+DESIGN = "safety"
+MOTHBALLED_DESIGNS = [("classic", "Classic"), ("transit", "Transit"), ("drafting", "Drafting"),
            ("textbook", "Textbook"), ("chalk", "Chalkboard"), ("safety", "Safety card"), ("board", "Chalkboard (new)")]
 DESIGN_FONTS = {
     "transit": "family=Public+Sans:ital,wght@0,400..900;1,400..700",
@@ -16,9 +18,8 @@ DESIGN_FONTS = {
 }
 
 
-# The top bar (Adder 2026-10-12): Calculus, Trigonometry and Videos, shown either as plain links or as three
-# dropdowns; the viewer picks with NAV_STYLES (cookie "nav"). Entries are (label, url name, url name args, anchor).
-NAV_STYLES = [("links", "Links"), ("menus", "Dropdowns")]
+# The top bar: Calculus, Trigonometry and Videos as three dropdowns (Adder 2026-10-15 settled on dropdowns over
+# plain links). Entries are (label, url name).
 NAV = [
     ("Calculus", [("AP Calc Course", "map"), ("Calc Formula Sheet", "formulas"), ("AP Calc Practice Exams", "exams"),
                   ("AP FRQ Archive", "frq")]),     # shown only when settings.FRQ_ARCHIVE is on
@@ -83,18 +84,12 @@ def site(request):
     theme = request.COOKIES.get("theme", "")
     if theme not in dict(THEMES):
         theme = ""          # empty: the page picks dark or light from the device setting
-    design = request.COOKIES.get("design", "classic")
-    if design not in dict(DESIGNS):
-        design = "classic"
     profile = getattr(request.user, "profile", None) if request.user.is_authenticated else None
-    nav_style = request.COOKIES.get("nav", "links")
-    if nav_style not in dict(NAV_STYLES):
-        nav_style = "links"
     full = has_full_access(request.user)
     nav_groups, nav_dash = _nav(request, profile, full)
     return {"ASSET_V": _asset_version(), "THEME": theme, "THEMES": THEMES,
-            "DESIGN": design, "DESIGNS": DESIGNS, "NAV": nav_groups, "NAV_DASH": nav_dash,
-            "NAV_STYLE": nav_style, "NAV_STYLES": NAV_STYLES, "FRQ_ARCHIVE": settings.FRQ_ARCHIVE, "DESIGN_FONTS": DESIGN_FONTS.get(design, ""),
+            "DESIGN": DESIGN, "NAV": nav_groups, "NAV_DASH": nav_dash,
+            "FRQ_ARCHIVE": settings.FRQ_ARCHIVE, "DESIGN_FONTS": DESIGN_FONTS[DESIGN],
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),
             "FULL_ACCESS": full,

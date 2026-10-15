@@ -6,26 +6,23 @@
     throwOnError: false, delimiters: [{ left: "$", right: "$", display: false }] }));
 })();
 
-// main navigation: open on wide screens, a Menu button on narrow ones; one dropdown open at a time
+// main navigation: three dropdowns in a row; when they don't fit (a phone, a signed-in name, a narrow window) they
+// fold behind the hamburger button. Measured, not a fixed breakpoint (Adder 2026-10-15: fold only once text is cut off).
 (function () {
   const fold = document.querySelector(".nav-fold");
-  const mq = window.matchMedia("(max-width: 1180px)");
   const top = document.querySelector(".top");
   const bar = top && top.querySelector(".in");
-  // wider than 1180px the bar can still overflow (links style, a signed-in name, a wide design font): measure it
-  // with the links laid out in a row and fold into the Menu button when they don't fit (.nav-tight, app.css)
   const measure = () => {
-    if (!bar || mq.matches) { if (top) top.classList.remove("nav-tight"); return; }
+    if (!bar) return;
     top.classList.remove("nav-tight");
     if (fold) fold.open = true;
     top.classList.toggle("nav-tight", bar.scrollWidth > bar.clientWidth + 1);
   };
-  const narrow = { get matches() { return mq.matches || !!(top && top.classList.contains("nav-tight")); } };
+  const narrow = { get matches() { return !!(top && top.classList.contains("nav-tight")); } };
   const groups = [...document.querySelectorAll(".nav-group")];
   // inside the narrow Menu every group stays open as a labelled list; on wide screens they are dropdowns
   const sync = () => { measure(); if (fold) fold.open = !narrow.matches; groups.forEach((g) => { g.open = narrow.matches; }); };
   sync();
-  mq.addEventListener ? mq.addEventListener("change", sync) : mq.addListener(sync);
   let t = 0, lastW = window.innerWidth;
   // width changes only: a phone's address bar resizes the height while scrolling, and that must not shut the Menu
   window.addEventListener("resize", () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth;
@@ -102,5 +99,28 @@
   });
   document.addEventListener("click", (e) => { if (!nav.contains(e.target)) closeAll(); });
   groups.forEach((g) => g.addEventListener("toggle", () => { if (!g.open) g.querySelectorAll(".has-sub.open").forEach((it) => setOpen(it, false)); }));
-  if (mq.addEventListener) mq.addEventListener("change", closeAll);
+  window.addEventListener("resize", closeAll);
+})();
+
+// light/dark switch: flips the page in place and stores the choice through the same /theme/ link it falls back to
+(function () {
+  const sw = document.querySelector(".theme-switch");
+  if (!sw) return;
+  const root = document.documentElement;
+  const isDark = () => root.dataset.theme ? root.dataset.theme === "slate"
+    : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const show = () => {
+    const dark = isDark();
+    sw.setAttribute("aria-checked", dark ? "true" : "false");
+    sw.href = `${dark ? sw.dataset.light : sw.dataset.dark}?next=${encodeURIComponent(location.pathname + location.search)}`;
+  };
+  show();
+  sw.addEventListener("click", (e) => {
+    e.preventDefault();
+    const next = isDark() ? "paper" : "slate";
+    fetch(next === "slate" ? sw.dataset.dark : sw.dataset.light, { credentials: "same-origin", redirect: "manual" }).catch(() => {});
+    root.dataset.theme = next;
+    show();
+  });
+  sw.addEventListener("keydown", (e) => { if (e.key === " ") { e.preventDefault(); sw.click(); } });
 })();

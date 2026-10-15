@@ -52,19 +52,6 @@ h1, h2, h3 { font-family: var(--font-head); line-height: 1.2; margin: 0 0 .4em; 
 .brand svg { width: 26px; height: 26px; }
 .top .grow { flex: 1; }
 .top .who { color: var(--dim); font-size: .9rem; }
-.themes { display: flex; gap: 4px; }
-.themes a { font-size: .78rem; text-decoration: none; color: var(--dim); border: 1px solid var(--rule); padding: 2px 8px; border-radius: 99px; }
-.themes a.on { color: var(--ink); border-color: var(--ink-2); }
-/* design switcher: a native <details> menu, no script, no dialog */
-.design-pick { position: relative; }
-.design-pick summary { list-style: none; cursor: pointer; font-size: .78rem; color: var(--dim); border: 1px solid var(--rule); padding: 2px 8px; border-radius: 99px; }
-.design-pick summary::-webkit-details-marker { display: none; }
-.design-pick[open] summary { color: var(--ink); border-color: var(--ink-2); }
-.design-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; display: grid; min-width: 150px; padding: 4px;
-  background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); box-shadow: var(--shadow); }
-.design-menu a { padding: 6px 10px; color: var(--ink-2); text-decoration: none; font-size: .9rem; border-radius: 4px; }
-.design-menu a:hover { background: var(--panel-2); }
-.design-menu a.on { color: var(--ink); font-weight: 700; }
 .linkbtn { background: none; border: 0; color: var(--dim); cursor: pointer; padding: 0; font-size: .9rem; }
 
 .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
@@ -94,8 +81,6 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { displ
 @media (max-width: 560px) {
   .top .in { gap: 10px; padding: 8px 12px; }
   .top .who, .top .crumb { display: none; }
-  .themes a { padding: 2px 6px; }
-  .design-pick summary { padding: 2px 6px; }
   .tabs a { padding: 10px 10px; }
 }
 .locked-card { border-style: dashed; }
@@ -528,17 +513,6 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .nav-drop a:hover, .nav-drop a.on { background: var(--panel-2); }
 .nav-dash { margin-left: 4px; }
 .menu-label { display: block; margin: 8px 0 2px; padding-top: 8px; border-top: 1px solid var(--rule); font: 600 .72rem var(--font-ui); color: var(--dim); }
-@media (max-width: 1180px) {
-  .nav-fold { position: relative; }
-  .nav-fold > summary { display: inline-block; }
-  .nav-fold > .site-nav { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; min-width: 240px; flex-direction: column; align-items: stretch;
-    padding: 10px; background: var(--panel); border: 1.5px solid var(--rule); border-radius: var(--radius, 8px); box-shadow: 0 10px 28px rgba(0,0,0,.14); }
-  .nav-fold .nav-set { flex-direction: column; gap: 2px; }
-  .nav-links .nav-set + .nav-set { padding: 6px 0 0; border-left: 0; border-top: 1px solid var(--rule); }
-  .nav-fold .nav-group > summary { pointer-events: none; font-size: .72rem; color: var(--dim); border: 0; padding: 6px 2px 0; }
-  .nav-fold .nav-group > summary::after { display: none; }
-  .nav-fold .nav-drop { position: static; box-shadow: none; border: 0; padding: 0; min-width: 0; background: none; }
-}
 
 /* ---------- all-videos page */
 .videos-page { max-width: 1240px; margin: 0 auto; }
@@ -574,11 +548,6 @@ table.data.exam-units td:first-child { min-width: 9em; }
 /* dropdowns and the folded menu sit on a panel: their links always use the page's ink, whatever the header uses */
 .top .nav-drop a { color: var(--ink-2); }
 .top .nav-drop a.on, .top .nav-drop a:hover { color: var(--ink); }
-@media (max-width: 1180px) {
-  .top .nav-fold > .site-nav a { color: var(--ink-2); }
-  .top .nav-fold > .site-nav a.on { color: var(--ink); }
-  .top .nav-fold .nav-group > summary { color: var(--dim); }
-}
 /* the same fold on a wide screen when the bar doesn't fit (links style, a signed-in name, a wide design font):
    site.js measures the bar and sets .nav-tight, so the Menu button appears instead of a cut-off Sign out */
 .top.nav-tight .nav-fold { position: relative; }
@@ -594,7 +563,7 @@ table.data.exam-units td:first-child { min-width: 9em; }
 .top.nav-tight .nav-fold > .site-nav a.on { color: var(--ink); }
 .top .in { max-width: 1320px; }
 .brand span, .top .linkbtn, .site-nav a, .nav-group > summary { white-space: nowrap; }
-@media (min-width: 1181px) { .site-nav { flex-wrap: nowrap; } }
+.site-nav { flex-wrap: nowrap; }
 
 /* the whole header strip of a unit opens and closes it, not just the heading's text (Adder 2026-10-12): the spacing
    lives inside the summary as padding, so no margin or box padding is left unclickable */
@@ -841,6 +810,24 @@ details.unit > summary h2 { margin: 0; }
 .top .nav-sub a:hover, .top .nav-sub .nav-item.open > a { color: var(--ink); }
 .nav-drop .has-sub > a::after { content: "›"; float: right; margin-left: 12px; color: var(--dim); }
 /* phones and the folded Menu: plain links, no flyouts */
-@media (max-width: 1180px) { .nav-sub { display: none !important; } .nav-drop .has-sub > a::after { content: none; } }
 .top.nav-tight .nav-sub { display: none !important; }
 .top.nav-tight .nav-drop .has-sub > a::after { content: none; }
+
+/* the menu button (Adder 2026-10-15): a hamburger icon, shown only when the dropdowns no longer fit on the bar */
+.nav-fold > summary { border: 0; padding: 4px; border-radius: 8px; line-height: 0; }
+.nav-fold > summary svg { display: block; }
+.nav-fold[open] > summary { background: var(--panel-2); }
+/* a submenu row highlights edge to edge like the others, not just behind its words */
+.nav-drop > .nav-item > a { display: block; }
+
+/* light/dark switch: sun on the left, moon on the right, the knob sits over the current one */
+.theme-switch { display: inline-flex; align-items: center; text-decoration: none; color: var(--ink-2); }
+.ts-track { position: relative; display: inline-flex; align-items: center; justify-content: space-between; width: 54px; height: 28px; padding: 0 6px;
+  border: 1.5px solid var(--rule); border-radius: 999px; background: var(--panel-2); box-sizing: border-box; }
+.ts-track svg { width: 15px; height: 15px; position: relative; z-index: 1; color: var(--dim); transition: color .2s; }
+.ts-knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: var(--panel);
+  box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease; }
+.theme-switch[aria-checked="true"] .ts-knob { transform: translateX(26px); }
+.theme-switch[aria-checked="false"] .ts-sun, .theme-switch[aria-checked="true"] .ts-moon { color: var(--ink); }
+.theme-switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) { .ts-knob, .ts-track svg { transition: none; } }

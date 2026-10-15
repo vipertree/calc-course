@@ -19,7 +19,6 @@ urlpatterns = [
     path("trig/formulas/", v.trig_formulas, name="trig_formulas"),
     path("videos/", v.videos, name="videos"),
     path("me/", v.student_dashboard, name="student_dashboard"),
-    path("nav/<str:style>/", v.set_nav_style, name="nav_style"),
     path("membership/<slug:plan>/", v.checkout, name="checkout"),
     path("login/", acc.LoginView.as_view(), name="login"),
     path("logout/", auth.LogoutView.as_view(), name="logout"),
@@ -79,6 +78,5 @@ urlpatterns = [
     path("teacher/class/<int:pk>/student/<int:uid>/remove/", v.remove_student, name="remove_student"),
     re_path(r"^video/(?P<name>[\w.-]+)$", v.video, name="video"),
     path("theme/<str:theme>/", v.set_theme, name="theme"),
-    path("design/<str:design>/", v.set_design, name="design"),
     path("admin/", admin.site.urls),
 ]

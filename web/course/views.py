@@ -183,19 +183,6 @@ def student_dashboard(request):
         "klass": class_for(request.user), "full": has_full_access(request.user)})
 
 
-def set_nav_style(request, style):
-    from django.utils.http import url_has_allowed_host_and_scheme
-    from .context import NAV_STYLES
-    nxt = request.GET.get("next") or ""
-    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
-        nxt = "home"
-    resp = redirect(nxt)
-    if style in dict(NAV_STYLES):
-        resp.set_cookie("nav", style, max_age=365 * 24 * 3600, samesite="Lax", path=settings.COOKIE_PATH,
-                        secure=settings.SESSION_COOKIE_SECURE)
-    return resp
-
-
 def trig_formulas(request):
     return formulas(request, module=True)
 
@@ -578,17 +565,6 @@ def set_theme(request, theme):
     return resp
 
 
-def set_design(request, design):
-    from django.utils.http import url_has_allowed_host_and_scheme
-    from .context import DESIGNS
-    nxt = request.GET.get("next") or ""
-    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
-        nxt = "home"
-    resp = redirect(nxt)
-    if design in dict(DESIGNS):
-        resp.set_cookie("design", design, max_age=365 * 24 * 3600, samesite="Lax", path=settings.COOKIE_PATH,
-                        secure=settings.SESSION_COOKIE_SECURE)
-    return resp
 
 
 # ------------------------------------------------------------------ transcripts (review before rendering)

@@ -1,6 +1,5 @@
 {% extends "base.html" %}{% load static course_text %}
 {% block title %}{{ L.number }} {{ L.title|plaintext }} · AP Calculus{% endblock %}
-{% block crumbs %}<a class="muted crumb" href="{% url 'map' %}" style="font-family:var(--font-ui);font-size:.9rem">Course map</a>{% endblock %}
 {% block head %}<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.105.3/mathlive.min.js"></script>
 {% if DESMOS_API_KEY %}<script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey={{ DESMOS_API_KEY }}"></script>{% endif %}{% endblock %}
 {% block main %}

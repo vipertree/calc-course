@@ -228,9 +228,15 @@
   pt/.style={only marks, mark=*, mark size=2pt, ink},
   closed/.style={only marks, mark=*, mark size=2.3pt, ink},
   open/.style={only marks, mark=*, mark size=2.3pt, mark options={fill=white, draw=ink, line width=0.9pt}},
-  fn2/.style={line width=1.4pt, ink, dashed, smooth, samples=120}}
+  fn2/.style={line width=1.4pt, ink, dashed, smooth, samples=120},
+  % slope fields: gray axes and no tick marks (the numbers mark the units), so nothing short and black on an axis
+  % can be mistaken for a slope segment (Adder, 7.3, 2026-10-14); a key's solution curve is heavier than the segments
+  fieldaxes/.style={axis line style={draw=faint}, major tick length=0pt, minor tick length=0pt,
+    xticklabel style={yshift=-4pt}, yticklabel style={xshift=-2pt},
+    major grid style={line width=0.2pt, draw=black!10}},
+  keycurve/.style={line width=2.2pt, ink, smooth, samples=160}}
 
-\tikzset{asym/.style={densely dashed, line width=0.7pt, ink!60}}
+\tikzset{asym/.style={densely dashed, line width=0.7pt, ink!60}, fieldseg/.style={line width=0.9pt, ink}}
 
 % ------------------------------------------------------------- lists
 \setlist[enumerate]{leftmargin=1.6em, itemsep=0.6em, topsep=0.4em}

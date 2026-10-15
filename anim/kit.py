@@ -871,8 +871,9 @@ def coffee_mug(height=1.6):
 
 def slope_field(ax, f, xs, ys, length=0.36, color=None, width=3):
     """Short segments of slope f(x, y) centred at each grid point (screen-length `length`), drawn in axis coordinates
-    so the slopes are true to the axes' scales."""
-    color = color or DIM
+    so the slopes are true to the axes' scales. The segments are DERIV (the slope is dy/dx), never DIM: in DIM they
+    looked like the axes' tick marks (Adder, 7.3, 2026-10-14)."""
+    color = color or DERIV
     sx = (ax.c2p(1, 0)[0] - ax.c2p(0, 0)[0])
     sy = (ax.c2p(0, 1)[1] - ax.c2p(0, 0)[1])
     segs = VGroup()

@@ -233,6 +233,8 @@ class Part:
     rubric: list           # list of (points, description)
     work: str = "4cm"
     topic: str = ""        # syllabus topic ("8.3"), for an exam's score report
+    key_figure: "Figure" = None  # keys and solutions only: a picture of the answer, e.g. the sketched solution curve on a
+                                 # slope field (Adder, 2026-10-14: a sketch answer is drawn, not described)
 
 
 @dataclass

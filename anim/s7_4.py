@@ -28,7 +28,7 @@ class Lesson(TranscriptScene):
         with self.beat("Reading the field") as b:
             self.play(FadeIn(ax), FadeIn(al), FadeIn(field), Write(de), run_time=1.4)
             b.line(1)
-            eq = VGroup(DashedLine(ax.c2p(-2, 0), ax.c2p(6, 0), color=TANGENT, stroke_width=4), DashedLine(ax.c2p(-2, 2), ax.c2p(6, 2), color=DERIV, stroke_width=4))
+            eq = VGroup(DashedLine(ax.c2p(-2, 0), ax.c2p(6, 0), color=TANGENT, stroke_width=4), DashedLine(ax.c2p(-2, 2), ax.c2p(6, 2), color=ACCUM, stroke_width=4))
             self.play(Create(eq), run_time=0.8)
             b.line(2)
             for y0, col, xr in ((1, FUNC, [-2, 6]), (3, SECANT, [0, 6])):          # y0 = 3 leaves the axes for x < 0
@@ -56,13 +56,13 @@ class Lesson(TranscriptScene):
         with self.beat("Equilibrium solutions") as b:
             self.play(FadeIn(ax), FadeIn(al), FadeIn(field), run_time=0.8)
             txt = VGroup(T(r"$\frac{dy}{dx} = 0$ whenever $y = c$:", 30), T("$y = c$ is a solution", 30, ACCUM)).arrange(DOWN, aligned_edge=LEFT, buff=0.15).to_corner(UR, buff=0.4)
-            self.play(FadeIn(txt), Create(Line(ax.c2p(-2, 2), ax.c2p(6, 2), color=DERIV, stroke_width=6)), run_time=1)
+            self.play(FadeIn(txt), Create(Line(ax.c2p(-2, 2), ax.c2p(6, 2), color=ACCUM, stroke_width=6)), run_time=1)
             b.line(1)
             self.play(Create(Line(ax.c2p(-2, 0), ax.c2p(6, 0), color=TANGENT, stroke_width=6)), FadeIn(M(r"y = 0, \ \ y = 2", 34, ACCUM).next_to(txt, DOWN, buff=0.3)), run_time=0.8)
             b.line(2)
             for y0 in (0.4, 1.2, 2.6, 3.0):
                 self.play(Create(ax.plot(logistic(y0), x_range=[0, 6], color=FUNC, stroke_width=3)), run_time=0.6)
-            self.play(FadeIn(M(r"\lim_{x\to\infty} y = 2", 36, DERIV).next_to(txt, DOWN, buff=1.0)), run_time=0.6)
+            self.play(FadeIn(M(r"\lim_{x\to\infty} y = 2", 36, ACCUM).next_to(txt, DOWN, buff=1.0)), run_time=0.6)
         self.clear()
 
         self.example("Concavity from the equation", r"$\dfrac{dy}{dx} = y(2 - y)$. (a) Find $\dfrac{d^2y}{dx^2}$ in terms of $y$. (b) Is the solution through $(0, 1.5)$ concave up or down there?",

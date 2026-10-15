@@ -117,9 +117,11 @@ def graph(name, fns, xr, yr, open=(), closed=(), vlines=(), hlines=(), labels=()
     return Figure(name=name, caption=caption, tikz=r"\begin{tikzpicture}" + axis + "".join(body) + r"\end{axis}\end{tikzpicture}")
 
 
-def slope_field(name, f, xs, ys, xr, yr, caption="", curves=(), w="6cm", h="6cm", length=0.32, closed=(), xlabel="x", ylabel="y"):
+def slope_field(name, f, xs, ys, xr, yr, caption="", curves=(), w="6cm", h="6cm", length=0.32, closed=(), xlabel="x", ylabel="y", key=()):
     """A slope field figure: a short segment of slope f(x, y) at each (x, y) in xs x ys, optionally with solution curves
-    (pgfplots expressions as in graph()). Segment length is in axis units, corrected for the axis aspect ratio."""
+    (pgfplots expressions as in graph()). Segment length is in axis units, corrected for the axis aspect ratio.
+    The axes and ticks are faint gray (fieldaxes) so the black segments read as the field. key: solution curves for an
+    answer key, (expr, a, b) as in curves, drawn heavier than the segments (keycurve)."""
     import math
     W, H = float(w.rstrip("cm")), float(h.rstrip("cm"))
     ux, uy = W / (xr[1] - xr[0]), H / (yr[1] - yr[0])          # cm per unit
@@ -130,8 +132,14 @@ def slope_field(name, f, xs, ys, xr, yr, caption="", curves=(), w="6cm", h="6cm"
             dx, dy = ux, m * uy                                   # direction in cm
             n = math.hypot(dx, dy)
             hx, hy = dx / n * (length / 2) / ux, dy / n * (length / 2) / uy
-            segs.append(rf"\draw[thick] (axis cs:{x - hx:.4f},{y - hy:.4f}) -- (axis cs:{x + hx:.4f},{y + hy:.4f});")
-    return graph(name, list(curves), xr, yr, closed=closed, caption=caption, w=w, h=h, extra="".join(segs), xlabel=xlabel, ylabel=ylabel)
+            segs.append(rf"\draw[fieldseg] (axis cs:{x - hx:.4f},{y - hy:.4f}) -- (axis cs:{x + hx:.4f},{y + hy:.4f});")
+    for expr, a, b in key:
+        segs.append(rf"\addplot[keycurve, domain={a}:{b}]{{{expr}}};")
+    if key and closed:                       # the point the key's curve passes through, on top of the curve
+        segs.append(r"\addplot[closed, mark size=3pt] coordinates {" + " ".join(f"({x},{y})" for x, y in closed) + "};")
+    fig = graph(name, list(curves), xr, yr, closed=closed, caption=caption, w=w, h=h, extra="".join(segs), xlabel=xlabel, ylabel=ylabel)
+    fig.tikz = fig.tikz.replace(r"\begin{axis}[calcaxes", r"\begin{axis}[calcaxes, fieldaxes", 1)
+    return fig
 
 
 def region(name, fns, xr, yr, pieces, caption="", var="x", **kw):

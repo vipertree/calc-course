@@ -167,7 +167,8 @@ def _frq(f: FRQ, key, n):
             + rf"\enspace\textperiodcentered\enspace {f.points} points}}\par" + "\n" + f.intro + "\n" + _fig(f.figure))
     parts = []
     for p in f.parts:
-        s = rf"\begin{{frqpart}}{{{p.label}}}{p.prompt}" + "\n" + rf"\work{{{p.work}}}{{{p.solution}}}" + "\n"
+        sol = p.solution + (_fig(p.key_figure) if p.key_figure is not None else "")
+        s = rf"\begin{{frqpart}}{{{p.label}}}{p.prompt}" + "\n" + rf"\work{{{p.work}}}{{{sol}}}" + "\n"
         if key:
             s += r"\par{\small\hfont\color{soft} Scoring}\par{\small\begin{tabular}{@{}p{1.1cm}p{13cm}@{}}"
             s += r" \\ ".join(rf"{pts} pt & {desc}" for pts, desc in p.rubric) + r"\end{tabular}}" + "\n"

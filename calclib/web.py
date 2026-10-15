@@ -338,6 +338,23 @@ def para(s, blanks=None):
 
 
 # ------------------------------------------------------------------ figures
+def solution_html(p, figdir):
+    """An FRQ part's worked solution as HTML. A part with a key_figure (a sketched solution curve) gets the picture too,
+    inline, since solutions are dropped into the page as HTML. Its ids are prefixed with the figure's name so two inline
+    figures on one page can't pick up each other's glyphs."""
+    out = html(p.solution)
+    if p.key_figure is None:
+        return out
+    svg = open(os.path.join(figdir, figure_svg(p.key_figure, figdir))).read()
+    svg = svg[svg.index("<svg"):]
+    pre = p.key_figure.name + "-"
+    svg = re.sub(r"\bid=(['\"])", lambda m: f"id={m.group(1)}{pre}", svg)
+    svg = re.sub(r"href=(['\"])#", lambda m: f"href={m.group(1)}#{pre}", svg)
+    svg = re.sub(r"url\(#", f"url(#{pre}", svg)
+    cap = f"<figcaption>{html(p.key_figure.caption)}</figcaption>" if p.key_figure.caption else ""
+    return out + f"<figure class='key-figure'><div class='svg'>{svg}</div>{cap}</figure>"
+
+
 def figure_svg(fig: Figure, outdir):
     """Compile a pgfplots figure to SVG with dvisvgm; black ink becomes currentColor for dark mode."""
     os.makedirs(outdir, exist_ok=True)
@@ -515,7 +532,7 @@ def export(t: Topic, outdir, figdir):
             pid = f"{fid}{p.label}"
             parts.append({"id": pid, "label": p.label, "html": para(p.prompt), "answer_kind": p.answer.kind, "units": _units(p.answer),
                           "points": sum(x for x, _ in p.rubric)})
-            priv["items"][pid] = {"answer": _answer(p.answer), "solution": html(p.solution),
+            priv["items"][pid] = {"answer": _answer(p.answer), "solution": solution_html(p, figdir),
                                   "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
         frqs.append({"id": fid, "title": f"Question {len(frqs) + 1}", "html": para(f.intro), "calc": f.calc, "figure": figpub(f.figure),
                      "type": f.frq_type, "points": f.points, "parts": parts})
@@ -561,7 +578,7 @@ def export_test(u: UnitTest, outdir, figdir):
             pid = f"{fid}{p.label}"
             parts.append({"id": pid, "label": p.label, "html": para(p.prompt), "answer_kind": p.answer.kind, "units": _units(p.answer),
                           "points": sum(x for x, _ in p.rubric)})
-            priv["items"][pid] = {"answer": _answer(p.answer), "solution": html(p.solution),
+            priv["items"][pid] = {"answer": _answer(p.answer), "solution": solution_html(p, figdir),
                                   "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
         # the student sees "Question n" only: a title or FRQ type would hint at the method
         frqs.append({"id": fid, "title": f"Question {i + 1}", "html": para(f.intro), "calc": f.calc,
@@ -605,7 +622,7 @@ def export_exam(e, outdir, figdir):
                 pid = f"{fid}{p.label}"
                 pts = sum(x for x, _ in p.rubric)
                 parts.append({"id": pid, "label": p.label, "html": para(p.prompt), "points": pts})
-                priv["items"][pid] = {"solution": html(p.solution), "display": p.answer.tex(), "topic": p.topic, "points": pts,
+                priv["items"][pid] = {"solution": solution_html(p, figdir), "display": p.answer.tex(), "topic": p.topic, "points": pts,
                                       "rubric": [{"points": x, "html": html(d)} for x, d in p.rubric]}
             # "Question n" only, as on the exam: a title or FRQ type would hint at the method
             out.append({"id": fid, "n": i, "title": f"Question {i}", "html": para(f.intro), "calc": f.calc,

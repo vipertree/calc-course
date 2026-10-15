@@ -176,10 +176,15 @@ fA = 2 - 2 * sp.exp((1 - x**2) / 2)
 check("F1A", solves(fA, rA))
 same("F1A", [fA.subs(x, 1), rA(1, 0), d2(rA).subs({x: 0, y: 1}), sp.factor(d2(rA))], [0, 2, 1, sp.factor((2 - y) * (1 - x**2))])
 FIG1A = slope_field("tU7_1a", lambda a, c: a * (2 - c), [-2, -1, 0, 1, 2], [-1, 0, 1, 2, 3], (-2.5, 2.5), (-1.5, 3.5), caption=r"The slope field for $\frac{dy}{dx} = x(2 - y)$.")
+# the key draws the sketch (Adder, 2026-10-14): the solution through (0, 1) is y = 2 - e^{-x^2/2}
+gA = 2 - sp.exp(-x**2 / 2)
+same("F1A sketch", [sp.diff(gA, x) - rA(x, gA), gA.subs(x, 0)], [0, 1])
+KEY1A = slope_field("tU7_1a_key", lambda a, c: a * (2 - c), [-2, -1, 0, 1, 2], [-1, 0, 1, 2, 3], (-2.5, 2.5), (-1.5, 3.5),
+                    key=[("2 - exp(-x^2/2)", -2.5, 2.5)], closed=[(0, 1)], caption=r"The solution curve through $(0, 1)$.")
 F1A = FRQ("A slope field", (r"Consider the differential equation $\dfrac{dy}{dx} = x(2 - y)$. Its slope field is shown. Let $y = f(x)$ be the particular solution with $f(1) = 0$."), [
     Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 1)$.", selfcheck(r"\text{a curve through } (0, 1) \text{ that rises on both sides toward } y = 2"),
          r"The curve has a horizontal tangent at $(0, 1)$, rises to the left and to the right toward $y = 2$ without reaching it, and follows the segments.",
-         [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm"),
+         [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm", key_figure=KEY1A),
     Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 1$, and use it to approximate $f(1.1)$.", selfcheck(r"y = 2(x - 1);\ f(1.1) \approx 0.2"),
          r"Slope $1 \cdot (2 - 0) = 2$, so $y = 2(x - 1)$ and $f(1.1) \approx 0.2$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("c", r"Find $\dfrac{d^2y}{dx^2}$ in terms of $x$ and $y$. Is the solution curve through $(0, 1)$ concave up or concave down at that point? Give a reason.",
@@ -196,10 +201,14 @@ fB = sp.exp(x - x**2 / 2)
 check("F1B", solves(fB, rB))
 same("F1B", [fB.subs(x, 2), rB(2, 1), d2(rB).subs({x: 1, y: 3}), sp.factor(d2(rB))], [1, -1, -3, sp.factor(y * ((1 - x)**2 - 1))])
 FIG1B = slope_field("tU7_1b", lambda a, c: c * (1 - a), [-1, 0, 1, 2, 3], [-2, -1, 0, 1, 2], (-1.5, 3.5), (-2.5, 2.5), caption=r"The slope field for $\frac{dy}{dx} = y(1 - x)$.")
+# the solution through (0, 1) is y = e^{x - x^2/2}, the same curve as f
+same("F1B sketch", [sp.diff(fB, x) - rB(x, fB), fB.subs(x, 0)], [0, 1])
+KEY1B = slope_field("tU7_1b_key", lambda a, c: c * (1 - a), [-1, 0, 1, 2, 3], [-2, -1, 0, 1, 2], (-1.5, 3.5), (-2.5, 2.5),
+                    key=[("exp(x - x^2/2)", -1.5, 3.5)], closed=[(0, 1)], caption=r"The solution curve through $(0, 1)$.")
 F1B = FRQ("A slope field", (r"Consider the differential equation $\dfrac{dy}{dx} = y(1 - x)$. Its slope field is shown. Let $y = f(x)$ be the particular solution with $f(2) = 1$."), [
     Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 1)$.", selfcheck(r"\text{a curve through } (0, 1) \text{ that peaks at } x = 1 \text{ and falls toward } y = 0"),
          r"The curve rises from $(0, 1)$, has a horizontal tangent at $x = 1$, then falls toward the $x$-axis, following the segments.",
-         [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm"),
+         [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm", key_figure=KEY1B),
     Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 2$, and use it to approximate $f(2.2)$.", selfcheck(r"y = 1 - (x - 2);\ f(2.2) \approx 0.8"),
          r"Slope $1 \cdot (1 - 2) = -1$, so $y = 1 - (x - 2)$ and $f(2.2) \approx 0.8$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("c", r"Find $\dfrac{d^2y}{dx^2}$ in terms of $x$ and $y$. Is the solution curve through $(1, 3)$ concave up or concave down at that point? Give a reason.",

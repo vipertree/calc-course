@@ -27,6 +27,12 @@ same("lesson", [sp.solve(y * (2 - y), y), second(lambda a, b: b * (2 - b)).subs(
      [[0, 2], -sp.Rational(3, 4), 1 - x + y, 2])
 
 FIG = slope_field("t7_4_frq", lambda a, c: a * (c - 1), [-2, -1, 0, 1, 2], [-1, 0, 1, 2, 3], (-2.5, 2.5), (-1.5, 3.5), caption=r"The slope field for $\frac{dy}{dx} = x(y - 1)$.")
+# the key draws the FRQ's sketch (Adder, 2026-10-14): the solution through (0, 2) is y = 1 + e^{x^2/2}, which leaves the window
+# (y = 3.5) at |x| = sqrt(2 ln 2.5) = 1.354
+gK = 1 + sp.exp(x**2 / 2)
+same("frq sketch", [sp.simplify(sp.diff(gK, x) - x * (gK - 1)), gK.subs(x, 0)], [0, 2])
+KEY = slope_field("t7_4_frq_key", lambda a, c: a * (c - 1), [-2, -1, 0, 1, 2], [-1, 0, 1, 2, 3], (-2.5, 2.5), (-1.5, 3.5),
+                  key=[("1 + exp(x^2/2)", -1.35, 1.35)], closed=[(0, 2)], caption=r"The solution curve through $(0, 2)$.")
 FIG_L = slope_field("t7_4_l", lambda a, c: c * (2 - c), [0, 1, 2, 3, 4], [-0.5, 0, 0.5, 1, 1.5, 2, 2.5], (-0.5, 4.5), (-1, 3), caption=r"The slope field for $\frac{dy}{dx} = y(2 - y)$.")
 
 NOTES = [
@@ -101,7 +107,7 @@ FRQS = [
     FRQ("A slope field", (r"Consider the differential equation $\dfrac{dy}{dx} = x(y - 1)$. Its slope field is shown."), [
         Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 2)$.", selfcheck(r"\text{a curve through } (0, 2) \text{ following the segments, rising on both sides}"),
              r"The curve passes through $(0, 2)$ with a horizontal tangent, rises to the left and to the right (slopes $x(y - 1)$ have the sign of $x$ there), and follows the segments.",
-             [(1, "solution curve through $(0, 2)$"), (1, "follows the slope field")], work="3cm"),
+             [(1, "solution curve through $(0, 2)$"), (1, "follows the slope field")], work="3cm", key_figure=KEY),
         Part("b", r"Find $\dfrac{d^2y}{dx^2}$ in terms of $x$ and $y$.", expr(d2, display=sp.latex(sp.factor(d2))),
              r"$\dfrac{d^2y}{dx^2} = (y - 1) + x\dfrac{dy}{dx} = (y - 1) + x \cdot x(y - 1) = (y - 1)(1 + x^2)$.", [(1, "product rule"), (1, "substitutes $\\frac{dy}{dx}$")], work="2.4cm"),
         Part("c", r"Is the graph of the solution through $(1, 2)$ concave up or concave down at that point? Give a reason for your answer.", selfcheck(r"\text{concave up}"),

@@ -475,12 +475,15 @@ d2_5 = sp.diff(dy5(x, yx), x).subs(sp.diff(yx, x), dy5(x, yx))
 same("Q5 second derivative at (1, 3)", d2_5.subs(yx, 3).subs(x, 1), 3)
 FIG5 = slope_field("exam_ab1_q5", lambda X, Y: X * X * (Y - 2), [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], [-1, 0, 1, 2, 3, 4], (-2, 2), (-1.6, 4.6),
                    caption=r"The slope field for $\frac{dy}{dx} = x^2(y - 2)$.", w="7cm", h="7.5cm", length=0.3)
+# the key draws the sketch (Adder, 2026-10-14): y = 2 - e^{x^3/3} leaves the window (y = -1.6) near x = 1.566
+KEY5 = slope_field("exam_ab1_q5_key", lambda X, Y: X * X * (Y - 2), [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], [-1, 0, 1, 2, 3, 4], (-2, 2), (-1.6, 4.6),
+                   key=[("2 - exp(x^3/3)", -2, 1.55)], closed=[(0, 1)], caption=r"The solution curve through $(0, 1)$.", w="7cm", h="7.5cm", length=0.3)
 FRQ5 = FRQ("A differential equation", (
     r"Consider the differential equation $\dfrac{dy}{dx} = x^2(y - 2)$. A slope field for the differential equation is shown."), [
     Part("a", r"On the slope field, sketch the solution curve that passes through the point $(0, 1)$.",
          selfcheck(r"\text{a curve through } (0, 1) \text{ that stays below } y = 2"),
          r"The curve passes through $(0, 1)$ with a horizontal tangent there, follows the slopes, decreases from left to right, stays below the line $y = 2$, and approaches $y = 2$ as $x$ decreases.",
-         [(1, r"A curve through $(0, 1)$ that follows the slope field and stays below $y = 2$.")], work="1cm", topic="7.4"),
+         [(1, r"A curve through $(0, 1)$ that follows the slope field and stays below $y = 2$.")], work="1cm", topic="7.4", key_figure=KEY5),
     Part("b", r"Let $y = f(x)$ be the particular solution to the differential equation with the initial condition $f(1) = 3$. Write an equation for the line tangent to the graph of $f$ at $x = 1$, and use it to approximate $f(1.2)$.",
          num(sp.Rational(16, 5), display=r"f(1.2) \approx 3.2"),
          r"At $(1, 3)$, $\frac{dy}{dx} = 1^2(3 - 2) = 1$. The tangent line is $y = 3 + (x - 1)$, so $f(1.2) \approx 3 + 0.2 = 3.2$.",

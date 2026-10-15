@@ -2,7 +2,7 @@
 
 CED: FUN-6.E (FUN-6.E.1): integral u dv = uv - integral v du, from the product rule; choose u to simplify when
 differentiated (LIATE as a guide) and dv to be integrable; a four-box table (u, dv, du, v). Lesson examples: x e^x,
-ln x on [1, e]. Worked examples: x cos x, x^2 e^x (parts twice), arctan x.
+ln x on [1, e] with dv = 1 dx. Worked examples: x cos x, x^2 e^x (parts twice), arctan x.
 """
 import sympy as sp
 
@@ -28,13 +28,13 @@ NOTES = [
 
     Section("The product rule, backward"),
     Formula("Integration by parts", (
-        r"\[ \int u\,dv = uv - \blank{\int v\,du}. \] Choose $u$ to be the part that gets simpler when differentiated; $dv$ is everything else, "
-        r"including $dx$. A guide for $u$: \textbf{LIATE} (logarithmic, inverse trig, algebraic, trig, exponential), top of the list first.")),
+        r"\[ \int u\,dv = uv - \blank{\int v\,du}. \] Choose $u$ to be the part that gets simpler when differentiated. Choose $dv$ so it at least "
+        r"doesn't get much more complicated when integrated; $dv$ is everything else, including $dx$ (with one factor, $dv = 1\,dx$). A guide for $u$: \textbf{LIATE} (logarithmic, inverse trig, algebraic, trig, exponential), top of the list first.")),
     Text(r"Keep a four-box table: $u$ and $dv$ on top, $du$ (differentiate) and $v$ (integrate) underneath."),
     VideoExample('A first example', work="2.6cm"),
     VideoExample('A definite integral', work="2.6cm"),
     Text(r"\textbf{Repeat or substitute.} Sometimes the new integral needs parts again (each time the power of $x$ drops), or a substitution."),
-    BigIdea(r"Integration by parts trades $\int u\,dv$ for $uv - \int v\,du$. Choose $u$ to simplify when differentiated."),
+    BigIdea(r"Integration by parts trades $\int u\,dv$ for $uv - \int v\,du$. Choose $u$ to get simpler when differentiated and $dv$ to stay no worse when integrated."),
     Check(r"Find $\displaystyle\int x\sin x\,dx$.", plus_c(x * sp.sin(x), -x * sp.cos(x) + sp.sin(x)), r"$u = x$, $dv = \sin x\,dx$: $-x\cos x + \sin x + C$."),
 ]
 
@@ -42,7 +42,7 @@ NOTES = [
 P = [(x * sp.exp(2 * x), x * sp.exp(2 * x) / 2 - sp.exp(2 * x) / 4, r"u = x,\ dv = e^{2x}\,dx"), (x * sp.sin(3 * x), -x * sp.cos(3 * x) / 3 + sp.sin(3 * x) / 9, r"u = x,\ dv = \sin 3x\,dx"),
      (x * sp.log(x), x**2 * sp.log(x) / 2 - x**2 / 4, r"u = \ln x,\ dv = x\,dx"), (x**2 * sp.log(x), x**3 * sp.log(x) / 3 - x**3 / 9, r"u = \ln x,\ dv = x^2\,dx"),
      (x * sp.exp(-x), -x * sp.exp(-x) - sp.exp(-x), r"u = x,\ dv = e^{-x}\,dx"), (x**2 * sp.cos(x), x**2 * sp.sin(x) + 2 * x * sp.cos(x) - 2 * sp.sin(x), r"u = x^2 \text{ (twice)}"),
-     (sp.asin(x), x * sp.asin(x) + sp.sqrt(1 - x**2), r"u = \arcsin x,\ dv = dx"), (sp.log(x) / x**2, -sp.log(x) / x - 1 / x, r"u = \ln x,\ dv = x^{-2}\,dx")]
+     (sp.asin(x), x * sp.asin(x) + sp.sqrt(1 - x**2), r"u = \arcsin x,\ dv = 1\,dx"), (sp.log(x) / x**2, -sp.log(x) / x - 1 / x, r"u = \ln x,\ dv = x^{-2}\,dx")]
 PRACTICE = [Item(rf"Find $\displaystyle\int {sp.latex(f)}\,dx$.", plus_c(f, F), rf"${u}$: ${tex(F)} + C$.", work="2.6cm") for f, F, u in P]
 PRACTICE += [
     Item(r"Evaluate $\displaystyle\int_0^1 x e^x\,dx$.", num(sp.integrate(x * sp.exp(x), (x, 0, 1))), r"$\left[x e^x - e^x\right]_0^1 = 0 - (-1) = 1$.", work="2cm"),

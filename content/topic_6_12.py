@@ -47,14 +47,16 @@ NOTES = [
 
     Section("Splitting a fraction"),
     Formula("Linear partial fractions", (
-        r"If the denominator factors into distinct linear factors, \[ \frac{p(x)}{(x - r)(x - s)} = \frac{A}{x - r} + \frac{B}{x - s}. \] "
-        r"Multiply through by the denominator, then substitute $x = r$ and $x = s$ to find $A$ and $B$. Each piece integrates to a log: "
-        r"$\int \frac{A}{x - r}\,dx = \blank{A\ln|x - r|} + C$.")),
-    Text(r"If the degree of the top is at least the degree of the bottom, divide first (Topic 6.10)."),
+        r"When the denominator is a product of linear factors, rewrite the fraction as some number $A$ over the first factor, plus some "
+        r"number $B$ over the second factor, and so on, one piece per factor: \[ \frac{p(x)}{(x - r)(x - s)} = \frac{A}{x - r} + \frac{B}{x - s}. \] "
+        r"Multiply both sides by the denominator. That gives a small equation for $A$ and $B$ that holds for every $x$, so choose $x$ "
+        r"values that cancel one term or the other: let $x = r$, then let $x = s$. (We pick these $x$ values; we aren't solving for $x$.) "
+        r"Each piece integrates to a log: $\int \frac{A}{x - r}\,dx = \blank{A\ln|x - r|} + C$.")),
+    Text(r"If the degree of the top is at least the degree of the bottom, divide first (Topic 6.10). On the AP exam, the linear factors don't repeat."),
     VideoExample('The method', work="3cm"),
     VideoExample('Using the method', work="3cm"),
     BigIdea(r"Partial fractions runs fraction addition backward: split into $\frac{A}{x - r} + \frac{B}{x - s}$, find $A$ and $B$ at the roots, integrate to logs."),
-    Check(r"Find $A$ and $B$: $\dfrac{3}{(x - 1)(x + 2)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 2}$. Enter $A$.", num(1), r"$3 = A(x + 2) + B(x - 1)$: $x = 1$ gives $A = 1$; $x = -2$ gives $B = -1$."),
+    Check(r"Find $A$ and $B$: $\dfrac{3}{(x - 1)(x + 2)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 2}$. Enter $A$.", num(1), r"$3 = A(x + 2) + B(x - 1)$. Let $x = 1$: $3 = 3A$, so $A = 1$. Let $x = -2$: $3 = -3B$, so $B = -1$."),
 ]
 
 # ---------------------------------------------------------------- practice
@@ -80,9 +82,9 @@ QUIZ = [
     Variants(q(1 / ((x - 2) * (x - 3))), q(1 / ((x + 1) * (x + 4))), q(2 / ((x - 1) * (x - 3)))),
     Variants(q(x / ((x - 1) * (x + 1))), q((x + 1) / ((x - 2) * (x + 3))), q((2 * x) / ((x - 4) * (x + 4)))),
     Variants(
-        Item(r"$\dfrac{5}{(x - 2)(x + 3)} = \dfrac{A}{x - 2} + \dfrac{B}{x + 3}$. Find $A$.", num(1), r"$x = 2$: $5 = 5A$.", work="1.2cm"),
-        Item(r"$\dfrac{x + 9}{(x - 1)(x + 3)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 3}$. Find $A$.", num(sp.Rational(5, 2)), r"$x = 1$: $10 = 4A$.", work="1.2cm"),
-        Item(r"$\dfrac{7x}{(x + 1)(x - 6)} = \dfrac{A}{x + 1} + \dfrac{B}{x - 6}$. Find $B$.", num(6), r"$x = 6$: $42 = 7B$.", work="1.2cm"),
+        Item(r"$\dfrac{5}{(x - 2)(x + 3)} = \dfrac{A}{x - 2} + \dfrac{B}{x + 3}$. Find $A$.", num(1), r"Let $x = 2$: $5 = 5A$, so $A = 1$.", work="1.2cm"),
+        Item(r"$\dfrac{x + 9}{(x - 1)(x + 3)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 3}$. Find $A$.", num(sp.Rational(5, 2)), r"Let $x = 1$: $10 = 4A$, so $A = \frac52$.", work="1.2cm"),
+        Item(r"$\dfrac{7x}{(x + 1)(x - 6)} = \dfrac{A}{x + 1} + \dfrac{B}{x - 6}$. Find $B$.", num(6), r"Let $x = 6$: $42 = 7B$, so $B = 6$.", work="1.2cm"),
     ),
     Variants(*[Item(rf"Evaluate $\displaystyle\int_{{{a}}}^{{{b}}} {sp.latex(f)}\,dx$.", num(sp.nsimplify(sp.simplify(sp.integrate(f, (x, a, b))))),
                     rf"Partial fractions, then logs: ${sp.latex(sp.simplify(sp.integrate(f, (x, a, b))))}$.", work="2cm")
@@ -98,7 +100,7 @@ MCQS = [
         r"$\ln|x - 1| - \ln|x + 2| + C$"], "A", r"$\frac{1}{(x - 1)(x + 2)} = \frac{1/3}{x - 1} - \frac{1/3}{x + 2}$."),
     MCQ(r"$\displaystyle\int_0^1 \frac{3}{(x + 1)(x + 4)}\,dx = $", [r"$\ln 2$", r"$\ln\frac85$", r"$\ln\frac{5}{8}$", r"$3\ln\frac85$"], "B",
         r"$\frac{1}{x + 1} - \frac{1}{x + 4}$: $[\ln(x + 1) - \ln(x + 4)]_0^1 = \ln\frac25 - \ln\frac14 = \ln\frac85$."),
-    MCQ(r"$\dfrac{4x - 1}{(x - 1)(x + 2)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 2}$. Then $A + B = $", [r"$1$", r"$2$", r"$3$", r"$4$"], "D", r"$A = 1$ (at $x = 1$) and $B = 3$ (at $x = -2$)."),
+    MCQ(r"$\dfrac{4x - 1}{(x - 1)(x + 2)} = \dfrac{A}{x - 1} + \dfrac{B}{x + 2}$. Then $A + B = $", [r"$1$", r"$2$", r"$3$", r"$4$"], "D", r"Let $x = 1$: $A = 1$. Let $x = -2$: $B = 3$."),
     MCQ(r"$\displaystyle\int \frac{x^2}{x^2 - 1}\,dx = $", [r"$\ln|x^2 - 1| + C$", r"$x + \frac12\ln\left|\frac{x - 1}{x + 1}\right| + C$", r"$x + \ln\left|\frac{x - 1}{x + 1}\right| + C$",
         r"$\frac{x^3}{3}\ln|x^2 - 1| + C$"], "B", r"Divide: $1 + \frac{1}{x^2 - 1}$, then partial fractions."),
 ]

@@ -2,8 +2,8 @@
 
 CED: LIM-6.A (LIM-6.A.1-LIM-6.A.3): an integral over an infinite interval, or of a function that is unbounded at a point
 of the interval, is a limit of definite integrals; it converges if the limit exists (a number) and diverges otherwise;
-limit notation is required. p-integrals: integral_1^oo x^(-p) dx converges exactly when p > 1. Lesson example: the
-hidden asymptote in integral_{-1}^{1} x^(-2) dx. Worked examples: e^(-2x) on [0, oo), x/(x^2 + 1) on [1, oo).
+limit notation is required. p-integrals: integral_1^oo x^(-p) dx converges exactly when p > 1. Lesson examples: 1/x^2
+and 1/x on [1, oo) (up to b, then the limit), the hidden asymptote in integral_{-1}^{1} x^(-2) dx. Worked examples: e^(-2x) on [0, oo), x/(x^2 + 1) on [1, oo).
 """
 import sympy as sp
 
@@ -30,8 +30,10 @@ NOTES = [
     Formula("Improper integrals", (
         r"\[ \int_a^\infty f(x)\,dx = \lim_{b\to\infty} \int_a^b f(x)\,dx. \] If $f$ is unbounded at $x = a$: $\displaystyle\int_a^c f(x)\,dx = \lim_{t\to a^+} \int_t^c f(x)\,dx$. "
         r"If the limit is a number, the integral \blank{converges}; if it is infinite or doesn't exist, the integral \blank{diverges}.")),
-    Text(r"\textbf{Write the limit on every line.} Never plug in $\infty$ directly."),
-    Text(r"$\int_1^\infty \frac{1}{x^2}\,dx = \lim_{b\to\infty}\left(1 - \frac1b\right) = 1$ converges; $\int_1^\infty \frac1x\,dx = \lim_{b\to\infty} \ln b = \infty$ diverges."),
+    Text(r"\textbf{$\infty$ is not a number.} The integral up to $\infty$ means: integrate up to some point $b$, then let $b \to \infty$. "
+         r"\textbf{Write the limit on every line}, and never plug in $\infty$ directly."),
+    VideoExample('Up to b, then the limit', work="3cm"),
+    VideoExample('One over x', work="2.6cm"),
     Formula("$p$-integrals", (r"$\displaystyle\int_1^\infty \frac{1}{x^p}\,dx$ converges if $p \blank{> 1}$ and diverges if $p \le 1$.")),
     Text(r"\textbf{Check inside the interval.} If $f$ is unbounded at a point inside $[a, b]$, split there. The Fundamental Theorem needs $f$ continuous on the whole interval."),
     VideoExample('A hidden asymptote', work="3cm"),

@@ -99,11 +99,12 @@ class Lesson(TranscriptScene):
 
         # ---------------------------------------------------------------- 17 / 5 first
         with self.beat("Division with numbers") as b:
-            cols = [-1.6, -1.0]
+            cols = [-1.5, -1.12]
             num = VGroup(M("1", 56).move_to([cols[0], 0.8, 0]), M("7", 56).move_to([cols[1], 0.8, 0]))
             frame, dv = division_frame("5", cols[0] - 0.45, cols[1] + 0.45, 1.3, 0.8, 56)
             q = M("3", 56, SECANT).move_to([cols[1], 1.85, 0])
-            sub = M("-15", 56).move_to([(cols[0] + cols[1]) / 2 - 0.2, -0.15, 0])
+            sub = M("-", "15", 56)
+            sub.shift([(cols[0] + cols[1]) / 2 - sub[1].get_center()[0], -0.15 - sub.get_center()[1], 0])    # the 15 sits under the 17
             ln = Line([cols[0] - 0.5, -0.6, 0], [cols[1] + 0.4, -0.6, 0], color=INK, stroke_width=3)
             r = M("2", 56, TANGENT).move_to([cols[1], -1.1, 0])
             grp = VGroup(num, frame, dv, q, sub, ln, r).shift(LEFT * 2.2)

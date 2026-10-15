@@ -30,7 +30,7 @@ LONGDIV = (r"Divide $x^2 + 3x + 5$ by $x + 1$, with the powers in order from hig
            r"\textbf{1.} Divide the leading terms: $x^2 \div x = x$. \textbf{2.} Multiply: $x(x + 1) = x^2 + x$. "
            r"\textbf{3.} Subtract: $\left(x^2 + 3x\right) - \left(x^2 + x\right) = 2x$. \textbf{4.} Bring down the $+\,5$: $2x + 5$. "
            r"Repeat: $2x \div x = 2$, $2(x + 1) = 2x + 2$, $(2x + 5) - (2x + 2) = 3$. The remainder $3$ has a lower degree than $x + 1$, so stop.")
-SYNTH = (r"\par\smallskip\centerline{\begin{tabular}{r|rrr} $-1$ & $1$ & $3$ & $5$ \\ & & $-1$ & $-2$ \\ \hline & $1$ & $2$ & $3$ \end{tabular}}\par\smallskip ")
+SYNTH = (r" \[ \begin{array}{r|rrr} -1 & 1 & 3 & 5 \\ & & -1 & -2 \\ \hline & 1 & 2 & 3 \end{array} \] ")
 
 NOTES = [
     Video("s6_10.py::Lesson", "Long division and completing the square", 5),
@@ -46,7 +46,7 @@ NOTES = [
         r"Bring down the first coefficient; multiply by $c$, write it under the next coefficient, and add; repeat. The last number is the remainder, and the others "
         r"are the quotient's coefficients, one degree lower than the top. For $x + 1 = x - (-1)$, $c = -1$:" + SYNTH +
         r"so the quotient is $x + 2$ and the remainder is $3$. To divide by something such as $x^2 + 1$ or $2x + 1$, use long division.")),
-    Text(r"So $\displaystyle\int \frac{x^2 + 3x + 5}{x + 1}\,dx = \int \left(x + 2 + \frac{3}{x + 1}\right) dx = \frac{x^2}{2} + 2x + \blank{3\ln|x + 1|} + C$."),
+    Text(r"So \[ \int \frac{x^2 + 3x + 5}{x + 1}\,dx = \int \left(x + 2 + \frac{3}{x + 1}\right) dx = \frac{x^2}{2} + 2x + \mblank{3\ln|x + 1|} + C. \]"),
 
     Section("Complete the square"),
     Formula("Two forms", (

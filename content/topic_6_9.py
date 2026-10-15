@@ -35,7 +35,7 @@ NOTES = [
     Video("s6_9.py::Lesson", "Substitution", 5),
 
     Section("The chain rule, backward"),
-    Text(r"$\frac{d}{dx}\sin\left(x^2\right) = \cos\left(x^2\right) \cdot 2x$, so $\int 2x\cos\left(x^2\right) dx = \sin\left(x^2\right) + C$. "
+    Text(r"By the chain rule, \[ \frac{d}{dx}\sin\left(x^2\right) = \cos\left(x^2\right) \cdot 2x, \quad \text{so} \quad \int 2x\cos\left(x^2\right) dx = \sin\left(x^2\right) + C. \] "
          r"The integrand has an \blank{inside function}, $x^2$, and its derivative, $2x$, is a factor. Substitution is essentially a reverse chain rule."),
 
     Section("Substitution"),

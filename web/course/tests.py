@@ -698,6 +698,21 @@ class SitePages(TestCase):
         self.assertIn('Unit 4</b><span>Contextual Applications of Differentiation <i class="lock">Members</i>', page)
         self.assertNotIn('Unit 1</b><span>Limits and Continuity <i class="lock">', page)
 
+    def test_videos_menu(self):
+        """Adder 2026-10-15: the Videos dropdown lists each unit with a flyout of its published videos."""
+        import tempfile
+        from pathlib import Path
+        from django.test import override_settings
+        with tempfile.TemporaryDirectory() as d:
+            for name in ("2_1.mp4", "2_1-dark.mp4", "0_1.mp4"):
+                (Path(d) / name).write_bytes(b"")
+            with override_settings(VIDEO_DIR=Path(d)):
+                page = self.client.get("/course/").content.decode()
+        self.assertIn('href="/videos/#2.1"><b>2.1</b>', page)
+        self.assertIn('href="/videos/#0.1"', page)
+        self.assertNotIn('href="/videos/#2.2"', page)                  # no video, no entry
+        self.assertNotIn('href="/videos/#1.1"', page)                  # nor a unit with none
+
     def test_new_navigation_pages(self):
         """Adder 2026-10-12: separate calc and trig courses and formula sheets, an all-videos page, a student
         dashboard, and a top bar in two layouts."""

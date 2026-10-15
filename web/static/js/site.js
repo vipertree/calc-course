@@ -98,6 +98,8 @@
     }
   });
   document.addEventListener("click", (e) => { if (!nav.contains(e.target)) closeAll(); });
+  // a link that only changes the hash (/videos/#6.2 while on Videos) doesn't reload the page: shut the menus by hand
+  nav.addEventListener("click", (e) => { if (e.target.closest(".nav-sub a")) { closeAll(); groups.forEach((g) => { g.open = narrow.matches; }); } });
   groups.forEach((g) => g.addEventListener("toggle", () => { if (!g.open) g.querySelectorAll(".has-sub.open").forEach((it) => setOpen(it, false)); }));
   window.addEventListener("resize", closeAll);
 })();

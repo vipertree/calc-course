@@ -52,6 +52,11 @@
   const want = decodeURIComponent(location.hash.slice(1));
   const first = items.find((b) => b.dataset.n === want) || items.find((b) => b.dataset.n === "1.1") || items[0];
   if (first) play(first, false);
+  // the top bar's Videos menu links to /videos/#6.2; on this page that only changes the hash, so follow it
+  window.addEventListener("hashchange", () => {
+    const b = items.find((x) => x.dataset.n === decodeURIComponent(location.hash.slice(1)));
+    if (b && !b.classList.contains("on")) { play(b, true); b.scrollIntoView({ block: "nearest" }); }
+  });
   // lesson titles carry $...$ math; KaTeX loads deferred, so typeset once the page is ready
   window.addEventListener("load", () => { if (window.renderMathInElement) renderMathInElement(document.querySelector(".videos-page"),
     { throwOnError: false, delimiters: [{ left: "$", right: "$", display: false }] }); });

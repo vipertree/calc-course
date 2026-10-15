@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from django.conf import settings
 
 from accounts.models import has_full_access
@@ -28,6 +30,18 @@ NAV = [
 ]
 
 
+def _published_videos():
+    """Lesson slugs with a published video, re-read only when the video folder changes."""
+    d = settings.VIDEO_DIR
+    return _video_slugs(str(d), d.stat().st_mtime) if d.exists() else frozenset()
+
+
+@lru_cache(maxsize=4)
+def _video_slugs(path, mtime):
+    from pathlib import Path
+    return frozenset(p.stem for p in Path(path).glob("*.mp4") if not p.stem.endswith("-dark"))
+
+
 def _course_tree(module, full):
     """The flyout under AP Calc Course (units, each with its lessons and unit test) or Trig Course (its lessons).
     Adder 2026-10-15: hover a course, then a unit, to reach any lesson."""
@@ -50,6 +64,21 @@ def _course_tree(module, full):
              "locked": not u["free"] and not full, "children": lessons(u)} for u in units]
 
 
+def _video_tree():
+    """The Videos dropdown below All videos: the trig module, then Units 1-10, each with a flyout of its published
+    lesson videos; a video opens on the Videos page (/videos/#2.1). Adder 2026-10-15."""
+    from django.urls import reverse
+    from . import content
+    have, base = _published_videos(), reverse("videos")
+    out = []
+    for u in sorted(content.syllabus(), key=lambda u: (not u["module"], u["n"])):
+        vids = [{"label": t["label"], "title": t["title"], "url": f"{base}#{t['n']}"}
+                for t in u["topics"] if content.slug(t["n"]) in have]
+        if vids:
+            out.append({"label": u["short"], "url": vids[0]["url"], "on": False, "children": vids})
+    return out
+
+
 def _nav(request, profile, full=False):
     from django.urls import reverse
     here = getattr(getattr(request, "resolver_match", None), "url_name", "")
@@ -60,6 +89,8 @@ def _nav(request, profile, full=False):
               for g, items in NAV]
     for g in groups:
         g["on"] = any(i["on"] for i in g["items"])
+        if g["name"] == "Videos":            # All videos, then Trig Review and Units 1-10, each opening its videos
+            g["items"] += _video_tree()
     dash = None
     if request.user.is_authenticated:
         if profile and profile.is_teacher:

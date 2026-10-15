@@ -213,3 +213,15 @@
 [data-design="textbook"] .about-ai h2 { font-size: 1.1rem; }
 [data-design="textbook"] .contact-card { border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); border-radius: 0; background: transparent; padding: 14px 0 6px; }
 [data-design="textbook"] .contact-form textarea { background: var(--panel-2); border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; }
+
+/* AP FRQ Archive: a book's index. Question types as a ruled list, questions as contents lines with the year as the number */
+[data-design="textbook"] .frq-cat { border: 0; border-bottom: 1px solid var(--soft); border-radius: 0; background: none; padding: 6px 2px; color: var(--accent); }
+[data-design="textbook"] .frq-cat.on { background: none; color: var(--ink); border-bottom: 2px solid var(--ink); font-weight: 700; }
+[data-design="textbook"] .frq-filter { border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); border-radius: 0; background: none; padding: 12px 0; }
+[data-design="textbook"] .frq-list { display: block; }
+[data-design="textbook"] .frq-row { padding: 6px 0; }
+[data-design="textbook"] .frq-row::after { display: none; }
+[data-design="textbook"] .frq-row small { font-style: normal; }
+[data-design="textbook"] .frq-group h2 { border-bottom: 1px solid var(--ink); padding-bottom: 4px; }
+[data-design="textbook"] .frq-sheet { border: 1px solid var(--soft); border-radius: 0; }
+[data-design="textbook"] .frq-links { border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); border-radius: 0; background: none; padding: 12px 0; }

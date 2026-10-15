@@ -20,7 +20,8 @@ DESIGN_FONTS = {
 # dropdowns; the viewer picks with NAV_STYLES (cookie "nav"). Entries are (label, url name, url name args, anchor).
 NAV_STYLES = [("links", "Links"), ("menus", "Dropdowns")]
 NAV = [
-    ("Calculus", [("AP Calc Course", "map"), ("Calc Formula Sheet", "formulas"), ("AP Calc Practice Exams", "exams")]),
+    ("Calculus", [("AP Calc Course", "map"), ("Calc Formula Sheet", "formulas"), ("AP Calc Practice Exams", "exams"),
+                  ("AP FRQ Archive", "frq")]),
     ("Trigonometry", [("Trig Course", "trig"), ("Trig Formulas", "trig_formulas")]),
     ("Videos", [("All videos", "videos")]),
 ]

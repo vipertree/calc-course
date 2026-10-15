@@ -716,3 +716,14 @@ class SitePages(TestCase):
         self.client.force_login(u)
         self.assertRedirects(self.client.get("/"), "/me/")
         self.assertContains(self.client.get("/me/"), "Student Dashboard")
+
+
+class UnitEndNext(TestCase):
+    """Adder 2026-10-14: Next at the end of a unit goes to that unit's test, not the next unit's first lesson."""
+
+    def test_last_lesson_points_to_the_unit_test(self):
+        from . import content
+        last = [t["n"] for u in content.syllabus() if u["n"] == 1 for t in u["topics"] if t["n"] in content.available()][-1]
+        page = self.client.get(f"/topic/{last}/").content.decode()
+        self.assertIn('href="/unit/U1/test/"', page)
+        self.assertNotIn('href="/topic/2.1/"', page)

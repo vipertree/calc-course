@@ -88,6 +88,7 @@ The scanner catches some of these; most need reading.
 - **Decoration.** Arrows (→), sparkles (✨), rockets (🚀), ✅ bullets in prose. Keep only where they're real UI affordances (a "Next →" button is fine).
 - **Title Case Every Heading** when the rest of the product uses sentence case. Match the product.
 - **Vague attribution.** "Players love…", "Experts agree…". Cite or cut.
+- **"Like" for "such as".** When introducing examples, write "such as", never "like": "an initial condition such as y(1) = 2", "functions such as sin x". Keep "like" only for real comparisons ("it looks like a parabola"). Adder flags this every time; the scanner marks it high.
 
 ### 5. What good replacement copy looks like
 

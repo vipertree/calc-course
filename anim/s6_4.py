@@ -15,7 +15,7 @@ from style import *
 
 # the rule kept in the corner during the examples (formulas stay on screen)
 REF_FTC = r"\begin{array}{c} F(x) = \int_a^x f(t)\,dt \\ \text{so } F'(x) = f(x) \end{array}"
-REF_CHAIN = r"\begin{array}{c} F(x) = \int_a^x f(t)\,dt \\ \tfrac{d}{dx}F(g(x)) = F'(g(x)) \cdot g'(x) \end{array}"
+REF_CHAIN = r"\begin{array}{c} F(x) = \int_a^x f(t)\,dt \\ \left[F(g(x))\right]' = F'(g(x))\, g'(x) \end{array}"
 
 
 def stack(xr, yF, yf, w=8.0, hF=2.7, hf=2.3, coords=True, Flab="F", flab="f"):
@@ -77,7 +77,7 @@ class Lesson(TranscriptScene):
             lx = T("$x$: the moving end, the input of $F$", 30, SECANT).next_to(eq[2], UR, buff=0.15).shift(RIGHT * 0.6)
             self.play(FadeIn(la), FadeIn(lx), run_time=0.8)
             b.line(2)
-            lt = T("$t$: runs from $a$ to $x$", 30, FUNC).next_to(eq[3], DOWN, buff=0.35)
+            lt = T("$t$: runs from $a$ to $x$", 30, FUNC).next_to(eq[3], DOWN, buff=0.35).shift(RIGHT * 0.5)
             self.play(FadeIn(lt), run_time=0.6)
             mini, _ = plot_axes([0, 5, 1], [0, 3, 1], w=4.6, h=2.4, coords=False)
             g = lambda s: 1.2 + 0.3 * np.sin(s)
@@ -153,9 +153,10 @@ class Lesson(TranscriptScene):
         self.clear()
 
         # ---------------------------------------------------------------- the nudge: dF is the sliver of area under f
-        top, tl, ttag, bot, bl, btag = stack([0, 6, 1], [0, 9, 3], [0, 3, 1], coords=False)
-        x0 = 5.0
-        DX = ValueTracker(0.8)
+        # a tall F graph and a wide nudge, so the rise dF is big enough to see
+        top, tl, ttag, bot, bl, btag = stack([0, 6, 1], [0, 9, 3], [0, 3, 1], hF=3.1, hf=2.1, coords=False)
+        x0 = 4.4
+        DX = ValueTracker(1.0)
 
         def parts():
             d = DX.get_value()
@@ -203,7 +204,7 @@ class Lesson(TranscriptScene):
             live = always_redraw(lambda: VGroup(*parts().values()))
             self.remove(*static)
             self.add(live)
-            self.play(DX.animate.set_value(0.2), run_time=2.4)
+            self.play(DX.animate.set_value(0.25), run_time=2.4)
             self.play(Write(rows[3]), run_time=1.2)
         self.clear()
 

@@ -57,7 +57,7 @@ NOTES = [
          r"rectangle, $f(x)$ tall and $\Delta x$ wide, so $\Delta F \approx f(x) \cdot \Delta x$ and $\frac{\Delta F}{\Delta x} \approx f(x)$. "
          r"As $\Delta x \to 0$ this becomes exact: \[ F'(x) = \lim_{\Delta x \to 0} \frac{\Delta F}{\Delta x} = f(x). \]"),
     Formula("The Fundamental Theorem of Calculus", (
-        r"If $f$ is continuous and \[ F(x) = \int_a^x f(t)\,dt, \] then \[ F'(x) = \blank{f(x)}. \]")),
+        r"For a continuous function $f$: \[ \text{If } F(x) = \int_a^x f(t)\,dt, \ \text{ then } \ F'(x) = \blank{f(x)}. \]")),
     Text(r"\textbf{Check it.} For $f(t) = 2t$ we found $F(x) = x^2$, and $F'(x) = 2x = f(x)$."),
     BigIdea(r"Integrating and taking a derivative undo each other: integrate $f$ up to $x$, take the derivative, and you get $f$ back. "
             r"The Fundamental Theorem joins the two halves of calculus, derivatives (slopes and rates) and integrals (Riemann sums and areas)."),
@@ -66,10 +66,10 @@ NOTES = [
 
     Section("With the chain rule"),
     Formula("A function of $x$ on top", (
-        r"If $F(x) = \int_a^x f(t)\,dt$, then $\int_a^{g(x)} f(t)\,dt = F(g(x))$, and by the chain rule "
-        r"\[ \frac{d}{dx}F(g(x)) = F'(g(x)) \cdot g'(x) = f(g(x)) \cdot \blank{g'(x)}. \]")),
+        r"Let $F(x) = \int_a^x f(t)\,dt$. A function $g(x)$ on top is $F$ of the inner function: \[ \int_a^{g(x)} f(t)\,dt = F(g(x)). \] "
+        r"By the chain rule, \[ \frac{d}{dx}F(g(x)) = F'(g(x)) \cdot g'(x) = f(g(x)) \cdot \blank{g'(x)}. \]")),
     VideoExample('With the chain rule', work="3cm"),
-    Text(r"\textbf{$x$ on the bottom.} Swap the limits first, which changes the sign: $\int_x^b f(t)\,dt = -\int_b^x f(t)\,dt$. "
+    Text(r"\textbf{$x$ on the bottom.} Swap the limits first, which changes the sign: \[ \int_x^b f(t)\,dt = -\int_b^x f(t)\,dt. \] "
          r"\textbf{$x$ at both ends.} Split the integral at a fixed number $c$, so each piece has one moving limit: "
          r"\[ \int_{u(x)}^{v(x)} f(t)\,dt = -\int_c^{u(x)} f(t)\,dt + \int_c^{v(x)} f(t)\,dt. \]"),
     Check(r"$F(x) = \int_1^x \frac{1}{1 + t^2}\,dt$. Find $F'(x)$.", expr(1 / (1 + x**2)), r"By the Fundamental Theorem: $F'(x) = \frac{1}{1 + x^2}$."),

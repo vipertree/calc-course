@@ -25,7 +25,7 @@ class Lesson(TranscriptScene):
         with self.beat("Rising and falling totals") as b:
             fc = bot.plot(f, x_range=[0, 7], color=FUNC, stroke_width=5)
             self.play(FadeIn(top), FadeIn(tl), FadeIn(ttag), FadeIn(bot), FadeIn(bl), FadeIn(btag), Create(fc), FadeIn(defn),
-                      FadeIn(M("f(t)", 40, FUNC).move_to(bot.c2p(2.0, 2.0))), run_time=1.2)
+                      FadeIn(M("f(t)", 40, FUNC).move_to(bot.c2p(4.3, 1.6))), run_time=1.2)
 
             def shaded():
                 xv = max(X.get_value(), 0.02)
@@ -128,7 +128,7 @@ class Lesson(TranscriptScene):
                      r"The graph of $f$ is shown. Let $g(x) = \int_0^x f(t)\,dt$. On what intervals is $g$ concave up? Concave down?",
                      [r"\text{concave up: } g'' > 0; \ \ \text{concave down: } g'' < 0", r"g' = f \ \text{(FTC)}, \ \text{so} \ g'' = f'",
                       r"\text{look at the slope of } f", r"f \text{ increasing on } (0, 3): \ g \text{ concave up}",
-                      r"f \text{ decreasing on } (3, 6): \ g \text{ concave down, inflection at } x = 3"], at=[1, 2, 3, 4, 5], figure=cfig,
+                      r"f \text{ decreasing on } (3, 6): \ g \text{ concave down}", r"\text{inflection point of } g \text{ at } x = 3"], at=[1, 2, 3, 4, 5, 5], figure=cfig,
                      cues={3: lambda sc: sc.play(up_seg.animate.set_color(DERIV), run_time=0.5), 4: lambda sc: sc.play(dn_seg.animate.set_color(TANGENT), run_time=0.5)},
                      text=r"The graph of $f$ consists of a segment from $(0, -2)$ to $(3, 4)$ and a segment from $(3, 4)$ to $(6, 1)$. Let $g(x) = \int_0^x f(t)\,dt$. "
                           r"On what intervals is the graph of $g$ concave up? Concave down?",

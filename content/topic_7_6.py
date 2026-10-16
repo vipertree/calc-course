@@ -23,10 +23,15 @@ NOTES = [
     Video("s7_6.py::Lesson", "Separation of variables", 4),
 
     Section("Separate, integrate, solve"),
+    Text(r"We can't integrate $\frac{dy}{dx} = xy$ with respect to $x$ as it stands: $xy$ is a function of $x$ \emph{and} $y$. "
+         r"If we can split it into a function of $y$ with $dy$ and a function of $x$ with $dx$, we can integrate each side and solve."),
     Formula("Separation of variables", (
         r"\textbf{1.} Separate: all the $y$'s with $dy$, all the $x$'s with $dx$. \par \textbf{2.} Integrate both sides. \par "
         r"\textbf{3.} Use \blank{one} constant of integration, on the $x$ side. \par \textbf{4.} Solve for $y$ if possible.")),
-    Text(r"$\frac{dy}{dx} = xy$: $\frac{dy}{y} = x\,dx$, so $\ln|y| = \frac{x^2}{2} + C$ and $|y| = e^Ce^{x^2/2}$. With $A = \pm e^C$: \[ y = \blank{Ae^{x^2/2}}. \] "
+    Text(r"\textbf{Why one constant.} Each side really gets a constant: $\ln|y| + D = \frac{x^2}{2} + C$. Subtract $D$: $\ln|y| = \frac{x^2}{2} + (C - D)$, "
+         r"and $C - D$ is just a new constant. So we write one constant, on the $x$ side, and call it $C$."),
+    Text(r"$\frac{dy}{dx} = xy$: $\frac{dy}{y} = x\,dx$. The left side means $\int \frac1y\,dy$: the integrand is $\frac1y$, with respect to $y$. "
+         r"So $\ln|y| = \frac{x^2}{2} + C$ and $|y| = e^Ce^{x^2/2}$. With $A = \pm e^C$: \[ y = \blank{Ae^{x^2/2}}. \] "
          r"Constants combine: $\pm e^C$ becomes $A$, and $2C$ becomes $K$."),
     VideoExample('Another one', work="2.8cm"),
     BigIdea(r"Separate the variables, integrate both sides with one constant, and solve for $y$: the general solution is a family."),

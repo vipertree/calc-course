@@ -23,11 +23,42 @@ class Lesson(TranscriptScene):
             field = slope_field(ax, f, grid, grid)
             self.play(LaggedStart(*[Create(s) for s in field], lag_ratio=0.01), run_time=3)
             b.line(2)
-            for c, col in ((-1.0, FUNC), (2.0, DERIV)):
+            for c, col in ((-1.0, FUNC), (2.0, SECANT)):
                 sol = ax.plot(lambda x, c=c: x - 1 + c * np.exp(-x), x_range=[-1.4 if c > 0 else -1.6, 3], color=col, stroke_width=5)
                 self.play(Create(sol), run_time=1.6)
         self.clear()
         self.title()
+
+        with self.beat("Solutions come in families") as b:
+            la, _ = plot_axes([-2, 2, 1], [-2, 3, 1], w=4.6, h=4.2, coords=False)
+            ra, _ = plot_axes([-2, 2, 1], [-2, 3, 1], w=4.6, h=4.2, coords=False)
+            VGroup(la, ra).arrange(RIGHT, buff=1.6).to_edge(DOWN, buff=0.9)
+            lde = M(r"\frac{dy}{dx} = x", 40, ACCUM).next_to(la, UP, buff=1.1)
+            lint = M(r"y = \int x\,dx = \tfrac12x^2 + C", 36).next_to(lde, DOWN, buff=0.2)
+            self.play(FadeIn(la), Write(lde), run_time=0.9)
+            self.play(Write(lint), run_time=1)
+            b.line(1)
+            par = VGroup(*[la.plot(lambda s, c=c: s * s / 2 + c, x_range=[-2, 2] if c < 1 else [-np.sqrt(2 * (3 - c)) + 0.01, np.sqrt(2 * (3 - c)) - 0.01], color=FUNC, stroke_width=3)
+                           for c in (-2, -1, 0, 1, 2)])
+            fam = T("many solutions: a family", 26, FUNC).next_to(la, DOWN, buff=0.15)
+            self.play(LaggedStart(*[Create(p_) for p_ in par], lag_ratio=0.25), FadeIn(fam), run_time=1.8)
+            b.line(2)
+            g = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5]
+            lf = slope_field(la, lambda x, y: x, g, [-1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5], length=0.28)
+            every = T("the slope at every point, for any solution", 26, DERIV).next_to(la, DOWN, buff=0.15)
+            self.play(par.animate.set_stroke(opacity=0.45), FadeIn(lf), FadeOut(fam), FadeIn(every), run_time=1.2)
+            b.line(3)
+            rde = M(r"\frac{dy}{dx} = x - y", 40, ACCUM).next_to(ra, UP, buff=1.1)
+            rf = slope_field(ra, lambda x, y: x - y, g, [-1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5], length=0.28)
+            sols = VGroup()
+            for c, col in ((-1.0, FUNC), (0.0, SECANT), (1.0, FUNC), (2.0, FUNC), (-0.4, FUNC)):
+                f_ = lambda x, c=c: x - 1 + c * np.exp(-x)
+                xs = [x for x in np.linspace(-2, 2, 400) if -2 <= f_(x) <= 3]
+                sols.add(ra.plot(f_, x_range=[xs[0], xs[-1]], color=col, stroke_width=3))
+            vary = T("$x$ and $y$ mixed: shapes vary, more than shifts", 26, SECANT).next_to(ra, DOWN, buff=0.15)
+            self.play(FadeIn(ra), Write(rde), FadeIn(rf), run_time=1)
+            self.play(LaggedStart(*[Create(c_) for c_ in sols], lag_ratio=0.25), FadeIn(vary), run_time=2)
+        self.clear()
 
         with self.beat("Patterns to look for") as b:
             panels = VGroup()

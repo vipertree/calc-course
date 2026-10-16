@@ -22,6 +22,11 @@ same("lesson", [sp.diff(5 * sp.exp(3 * x), x) - 3 * 5 * sp.exp(3 * x), sp.simpli
 NOTES = [
     Video("s7_2.py::Lesson", "Verifying solutions", 4),
 
+    Section("A different kind of solution"),
+    Text(r"In algebra, a solution is a \blank{value}: $2x + 1 = 7$ has the solution $x = 3$. A solution to a differential equation is a \blank{function} "
+         r"(an equation for $y$ in terms of $x$, or a curve), and there can be many. For $\frac{dy}{dx} = 3y$, we want a $y$ whose derivative is $3y$. "
+         r"In this topic we only verify: given a particular $y$, does the statement about its derivative hold?"),
+
     Section("The test"),
     Formula("Verifying a solution", (
         r"\textbf{1.} Differentiate the candidate as many times as the equation needs. \par \textbf{2.} Substitute $y$, $y'$, $y''$ into the equation. \par "

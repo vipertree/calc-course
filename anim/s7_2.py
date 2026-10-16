@@ -10,21 +10,51 @@ class Lesson(TranscriptScene):
     NUM = "7.2"
 
     def construct(self):
-        with self.beat("Does it fit?") as b:
-            de = M(r"\frac{dy}{dx} = 3y", 56, ACCUM).to_edge(UP, buff=0.6)
-            cand = M(r"y = 5e^{3x} \ ?", 48).next_to(de, DOWN, buff=0.6)
-            self.play(Write(de), FadeIn(cand), run_time=1.2)
+        with self.beat("A different kind of solution") as b:
+            sep = Line(UP * 3.2, DOWN * 3.2, color=DIM, stroke_width=2)
+            lh = T("algebra", 38, DIM).move_to([-3.6, 2.9, 0])
+            le = M(r"2x + 1 = 7", 52).next_to(lh, DOWN, buff=0.5)
+            ls = M(r"\text{solution: } x = 3", 44, SECANT).next_to(le, DOWN, buff=0.5)
+            lv = T("a value", 32, SECANT).next_to(ls, DOWN, buff=0.25)
+            nl = NumberLine(x_range=[0, 6, 1], length=4.6, color=DIM, include_numbers=True, font_size=26).next_to(lv, DOWN, buff=0.6)
+            dot = Dot(nl.n2p(3), color=SECANT, radius=0.11)
+            self.play(FadeIn(sep), FadeIn(lh), Write(le), run_time=1)
+            self.play(FadeIn(ls), FadeIn(lv), FadeIn(nl), FadeIn(dot, scale=1.6), run_time=1)
             b.line(1)
+            rh = T("differential equation", 38, DIM).move_to([3.6, 2.9, 0])
+            re_ = M(r"\frac{dy}{dx} = 3y", 52, ACCUM).next_to(rh, DOWN, buff=0.4)
+            rs = M(r"\text{solution: a function } y = \dots", 40, FUNC).next_to(re_, DOWN, buff=0.4)
+            rc = T("a curve", 32, FUNC).next_to(rs, DOWN, buff=0.2)
+            ax, _ = plot_axes([-1.5, 1, 1], [-4, 4, 2], w=3.6, h=2.4, coords=False)
+            ax.next_to(rc, DOWN, buff=0.3)
+            curves = VGroup(*[ax.plot(lambda s, c=c: c * np.exp(3 * s), x_range=[-1.5, 0.6 if abs(c) > 1 else 0.85], color=FUNC, stroke_width=3) for c in (-2, -1, -0.5, 0.5, 1, 2)])
+            self.play(FadeIn(rh), Write(re_), run_time=1)
+            self.play(FadeIn(rs), FadeIn(rc), FadeIn(ax), Create(curves[3]), run_time=1)
+            many = T("often many", 30, FUNC).next_to(ax, RIGHT, buff=0.2)
+            self.play(LaggedStart(*[Create(c) for k, c in enumerate(curves) if k != 3], lag_ratio=0.2), FadeIn(many), run_time=1.4)
+            b.line(2)
+            self.play(Indicate(re_, color=ACCUM), run_time=1)
+        self.clear()
+        self.title()
+
+        with self.beat("Does it fit?") as b:
+            de = M(r"\frac{dy}{dx} = 3y", 56, ACCUM).to_edge(UP, buff=0.5)
+            want = T("we want: $y$ in terms of $x$ whose derivative is $3y$", 30, DIM).next_to(de, DOWN, buff=0.3)
+            self.play(Write(de), FadeIn(want), run_time=1)
+            ask = T("given a $y$, does the statement hold?", 34, SECANT).next_to(want, DOWN, buff=0.35)
+            self.play(FadeIn(ask), run_time=0.7)
+            b.line(1)
+            cand = M(r"y = 5e^{3x} \ ?", 48).next_to(ask, DOWN, buff=0.45)
+            self.play(FadeIn(cand), run_time=0.7)
             lhs = VGroup(T("left side", 28, DIM), M(r"\frac{dy}{dx} = 15e^{3x}", 44)).arrange(DOWN, buff=0.2)
             rhs = VGroup(T("right side", 28, DIM), M(r"3y = 3\left(5e^{3x}\right) = 15e^{3x}", 44)).arrange(DOWN, buff=0.2)
-            VGroup(lhs, rhs).arrange(RIGHT, buff=1.2).next_to(cand, DOWN, buff=0.8)
+            VGroup(lhs, rhs).arrange(RIGHT, buff=1.2).next_to(cand, DOWN, buff=0.5)
             self.play(FadeIn(lhs), run_time=0.8)
             b.line(2)
             self.play(FadeIn(rhs), run_time=0.8)
-            tick = M(r"\checkmark", 72, DERIV).next_to(VGroup(lhs, rhs), DOWN, buff=0.5)
+            tick = M(r"\checkmark", 64, DERIV).next_to(VGroup(lhs, rhs), DOWN, buff=0.3)
             self.play(FadeIn(tick, scale=1.5), run_time=0.6)
         self.clear()
-        self.title()
 
         with self.beat("The test") as b:
             steps = VGroup(T("1. Differentiate the candidate as many times as the equation needs.", 32), T("2. Substitute $y$, $y'$ (and $y''$) into both sides.", 32),

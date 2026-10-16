@@ -27,8 +27,7 @@ NOTES = [
     Formula("Particular solution", (
         r"\textbf{1.} Separate and integrate (one $+\,C$). \par \textbf{2.} Substitute the initial condition \blank{right away} to find $C$. \par "
         r"\textbf{3.} Solve for $y$; choose the sign that fits the initial point. \par \textbf{4.} The domain is an interval containing the initial point where the solution is defined.")),
-    Text(r"$\frac{dy}{dx} = \frac xy$, $y(1) = 2$: $\frac{y^2}{2} = \frac{x^2}{2} + C$; at $(1, 2)$, $C = \frac32$; $y^2 = x^2 + 3$; $y = \blank{+\sqrt{x^2 + 3}}$ since $y(1) > 0$."),
-    VideoExample('Find C right away', work="3cm"),
+    VideoExample('Find C right away', work="5cm"),
     BigIdea(r"Separate, integrate, and substitute the initial condition to find $C$ before solving for $y$. Pick the sign that matches the point and watch the domain."),
     Check(r"Find the particular solution of $\frac{dy}{dx} = y$ with $y(0) = 4$.", expr(4 * sp.exp(x)), r"$\ln|y| = x + C$, $C = \ln 4$: $y = 4e^x$."),
 ]

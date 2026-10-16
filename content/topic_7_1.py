@@ -16,8 +16,14 @@ NOTES = [
     Video("s7_1.py::Lesson", "Differential equations", 5),
 
     Section("Rules for rates"),
-    Text(r"A \blank{differential equation} is an equation that involves a derivative. It gives a rule for how a quantity changes, such as $\frac{dT}{dt} = -k(T - 70)$ for cooling coffee. "
-         r"A \blank{solution} is a function (not a number) whose derivative obeys the rule: every $y = x^3 + C$ solves $\frac{dy}{dx} = 3x^2$."),
+    Text(r"\textbf{Cooling coffee, one piece at a time.} The coffee starts at $90^\circ$F in a $70^\circ$F room. "
+         r"$\frac{dT}{dt}$ is the change in temperature with respect to time. It depends on how far $T$ is from room temperature, $\blank{T - 70}$. "
+         r"How much it changes depends on some constant $k$, and the whole thing is negative because the temperature is decreasing: \[ \frac{dT}{dt} = -k(T - 70). \]"),
+    Text(r"A \blank{differential equation} is an equation that involves a derivative. It gives a rule for how a quantity changes. "
+         r"A \blank{solution} is a function (not a number) whose derivative obeys the rule: every $y = x^3 + C$ solves $\frac{dy}{dx} = 3x^2$. "
+         r"That one is just an antiderivative, so you've already solved some differential equations."),
+    Text(r"In later courses, derivatives show up all over a differential equation, the way a variable can show up all over an algebra equation. "
+         r"The differential equations in this course are relatively simple, but not always easy."),
     Table(r"the rate of change of $y$ is proportional to $y$ & $\dfrac{dy}{dt} = \blank{ky}$ \\ "
           r"proportional to the square root of $y$ & $\dfrac{dy}{dt} = k\sqrt y$ \\ "
           r"inversely proportional to $y$ & $\dfrac{dy}{dt} = \dfrac ky$ \\ "

@@ -22,8 +22,14 @@ FIG_XY = slope_field("t7_3_xy", lambda a, c: a * c, G, G, (-2, 2), (-2, 2), capt
 NOTES = [
     Video("s7_3.py::Lesson", "Slope fields", 4),
 
+    Section("Solutions come in families"),
+    Text(r"The simplest differential equations have only $x$ on the right side. Integrating gives $F(x) + C$, so there are many solutions. "
+         r"For $\frac{dy}{dx} = x$, $y = \blank{\tfrac12x^2 + C}$: a family of parabolas, each one shifted up or down. "
+         r"When the right side mixes $x$ and $y$, the solutions can vary widely in shape, and shifting one solution up or down won't give the others."),
+
     Section("Slope fields"),
-    Text(r"A \blank{slope field} draws, at each point $(x, y)$, a short segment whose slope is the value of $\frac{dy}{dx}$ there. Every solution curve follows the segments."),
+    Text(r"A \blank{slope field} draws, at each point $(x, y)$, a short segment whose slope is the value of $\frac{dy}{dx}$ there. It is not a single function: "
+         r"it shows the slope that \emph{any} solution through that point will have. Every solution curve follows the segments."),
     FIG_XMY,
     Formula("Patterns", (
         r"If $\frac{dy}{dx}$ depends only on $x$, the slopes are equal down each vertical \blank{column}. \par "

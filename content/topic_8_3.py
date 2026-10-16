@@ -3,7 +3,7 @@
 CED: CHA-4.D (CHA-4.D.1, CHA-4.D.2): the definite integral of a rate of change gives the net change (accumulation)
 over the interval; units of the integral are rate units times input units; amount = initial amount + integral of
 (rate in - rate out); the amount is greatest where rate in - rate out changes from + to -, checked against the
-endpoints. Lesson example: tank with E(t) = 8 + 2t, D(t) = t^2, A(0) = 50. Worked examples: interpret an integral and
+endpoints. Lesson example: tank with E(t) = 8 + 2t, D(t) = t^2, F(0) = 50 (the amount is big F, Adder 2026-10-14; examples say where they are headed first). Worked examples: interpret an integral and
 a derivative in context; trapezoidal sum of a rate from a table; maximum temperature from H'(t) = 4 - t.
 """
 import sympy as sp
@@ -32,14 +32,15 @@ NOTES = [
 
     Section("Start plus net change"),
     Formula("Amount from rates", (
-        r"If the amount $A$ changes at rate $A'(t) = E(t) - D(t)$ (rate in minus rate out), then \[ A(t) = \blank{A(0)} + \int_0^t \blank{\big(E(u) - D(u)\big)}\,du. \] "
-        r"What you had, plus what came in, minus what went out.")),
+        r"If the amount $F$ changes at rate $F'(t) = E(t) - D(t)$ (rate in minus rate out), then \[ F(t) = \blank{F(0)} + \int_0^t \blank{\big(E(u) - D(u)\big)}\,du. \] "
+        r"What you had, plus what came in, minus what went out. $F$ is an accumulation function, so knowing the starting amount and the rates answers many questions about the amount at any time.")),
     Section("Units and interpretation"),
     Text(r"An integral's units are the rate's units times the input's units: (liters per hour)(hours) $=$ liters. To interpret $\int_a^b R(t)\,dt$, say "
          r"\emph{what} accumulates, that it is a \emph{total}, and \emph{over which interval}, with units."),
     Text(r"\textbf{Example sentence.} $\int_2^5 E(t)\,dt$ is the total number of liters of water that flow into the tank from $t = 2$ to $t = 5$ hours."),
     Section("Greatest and least amounts"),
-    Text(r"$A$ increases while $E(t) > D(t)$ and decreases while $E(t) < D(t)$. A sign chart for $E - D$ finds the critical points. For the absolute maximum on a closed interval, compare $A$ at the critical points and both endpoints."),
+    Text(r"$F$ increases while $E(t) > D(t)$ and decreases while $E(t) < D(t)$. A sign chart for $E - D$ finds the critical points. For the absolute maximum on a closed interval, compare $F$ at the critical points and both endpoints."),
+    Text(r"\textbf{Before solving, say where you're headed.} For a maximum temperature with $H(0) = 60$: $H(t) = 60 + \int_0^t H'(u)\,du$, and $H$ is greatest where $H' = 0$ and changes from $+$ to $-$, or at an endpoint. So the first step is to solve $H'(t) = 0$."),
     VideoExample('Water in a tank', work="5cm"),
     Text(r"\textbf{Inputs and outputs.} ``How much'' is answered with an amount ($\frac{230}{3}$ liters); ``when'' with a time ($t = 4$ hours)."),
     BigIdea(r"Amount $=$ start $+ \int$(rate in $-$ rate out). Integral units are rate units times time units. The amount peaks where the net rate changes from $+$ to $-$; check the endpoints."),
@@ -71,9 +72,9 @@ same("p", [12 + I(4 - t, 0, 4), 500 + I(40 - 6 * t, 0, sp.Rational(20, 3)), 500 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"An amount starts at $30$ and changes at $A'(t) = 2t + 1$. Find $A(3)$.", num(30 + I(2 * t + 1, 0, 3)), r"$30 + 12$.", work="1.2cm"),
-        Item(r"An amount starts at $100$ and changes at $A'(t) = -3t^2$. Find $A(2)$.", num(100 + I(-3 * t**2, 0, 2)), r"$100 - 8$.", work="1.2cm"),
-        Item(r"An amount starts at $5$ and changes at $A'(t) = e^t$. Find $A(\ln 3)$.", num(7), r"$5 + (3 - 1)$.", work="1.2cm"),
+        Item(r"An amount starts at $30$ and changes at $F'(t) = 2t + 1$. Find $F(3)$.", num(30 + I(2 * t + 1, 0, 3)), r"$30 + 12$.", work="1.2cm"),
+        Item(r"An amount starts at $100$ and changes at $F'(t) = -3t^2$. Find $F(2)$.", num(100 + I(-3 * t**2, 0, 2)), r"$100 - 8$.", work="1.2cm"),
+        Item(r"An amount starts at $5$ and changes at $F'(t) = e^t$. Find $F(\ln 3)$.", num(7), r"$5 + (3 - 1)$.", work="1.2cm"),
     ),
     Variants(
         Item(r"Water enters at $E(t) = 10$ L/hr and leaves at $D(t) = 2t$ L/hr for $0 \le t \le 8$. At what time is the amount greatest?", num(5), r"$10 - 2t$ changes from $+$ to $-$ at $t = 5$.", work="1.4cm"),

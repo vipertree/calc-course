@@ -26,7 +26,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(ax), FadeIn(al), Create(fam), run_time=1.6)
             b.line(1)
             dot = Dot(ax.c2p(1, 2), color=SECANT, radius=0.1)
-            self.play(FadeIn(dot), FadeIn(M("(1, 2)", 32, SECANT).next_to(dot, LEFT, buff=0.15)), run_time=0.6)
+            self.play(FadeIn(dot), FadeIn(M("(1, 2)", 32, SECANT).add_background_rectangle(color=BG, opacity=0.9, buff=0.06).next_to(dot, UR, buff=0.12)), run_time=0.6)
             b.line(2)
             part = ax.plot(lambda s: np.sqrt(s * s + 3), x_range=[-3, 3], color=ACCUM, stroke_width=6)
             self.play(fam.animate.set_opacity(0.25), Create(part), FadeIn(M(r"y = \sqrt{x^2 + 3}", 40, ACCUM).to_edge(RIGHT, buff=1.0)), run_time=1.2)

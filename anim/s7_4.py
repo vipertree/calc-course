@@ -43,7 +43,7 @@ class Lesson(TranscriptScene):
         with self.beat("Sketching a particular solution") as b:
             self.play(FadeIn(ax), FadeIn(al), FadeIn(field), run_time=0.8)
             dot = Dot(ax.c2p(0, 1), color=SECANT, radius=0.1)
-            self.play(FadeIn(dot), FadeIn(T("start at the point", 28, SECANT).next_to(dot, UR, buff=0.1)), run_time=0.6)
+            self.play(FadeIn(dot), FadeIn(T("start at the point", 28, SECANT).add_background_rectangle(color=BG, opacity=0.9, buff=0.08).next_to(dot, UR, buff=0.1)), run_time=0.6)
             b.line(1)
             g = logistic(1)
             self.play(Create(ax.plot(g, x_range=[0, 6], color=FUNC, stroke_width=5)), run_time=1.4)

@@ -24,7 +24,9 @@ class Lesson(TranscriptScene):
             self.play(LaggedStart(*[Create(s) for s in field], lag_ratio=0.01), run_time=3)
             b.line(2)
             for c, col in ((-1.0, FUNC), (2.0, SECANT)):
-                sol = ax.plot(lambda x, c=c: x - 1 + c * np.exp(-x), x_range=[-1.4 if c > 0 else -1.6, 3], color=col, stroke_width=5)
+                f_ = lambda x, c=c: x - 1 + c * np.exp(-x)
+                xs = [x for x in np.linspace(-3, 3, 600) if -2.9 <= f_(x) <= 2.9]          # stays on the axes
+                sol = ax.plot(f_, x_range=[xs[0], xs[-1]], color=col, stroke_width=5)
                 self.play(Create(sol), run_time=1.6)
         self.clear()
         self.title()

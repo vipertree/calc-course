@@ -2,7 +2,8 @@
 
 CED: CHA-5.A (CHA-5.A.1, CHA-5.A.2): the area between y = f(x) and y = g(x) on [a, b] with f >= g is the integral of
 f(x) - g(x); limits are where the curves meet when the region is bounded only by them; works below the x-axis.
-Lesson example: y = x and y = x^2 - 2, area 9/2. Worked examples: sqrt x and x/2 (4/3); cos x and sin x on [0, pi/4]
+Adder 2026-10-14: both views (cut out the lower area / add slivers), slivers as lines, every
+example sketched first with intersections labeled once found. Lesson example: y = x and y = x^2 - 2, area 9/2. Worked examples: sqrt x and x/2 (4/3); cos x and sin x on [0, pi/4]
 (sqrt 2 - 1); e^x, y = 1, x = 2 (e^2 - 3).
 """
 import sympy as sp
@@ -33,14 +34,16 @@ NOTES = [
     Video("s8_4.py::Lesson", "Area between curves", 6),
 
     Section("Top minus bottom"),
-    Text(r"Slice the region into thin vertical rectangles. The rectangle at $x$ runs from the bottom curve to the top curve: height $f(x) - g(x)$, width $dx$."),
+    Text(r"Two ways to see it. Take the whole area under the top curve and cut out the smaller area under the bottom curve: $\int_a^b f(x)\,dx - \int_a^b g(x)\,dx$. "
+         r"Or add up thin slivers: the sliver at $x$ reaches from the bottom curve up to the top curve, so its height is $f(x) - g(x)$."),
     Formula("Area between curves", (r"If $f(x) \ge g(x)$ on $[a, b]$, the area between them is \[ A = \int_a^b \blank{\big(f(x) - g(x)\big)}\,dx = \int_a^b (\text{top} - \text{bottom})\,dx. \]")),
-    Text(r"This works below the $x$-axis too: top $= 1$ and bottom $= -2$ give height $1 - (-2) = 3$. Sliding both curves up doesn't change top minus bottom."),
+    Text(r"This works below the $x$-axis too: if at $x = 2$ the top curve is at $1$ and the bottom curve is at $-2$, the sliver there has height $1 - (-2) = 3$. Sliding both curves up doesn't change top minus bottom."),
     Section("Limits and which curve is on top"),
-    Text(r"If only the two curves bound the region, the limits are where they meet: set $f(x) = g(x)$ and solve. Then test a point between the limits to see which curve is on top."),
+    Text(r"\textbf{Sketch first.} Think through each graph ($y = x$ is a line through the origin; $y = x^2 - 2$ is the parabola $y = x^2$ shifted down $2$) and draw it: the sketch shows which curve is on top. "
+         r"If only the two curves bound the region, the limits are where they meet: set $f(x) = g(x)$, solve, and label the intersection points on the sketch. If the picture leaves any doubt, test a point between the limits."),
     FIG,
     VideoExample('Area between a line and a parabola', work="4.6cm"),
-    BigIdea(r"Area between curves $= \int (\text{top} - \text{bottom})\,dx$; limits where the curves meet; a test point tells you which is on top."),
+    BigIdea(r"Area between curves $= \int (\text{top} - \text{bottom})\,dx$. Sketch first to see which is on top; the limits are where the curves meet."),
     Check(r"Find the area between $y = x^2$ and $y = x$.", selfcheck(r"\tfrac16"), r"Meet at $0$ and $1$; $x$ on top: $\frac12 - \frac13$."),
 ]
 

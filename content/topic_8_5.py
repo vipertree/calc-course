@@ -3,7 +3,7 @@
 CED: CHA-5.A (CHA-5.A.3, CHA-5.A.4): with x = f(y) on the right and x = g(y) on the left for c <= y <= d, the area is
 the integral of f(y) - g(y) dy. Choose dy when the left and right boundaries don't change (or the curves are given as x
 in terms of y). Lesson example: x = y^2 - 4 and x = 2y - 1, area 32/3. Choosing dy: sqrt x, x - 2, y = 0 done both ways
-(10/3). Worked examples: x = 4 - y^2 and the y-axis; y = ln x as x = e^y; x = y^2 and x = 2 - y^2.
+(10/3). Adder 2026-10-14: slivers are lines; label the boundaries, sketch first, label intersections. Worked examples: x = 4 - y^2 and the y-axis; y = ln x as x = e^y; x = y^2 and x = 2 - y^2.
 """
 import sympy as sp
 
@@ -28,13 +28,14 @@ NOTES = [
     Video("s8_5.py::Lesson", "Area with respect to y", 5),
 
     Section("Right minus left"),
-    Text(r"Slice horizontally. The slice at height $y$ runs from the left curve to the right curve: length $f(y) - g(y)$, thickness $dy$."),
+    Text(r"Use horizontal slivers. The sliver at height $y$ runs from the left curve to the right curve: length $f(y) - g(y)$, thickness $dy$."),
     Formula("Area with respect to $y$", (r"If $f(y) \ge g(y)$ for $c \le y \le d$, the area between $x = f(y)$ and $x = g(y)$ is \[ A = \int_c^d \blank{\big(f(y) - g(y)\big)}\,dy = \int_c^d (\text{right} - \text{left})\,dy. \] "
                                           r"The limits are $y$ values, and each curve must be written as $x = $ (something in $y$).")),
     Section("Choosing $dy$"),
-    Text(r"The region below needs two integrals in $x$ (the bottom switches at $x = 2$): $\int_0^4 \sqrt x\,dx - \int_2^4 (x - 2)\,dx = \frac{10}{3}$. In $y$ it needs one: $\int_0^2 (y + 2 - y^2)\,dy = \frac{10}{3}$."),
+    Text(r"Label the boundaries first: $y = \sqrt x$, $y = x - 2$, and $y = 0$. The region below needs two integrals in $x$ (the bottom switches at $x = 2$): $\int_0^4 \sqrt x\,dx - \int_2^4 (x - 2)\,dx = \frac{10}{3}$. In $y$ it needs one: $\int_0^2 (y + 2 - y^2)\,dy = \frac{10}{3}$."),
     FIG,
-    Text(r"Use $dy$ when the left and right boundaries stay the same all the way up, or when the curves are already given as $x$ in terms of $y$."),
+    Text(r"Use $dy$ when the left and right boundaries stay the same all the way up, or when the curves are already given as $x$ in terms of $y$. "
+         r"As with $dx$, sketch first ($x = y^2 - 4$ is the sideways parabola $x = y^2$ shifted left $4$), then find the intersection points and label them on the sketch."),
     VideoExample('A parabola and a line, sideways', work="4.6cm"),
     BigIdea(r"Horizontal slices: area $= \int_c^d (\text{right} - \text{left})\,dy$ with $y$ limits."),
     Check(r"Find the area between $x = y^2$ and $x = 4$.", selfcheck(r"\tfrac{32}{3}"), r"$\int_{-2}^2 (4 - y^2)\,dy$."),

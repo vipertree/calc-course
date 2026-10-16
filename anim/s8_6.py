@@ -1,4 +1,8 @@
-"""Topic 8.6: Area between curves that cross more than twice. Narration comes from transcripts/8_6.md."""
+"""Topic 8.6: Area between curves that cross more than twice. Narration comes from transcripts/8_6.md.
+
+Adder's notes (2026-10-14): calculator work is Desmos, not a TI-84: function notation, absolute value bars, a
+Desmos-look screen (kit.desmos_panel / desmos_graph) with the intersections clicked on the graph.
+"""
 import numpy as np
 from manim import *
 
@@ -68,13 +72,33 @@ class Lesson(TranscriptScene):
                      notes_graph=dict(fns=[("x^3-x^2", -1.5, 2.45), ("2*x", -1.6, 2.6)], xr=(-1.6, 2.6), yr=(-5, 7), ystep=2))
 
         with self.beat("With a calculator") as b:
-            screen = RoundedRectangle(width=7.2, height=2.6, corner_radius=0.2, stroke_color=INK, stroke_width=3, fill_color="#DDE6D5", fill_opacity=1)
-            line1 = Text("∫(abs(X³ − X² − 2X), X, −1, 2)", font="DejaVu Sans Mono", font_size=30, color=INK).move_to(screen).shift(UP * 0.4)
-            line2 = Text("3.083333333", font="DejaVu Sans Mono", font_size=30, color=INK).move_to(screen).shift(DOWN * 0.5 + RIGHT * 1.8)
-            self.play(FadeIn(screen), Write(line1), run_time=1.2)
-            self.play(FadeIn(line2), FadeIn(M(r"\tfrac{37}{12} \approx 3.0833", 40, ACCUM).next_to(screen, DOWN, buff=0.5)), run_time=0.8)
+            # Desmos, as students use it (Adder: not TI-84 syntax): function notation, |...| bars, clicked intersections
+            panel = desmos_panel([(r"f(x)=x^{3}-x^{2}", None, True), (r"g(x)=2x", None, True),
+                                  (r"\int_{-1}^{2}|f(x)-g(x)|\,dx", "3.08333333333")], width=5.8, size=34)
+            paper, dax = desmos_graph([-2, 3], [-4, 6], w=5.0, h=panel.height)
+            VGroup(panel, paper).arrange(RIGHT, buff=0, aligned_edge=UP).move_to(UP * 0.5)
+            c1 = dax.plot(f, x_range=[-1.3, 2.2], color=DESMOS_COLORS[0], stroke_width=4)
+            c2 = dax.plot(g, x_range=[-2, 3], color=DESMOS_COLORS[1], stroke_width=4)
+            p1 = desmos_point(dax, -1, -2, "(-1, -2)")
+            p1[1].next_to(p1[0], DR, buff=0.06)
+            p2 = desmos_point(dax, 2, 4, "(2, 4)")
+            p2[1].next_to(p2[0], RIGHT, buff=0.08)
+            self.play(FadeIn(panel[0]), FadeIn(panel[1]), FadeIn(panel[3]), FadeIn(paper), run_time=0.8)
+            for k, c in ((0, c1), (1, c2)):
+                self.play(FadeIn(panel.rows[k]), run_time=0.6)
+                self.play(Create(c), run_time=0.8)
             b.line(1)
-            self.play(FadeIn(T("limits: the outer crossings", 32, SECANT).next_to(screen, UP, buff=0.4)), run_time=0.8)
+            self.play(FadeIn(p1), run_time=0.5)
+            self.play(FadeIn(p2), run_time=0.5)
+            lim = T("limits: the outer crossings", 30, SECANT).next_to(VGroup(panel, paper), DOWN, buff=0.4)
+            self.play(FadeIn(lim), run_time=0.6)
+            b.line(2)
+            row = panel.rows[2]
+            badge = VGroup(row[-3], row[-2])
+            self.play(FadeOut(lim), FadeIn(VGroup(*[m for m in row if m not in badge])), run_time=1)
+            b.line(3)
+            self.play(FadeIn(badge), run_time=0.6)
+            self.play(FadeIn(M(r"\tfrac{37}{12} \approx 3.0833", 40, ACCUM).next_to(VGroup(panel, paper), DOWN, buff=0.4)), run_time=0.8)
         self.clear()
 
         with self.beat("Close") as b:

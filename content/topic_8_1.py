@@ -1,7 +1,8 @@
 """Topic 8.1: Finding the average value of a function on an interval.
 
 CED: CHA-4.B (CHA-4.B.1): the average value of a continuous f on [a, b] is 1/(b - a) times the integral of f from a to b.
-Built from the average of n equally spaced samples; the picture is the rectangle with the same area; a continuous f
+Opens on the derivative/integral x analytic/graphical grid plus inverses (Adder, 2026-10-14); average of five readings
+(61), then the integral as the sum of infinitely thin slivers divided by the width; the picture is the rectangle with the same area; a continuous f
 reaches its average value at some c (Mean Value Theorem for integrals). Average value (a height) is not average rate of
 change (a slope). Lesson example: x^2 on [1, 4], average 7, reached at sqrt 7. Worked examples: from a graph (segment and
 semicircle), sin x on [0, pi], a trapezoidal average from a table.
@@ -24,6 +25,9 @@ def trap(ts, vs):
 
 
 same("lesson", [avg(x**2, 1, 4)], [7])
+TMP = sp.interpolate([(6, 52), (10, 61), (14, 70), (18, 66), (22, 56)], x)
+same("readings", [sp.Rational(52 + 61 + 70 + 66 + 56, 5)], [61])
+close("continuous", float(sp.integrate(TMP, (x, 6, 22)) / 16), 62.9, 0.05)
 same("ex1", [(4 + 2 * sp.pi) / 6], [(2 + sp.pi) / 3])
 same("ex2", [avg(sp.sin(x), 0, sp.pi)], [2 / sp.pi])
 same("ex3", [trap([0, 2, 4, 6, 8], [60, 64, 70, 68, 62]) / 8], [sp.Rational(263, 4)])
@@ -37,19 +41,26 @@ same("g", [sp.Rational(1, 2) * 2 * 2 + 2 * 2 + sp.Rational(1, 2) * 2 * (2 + 0)],
 NOTES = [
     Video("s8_1.py::Lesson", "Average value of a function", 6),
 
+    Section("Four meanings, plus one"),
+    Text(r"A derivative is an instantaneous rate of change (analytically) and the slope at a point (graphically). An integral is an accumulation (analytically) "
+         r"and the area under the curve (graphically). And derivatives and integrals are inverses: $\dfrac{d}{dx}\displaystyle\int_a^x f(t)\,dt = f(x)$. Unit 8 applies all four meanings."),
     Section("From a list to an integral"),
-    Text(r"The average of $n$ equally spaced samples is $\dfrac{f(x_1) + \cdots + f(x_n)}{n}$. Since $n = \dfrac{b - a}{\Delta x}$, that equals "
-         r"$\dfrac{1}{b - a}\sum f(x_k)\,\Delta x$: a Riemann sum divided by the length of the interval. More samples turn the sum into an integral."),
+    Text(r"Five temperature readings, $52^\circ, 61^\circ, 70^\circ, 66^\circ, 56^\circ$, average $\dfrac{305}{5} = 61^\circ$: the sum of the values divided by how many there are. "
+         r"A continuous function has a value at every instant. Its \emph{sum} is the accumulation, the integral, which adds up infinitely many infinitely thin slivers, "
+         r"and dividing by how many becomes dividing by the width of the interval."),
     Formula("Average value", (
         r"The average value of a continuous function $f$ on $[a, b]$ is \[ f_{\text{avg}} = \blank{\frac{1}{b - a}\int_a^b f(x)\,dx}. \] "
-        r"In words: add everything up with the integral, then divide by the length of the interval.")),
+        r"In words: the total accumulated, divided by the width of the interval.")),
     Section("The picture"),
-    Text(r"$f_{\text{avg}}\cdot(b - a) = \int_a^b f(x)\,dx$: the average value is the height of the rectangle on $[a, b]$ with the same area as the region. "
-         r"Think of the region as water leveling out."),
+    Text(r"$f_{\text{avg}}\cdot(b - a) = \int_a^b f(x)\,dx$: picture the area under the curve as water held between walls at $a$ and $b$. When it settles, its level is the average value: "
+         r"the height of the rectangle on $[a, b]$ with the same area as the region."),
     FIG_LEVEL,
     Formula("Mean Value Theorem for integrals", (
         r"If $f$ is continuous on $[a, b]$, there is at least one $c$ in $[a, b]$ with \[ f(c) = \blank{\frac{1}{b - a}\int_a^b f(x)\,dx}. \] "
         r"A continuous function reaches its average value somewhere in the interval.")),
+    Text(r"\textbf{It is the Mean Value Theorem in disguise.} Let $F(x) = \int_a^x f(t)\,dt$, so $F'(x) = f(x)$: the curve is the derivative of the accumulation function. "
+         r"The Mean Value Theorem for $F$ gives a $c$ with $F'(c) = \dfrac{F(b) - F(a)}{b - a}$. Since $F'(c) = f(c)$ and $F(b) - F(a) = \int_a^b f(t)\,dt$, "
+         r"that says $f(c) = \dfrac{1}{b - a}\int_a^b f(t)\,dt$."),
     VideoExample('Average value of x squared', work="3.6cm"),
     Text(r"\textbf{Inputs and outputs.} The average value is an output ($7$). Where $f$ equals it is an input ($x = \sqrt7$). Questions ask for each separately."),
     Section("Not the average rate of change"),

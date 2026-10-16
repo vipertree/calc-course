@@ -86,13 +86,13 @@ class Lesson(TranscriptScene):
         ch = staged_chart([4], ["+", "-"], words=["rising", "falling"], name="F'", width=5.5)
         self.example("Water in a tank", r"Water flows into a tank at $E(t) = 8 + 2t$ liters per hour and drains at $D(t) = t^2$ liters per hour, $0 \le t \le 6$. The tank holds $50$ liters at $t = 0$. "
                      r"(a) Is the amount increasing or decreasing at $t = 5$? (b) How much water is in the tank at $t = 6$? (c) When is the amount greatest, and what is it?",
-                     [r"TEXT:Where we're headed: $F(t) = 50 + \int_0^t \big(E(u) - D(u)\big)\,du$, so $F'(t) = E(t) - D(t)$.",
+                     [r"TEXT:Where we're headed:", r"F(t) = 50 + \int_0^t \big(E(u) - D(u)\big)\,du", r"\text{so } F'(t) = E(t) - D(t)",
                       r"\text{(a) } F'(5) = E(5) - D(5) = 18 - 25 = -7 < 0", r"TEXT:Decreasing at $t = 5$.", r"\text{(b) } F(6) = 50 + \int_0^6 \left(8 + 2t - t^2\right) dt",
                       r"= 50 + \left[8t + t^2 - \tfrac{t^3}{3}\right]_0^6", r"= 50 + (48 + 36 - 72)", r"= 62 \text{ liters}",
                       r"TEXT:(c) $F$ is greatest where $F'$ changes from $+$ to $-$, or at an endpoint.", r"8 + 2t - t^2 = 0", r"t^2 - 2t - 8 = 0", r"(t - 4)(t + 2) = 0", r"t = 4 \ \ (t = -2 \text{ is outside})",
                       r"F'(1) = 8 + 2 - 1 = 9 > 0", r"F'(5) = -7 < 0", r"F(0) = 50, \ \ F(4) = \tfrac{230}{3} \approx 76.7, \ \ F(6) = 62", r"\text{greatest: } \tfrac{230}{3} \text{ liters at } t = 4"],
-                     at=[1, 2, 2, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 9], figure=ch, figure_at=6, size=42,
-                     cues={12: reveal_sign(ch, 0), 13: lambda sc: (reveal_sign(ch, 1)(sc), reveal_words(ch)(sc)), 15: mark_point(ch, 0, "max")}, follow=True)
+                     at=[1, 1, 1, 2, 2, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 9], figure=ch, figure_at=6, size=42,
+                     cues={14: reveal_sign(ch, 0), 15: lambda sc: (reveal_sign(ch, 1)(sc), reveal_words(ch)(sc)), 17: mark_point(ch, 0, "max")}, follow=True)
 
         with self.beat("Close") as b:
             card = VGroup(M(r"F(t) = F(0) + \int_0^t (\text{rate in} - \text{rate out})", 42, ACCUM), T("units: rate units $\\times$ time units", 34),
@@ -102,9 +102,9 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: Interpret in context", r"Oil leaks from a tanker at $R(t)$ gallons per hour, $t$ in hours. Interpret (a) $\int_2^5 R(t)\,dt = 140$ and (b) $R'(3) = -4$, with units.",
-                     [r"TEXT:Where we're headed: an integral of a rate is a total amount; $R'$ is how fast the rate itself changes.",
+                     [r"TEXT:Where we're headed: an integral of a rate is a total amount;", r"TEXT:$R'$ is how fast the rate itself changes.",
                       r"TEXT:(a) A total of $140$ gallons leak from $t = 2$ to $t = 5$ hours.",
-                      r"TEXT:(b) At $t = 3$ hours, the leak rate is decreasing at $4$ gallons per hour per hour."], at=[1, 2, 3])
+                      r"TEXT:(b) At $t = 3$ hours, the leak rate is decreasing at $4$ gallons per hour per hour."], at=[1, 1, 2, 3])
         tab = table(["t", "0", "2", "5", "8"], [["P'(t)", "30", "40", "25", "10"]], size=34)
         self.example("Example 2: From a table of rates", VGroup(T(r"A town has $1200$ people at $t = 0$ (years). Use a trapezoidal sum to approximate $P(8)$.", 38), tab).arrange(DOWN, buff=0.3),
                      [r"P(8) = P(0) + \int_0^8 P'(t)\,dt", r"\int_0^8 P'(t)\,dt \approx 2\cdot\tfrac{P'(0) + P'(2)}{2} + 3\cdot\tfrac{P'(2) + P'(5)}{2} + 3\cdot\tfrac{P'(5) + P'(8)}{2}",

@@ -17,7 +17,7 @@ class Lesson(TranscriptScene):
     NUM = "8.4"
 
     def construct(self):
-        top = lambda s: 3.2 - 0.35 * (s - 2.5)**2
+        top = lambda s: 3.2 - 0.45 * (s - 2.5)**2     # crosses g twice, at a and b
         bot = lambda s: 0.6 + 0.25 * np.sin(1.4 * s) + 0.1 * s
         xs = np.linspace(0, 5, 4001)
         diff = np.array([top(s) - bot(s) for s in xs])
@@ -92,22 +92,22 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(ax), FadeIn(al), FadeIn(reg), Create(gt), Create(gb), run_time=1.2)
             self.add(gt, gb)
             b.line(1)
-            col = 2.0
-            at = M(r"\text{at } x = 2:", 36, DIM).move_to([col, 2.4, 0], aligned_edge=LEFT)
+            col = 1.2
+            at = M(r"\text{at } x = 2:", 44, DIM).move_to([col, 2.4, 0], aligned_edge=LEFT)
             l_top = Line(ax.c2p(2, 0), ax.c2p(2, 1), color=FUNC, stroke_width=7)
             l_bot = Line(ax.c2p(2, 0), ax.c2p(2, -2), color=DERIV, stroke_width=7)
             d_top, d_bot = Dot(ax.c2p(2, 1), color=FUNC, radius=0.07), Dot(ax.c2p(2, -2), color=DERIV, radius=0.07)
-            n1 = M(r"\text{top} = 1", 36, FUNC).next_to(at, DOWN, buff=0.4, aligned_edge=LEFT)
-            n2 = M(r"\text{bottom} = -2", 36, DERIV).next_to(n1, DOWN, buff=0.35, aligned_edge=LEFT)
+            n1 = M(r"\text{top} = 1", 44, FUNC).next_to(at, DOWN, buff=0.4, aligned_edge=LEFT)
+            n2 = M(r"\text{bottom} = -2", 44, DERIV).next_to(n1, DOWN, buff=0.35, aligned_edge=LEFT)
             self.play(FadeIn(at), run_time=0.4)
             self.play(Create(l_top), FadeIn(d_top), FadeIn(n1), run_time=0.9)
             self.play(Create(l_bot), FadeIn(d_bot), FadeIn(n2), run_time=0.9)
             b.line(2)
             sl = always_redraw(lambda: Line(ax.c2p(2, -2 + up_()), ax.c2p(2, 1 + up_()), color=SECANT, stroke_width=7))
-            n3 = M(r"\text{height} = 1 - (-2) = 3", 38, SECANT).next_to(n2, DOWN, buff=0.45, aligned_edge=LEFT)
+            n3 = M(r"\text{height} = 1 - (-2) = 3", 44, SECANT).next_to(n2, DOWN, buff=0.45, aligned_edge=LEFT)
             self.play(FadeIn(sl), FadeOut(l_top), FadeOut(l_bot), FadeOut(d_top), FadeOut(d_bot), FadeIn(n3), run_time=1)
             b.line(3)
-            self.play(FadeOut(VGroup(at, n1, n2)), n3.animate.become(M(r"\text{height} = 3", 38, SECANT).move_to(n3, aligned_edge=LEFT)), run_time=0.6)
+            self.play(FadeOut(VGroup(at, n1, n2)), n3.animate.become(M(r"\text{height} = 3", 44, SECANT).move_to(n3, aligned_edge=LEFT)), run_time=0.6)
             self.play(shift.animate.set_value(3), run_time=2)
             self.play(Indicate(n3), run_time=0.8)
         self.clear()
@@ -135,9 +135,9 @@ class Lesson(TranscriptScene):
         f1, g1 = (lambda s: s), (lambda s: s**2 - 2)
         line = VGroup(ax.plot(f1, x_range=[-2, 2.8], color=FUNC, stroke_width=4), M("y = x", 26, FUNC).move_to(ax.c2p(1.0, 2.55)))
         ghost = ax.plot(lambda s: s**2, x_range=[-1.7, 1.7], color=DIM, stroke_width=3)
-        para = VGroup(ax.plot(g1, x_range=[-2, 2.2], color=DERIV, stroke_width=4), M("y = x^2 - 2", 26, DERIV).move_to(ax.c2p(-1.25, 2.1)))
+        para = VGroup(ax.plot(g1, x_range=[-2, 2.2], color=DERIV, stroke_width=4), M("y = x^2 - 2", 26, DERIV).move_to(ax.c2p(-1.05, 2.75)))
         shade = region(ax, f1, g1, -1, 2, opacity=0.3)
-        pts = VGroup(point_label(ax, -1, -1, "(-1, -1)", (-1.0, -2.25)), point_label(ax, 2, 2, "(2, 2)", (2.55, 1.55)))
+        pts = VGroup(point_label(ax, -1, -1, "(-1, -1)", (-1.45, -2.2)), point_label(ax, 2, 2, "(2, 2)", (2.55, 1.55)))
         sl = sliver(ax, f1, g1, 0.6)
 
         def sketch_parabola(sc):
@@ -163,11 +163,11 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         # Example 1: root and line
-        ax, _ = plot_axes([0, 5, 1], [0, 2.5, 1], w=5, h=2.8)
+        ax, _ = plot_axes([0, 5, 1], [-0.6, 2.5, 1], w=5, h=3.4)
         r1 = VGroup(ax.plot(np.sqrt, x_range=[0, 5], color=FUNC, stroke_width=4), M(r"y = \sqrt x", 26, FUNC).move_to(ax.c2p(0.9, 1.75)))
         l1 = VGroup(ax.plot(lambda s: s / 2, x_range=[0, 5], color=DERIV, stroke_width=4), M(r"y = \tfrac x2", 26, DERIV).move_to(ax.c2p(3.4, 0.95)))
         sh1 = region(ax, np.sqrt, lambda s: s / 2, 0, 4, opacity=0.3)
-        p1 = VGroup(point_label(ax, 0, 0, "(0, 0)", (-0.55, 0.35)), point_label(ax, 4, 2, "(4, 2)", (4.45, 1.55)))
+        p1 = VGroup(point_label(ax, 0, 0, "(0, 0)", (0.5, -0.35)), point_label(ax, 4, 2, "(4, 2)", (4.45, 1.55)))
         s1 = sliver(ax, np.sqrt, lambda s: s / 2, 1.5)
         self.example("Example 1: Root and line", r"Find the area between $y = \sqrt x$ and $y = \frac x2$.",
                      [r"TEXT:$y = \sqrt x$: the top half of a sideways parabola, from the origin", r"TEXT:$y = \tfrac x2$: a line through the origin, slope $\tfrac12$",
@@ -196,7 +196,7 @@ class Lesson(TranscriptScene):
         e3 = VGroup(ax.plot(np.exp, x_range=[0, 2.08], color=FUNC, stroke_width=4), M(r"y = e^x", 26, FUNC).move_to(ax.c2p(1.0, 6.4)))
         h3 = VGroup(Line(ax.c2p(0, 1), ax.c2p(2.5, 1), color=DERIV, stroke_width=4), M("y = 1", 26, DERIV).move_to(ax.c2p(2.3, 1.7)),
                     DashedLine(ax.c2p(2, 0), ax.c2p(2, 8), color=DIM), M("x = 2", 26, DIM).move_to(ax.c2p(2.45, 4.2)))
-        p3 = point_label(ax, 0, 1, "(0, 1)", (-0.55, 1.0))
+        p3 = point_label(ax, 0, 1, "(0, 1)", (0.42, 0.45))
         sh3 = VGroup(region(ax, np.exp, lambda s: 1, 0, 2, opacity=0.3), sliver(ax, np.exp, lambda s: 1, 1.3))
         self.example("Example 3: Three boundaries", r"Find the area of the region bounded by $y = e^x$, $y = 1$, and $x = 2$.",
                      [r"TEXT:$y = e^x$: through $(0, 1)$, rising fast", r"TEXT:$y = 1$: a horizontal line; $x = 2$: a vertical line",

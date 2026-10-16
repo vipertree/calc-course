@@ -85,7 +85,7 @@ class Lesson(TranscriptScene):
         ax, _ = plot_axes([-4.5, 5.5, 1], [-2.5, 3.8, 1], w=5, h=4.6)
         p, l = (lambda y: y**2 - 4), (lambda y: 2 * y - 1)
         ghost = side(ax, lambda y: y**2, -1.8, 1.8, DIM)
-        para = VGroup(side(ax, p, -2.4, 3.1, DERIV), M("x = y^2 - 4", 26, DERIV).move_to(ax.c2p(-2.4, 3.0)))
+        para = VGroup(side(ax, p, -2.4, 3.1, DERIV), M("x = y^2 - 4", 26, DERIV).move_to(ax.c2p(-3.0, 3.0)))
         line = VGroup(side(ax, l, -1.75, 3.25, FUNC), M("x = 2y - 1", 26, FUNC).move_to(ax.c2p(3.4, 0.4)))
         shade = region(ax, l, p, -1, 3, var="y", opacity=0.3)
         pts = VGroup(point_label(ax, -3, -1, "(-3, -1)", (-3.0, -2.1), size=24), point_label(ax, 5, 3, "(5, 3)", (3.9, 3.5), size=24))
@@ -125,7 +125,7 @@ class Lesson(TranscriptScene):
         # Example 2: solve for x first
         ax, _ = plot_axes([-0.3, 3.6, 1], [-0.3, 1.4, 0.5], w=4.4, h=2.8, coords=False)
         c2 = VGroup(ax.plot(np.log, x_range=[0.75, 3], color=FUNC, stroke_width=4), M(r"y = \ln x", 26, FUNC).move_to(ax.c2p(2.65, 0.55)))
-        b2 = VGroup(DashedLine(ax.c2p(0, 1), ax.c2p(3, 1), color=DIM), M("y = 1", 24, DIM).move_to(ax.c2p(3.3, 1.0)))
+        b2 = VGroup(DashedLine(ax.c2p(0, 1), ax.c2p(3, 1), color=DIM), M("y = 1", 24, DIM).move_to(ax.c2p(3.35, 1.0)))
         sh2 = VGroup(region(ax, np.exp, lambda y: 0, 0, 1, var="y", opacity=0.3), sliver(ax, np.exp, lambda y: 0, 0.5, var="y"))
         p2 = VGroup(point_label(ax, 1, 0, "(1, 0)", (1.25, -0.19), size=24), point_label(ax, np.e, 1, "(e, 1)", (2.6, 1.27), size=24))
         self.example("Example 2: Solve for x first", r"Find the area of the region bounded by $y = \ln x$, the $y$-axis, $y = 0$, and $y = 1$.",
@@ -135,8 +135,8 @@ class Lesson(TranscriptScene):
                      cues={0: draw_cue(c2), 1: draw_cue(b2, sh2[0]), 3: draw_cue(p2), 4: draw_cue(sh2[1])}, overlays=(c2, b2, sh2, p2))
         # Example 3: two sideways parabolas
         ax, _ = plot_axes([-0.3, 2.3, 1], [-1.8, 1.8, 1], w=3.4, h=3.8)
-        c3 = VGroup(side(ax, lambda y: y**2, -1.25, 1.25, DERIV), M("x = y^2", 26, DERIV).move_to(ax.c2p(1.7, 1.55)))
-        d3 = VGroup(side(ax, lambda y: 2 - y**2, -1.25, 1.25, FUNC), M("x = 2 - y^2", 26, FUNC).move_to(ax.c2p(0.4, 1.55)))
+        c3 = VGroup(side(ax, lambda y: y**2, -1.25, 1.25, DERIV), M("x = y^2", 26, DERIV).move_to(ax.c2p(1.85, 1.6)))
+        d3 = VGroup(side(ax, lambda y: 2 - y**2, -1.25, 1.25, FUNC), M("x = 2 - y^2", 26, FUNC).move_to(ax.c2p(0.78, 1.62)))
         sh3 = region(ax, lambda y: 2 - y**2, lambda y: y**2, -1, 1, var="y", opacity=0.3)
         p3 = VGroup(point_label(ax, 1, 1, "(1, 1)", (1.8, 1.0), size=24), point_label(ax, 1, -1, "(1, -1)", (1.8, -1.0), size=24))
         s3 = sliver(ax, lambda y: 2 - y**2, lambda y: y**2, 0.3, var="y")

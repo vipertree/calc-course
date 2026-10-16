@@ -76,14 +76,14 @@ class Lesson(TranscriptScene):
             panel = desmos_panel([(r"f(x)=x^{3}-x^{2}", None, True), (r"g(x)=2x", None, True),
                                   (r"\int_{-1}^{2}|f(x)-g(x)|\,dx", "3.08333333333")], width=5.8, size=34)
             paper, dax = desmos_graph([-2, 3], [-4, 6], w=5.0, h=panel.height)
-            VGroup(panel, paper).arrange(RIGHT, buff=0, aligned_edge=UP).move_to(UP * 0.5)
+            VGroup(panel, paper).arrange(RIGHT, buff=0, aligned_edge=UP).scale(1.18).move_to(UP * 0.6)
             c1 = dax.plot(f, x_range=[-1.3, 2.2], color=DESMOS_COLORS[0], stroke_width=4)
             c2 = dax.plot(g, x_range=[-2, 3], color=DESMOS_COLORS[1], stroke_width=4)
             p1 = desmos_point(dax, -1, -2, "(-1, -2)")
             p1[1].next_to(p1[0], DR, buff=0.06)
             p2 = desmos_point(dax, 2, 4, "(2, 4)")
             p2[1].next_to(p2[0], RIGHT, buff=0.08)
-            self.play(FadeIn(panel[0]), FadeIn(panel[1]), FadeIn(panel[3]), FadeIn(paper), run_time=0.8)
+            self.play(FadeIn(panel[0]), FadeIn(panel[1]), FadeIn(panel[3]), FadeIn(paper), FadeIn(VGroup(*panel.rows[2][:3], panel.rows[2][-1])), run_time=0.8)
             for k, c in ((0, c1), (1, c2)):
                 self.play(FadeIn(panel.rows[k]), run_time=0.6)
                 self.play(Create(c), run_time=0.8)
@@ -95,7 +95,7 @@ class Lesson(TranscriptScene):
             b.line(2)
             row = panel.rows[2]
             badge = VGroup(row[-3], row[-2])
-            self.play(FadeOut(lim), FadeIn(VGroup(*[m for m in row if m not in badge])), run_time=1)
+            self.play(FadeOut(lim), FadeIn(row[3]), run_time=1)
             b.line(3)
             self.play(FadeIn(badge), run_time=0.6)
             self.play(FadeIn(M(r"\tfrac{37}{12} \approx 3.0833", 40, ACCUM).next_to(VGroup(panel, paper), DOWN, buff=0.4)), run_time=0.8)

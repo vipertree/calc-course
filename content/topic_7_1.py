@@ -24,11 +24,11 @@ NOTES = [
          r"That one is just an antiderivative, so you've already solved some differential equations."),
     Text(r"In later courses, derivatives show up all over a differential equation, the way a variable can show up all over an algebra equation. "
          r"The differential equations in this course are relatively simple, but not always easy."),
-    Table(r"the rate of change of $y$ is proportional to $y$ & $\dfrac{dy}{dt} = \blank{ky}$ \\ "
+    Table(r"the rate of change of $y$ is proportional to $y$ & $\dfrac{dy}{dt} = ky$ \\ "
           r"proportional to the square root of $y$ & $\dfrac{dy}{dt} = k\sqrt y$ \\ "
           r"inversely proportional to $y$ & $\dfrac{dy}{dt} = \dfrac ky$ \\ "
           r"proportional to the difference between $y$ and $70$ & $\dfrac{dy}{dt} = k(y - 70)$ \\ "
-          r"jointly proportional to $y$ and $1000 - y$ & $\dfrac{dy}{dt} = \blank{ky(1000 - y)}$", "ll", header=r"In words & Differential equation"),
+          r"jointly proportional to $y$ and $1000 - y$ & $\dfrac{dy}{dt} = ky(1000 - y)$", "ll", header=r"In words & Differential equation"),
     Text(r"\textbf{Reading the rate.} Substitute the given values into the right side: the result is the rate of change there, and its \blank{sign} tells whether the quantity is increasing or decreasing."),
     VideoExample('Reading the rate', work="2.4cm"),
     BigIdea(r"A differential equation is a rule for a rate of change; its solutions are functions. Translate ``proportional to'' as a constant times, and plug in to read the rate."),

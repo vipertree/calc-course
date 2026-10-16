@@ -38,8 +38,9 @@ class Lesson(TranscriptScene):
             sep[2].set_color(SECANT)
             self.play(FadeIn(ops), run_time=0.6)
             self.play(FadeIn(sep, shift=DOWN * 0.2), run_time=1)
-            labs = VGroup(T("all the $y$'s with $dy$", 30, ACCUM).next_to(sep[0], DOWN, buff=0.3).shift(LEFT * 1.4),
-                          T("all the $x$'s with $dx$", 30, SECANT).next_to(sep[2], DOWN, buff=0.3).shift(RIGHT * 1.4))
+            # beside the equation, not under it, so nothing crowds the integral below (Adder, 7.6: overlapping text)
+            labs = VGroup(T("all the $y$'s with $dy$", 30, ACCUM).next_to(sep, LEFT, buff=0.8),
+                          T("all the $x$'s with $dx$", 30, SECANT).next_to(sep, RIGHT, buff=0.8))
             self.play(FadeIn(labs), run_time=0.6)
             b.line(1)
             integ = M(r"\int \frac{dy}{y} = \int x\,dx", 60).shift(DOWN * 1.55)

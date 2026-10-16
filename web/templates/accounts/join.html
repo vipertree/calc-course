@@ -4,12 +4,12 @@
 <div class="auth"><div class="card">
   <h1>Join a class</h1>
   <p class="muted">Your teacher has a six-letter class code.</p>
-  <form method="post" novalidate>{% csrf_token %}
+  <form method="post" novalidate>{% csrf_token %}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     {% include "accounts/_fields.html" %}
     <p><button class="btn primary">{% if existing %}Join class{% else %}Create account and join{% endif %}</button></p>
   </form>
   {% if not existing %}
   <p class="muted small">We don't ask for your email. If you forget your password, your teacher can reset it. See <a href="{% url 'privacy' %}">what we keep</a>.</p>
-  <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a>.</p>{% endif %}
+  <p class="muted">Already have an account? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign in</a>.</p>{% endif %}
 </div></div>
 {% endblock %}

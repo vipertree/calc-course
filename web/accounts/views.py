@@ -90,6 +90,16 @@ class LoginView(auth_views.LoginView):
         return super().form_invalid(form)
 
 
+def _next(request, default="home"):
+    """Where to go after joining or signing up: the page the visitor came from (?next=, carried through the form),
+    if it is on this site; otherwise `default`. Adder 2026-10-16: signing in brings you back to that page."""
+    from django.utils.http import url_has_allowed_host_and_scheme
+    nxt = request.POST.get("next") or request.GET.get("next") or ""
+    if nxt and url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        return nxt
+    return default
+
+
 def _new_user(form, role=Profile.STUDENT, email="", **profile):
     u = User.objects.create_user(form.cleaned_data["username"], email=email, password=form.cleaned_data["password"])
     Profile.objects.create(user=u, role=role, display_name=form.cleaned_data["display_name"], **profile)
@@ -105,16 +115,16 @@ def join(request):
                 form.add_error("code", "Teacher accounts can't join a class. Use a student account.")
             else:
                 Enrollment.objects.get_or_create(classroom=form.classroom, student=request.user)
-                return redirect("home")
-        return render(request, "accounts/join.html", {"form": form, "existing": True})
+                return redirect(_next(request))
+        return render(request, "accounts/join.html", {"form": form, "existing": True, "next": _next(request, "")})
     form = F.JoinForm(request.POST or None, initial={"code": request.GET.get("code", "")})
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             u = _new_user(form)
             Enrollment.objects.create(classroom=form.classroom, student=u)
         login(request, u, backend=settings.AUTHENTICATION_BACKENDS[0])
-        return redirect("home")
-    return render(request, "accounts/join.html", {"form": form})
+        return redirect(_next(request))
+    return render(request, "accounts/join.html", {"form": form, "next": _next(request, "")})
 
 
 @ratelimit("signup", "ip", 10, HOUR)
@@ -128,8 +138,8 @@ def signup(request):
         send_verification(request, u, u.email)
         login(request, u, backend=settings.AUTHENTICATION_BACKENDS[0])
         messages.success(request, f"Welcome! We sent a link to {u.email}. Open it to confirm your email.")
-        return redirect("home")
-    return render(request, "accounts/signup.html", {"form": form, "teacher": False})
+        return redirect(_next(request))
+    return render(request, "accounts/signup.html", {"form": form, "teacher": False, "next": _next(request, "")})
 
 
 @ratelimit("signup", "ip", 10, HOUR)

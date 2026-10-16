@@ -114,6 +114,30 @@ class SignUp(TestCase):
         self.assertFalse(Enrollment.objects.exists())
 
 
+class BackToThePage(TestCase):
+    """Adder 2026-10-16: signing in (or signing up) from a page brings you back to that page."""
+
+    def test_sign_in_link_carries_the_page(self):
+        page = self.client.get("/topic/2.1/").content.decode()
+        self.assertIn('href="/login/?next=/topic/2.1/"', page)
+        self.assertNotIn("?next=", self.client.get("/login/").content.decode().split('class="linkbtn"')[1][:80])
+
+    def test_login_returns_to_the_page(self):
+        make_user("ana")
+        r = self.client.post("/login/?next=/topic/2.1/", {"username": "ana", "password": PW, "next": "/topic/2.1/"})
+        self.assertRedirects(r, "/topic/2.1/", fetch_redirect_response=False)
+
+    def test_signup_returns_to_the_page_but_not_off_site(self):
+        d = {"display_name": "Kai Moreno", "email": "kai@example.com", "username": "kai", "password": PW,
+             "age_ok": "on", "started": stamp(10), "next": "/topic/2.1/"}
+        self.assertContains(self.client.get("/signup/?next=/topic/2.1/"), 'name="next" value="/topic/2.1/"')
+        r = self.client.post("/signup/", d)
+        self.assertRedirects(r, "/topic/2.1/", fetch_redirect_response=False)
+        self.client.logout()
+        r = self.client.post("/signup/", dict(d, username="kai2", email="kai2@example.com", next="https://evil.example/"))
+        self.assertEqual(r["Location"], "/")
+
+
 class EmailLinks(TestCase):
     def setUp(self):
         self.u = make_user("kai", email="kai@example.com")

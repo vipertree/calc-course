@@ -114,6 +114,18 @@ def _asset_version():
     return str(int(max((os.path.getmtime(f) for f in files), default=0)))
 
 
+# pages a Sign in link should not come back to (Adder 2026-10-16: otherwise signing in returns you to the page you were on)
+_NO_RETURN = {"home", "login", "logout", "join", "signup", "teacher_signup", "password_reset", "password_reset_done",
+              "password_reset_confirm", "password_reset_complete", "verify_email", "resend_verification"}
+
+
+def _back_here(request):
+    here = getattr(getattr(request, "resolver_match", None), "url_name", "")
+    if request.user.is_authenticated or not here or here in _NO_RETURN or request.method != "GET":
+        return ""
+    return request.get_full_path()
+
+
 def site(request):
     theme = request.COOKIES.get("theme", "")
     if theme not in dict(THEMES):
@@ -126,7 +138,7 @@ def site(request):
             "FRQ_ARCHIVE": settings.FRQ_ARCHIVE, "DESIGN_FONTS": DESIGN_FONTS[DESIGN],
             "DESMOS_API_KEY": settings.DESMOS_API_KEY,
             "PROFILE": profile, "IS_TEACHER": bool(profile and profile.is_teacher),
-            "FULL_ACCESS": full,
+            "FULL_ACCESS": full, "BACK_HERE": _back_here(request),
             "CSP_NONCE": getattr(request, "csp_nonce", ""),
             "LEGAL_REVIEWED": settings.LEGAL_PAGES_REVIEWED, "CONTACT_EMAIL": settings.CONTACT_EMAIL,
             "BACKUP_DAYS": settings.BACKUP_DAYS, "UNVERIFIED_DAYS": settings.UNVERIFIED_ACCOUNT_DAYS}

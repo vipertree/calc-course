@@ -11,6 +11,6 @@
     <p><button class="btn primary">Sign in</button></p>
   </form>
   <p class="muted"><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
-  <p class="muted">New here? <a href="{% url 'join' %}">Join your class with a code</a>, <a href="{% url 'signup' %}">study on your own</a>, or <a href="{% url 'teacher_signup' %}">ask for a teacher account</a>.</p>
+  <p class="muted">New here? <a href="{% url 'join' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Join your class with a code</a>, <a href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">study on your own</a>, or <a href="{% url 'teacher_signup' %}">ask for a teacher account</a>.</p>
 </div></div>
 {% endblock %}

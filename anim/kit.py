@@ -914,6 +914,34 @@ def slice_rect(ax, top, bottom, at, d, var="x", color=SECANT, label=None):
     return VGroup(rect, arr)
 
 
+def sliver(ax, top, bottom, at, var="x", color=SECANT, width=6):
+    """A representative slice drawn as a thin line (Adder, 8.4/8.5: a sliver, not a rectangle with dx): at x = at from
+    y = bottom(at) up to y = top(at) (var="x"), or at y = at from x = bottom(at) across to x = top(at) (var="y")."""
+    if var == "x":
+        return Line(ax.c2p(at, bottom(at)), ax.c2p(at, top(at)), color=color, stroke_width=width)
+    return Line(ax.c2p(bottom(at), at), ax.c2p(top(at), at), color=color, stroke_width=width)
+
+
+def _sketch(m):
+    """Curves and lines are drawn with a pen; everything else (labels, dots, shading) fades in."""
+    if isinstance(m, (ParametricFunction, Line)):
+        return Create(m)
+    if type(m) is VGroup:
+        return AnimationGroup(*[_sketch(x) for x in m])
+    return FadeIn(m)
+
+
+def draw_cue(*ms, rt=1.0):
+    """An example() cue that sketches these on the figure (Adder, 8.4: sketch first, label the intersections once found).
+    Pass the same mobjects as example(overlays=...) so they move with the figure."""
+    return lambda sc: sc.play(*[_sketch(m) for m in ms], run_time=rt)
+
+
+def point_label(ax, x, y, tex, at, size=26, color=SECANT):
+    """A labeled point on a sketch: a dot at (x, y) and its coordinates centered at the data position `at`, off the curves."""
+    return VGroup(Dot(ax.c2p(x, y), color=color, radius=0.07), M(tex, size, color).move_to(ax.c2p(*at)))
+
+
 def solid_of_revolution(ax, r_out, a, b, r_in=None, axis_y=0.0, n=9, color=ACCUM, tilt=0.32):
     """A 2D sketch of a solid made by revolving about the horizontal line y = axis_y: the outline (curve and its mirror
     image), n elliptical cross sections (discs, or washers when r_in is given), all in axis coordinates.
@@ -1352,3 +1380,86 @@ def zoom_to(z, R1, **kw):
     return AnimationGroup(z.animate.set_value(np.log10(R1)), UpdateFromFunc(z.zoom_view, z.zoom_redraw), **kw)
 
 
+
+
+# ---------------------------------------------------------------- Desmos look
+DESMOS_INK, DESMOS_LINE, DESMOS_GUTTER, DESMOS_RESULT = "#000000", "#D6D6D6", "#F2F2F2", "#E6E6E6"
+DESMOS_COLORS = ["#C74440", "#2D70B3", "#388C46", "#6042A6", "#FA7E19"]
+
+
+def desmos_panel(rows, width=6.6, size=38):
+    """A Desmos expression list as students see it (Adder, 8.6: calculator work is Desmos, not a TI-84): a white panel,
+    one row per expression with the numbered gray gutter, the expression in ordinary notation (|v(t)| with bars, f(x)
+    as functions), and an evaluated result in Desmos's gray "= value" badge at the row's lower right.
+
+    rows: list of (tex, result) or (tex, result, graphed); result None for a definition. graphed: the colored circle
+    Desmos puts in the gutter of a plotted function. Stays white in dark mode, like a screenshot.
+    The panel's .rows[k] is row k (its gutter, expression and badge), so a scene can reveal rows one at a time."""
+    built, h_tot = [], 0
+    for k, row in enumerate(rows):
+        tex, res = row[0], row[1]
+        graphed = row[2] if len(row) > 2 else False
+        expr = MathTex(tex, font_size=size, color=DESMOS_INK)
+        expr.set_max_width(width - 1.0)
+        h = max(0.85, expr.height + (0.75 if res is not None else 0.35))
+        cell = Rectangle(width=width, height=h, stroke_width=0, fill_color=WHITE, fill_opacity=1)
+        gut = Rectangle(width=0.5, height=h, stroke_width=0, fill_color=DESMOS_GUTTER, fill_opacity=1).align_to(cell, LEFT)
+        num = Text(str(k + 1), font="DejaVu Sans", font_size=16, color="#777777").move_to(gut.get_top() + DOWN * 0.18)
+        parts = VGroup(cell, gut, num)
+        if graphed:
+            parts.add(Circle(radius=0.12, stroke_width=0, fill_color=DESMOS_COLORS[k % len(DESMOS_COLORS)], fill_opacity=1).move_to(gut).shift(DOWN * 0.08))
+        expr.next_to(gut, RIGHT, buff=0.25).align_to(cell, UP).shift(DOWN * 0.18)
+        parts.add(expr)
+        if res is not None:
+            rt = MathTex("=" + res, font_size=size - 6, color=DESMOS_INK)
+            badge = RoundedRectangle(width=rt.width + 0.3, height=rt.height + 0.2, corner_radius=0.08, stroke_width=0,
+                                     fill_color=DESMOS_RESULT, fill_opacity=1)
+            badge.move_to(cell.get_corner(DR) + np.array([-badge.width / 2 - 0.15, badge.height / 2 + 0.1, 0]))
+            rt.move_to(badge)
+            parts.add(badge, rt)
+        parts.add(Line(cell.get_corner(DL), cell.get_corner(DR), color=DESMOS_LINE, stroke_width=1.5))
+        built.append(parts)
+        h_tot += h
+    stack = VGroup(*built).arrange(DOWN, buff=0)
+    top = Rectangle(width=width, height=0.42, stroke_width=0, fill_color="#EDEDED", fill_opacity=1).next_to(stack, UP, buff=0)
+    plus = Text("+", font="DejaVu Sans", font_size=24, color="#555555").move_to(top.get_left() + RIGHT * 0.3)
+    frame = Rectangle(width=width, height=stack.height + top.height, stroke_color="#BBBBBB", stroke_width=2).move_to(VGroup(top, stack))
+    panel = VGroup(top, plus, stack, frame)
+    panel.rows = list(stack)
+    return panel
+
+
+def desmos_entry(tex, result=None, width=5.8, size=38):
+    """One Desmos row: an integral typed the way Desmos shows it."""
+    return desmos_panel([(tex, result)], width=width, size=size)
+
+
+def desmos_graph(xr, yr, w=5.0, h=4.0, step=1):
+    """Desmos's graph paper beside its expression list: white, light minor grid, darker major grid, dark axes with
+    gray numbers. Returns (paper, ax); plot on ax with DESMOS_COLORS, in the order of the expression rows."""
+    ax = Axes(x_range=[xr[0], xr[1], step], y_range=[yr[0], yr[1], step], x_length=w, y_length=h, tips=False,
+              axis_config={"color": "#333333", "stroke_width": 2, "include_ticks": False})
+    bg = Rectangle(width=w, height=h, stroke_color="#BBBBBB", stroke_width=2, fill_color=WHITE, fill_opacity=1).move_to(ax)
+    grid = VGroup()
+    for v in np.arange(np.ceil(xr[0] / step * 5) * step / 5, xr[1] + 1e-9, step / 5):
+        major = abs(v / step - round(v / step)) < 1e-6
+        grid.add(Line(ax.c2p(v, yr[0]), ax.c2p(v, yr[1]), color="#CCCCCC" if major else "#EEEEEE", stroke_width=1.2 if major else 0.8))
+    for v in np.arange(np.ceil(yr[0] / step * 5) * step / 5, yr[1] + 1e-9, step / 5):
+        major = abs(v / step - round(v / step)) < 1e-6
+        grid.add(Line(ax.c2p(xr[0], v), ax.c2p(xr[1], v), color="#CCCCCC" if major else "#EEEEEE", stroke_width=1.2 if major else 0.8))
+    nums = VGroup()
+    for v in np.arange(np.ceil(xr[0] / step) * step, xr[1] + 1e-9, step):
+        if abs(v) > 1e-9 and xr[0] < v < xr[1]:
+            nums.add(Text(f"{v:g}".replace("-", "−"), font="DejaVu Sans", font_size=13, color="#555555").next_to(ax.c2p(v, 0), DOWN, buff=0.06))
+    for v in np.arange(np.ceil(yr[0] / step) * step, yr[1] + 1e-9, step):
+        if abs(v) > 1e-9 and yr[0] < v < yr[1]:
+            nums.add(Text(f"{v:g}".replace("-", "−"), font="DejaVu Sans", font_size=13, color="#555555").next_to(ax.c2p(0, v), LEFT, buff=0.06))
+    return VGroup(bg, grid, ax, nums), ax
+
+
+def desmos_point(ax, x, y, text):
+    """A Desmos intersection point: the gray dot and its coordinate label, as Desmos shows them when clicked."""
+    d = Dot(ax.c2p(x, y), radius=0.06, color="#666666")
+    lab = Text(text.replace("-", "−"), font="DejaVu Sans", font_size=15, color="#333333")
+    box = RoundedRectangle(width=lab.width + 0.14, height=lab.height + 0.1, corner_radius=0.05, stroke_width=0, fill_color=WHITE, fill_opacity=0.9).move_to(lab)
+    return VGroup(d, VGroup(box, lab))

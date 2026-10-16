@@ -2,7 +2,8 @@
 
 CED: CHA-4.C (CHA-4.C.1, CHA-4.C.2): displacement is the integral of velocity; total distance is the integral of speed
 |v|; position s(t) = s(0) + integral of v; velocity v(t) = v(0) + integral of a. Without a calculator, total distance
-splits where v changes sign (a sign chart every time). Lesson example: v = t^2 - 6t + 8 on [0, 5], s(0) = 1.
+splits where v changes sign (a sign chart every time) and takes the opposite of the negative pieces;
+|integral of v| is not integral of |v| (Adder, 2026-10-14). Lesson example: v = t^2 - 6t + 8 on [0, 5], s(0) = 1.
 Worked examples: from a velocity graph made of segments, from acceleration, working backward to s(0).
 """
 import sympy as sp
@@ -36,12 +37,18 @@ NOTES = [
     Video("s8_2.py::Lesson", "Motion with integrals", 6),
 
     Section("Displacement and position"),
-    Formula("Displacement", (r"Since $s' = v$, the Fundamental Theorem gives \[ \int_a^b v(t)\,dt = \blank{s(b) - s(a)}, \] the net change in position. Area below the axis counts as backward motion and cancels.")),
+    Text(r"Integrating a rate of change yields net change: $\int_a^b f'(t)\,dt = f(b) - f(a)$. Velocity is the rate of change of position ($v = s'$), so integrating velocity yields the change in position."),
+    Formula("Displacement", (r"\[ \int_a^b v(t)\,dt = \blank{s(b) - s(a)}, \] the net change in position: where you end up, relative to where you started. Area above the axis is forward motion and counts as positive; area below is backward motion and counts as negative, so they cancel.")),
     Formula("Position and velocity from a starting value", (
         r"\[ s(t) = \blank{s(0)} + \int_0^t v(u)\,du, \qquad v(t) = v(0) + \blank{\int_0^t a(u)\,du}. \] Where you start, plus the net change since.")),
     Section("Total distance"),
-    Formula("Total distance", (r"\[ \text{total distance} = \blank{\int_a^b |v(t)|\,dt}. \] Without a calculator, find where $v$ changes sign, split the interval there, and add the pieces as positive numbers.")),
-    Text(r"Make a sign chart for $v$ every time: the zeros of $v$ cut $[a, b]$ into pieces, one test value per piece."),
+    Text(r"Total distance means something different from displacement: travel in either direction adds to it, the way a car's odometer counts up whether the car drives east or west."),
+    Formula("Total distance", (r"\[ \text{total distance} = \blank{\int_a^b |v(t)|\,dt}. \] Graphically, the absolute value turns everything positive: the part of the graph below the axis flips above it.")),
+    Text(r"\textbf{On a calculator (Desmos)}, enter the absolute value bars right inside the integral, $\int_a^b |v(t)|\,dt$. \textbf{By hand}, find where $v$ becomes negative "
+         r"(a sign chart for $v$, every time), split the interval there, and take the opposite of each piece whose integral comes out negative: "
+         r"$\int_a^b |v(t)|\,dt = \int_a^c v(t)\,dt + \left(-\int_c^b v(t)\,dt\right)$ when $v > 0$ on $(a, c)$ and $v < 0$ on $(c, b)$."),
+    Text(r"\textbf{Not the absolute value of the integral.} With $30$ miles forward and $10$ back, $\left|\int v\,dt\right| = |30 + (-10)| = 20$, only the size of the displacement, "
+         r"while $\int |v|\,dt = 30 + 10 = 40$, the total distance."),
     VideoExample('Displacement and distance', work="4.6cm"),
     BigIdea(r"$\int v\,dt$ is displacement (it can cancel); $\int |v|\,dt$ is total distance (it never cancels). Position is the start plus the integral of velocity."),
     Check(r"$v(t) = 2t - 4$ on $[0, 3]$. Find the displacement and the total distance.", selfcheck(r"-3 \text{ and } 5"), r"$\int_0^3 = 9 - 12 = -3$. Split at $2$: $4 + 1 = 5$."),

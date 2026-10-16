@@ -15,7 +15,7 @@ class Lesson(TranscriptScene):
         ax, al = plot_axes([0, 10, 2], [0, 12, 2], w=7, h=4.8, xlabel="t", ylabel="P")
         VGroup(ax, al).to_edge(LEFT, buff=0.7).shift(DOWN * 0.3)
         with self.beat("Growth that levels off") as b:
-            self.play(FadeIn(T("BC only", 28, DIM).to_corner(UR, buff=0.4)), FadeIn(ax), FadeIn(al), run_time=0.6)
+            self.play(FadeIn(ax), FadeIn(al), run_time=0.6)
             self.play(Create(ax.plot(P, x_range=[0, 10], color=FUNC, stroke_width=5)), run_time=2)
             b.line(1)
             cap = DashedLine(ax.c2p(0, L), ax.c2p(10, L), color=SECANT)

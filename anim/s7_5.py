@@ -26,7 +26,7 @@ class Lesson(TranscriptScene):
         pts = euler(f, 0, 1, 0.5, 2)
         with self.beat("Walking along tangent lines") as b:
             field = slope_field(ax, f, np.arange(0.1, 1.2, 0.2), np.arange(0.5, 4, 0.5), length=0.28)
-            self.play(FadeIn(T("BC only", 28, DIM).to_corner(UR, buff=0.4)), FadeIn(ax), FadeIn(al), FadeIn(field), Create(ax.plot(exact, x_range=[0, 1.1], color=FUNC, stroke_width=3, stroke_opacity=0.5)), run_time=1.4)
+            self.play(FadeIn(ax), FadeIn(al), FadeIn(field), Create(ax.plot(exact, x_range=[0, 1.1], color=FUNC, stroke_width=3, stroke_opacity=0.5)), run_time=1.4)
             b.line(1)
             d0 = Dot(ax.c2p(*pts[0]), color=SECANT)
             self.play(FadeIn(d0), run_time=0.4)

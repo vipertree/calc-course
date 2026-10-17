@@ -135,7 +135,7 @@ class Lesson(TranscriptScene):
         f1, g1 = (lambda s: s), (lambda s: s**2 - 2)
         line = VGroup(ax.plot(f1, x_range=[-2, 2.8], color=FUNC, stroke_width=4), M("y = x", 26, FUNC).move_to(ax.c2p(1.0, 2.55)))
         ghost = ax.plot(lambda s: s**2, x_range=[-1.7, 1.7], color=DIM, stroke_width=3)
-        para = VGroup(ax.plot(g1, x_range=[-2, 2.2], color=DERIV, stroke_width=4), M("y = x^2 - 2", 26, DERIV).move_to(ax.c2p(-1.05, 2.75)))
+        para = VGroup(ax.plot(g1, x_range=[-2, 2.2], color=DERIV, stroke_width=4), M("y = x^2 - 2", 26, DERIV).move_to(ax.c2p(-1.5, 2.55)))
         shade = region(ax, f1, g1, -1, 2, opacity=0.3)
         pts = VGroup(point_label(ax, -1, -1, "(-1, -1)", (-1.45, -2.2)), point_label(ax, 2, 2, "(2, 2)", (2.55, 1.55)))
         sl = sliver(ax, f1, g1, 0.6)
@@ -163,11 +163,11 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         # Example 1: root and line
-        ax, _ = plot_axes([0, 5, 1], [-0.6, 2.5, 1], w=5, h=3.4)
+        ax, _ = plot_axes([-1, 5, 1], [-0.6, 2.5, 1], w=5.8, h=3.4)
         r1 = VGroup(ax.plot(np.sqrt, x_range=[0, 5], color=FUNC, stroke_width=4), M(r"y = \sqrt x", 26, FUNC).move_to(ax.c2p(0.9, 1.75)))
         l1 = VGroup(ax.plot(lambda s: s / 2, x_range=[0, 5], color=DERIV, stroke_width=4), M(r"y = \tfrac x2", 26, DERIV).move_to(ax.c2p(3.4, 0.95)))
         sh1 = region(ax, np.sqrt, lambda s: s / 2, 0, 4, opacity=0.3)
-        p1 = VGroup(point_label(ax, 0, 0, "(0, 0)", (0.5, -0.35)), point_label(ax, 4, 2, "(4, 2)", (4.45, 1.55)))
+        p1 = VGroup(point_label(ax, 0, 0, "(0, 0)", (-0.55, 0.3)), point_label(ax, 4, 2, "(4, 2)", (4.45, 1.55)))
         s1 = sliver(ax, np.sqrt, lambda s: s / 2, 1.5)
         self.example("Example 1: Root and line", r"Find the area between $y = \sqrt x$ and $y = \frac x2$.",
                      [r"TEXT:$y = \sqrt x$: the top half of a sideways parabola, from the origin", r"TEXT:$y = \tfrac x2$: a line through the origin, slope $\tfrac12$",

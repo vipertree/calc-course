@@ -80,7 +80,7 @@ class Lesson(TranscriptScene):
             c1 = dax.plot(f, x_range=[-1.3, 2.2], color=DESMOS_COLORS[0], stroke_width=4)
             c2 = dax.plot(g, x_range=[-2, 3], color=DESMOS_COLORS[1], stroke_width=4)
             p1 = desmos_point(dax, -1, -2, "(-1, -2)")
-            p1[1].next_to(p1[0], DR, buff=0.06)
+            p1[1].next_to(p1[0], LEFT, buff=0.08)
             p2 = desmos_point(dax, 2, 4, "(2, 4)")
             p2[1].next_to(p2[0], RIGHT, buff=0.08)
             self.play(FadeIn(panel[0]), FadeIn(panel[1]), FadeIn(panel[3]), FadeIn(paper), FadeIn(VGroup(*panel.rows[2][:3], panel.rows[2][-1])), run_time=0.8)

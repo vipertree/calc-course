@@ -261,6 +261,11 @@ class RecordedService(SpeechService):
         self.align = json.load(open(beats_json))
         self.root = os.path.dirname(os.path.dirname(os.path.abspath(beats_json)))
         self._audio = None
+        # the studio-cleaned copy (tools/enhance_recording.py), same length, when there is one; the narration cache
+        # keys on "source", so switching files re-slices every beat
+        enhanced = self.align["source"].replace(".wav", ".enhanced.wav")
+        if os.path.exists(os.path.join(os.path.dirname(self.root), enhanced)):
+            self.align["source"] = enhanced
 
     def _wav(self):
         if self._audio is None:

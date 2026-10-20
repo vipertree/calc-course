@@ -58,6 +58,7 @@ upright_axes(st, v, xr, yr)              the graph's axes standing in the plane 
                                          merge axis_line(...) pieces into it).
 axis_line(axis, at, lo, hi)              the axis of revolution as sortable line pieces.
 
+face_labels(v, cap, other, area, thick) a label pointing at a slab's face and a double arrow for its thickness.
 Props: bread_slices(...) a sliced sandwich loaf (crust, crumb faces with holes, end heels), cutting_board(...).
 
 Tested by anim/_solids_test.py (renders a contact sheet of every builder).
@@ -322,7 +323,8 @@ def render(view, items, sw_scale=1.0):
 
 
 class Stage(VGroup):
-    """A live 3D picture. draw(stage, view, **values) returns the items to render (see render()). Every keyword
+    """A live 3D picture. draw(stage, view, **values) returns the items to render (see render()), or (items, view) to
+    render with a changed view (an object zoomed or panned by a parameter). Every keyword
     parameter becomes a ValueTracker; yaw and pitch always exist. The picture is rebuilt on a frame when a value, or
     the stage's place on screen, has changed.
 
@@ -404,6 +406,8 @@ class Stage(VGroup):
         v = self.view()
         values = {n: t.get_value() for n, t in self.trackers.items() if n not in ("yaw", "pitch")}
         items = self.draw_fn(self, v, **values)
+        if isinstance(items, tuple) and len(items) == 2 and isinstance(items[1], View):
+            items, v = items                     # draw() changed the view (zoomed or panned the object)
         pic = render(v, items, self.sw_scale * k)
         new = [self.pin] + list(pic.submobjects)
         if self._box0 is not None:
@@ -782,6 +786,21 @@ def upright_axes(st, v, xr, yr, color=None, size=28):
     return [xa, ya, lx.next_to(xa.get_end(), RIGHT, buff=0.08), ly.next_to(ya.get_end(), UP, buff=0.08)]
 
 
+# ---------------------------------------------------------------------------------------------------------- labels
+
+
+def face_labels(v, cap, other, area, thick):
+    """(kit-dependent) A label pointing at a lifted slab's face (beside it, not on it) and a double arrow for its thickness across the top."""
+    from kit import nudge_arrow
+    c = v.P(cap.pts.mean(axis=0))
+    top = max(range(len(cap.pts)), key=lambda i: v.P(cap.pts[i])[1])
+    lab = M(area, 36, INK).move_to(c + LEFT * 1.9 + UP * 0.2)
+    ptr = Arrow(lab.get_right() + RIGHT * 0.05, c, buff=0.08, color=INK, stroke_width=3, max_tip_length_to_length_ratio=0.15)
+    p0, p1 = v.P(cap.pts[top]), v.P(other.pts[top])
+    arr = nudge_arrow(p0 + UP * 0.25, p1 + UP * 0.25, label=thick, side=UP)
+    return VGroup(lab, ptr), arr
+
+
 # ---------------------------------------------------------------------------------------------------------- props
 
 CRUST, CRUST_TOP, CRUST_RIM, CRUMB, CRUMB_HOLE = "#B9773A", "#9A5A26", "#8E4F1E", "#F1DCAA", "#D9BC83"
@@ -859,10 +878,15 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
     Cues: base_cues(st, pose) gives the usual moves as scene functions."""
     k_lines = len(curves)
     params = {f"c{i}": 0.0 for i in range(len(curves) + len(lines))}
-    params.update(shade=0.0, seg=0.0, one=0.0, many=0.0, n=float(n))
+    params.update(shade=0.0, seg=0.0, one=0.0, many=0.0, n=float(n), fit=0.0)
     top, bot, a, b = region
+    fit_to = [1.0, np.zeros(3)]                 # zoom and shift (creation units) that fit the angled pose in the flat box
 
     def draw(st, v, **p):
+        if p["fit"] > 0:
+            z = 1 + (fit_to[0] - 1) * p["fit"]
+            kk = v.scale / st.view0.scale
+            v = v.turned(origin=v.origin + fit_to[1] * kk * p["fit"], scale=v.scale * z)
         out = list(floor_axes(st, v, xr, yr, ticks=ticks))
         if p["shade"] > 0:
             out.append(floor_region(v, top, bot, a, b, var=var, opacity=0.35 * p["shade"]))
@@ -901,11 +925,27 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
             d = (v.P(1, 0, 0) - v.P(0, 0, 0)) if var == "x" else (v.P(0, 1, 0) - v.P(0, 0, 0))
             d = -d / max(np.linalg.norm(d), 1e-6)
             out.append(lab.move_to(pt + d * (0.12 + lab.width / 2 + 0.05)))
-        return out
+        return out, v
 
     st = Stage(draw, View(scale=scale, yaw=FLAT["yaw"], pitch=FLAT["pitch"]), **params)
     full = {f"c{i}": 1.0 for i in range(len(curves) + len(lines))}
-    st.reserve(dict(FLAT, **full, shade=1, seg=1), dict(yaw=pose[0], pitch=pose[1], **full, shade=1, seg=1, many=1, one=1))
+    flat_pose = dict(FLAT, **full, shade=1, seg=1)
+    angled = dict(yaw=pose[0], pitch=pose[1], **full, shade=1, seg=1, many=1, one=1)
+
+    def box(pose_):
+        for k_, v_ in pose_.items():
+            st.trackers[k_].set_value(v_)
+        st.redraw(force=True)
+        g = VGroup(*[m for m in st.submobjects[1:] if len(m.get_family()) > 1 or len(m.points)])
+        return np.array([g.get_left()[0], g.get_bottom()[1], g.get_right()[0], g.get_top()[1]])
+    F, B = box(flat_pose), box(angled)
+    o = st.view0.origin
+    z = 0.97 * min((F[2] - F[0]) / (B[2] - B[0]), (F[3] - F[1]) / (B[3] - B[1]))
+    Fc, Bc = np.array([(F[0] + F[2]) / 2, (F[1] + F[3]) / 2, 0]), np.array([(B[0] + B[2]) / 2, (B[1] + B[3]) / 2, 0])
+    fit_to[0], fit_to[1] = z, Fc - o - z * (Bc - o)
+    for k_ in st.trackers:
+        st.trackers[k_].set_value(params.get(k_, FLAT.get(k_, 0.0)))
+    st.reserve(flat_pose)
     st.pose = pose
     return st
 
@@ -924,17 +964,21 @@ def base_cues(st):
 
     def stand(rt=2.0):
         def cue(sc):
-            sc.play(st.to("yaw", st.pose[0]), st.to("pitch", st.pose[1]), run_time=rt)
+            sc.play(st.to("yaw", st.pose[0]), st.to("pitch", st.pose[1]), st.to("fit", 1), run_time=rt)
             sc.play(st.to("one", 1), run_time=1.2)
         return cue
 
-    def fill(rt=1.6):
-        return lambda sc: sc.play(st.to("many", 1), run_time=rt)
+    def fill(rt=1.6, turn=16.0, hold=3.0):
+        def cue(sc):
+            sc.play(st.to("many", 1), run_time=rt)
+            if turn:
+                sc.play(st.spin(turn), run_time=hold)       # a slow turn while it is up, so there is time to look
+        return cue
 
     def flat(rt=1.8):
         def cue(sc):
             sc.play(st.to("many", 0), st.to("one", 0), run_time=0.8)
-            sc.play(st.to("yaw", FLAT["yaw"]), st.to("pitch", FLAT["pitch"]), run_time=rt)
+            sc.play(st.to("yaw", FLAT["yaw"]), st.to("pitch", FLAT["pitch"]), st.to("fit", 0), run_time=rt)
         return cue
 
     def both(*fns):

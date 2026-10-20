@@ -29,11 +29,13 @@ NOTES = [
     Video("s8_7.py::Lesson", "Cross sections: squares and rectangles", 5),
 
     Section("Volume is the integral of area"),
-    Text(r"A thin slice of a solid is almost a slab: volume $\approx$ (area of its face) $\times$ (thickness). Adding the slices and letting them get thin gives an integral."),
+    Text(r"This lesson and the next are about one kind of volume problem: a solid built on a flat region, the \emph{base}, whose cross sections perpendicular to an axis have a known shape, such as squares, rectangles, triangles or semicircles."),
+    Text(r"A thin slice of a solid is almost a slab: volume $\approx$ (area of its face) $\times$ (thickness). Adding up infinitely many thin slices gives an integral."),
     Formula("Volume by cross sections", (r"If the cross section perpendicular to the $x$-axis at $x$ has area $A(x)$, \[ V = \blank{\int_a^b A(x)\,dx}. \] "
                                           r"For cross sections perpendicular to the $y$-axis, $V = \int_c^d A(y)\,dy$.")),
     Section("Squares and rectangles on a base"),
     Text(r"The base region lies flat. At each $x$, the segment across the base runs from the bottom curve to the top curve: that segment is a side of the cross section, $s(x) = \text{top} - \text{bottom}$."),
+    Text(r"On paper, sketch only the flat base and one slice across it, and picture the cross section standing on that slice."),
     FIG_BASE,
     Formula("Areas to know", (r"Square with side $s$: $A = \blank{s^2}$. Rectangle with base $s$ and height $h$: $A = \blank{sh}$ (the height is given: a number, or a multiple of $s$).")),
     VideoExample('Squares on a root', work="3cm"),

@@ -29,7 +29,7 @@ NOTES = [
     Video("s8_8.py::Lesson", "Cross sections: triangles and semicircles", 5),
 
     Section("Areas in terms of the side on the base"),
-    Text(r"The method is the same as for squares: $V = \int A(x)\,dx$ with $s(x) = \text{top} - \text{bottom}$ across the base. Only the area formula changes."),
+    Text(r"The same kind of volume problem as in 8.7: a flat base, with cross sections of a known shape standing on it, perpendicular to an axis. The volume is the sum of infinitely many thin slices: $V = \int A(x)\,dx$ with $s(x) = \text{top} - \text{bottom}$ across the base. Only the area formula changes."),
     Table(r"square & $s^2$ \\ equilateral triangle & $\mblank{\frac{\sqrt3}{4}s^2}$ \\ isosceles right triangle, leg on the base & $\mblank{\frac12 s^2}$ \\ "
           r"isosceles right triangle, hypotenuse on the base & $\mblank{\frac14 s^2}$ \\ semicircle, diameter on the base & $\mblank{\frac\pi8 s^2}$ \\",
           "ll", header=r"Cross section (side $s$ on the base) & Area $A$"),

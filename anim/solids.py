@@ -58,10 +58,22 @@ upright_axes(st, v, xr, yr)              the graph's axes standing in the plane 
                                          merge axis_line(...) pieces into it).
 axis_line(axis, at, lo, hi)              the axis of revolution as sortable line pieces.
 
+Lesson helpers (8.7, 8.8):
+base_stage(curves, region, kind, ...)    a cross-section example as one Stage that starts as the flat 2D sketch (pitch
+                                         90): params c0.. (draw each boundary), shade, seg (the slice), one (stand the
+                                         highlighted section), many (stand n slabs), fit (zoom the angled pose into the
+                                         sketch's box). base_cues(st) gives example() cue functions: draw(i, ...),
+                                         shade(), seg(), stand(), fill() (with a slow turn), flat(), both(*cues).
+Stage.reserve(*poses)                    fix a stage's footprint to the union of its pictures in those poses.
+draw() may return (items, view)          to render with a changed view (zoom/pan driven by a param).
 face_labels(v, cap, other, area, thick) a label pointing at a slab's face and a double arrow for its thickness.
 Props: bread_slices(...) a sliced sandwich loaf (crust, crumb faces with holes, end heels), cutting_board(...).
 
-Tested by anim/_solids_test.py (renders a contact sheet of every builder).
+Gotcha (why redraw empties old children in place): during an animation the Cairo renderer draws the family members
+it listed when the animation began, so replaced children would linger as ghosts.
+
+Tested by anim/_solids_test.py: Sheet (every builder on one frame), Motion (tilt, spin, slice count, sweep; timing),
+Bread (the loaf prop).
 """
 import functools
 
@@ -894,13 +906,13 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
             t = p[f"c{i}"]
             if t > 0.01:
                 out.append(floor_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col))
-            if t > 0.98 and tex:
+            if t > 0.98 and tex and p["fit"] < 0.5:          # sketch labels: off while the solid stands (they'd sit on it)
                 out.append(st.label(("curve", i), tex, 28, col).move_to(v.P(lab[0], lab[1], 0)))
         for j, (x0, y0, x1, y1, col, tex, lab) in enumerate(lines):
             t = p[f"c{k_lines + j}"]
             if t > 0.01:
                 out.append(Line(v.P(x0, y0, 0), v.P(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, 0), color=col, stroke_width=4))
-            if t > 0.98 and tex:
+            if t > 0.98 and tex and p["fit"] < 0.5:
                 out.append(st.label(("line", j), tex, 28, col).move_to(v.P(lab[0], lab[1], 0)))
         if p["seg"] > 0.01:
             sg = floor_segment(v, top, bot, at, var=var)
@@ -917,7 +929,7 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
             c = a + (k_at + 0.5) * w if p["many"] > 0.01 else at
             bodies.append(slab(kind, top, bot, c, w * (1 - gap), axis=var, color=SECANT, height=height, rise=p["one"]))
         out += [bb for bb in bodies if bb is not None]
-        if p["seg"] > 0.98 and seg_label:
+        if p["seg"] > 0.98 and seg_label and p["one"] < 0.01:
             # the segment's label sits off its middle, on the side away from the solid's front
             m = (bot(at) + top(at)) / 2
             pt = v.P(at, m, 0) if var == "x" else v.P(m, at, 0)

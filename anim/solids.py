@@ -31,6 +31,10 @@ SortMark(mob, pt)                        just `mob` (the flat sketch is unchange
                                          a disc's face, an end cap or a washer's hole and vanishes inside a solid.
                                          revolve() records each solid's shape on its Body (body.rev; a shifted copy
                                          keeps it) for this test. upright_axes and rev_stage's axis of revolution use it.
+SortPath(pts, mob=, color=, width=)      a curve lying ON a solid (rev_stage's generating curves and straight boundaries):
+                                         the same piecewise test, each piece judged from a point nudged toward the viewer
+                                         (bias), so it is hidden only by what is strictly in front of it, never by the
+                                         surface, cap or disc rim it lies on, and dimmed through a see-through ghost.
 
 Stage(draw, view, box=, **params)    a live picture: draw(stage, view, **values) -> list of items, redrawn each
                                          frame when a param or the view changes. Params are ValueTrackers:
@@ -409,6 +413,16 @@ class SortLine:
         self.mob, self.color, self.width, self.dashed, self.tip, self.frac = mob, color, width, dashed, tip, frac
 
 
+class SortPath:
+    """A curve lying ON a solid of revolution (the generating curve, a straight boundary): a polyline of world points.
+    Like SortLine, it is `mob` on the flat sketch; with solids of revolution in the picture render() cuts it into short
+    pieces, each tested from a point nudged a little toward the viewer, so it is hidden only by what is strictly in front
+    of it, never by the surface, cap or disc rim it lies on, and dimmed through a see-through ghost."""
+
+    def __init__(self, pts, mob=None, color=INK, width=4.0, bias=0.012):
+        self.pts, self.mob, self.color, self.width, self.bias = np.asarray(pts, dtype=float), mob, color, width, bias
+
+
 class SortMark:
     """A small mobject (a tick mark) pinned to one world point: drawn in place, or with the axis pieces when that point
     shows (see SortLine)."""
@@ -493,6 +507,9 @@ def _late_lines(view, lines, occ, sw_scale):
         return f
     out = []
     for it in lines:
+        if isinstance(it, SortPath):
+            out += _path_pieces(view, it, keep, occ)
+            continue
         if isinstance(it, SortMark):
             f = keep(it.pt[None, :])[0]
             if f > 0.02:
@@ -523,6 +540,37 @@ def _late_lines(view, lines, occ, sw_scale):
             ft = keep(it.p1[None, :])[0]
             if ft > 0.02:
                 out.append(it.tip if ft > 0.98 else it.tip.copy().set_opacity(ft))
+    return out
+
+
+def _path_pieces(view, it, keep, occ):
+    """A SortPath as runs of visible pieces (see SortPath)."""
+    P = it.pts
+    if len(P) < 2:
+        return []
+    S = view.P(P)
+    seg = np.linalg.norm(np.diff(S, axis=0), axis=1)
+    # resample so no piece is longer than about 0.04 screen units
+    reps = np.maximum(1, np.ceil(seg / 0.04).astype(int))
+    Q = [P[0]]
+    for i, k_ in enumerate(reps):
+        for j in range(1, k_ + 1):
+            Q.append(P[i] + (P[i + 1] - P[i]) * j / k_)
+    Q = np.array(Q)
+    ext = max((float(np.max(b.hi - b.lo)) for b in occ), default=1.0)
+    mid = (Q[:-1] + Q[1:]) / 2 + view.toward()[None, :] * it.bias * ext
+    f = keep(mid)
+    SQ = view.P(Q)
+    out, i, n = [], 0, len(f)
+    while i < n:
+        if f[i] < 0.02:
+            i += 1
+            continue
+        j = i
+        while j + 1 < n and abs(f[j + 1] - f[i]) < 1e-6:
+            j += 1
+        out.append(VMobject().set_points_as_corners(SQ[i:j + 2]).set_stroke(it.color, it.width, opacity=float(f[i])).set_fill(opacity=0))
+        i = j + 1
     return out
 
 
@@ -575,13 +623,13 @@ def render(view, items, sw_scale=1.0):
 
     run = []
     for i, it in enumerate(items):
-        if isinstance(it, (SortLine, SortMark)):
+        if isinstance(it, (SortLine, SortMark, SortPath)):
             if occ and i < last:
                 late.append(it)                 # drawn after the last body, below whatever follows it (labels)
             elif occ:
                 flush(run)
                 mobs.extend(_late_lines(view, [it], occ, sw_scale))
-            elif isinstance(it, SortMark) or it.mob is not None:
+            elif isinstance(it, (SortMark, SortPath)) or it.mob is not None:
                 flush(run)
                 put(it.mob)
             else:
@@ -1496,13 +1544,17 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
         for i, (f, lo, hi, col, tex, lab, cvar) in enumerate(curves):
             t = p[f"c{i}"]
             if t > 0.01:
-                out.append(upright_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col))
+                # the curve lies on the solid's outer surface: sorted in pieces, so a disc's rim never covers it
+                ss = np.linspace(lo, lo + (hi - lo) * t, 80)
+                wp = [(q, 0.0, f(q)) if cvar == "x" else (f(q), 0.0, q) for q in ss]
+                out.append(SortPath(wp, mob=upright_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col), color=col, width=4))
             if t > 0.98 and tex and flat:
                 out.append(st.label(("curve", i), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
         for j, (x0, y0, x1, y1, col, tex, lab) in enumerate(lines):
             t = p[f"c{k_lines + j}"]
             if t > 0.01:
-                out.append(Line(v.P(x0, 0, y0), v.P(x0 + (x1 - x0) * t, 0, y0 + (y1 - y0) * t), color=col, stroke_width=4))
+                e = (x0 + (x1 - x0) * t, 0, y0 + (y1 - y0) * t)
+                out.append(SortPath([(x0, 0, y0), e], mob=Line(v.P(x0, 0, y0), v.P(*e), color=col, stroke_width=4), color=col, width=4))
             if t > 0.98 and tex and flat:
                 out.append(st.label(("line", j), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
         if axis_tex and p["axis"] > 0.01:

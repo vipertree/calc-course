@@ -419,8 +419,11 @@ class SortPath:
     pieces, each tested from a point nudged a little toward the viewer, so it is hidden only by what is strictly in front
     of it, never by the surface, cap or disc rim it lies on, and dimmed through a see-through ghost."""
 
-    def __init__(self, pts, mob=None, color=INK, width=4.0, bias=0.012):
+    def __init__(self, pts, mob=None, color=INK, width=4.0, bias=0.012, opacity=1.0):
         self.pts, self.mob, self.color, self.width, self.bias = np.asarray(pts, dtype=float), mob, color, width, bias
+        self.opacity = opacity
+        if mob is not None and opacity < 0.999:
+            mob.set_stroke(opacity=opacity)
 
 
 class SortMark:
@@ -559,7 +562,7 @@ def _path_pieces(view, it, keep, occ):
     Q = np.array(Q)
     ext = max((float(np.max(b.hi - b.lo)) for b in occ), default=1.0)
     mid = (Q[:-1] + Q[1:]) / 2 + view.toward()[None, :] * it.bias * ext
-    f = keep(mid)
+    f = keep(mid) * it.opacity
     SQ = view.P(Q)
     out, i, n = [], 0, len(f)
     while i < n:
@@ -1542,20 +1545,24 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
         if shade and lit > 0.01:
             top, bot, a, b, var = shade
             out.append(upright_region(v, top, bot, a, b, var=var, opacity=0.45 * lit))
+        # the curves lie on the solid: when it is cut apart around one slice, they fade with its pieces
+        c_op = p["pieces"] if p["split"] > 0.5 else 1.0
         for i, (f, lo, hi, col, tex, lab, cvar) in enumerate(curves):
             t = p[f"c{i}"]
             if t > 0.01:
                 # the curve lies on the solid's outer surface: sorted in pieces, so a disc's rim never covers it
                 ss = np.linspace(lo, lo + (hi - lo) * t, 80)
                 wp = [(q, 0.0, f(q)) if cvar == "x" else (f(q), 0.0, q) for q in ss]
-                out.append(SortPath(wp, mob=upright_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col), color=col, width=4))
+                if c_op > 0.01:
+                    out.append(SortPath(wp, mob=upright_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col), color=col, width=4, opacity=c_op))
             if t > 0.98 and tex and flat:
                 out.append(st.label(("curve", i), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
         for j, (x0, y0, x1, y1, col, tex, lab) in enumerate(lines):
             t = p[f"c{k_lines + j}"]
             if t > 0.01:
                 e = (x0 + (x1 - x0) * t, 0, y0 + (y1 - y0) * t)
-                out.append(SortPath([(x0, 0, y0), e], mob=Line(v.P(x0, 0, y0), v.P(*e), color=col, stroke_width=4), color=col, width=4))
+                if c_op > 0.01:
+                    out.append(SortPath([(x0, 0, y0), e], mob=Line(v.P(x0, 0, y0), v.P(*e), color=col, stroke_width=4), color=col, width=4, opacity=c_op))
             if t > 0.98 and tex and flat:
                 out.append(st.label(("line", j), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
         if axis_tex and p["axis"] > 0.01:

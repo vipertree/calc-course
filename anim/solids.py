@@ -67,6 +67,25 @@ base_stage(curves, region, kind, ...)    a cross-section example as one Stage th
 Stage.reserve(*poses)                    fix a stage's footprint to the union of its pictures in those poses.
 draw() may return (items, view)          to render with a changed view (zoom/pan driven by a param).
 face_labels(v, cap, other, area, thick) a label pointing at a slab's face and a double arrow for its thickness.
+Lesson helpers (8.9 on, revolution):
+rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=, lines=, axis_tex=, axis_lab=, hole=, d=, ...)
+                                         a revolution example as one Stage that starts as the flat upright sketch
+                                         (FLAT_UP: yaw 0, pitch 0): params c0.. (draw each curve/line), shade, axis (the
+                                         dashed axis of revolution y = k / x = k with its label), rad (the radius at `at`
+                                         from the axis to edge(at), labeled R), sweep (0 -> 1: the region turns about the
+                                         axis and the part swept so far stays), solid (opacity; slice() fades it to the
+                                         ghost), one (the single thin disc at `at`; a washer when hole= is given, for
+                                         8.11+), fit. extra(st, v, p) / extra_params add items and params of your own.
+                                         d defaults to 1.2% of the range: one slice, thickness negligible.
+rev_cues(st)                             draw(i..), shade(), axis(), rad(), spin() (tilt, sweep, slow turn), slice()
+                                         (ghost + one disc with R on its face), flat() (back to the sketch, region and R),
+                                         both(*cues). Pass cues to example(cues={step: ...}).
+upright_axes(..., ticks=)                tick numbers on the upright axes.
+Stage(..., fresh_labels=True)            labels sort with the picture during a play (rev_stage sets it; see label()).
+
+Speed: faces are built by copying a template VMobject's state (_fast_vm) and collected into the picture in one go;
+a full solid redraws in well under 0.1 s. Pictures are pixel-identical to the first version.
+
 Props: bread_slices(...) a sliced sandwich loaf (crust, crumb faces with holes, end heels), cutting_board(...).
 
 Gotcha (why redraw empties old children in place): during an animation the Cairo renderer draws the family members
@@ -1217,7 +1236,7 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
         sw, op, one = p["sweep"], p["solid"], p["one"]
         if sw > 1e-3 and op > 0.01:
             t1 = TAU if sw > 0.999 else sw * TAU
-            out.append(revolve(outline, axis, k, 0.0, t1, nt=nt, color=color, opacity=1.0 if op > 0.99 else op, grid=op < 0.99))
+            out.append(revolve(outline, axis, k, 0.0, t1, nt=nt, color=color, opacity=1.0 if op > 0.99 else op))
         if one > 0.01:
             R = abs(edge(at) - k)
             body = (washer(R, abs(hole(at) - k), at, dd, axis, k, color=disc_color, opacity=min(1.0, one))

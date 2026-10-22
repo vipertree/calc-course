@@ -63,7 +63,7 @@ def bead(st, v, curve, shade, sweep, side, cut_line, split, cut, pieces, ghost, 
                 out += ring(v, B(X0), X0, cut_line)
         else:
             if ghost > 0.01:
-                out += [revolve(BEAD, "x", 0.0, nt=48, opacity=0.35 * ghost, grid=True), VMobject()]
+                out += [revolve(BEAD, "x", 0.0, nt=48, opacity=0.35 * ghost), VMobject()]
             if pieces > 0.01:
                 g, op = 0.8 * cut, (1.0 if pieces > 0.99 else pieces)
                 out.append(revolve(BEAD_L, "x", 0.0, nt=48, opacity=op).moved(t=(-g, 0, 0)))

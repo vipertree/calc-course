@@ -1,7 +1,7 @@
 """Topic 8.10: Volume with the disc method: revolving around other axes.
 
 CED: CHA-5.D (CHA-5.D.3, CHA-5.D.4): revolving about a horizontal line y = k or vertical line x = k that bounds the
-region gives discs of radius R = distance from the axis to the curve (bigger - smaller); V = pi * integral of R^2.
+region gives discs of radius R = distance from the axis to the curve, measured on the picture; V = pi * integral of R^2.
 Lesson example: y = x^2 and y = 4 about y = 4 (512 pi/15). Worked examples: sqrt x, y = 2, y-axis about y = 2 (8 pi/3);
 x = y^2 and x = 1 about x = 1 (16 pi/15); y = x^2, x-axis, x = 1 about x = 1 (pi/6).
 """
@@ -28,7 +28,7 @@ NOTES = [
 
     Section("The radius is a distance to the axis"),
     Text(r"When the axis is a line $y = k$ or $x = k$ that bounds the region, the slices are still solid discs. Only the radius changes: it is the distance from the axis to the curve."),
-    Formula("Radius about another axis", (r"Axis $y = k$: $R(x) = \blank{|f(x) - k|}$. Axis $x = k$: $R(y) = \blank{|g(y) - k|}$. Write it as bigger minus smaller. \[ V = \pi\int R^2 \]")),
+    Formula("Radius about another axis", (r"$R$ = the distance from the \blank{axis} to the \blank{curve}, found on the picture: about $y = 4$ with the curve $y = x^2$ below the axis, $R = \blank{4 - x^2}$. \[ V = \pi\int R^2 \]")),
     FIG,
     Text(r"\textbf{A common slip.} About $y = 4$, the radius to $y = x^2$ is $4 - x^2$, not $x^2$: $x^2$ is the distance to the $x$-axis."),
     VideoExample('Spinning about y = 4', work="4cm"),

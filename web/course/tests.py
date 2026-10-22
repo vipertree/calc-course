@@ -694,7 +694,8 @@ class SitePages(TestCase):
         self.assertNotIn('Unit 1</b><span>Limits and Continuity <i class="lock">', page)
 
     def test_videos_menu(self):
-        """Adder 2026-10-15: the Videos dropdown lists each unit with a flyout of its published videos."""
+        """Adder 2026-10-15/21: the Videos dropdown has All videos, Trig Review (its videos) and Calc Course (units, then
+        each unit's published videos)."""
         import tempfile
         from pathlib import Path
         from django.test import override_settings
@@ -707,6 +708,10 @@ class SitePages(TestCase):
         self.assertIn('href="/videos/#0.1"', page)
         self.assertNotIn('href="/videos/#2.2"', page)                  # no video, no entry
         self.assertNotIn('href="/videos/#1.1"', page)                  # nor a unit with none
+        drop = page.split('<summary>Videos</summary>', 1)[1].split("</details>", 1)[0]
+        self.assertIn('aria-haspopup="true" aria-expanded="false">Trig Review</a>', drop)
+        self.assertIn('aria-haspopup="true" aria-expanded="false">Calc Course</a>', drop)
+        self.assertIn('<b>Unit 2</b>', drop)                            # a unit, one level down under Calc Course
 
     def test_new_navigation_pages(self):
         """Adder 2026-10-12: separate calc and trig courses and formula sheets, an all-videos page, a student

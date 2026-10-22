@@ -68,17 +68,27 @@ def _course_tree(module, full):
 
 
 def _video_tree():
-    """The Videos dropdown below All videos: the trig module, then Units 1-10, each with a flyout of its published
-    lesson videos; a video opens on the Videos page (/videos/#2.1). Adder 2026-10-15."""
+    """The Videos dropdown below All videos (Adder 2026-10-21): Trig Review, opening its lesson videos, and Calc
+    Course, opening its units and then each unit's videos. Only published videos are listed; one opens on the Videos
+    page (/videos/#2.1)."""
     from django.urls import reverse
     from . import content
     have, base = _published_videos(), reverse("videos")
-    out = []
+    trig, units = [], []
     for u in sorted(content.syllabus(), key=lambda u: (not u["module"], u["n"])):
         vids = [{"label": t["label"], "title": t["title"], "url": f"{base}#{t['n']}"}
                 for t in u["topics"] if content.slug(t["n"]) in have]
-        if vids:
-            out.append({"label": u["short"], "url": vids[0]["url"], "on": False, "children": vids})
+        if not vids:
+            continue
+        if u["module"]:
+            trig += vids
+        else:
+            units.append({"label": u["short"], "title": u["title"], "url": vids[0]["url"], "children": vids})
+    out = []
+    if trig:
+        out.append({"label": "Trig Review", "url": trig[0]["url"], "on": False, "children": trig})
+    if units:
+        out.append({"label": "Calc Course", "url": units[0]["url"], "on": False, "children": units})
     return out
 
 
@@ -92,7 +102,7 @@ def _nav(request, profile, full=False):
               for g, items in NAV]
     for g in groups:
         g["on"] = any(i["on"] for i in g["items"])
-        if g["name"] == "Videos":            # All videos, then Trig Review and Units 1-10, each opening its videos
+        if g["name"] == "Videos":            # All videos, Trig Review (its videos), Calc Course (units, then videos)
             g["items"] += _video_tree()
     dash = None
     if request.user.is_authenticated:

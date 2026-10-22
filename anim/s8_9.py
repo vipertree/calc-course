@@ -191,9 +191,9 @@ class Lesson(TranscriptScene):
                        at=2.25, shade=(SQ, ZERO, 0, 4, "x"), lines=[(4, 0, 4, 2, DIM, "x = 4", (4.0, 2.4))], ticks={"x": [1, 2, 3, 4], "y": [-2, 2]}, scale=1.1)
         c = rev_cues(st)
         self.example("Discs on a root", r"The region under $y = \sqrt x$ for $0 \le x \le 4$ is revolved about the $x$-axis. Find the volume.",
-                     [r"TEXT:The region: under $y = \sqrt x$, from $x = 0$ to $x = 4$", r"TEXT:One slice at $x$: a disc", r"R(x) = \sqrt x - 0 = \sqrt x",
+                     [r"TEXT:The region: under $y = \sqrt x$, from $x = 0$ to $x = 4$", r"TEXT:One slice at $x$: a disc", r"TEXT:The radius runs from the axis up to the curve:", r"R(x) = \sqrt x",
                       r"A(x) = \pi\left(\sqrt x\right)^2 = \pi x", r"V = \pi\int_0^4 x\,dx", r"= \pi\left[\tfrac{x^2}{2}\right]_0^4", r"= 8\pi \approx 25.13"],
-                     at=[1, 2, 3, 4, 5, 5, 5], figure=st, figure_at=1, follow=True, size=42, ref=REF_X,
+                     at=[1, 2, 3, 3, 4, 5, 5, 5], figure=st, figure_at=1, follow=True, size=42, ref=REF_X,
                      cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 1: c["both"](c["spin"](rt=1.6, sweep=3.0, hold=1.2), c["slice"](rt=1.2)),
                            2: c["both"](c["rad"](), lambda sc: sc.wait(1.0), c["flat"]())})
 

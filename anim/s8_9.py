@@ -92,7 +92,7 @@ class Lesson(TranscriptScene):
     def construct(self):
         # ---------------------------------------------------------------- cold open: a region sweeps out a solid
         with self.beat("Spinning a region") as b:
-            st = rev_stage([(np.sqrt, 0, 4.4, FUNC, r"y = \sqrt x", (4.55, 2.45), "x")], region_outline(SQ, ZERO, 0, 4), "x", 0.0, SQ, (-0.5, 5.0), (-2.5, 2.7),
+            st = rev_stage([(np.sqrt, 0, 4.4, FUNC, r"y = \sqrt x", (2.9, 2.25), "x")], region_outline(SQ, ZERO, 0, 4), "x", 0.0, SQ, (-0.5, 5.0), (-2.5, 2.7),
                            at=2.0, shade=(SQ, ZERO, 0, 4, "x"), lines=[(4, 0, 4, 2, DIM, None, None)], ticks={"x": [1, 2, 3, 4]}, scale=1.3, pose=(-32.0, 20.0), turn=-26.0)
             st.move_to(DOWN * 0.2)
             c = rev_cues(st)
@@ -187,7 +187,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         # ---------------------------------------------------------------- the lesson example: sketch, spin, one disc
-        st = rev_stage([(np.sqrt, 0, 4.4, FUNC, r"y = \sqrt x", (4.55, 2.45), "x")], region_outline(SQ, ZERO, 0, 4), "x", 0.0, SQ, (-0.5, 5.0), (-2.5, 2.7),
+        st = rev_stage([(np.sqrt, 0, 4.4, FUNC, r"y = \sqrt x", (2.9, 2.25), "x")], region_outline(SQ, ZERO, 0, 4), "x", 0.0, SQ, (-0.5, 5.0), (-2.5, 2.7),
                        at=2.25, shade=(SQ, ZERO, 0, 4, "x"), lines=[(4, 0, 4, 2, DIM, "x = 4", (4.0, 2.4))], ticks={"x": [1, 2, 3, 4], "y": [-2, 2]}, scale=1.1)
         c = rev_cues(st)
         self.example("Discs on a root", r"The region under $y = \sqrt x$ for $0 \le x \le 4$ is revolved about the $x$-axis. Find the volume.",

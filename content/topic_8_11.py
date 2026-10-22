@@ -1,9 +1,9 @@
 """Topic 8.11: Volume with the washer method: revolving around the x- or y-axis.
 
 CED: CHA-5.D (CHA-5.D.5, CHA-5.D.6): when the region doesn't touch the axis, slices are washers:
-V = pi * integral of (R^2 - r^2), R from the axis to the farther curve, r to the nearer; square each radius
-separately. Lesson example: y = x and y = x^2 about the x-axis (2 pi/15), then about the y-axis (pi/6). Worked
-examples: sqrt x and x about the x-axis (pi/6); 4 - x^2 and y = 3 about the x-axis (136 pi/15); 2x and x^2 about the
+V = pi * integral of (R^2 - r^2), R from the axis to the outer edge (the farther curve), r to the edge of the hole (the
+nearer curve), both measured on the picture; square each radius separately. Lesson example: y = x and y = x^2 about the x-axis (2 pi/15), then about the y-axis (pi/6). Worked
+examples: sqrt x and x about the x-axis (pi/6); Rowan's napkin ring, 4 - x^2 and y = 3 about the x-axis (136 pi/15); 2x and x^2 about the
 y-axis (8 pi/3).
 """
 import sympy as sp
@@ -29,7 +29,7 @@ NOTES = [
 
     Section("Outer and inner radius"),
     Text(r"If there is a gap between the region and the axis, each slice is a washer: a disc with a hole."),
-    Formula("Washer method", (r"\[ V = \pi\int_a^b \blank{\left(R(x)^2 - r(x)^2\right)}\,dx, \] where $R$ is the distance from the axis to the farther curve and $r$ the distance to the nearer curve. "
+    Formula("Washer method", (r"\[ V = \pi\int_a^b \blank{\left(R(x)^2 - r(x)^2\right)}\,dx, \] where $R$ is the distance from the axis to the outer edge (the farther curve) and $r$ the distance from the axis to the edge of the hole (the nearer curve), each found on the picture. "
                               r"About the $y$-axis, use $dy$ and radii in terms of $y$.")),
     Text(r"\textbf{Square each radius separately.} $(R - r)^2 \ne R^2 - r^2$: with $R = 3$, $r = 2$, $(3 - 2)^2 = 1$ but $9 - 4 = 5$."),
     FIG,

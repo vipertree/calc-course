@@ -60,6 +60,8 @@ region_outline(top, bot, a, b)           CCW outline of the region between two g
 revolve(outline, axis, at, t0, t1)       the surface swept by the outline from angle t0 to t1, plus end caps (the
                                          region itself) when it is not a full turn. A full turn is closed and culled;
                                          a partial one is two-sided, so you can see inside it.
+                                         inner_color= colors the inner wall (faces looking toward the axis);
+                                         grid="inner" adds meridians and rings on it only, so a hollow reads as one.
 disc(R, x, d, ...) / washer(R, r, x, d)  one slice (a revolved rectangle): washers show the hole with its inner wall.
 upright_axes(st, v, xr, yr)              the graph's axes standing in the plane y = 0 (sorted with the solid if you
                                          merge axis_line(...) pieces into it).
@@ -86,7 +88,11 @@ rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=, lines=, axis_tex=,
                                          ghost), one (the single thin disc at `at`; a washer when hole= is given, for
                                          8.11+), fit. extra(st, v, p) / extra_params add items and params of your own.
                                          d defaults to 1.2% of the range: one slice, thickness negligible.
-rev_cues(st)                             draw(i..), shade(), axis(), rad(), spin() (tilt, sweep, slow turn), slice()
+                                         Washers (hole=): rin, the inner radius r beside R; the hollow's inner wall
+                                         and the washer's hole wall in a toned color, with rings on the hollow's wall.
+                                         Openings: wedge (cutaway quarter), cut_line, split/cut/pieces (pull the
+                                         solid apart around one slice), many/n/smooth (rebuild it from slices).
+rev_cues(st)                             draw(i..), shade(), axis(), rad(), rin(), spin() (tilt, sweep, slow turn), slice()
                                          (ghost + one disc with R on its face), flat() (back to the sketch, region and R),
                                          both(*cues). Pass cues to example(cues={step: ...}).
 upright_axes(..., ticks=)                tick numbers on the upright axes.
@@ -109,7 +115,7 @@ import numpy as np
 from manim import (DEGREES, PI, TAU, Mobject, ValueTracker, VGroup, VMobject, Arrow, Line, DashedLine, Polygon, SurroundingRectangle,
                    ManimColor, interpolate_color, WHITE, BLACK, FadeIn, FadeOut, ORIGIN, RIGHT, UP, DOWN, LEFT, smooth)
 
-from style import BG, INK, DIM, FUNC, AREA, ACCUM, SECANT, TANGENT, M
+from style import BG, INK, DIM, FUNC, AREA, ACCUM, SECANT, TANGENT, DERIV, M
 
 # ---------------------------------------------------------------------------------------------------------- view
 
@@ -366,8 +372,10 @@ def _face_mobs(view, f, flip, sw_scale):
 
 
 def _visible(view, f, cull):
-    if f.line or f.normal is None:
+    if f.normal is None:
         return True, False
+    if f.line:                                  # a line piece on a surface (a ring) hides with the face it lies on
+        return (not cull) or float(f.normal @ view.toward()) > 1e-6, False
     facing = float(f.normal @ view.toward())
     if cull:
         return facing > 1e-6, False
@@ -554,10 +562,12 @@ def render(view, items, sw_scale=1.0):
                         mobs.extend(_face_mobs(view, f, flip, sw_scale))
             else:
                 faces = []
+                bias = 0.03 * float(np.max(b.hi - b.lo))     # a ring drawn on a surface sorts just in front of it
                 for f in b.faces:
                     vis, flip = _visible(view, f, b.closed)
                     if vis:
-                        faces.append((float(view.depth(f.pts.mean(axis=0))), f, flip))
+                        d = float(view.depth(f.pts.mean(axis=0)))
+                        faces.append((d - bias if (f.line and f.normal is not None) else d, f, flip))
                 faces.sort(key=lambda t: -t[0])
                 for _, f, flip in faces:
                     mobs.extend(_face_mobs(view, f, flip, sw_scale))
@@ -978,16 +988,20 @@ def _rev_dir(axis, nx, ny, th):
     return np.array([nx * np.cos(th), -nx * np.sin(th), ny])
 
 
-def revolve(outline, axis="x", at=0.0, t0=0.0, t1=TAU, nt=48, color=ACCUM, cap_color=AREA, opacity=1.0, caps=True, grid=False):
+def revolve(outline, axis="x", at=0.0, t0=0.0, t1=TAU, nt=48, color=ACCUM, cap_color=AREA, opacity=1.0, caps=True, grid=False,
+            inner_color=None):
     """The solid swept by a region (CCW outline in graph coordinates) turning about the axis line from angle t0 to t1.
     A full turn is closed (culled). A partial turn is open: two-sided, so its inside shows, and gets caps (the region
-    itself in cap_color) at both ends. grid=True draws faint lines along the surface (helps it read as round)."""
+    itself in cap_color) at both ends. grid=True draws faint lines along the surface (helps it read as round);
+    grid="inner" draws them only on the inner wall. inner_color: the color of the inner wall (the faces that look
+    toward the axis: a washer's hole, a hollow solid's bowl), so you can see into the hollow; None keeps `color`."""
     full = abs((t1 - t0) - TAU) < 1e-6
     n_t = max(2, int(np.ceil(nt * abs(t1 - t0) / TAU)))
     ths = np.linspace(t0, t1, n_t + 1)
     pts2 = [tuple(map(float, p)) for p in outline]
     k = len(pts2)
     faces = []
+    n_in = 0                                    # inner-wall edges so far (grid="inner" rings every few of them)
     for j in range(k):
         (x0, y0), (x1, y1) = pts2[j], pts2[(j + 1) % k]
         if abs(x1 - x0) + abs(y1 - y0) < 1e-9:
@@ -999,13 +1013,31 @@ def revolve(outline, axis="x", at=0.0, t0=0.0, t1=TAU, nt=48, color=ACCUM, cap_c
         on_axis = (axis == "x" and abs(y0 - at) < 1e-9 and abs(y1 - at) < 1e-9) or (axis == "y" and abs(x0 - at) < 1e-9 and abs(x1 - at) < 1e-9)
         if on_axis:
             continue
+        # an inner wall looks toward the axis: its normal points back across the radius
+        radial = ny * np.sign((y0 + y1) / 2 - at) if axis == "x" else nx * np.sign((x0 + x1) / 2 - at)
+        inner = radial < -1e-9
+        col = inner_color if (inner and inner_color is not None) else color
+        g_on = grid is True or (grid == "inner" and inner)
         for i in range(n_t):
             a_, b_ = ths[i], ths[i + 1]
             q = np.array([_rev(axis, at, x0, y0, a_), _rev(axis, at, x1, y1, a_), _rev(axis, at, x1, y1, b_), _rev(axis, at, x0, y0, b_)])
             nrm = _rev_dir(axis, nx, ny, (a_ + b_) / 2)
             wall = abs(x1 - x0) < 1e-9 if axis == "x" else abs(y1 - y0) < 1e-9       # an end wall: no grid spokes on it
-            edge = (ManimColor(interpolate_color(ManimColor(color), BLACK, 0.2)) if grid and i % 4 == 0 and not wall else False)
-            faces.append(Face(q, color, normal=nrm, edge=edge, opacity=opacity, edge_width=0.8))
+            if grid == "inner":
+                edge = False
+                if inner and i % 4 == 0:            # a meridian on the inner wall, as one clean line
+                    faces.append(Face([q[0], q[1]], interpolate_color(ManimColor(col), BLACK, 0.3), line=True, width=1.2, opacity=opacity,
+                                      normal=_rev_dir(axis, nx, ny, a_)))
+            else:
+                edge = (ManimColor(interpolate_color(ManimColor(col), BLACK, 0.2)) if g_on and i % 4 == 0 and not wall else False)
+            faces.append(Face(q, col, normal=nrm, edge=edge, opacity=opacity, edge_width=0.8))
+        if grid == "inner" and inner:
+            if n_in % 6 == 3:                   # a ring around the hollow: shows how deep it goes
+                ring = interpolate_color(ManimColor(col), BLACK, 0.3)
+                for i in range(n_t):
+                    faces.append(Face([_rev(axis, at, x0, y0, ths[i]), _rev(axis, at, x0, y0, ths[i + 1])], ring, line=True, width=1.2,
+                                      opacity=opacity, normal=_rev_dir(axis, nx, ny, (ths[i] + ths[i + 1]) / 2)))
+            n_in += 1
     if caps and not full:
         # each cap is the region itself, cut into thin strips across the axis so it depth-sorts against the small
         # surface faces (one big polygon sorted by its center showed through the solid's narrow end); its outline is
@@ -1368,9 +1400,44 @@ def _gpt(axis, s, c):
     return (s, c) if axis == "x" else (c, s)
 
 
+def _clip_outline(outline, i_s, c, side):
+    """The part of a polygon (graph coordinates) with coordinate i_s <= c (side -1) or >= c (side 1): one
+    Sutherland-Hodgman pass, enough for a region between two graphs."""
+    pts = [tuple(map(float, q)) for q in outline]
+    keep = (lambda q: q[i_s] <= c + 1e-12) if side < 0 else (lambda q: q[i_s] >= c - 1e-12)
+    out = []
+    for j in range(len(pts)):
+        a, b = pts[j - 1], pts[j]
+        if keep(b):
+            if not keep(a):
+                t = (c - a[i_s]) / (b[i_s] - a[i_s])
+                out.append(tuple(a[m] + t * (b[m] - a[m]) for m in range(2)))
+            out.append(b)
+        elif keep(a):
+            t = (c - a[i_s]) / (b[i_s] - a[i_s])
+            out.append(tuple(a[m] + t * (b[m] - a[m]) for m in range(2)))
+    return out
+
+
+def _front_ring(v, axis, k, s, c, frac, color, n=64):
+    """The cut line drawn around a solid of revolution at slice position s (graph cross coordinate c of its outer
+    edge), frac of the way around: only the half that faces us, drawn over the solid."""
+    w = v.toward()
+    sg = 1.0 if c >= k else -1.0
+    g = _gpt(axis, s, c)
+    th = np.linspace(0, TAU * frac, max(2, int(n * frac)) + 1)
+    out = []
+    for a, b_ in zip(th[:-1], th[1:]):
+        nrm = _rev_dir(axis, 0.0, sg, (a + b_) / 2) if axis == "x" else _rev_dir(axis, sg, 0.0, (a + b_) / 2)
+        if nrm @ w > 0:
+            out.append(Line(v.P(_rev(axis, k, g[0], g[1], a)), v.P(_rev(axis, k, g[0], g[1], b_)), color=color, stroke_width=5))
+    return out
+
+
 def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), ticks=None, color=ACCUM, disc_color=SECANT,
               rad_color=TANGENT, axis_color=None, axis_tex=None, axis_lab=None, scale=1.0, pose=(-30.0, 20.0), turn=24.0, d=None,
-              hole=None, rad_label="R", rad_side=-1, ghost=0.35, nt=48, extra=None, extra_params=None):
+              hole=None, rad_label="R", rad_side=-1, ghost=0.35, nt=48, extra=None, extra_params=None, rin_color=None, rin_label="r",
+              inner=None):
     """The picture for a solid-of-revolution worked example, as a Stage that starts as the student's flat 2D sketch
     (the upright graph seen straight on, FLAT_UP), the revolution counterpart of base_stage.
 
@@ -1382,18 +1449,33 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
     washer (8.11 on). at: the slice we care about. axis_tex: draw the axis of revolution as a dashed line with this
     label at graph point axis_lab (for an axis other than a coordinate axis).
     extra(st, v, p) -> items drawn on top, with extra_params {name: start value} as more params.
+    Washers (hole= given): rin draws the inner radius r from the axis to hole(at) (rin_color, default DERIV), R and r
+    then sit side by side (R on rad_side, r on the other) so neither covers the other; the hollow's inner wall and the
+    washer's hole wall get their own tone (inner=, default the color mixed 30% toward the background: darker on a dark
+    page, lighter on paper), with faint rings and meridians on the hollow's wall, so you can see into it.
 
     Params (all start at 0 unless noted): c0, c1, ... draw each curve (and line) 0 -> 1; shade; axis (the dashed axis
     line); rad (the R segment at `at` and its label); sweep (the region turning about the axis, 0 -> 1 = a full turn; the
     part swept so far stays); solid (1: its opacity, faded to `ghost` to see a slice inside); one (the disc at `at`, with
-    R drawn on its face); fit (zoom the angled pose into the sketch's box); yaw/pitch. Cues: rev_cues(st)."""
+    R drawn on its face); fit (zoom the angled pose into the sketch's box); yaw/pitch. Cues: rev_cues(st).
+    For a lesson's opening (8.11 on; all off by default): wedge (0 -> 1 cuts the quarter of the full solid between its
+    top and the side facing us away, so the hollow and the wall, the region itself, show); cut_line (a ring drawn
+    around the solid at `at`); split (1: the solid is cut at `at`: the two pieces, opacity pieces (1), slide apart by
+    cut, leaving the slice of thickness d; a solid below 1 shows as a ghost behind them); many (the solid rebuilt
+    from n slices, n starts at 8, then smooth = 1 for the smooth solid). Pass d= for a slice thick enough to see."""
     k_lines = len(curves)
     params = {f"c{i}": 0.0 for i in range(len(curves) + len(lines))}
-    params.update(shade=0.0, axis=0.0, rad=0.0, sweep=0.0, solid=1.0, one=0.0, fit=0.0)
+    params.update(shade=0.0, axis=0.0, rad=0.0, rin=0.0, sweep=0.0, solid=1.0, one=0.0, fit=0.0, wedge=0.0, cut_line=0.0, split=0.0, cut=0.0,
+                  pieces=1.0, many=0.0, n=8.0, smooth=0.0)
     params.update(extra_params or {})
     axis_color = axis_color or INK
+    rin_color = rin_color or DERIV
+    dark = (lambda c: interpolate_color(ManimColor(c), ManimColor(BG), 0.3))     # darker on a dark page, lighter on paper
+    in_solid = (inner if inner is not None else dark(color)) if hole else None
+    in_disc = (inner if inner is not None else dark(disc_color)) if hole else None
     span = (xr[1] - xr[0]) if axis == "x" else (yr[1] - yr[0])
     dd = d if d is not None else 0.012 * span          # one thin slice: its thickness is negligible
+    s_lo, s_hi = (min(q[0 if axis == "x" else 1] for q in outline), max(q[0 if axis == "x" else 1] for q in outline))
     fit_to = [1.0, np.zeros(3)]
 
     def world(gx, gy, off=0.0):
@@ -1431,32 +1513,76 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
             if p["axis"] > 0.98 and axis_lab is not None and flat:
                 out.append(st.label("axis", axis_tex, 28, axis_color).move_to(v.P(*world(*axis_lab))))
         sw, op, one = p["sweep"], p["solid"], p["one"]
-        if sw > 1e-3 and op > 0.01:
+        skw = dict(inner_color=in_solid, grid="inner") if hole else {}
+        sgn = 1.0 if edge(at) >= k else -1.0           # which side of the axis the region is on
+        if p["many"] > 0.01:
+            # the solid rebuilt from n slices (n = 8, 16, 40, ...), then smooth
+            if p["smooth"] > 0.5:
+                out.append(revolve(outline, axis, k, nt=nt, color=color, **skw))
+            else:
+                nn = max(1, int(round(p["n"])))
+                w = (s_hi - s_lo) / nn
+                for i in range(nn):
+                    m = s_lo + (i + 0.5) * w
+                    R_ = abs(edge(m) - k)
+                    ww = w * (0.82 if nn < 30 else 1.0)
+                    out.append(washer(R_, abs(hole(m) - k), m, ww, axis, k, color=color, nt=40, inner_color=in_solid) if hole
+                               else disc(R_, m, ww, axis, k, color=color, nt=40))
+        elif p["split"] > 0.5:
+            # cut at `at`: the two pieces slide apart (cut) and fade (pieces), leaving the one slice
+            if op < 0.99 and op > 0.01:
+                out += [revolve(outline, axis, k, nt=nt, color=color, opacity=op, **skw), VMobject()]
+            if p["pieces"] > 0.01:
+                g, po = 0.6 * p["cut"] * span / 4, (1.0 if p["pieces"] > 0.99 else p["pieces"])
+                tv = (lambda d_: (d_, 0, 0)) if axis == "x" else (lambda d_: (0, 0, d_))
+                for side_, mv in ((-1, -g), (1, g)):
+                    piece = _clip_outline(outline, 0 if axis == "x" else 1, at + side_ * dd / 2, side_)
+                    if len(piece) >= 3:
+                        out.append(revolve(piece, axis, k, nt=nt, color=color, opacity=po, **skw).moved(t=tv(mv)))
+            out.append(washer(abs(edge(at) - k), abs(hole(at) - k), at, dd, axis, k, color=disc_color, inner_color=in_disc) if hole
+                       else disc(abs(edge(at) - k), at, dd, axis, k, color=disc_color))
+        elif sw > 1e-3 and op > 0.01:
             t1 = TAU if sw > 0.999 else sw * TAU
-            out.append(revolve(outline, axis, k, 0.0, t1, nt=nt, color=color, opacity=1.0 if op > 0.99 else op))
-        if one > 0.01:
+            t0 = 0.0
+            if p["wedge"] > 0.01 and sw > 0.999:       # a quarter cut away (top to front), to see inside
+                if sgn > 0:
+                    t0 = p["wedge"] * PI / 2
+                else:
+                    t1 = TAU - p["wedge"] * PI / 2
+            out.append(revolve(outline, axis, k, t0, t1, nt=nt, color=color, opacity=1.0 if op > 0.99 else op, **skw))
+            if p["cut_line"] > 0.01:
+                out += _front_ring(v, axis, k, at, edge(at), p["cut_line"], disc_color)
+        if one > 0.01 and p["split"] < 0.5 and p["many"] < 0.01:
             R = abs(edge(at) - k)
-            body = (washer(R, abs(hole(at) - k), at, dd, axis, k, color=disc_color, opacity=min(1.0, one))
+            body = (washer(R, abs(hole(at) - k), at, dd, axis, k, color=disc_color, opacity=min(1.0, one), inner_color=in_disc)
                     if hole else disc(R, at, dd, axis, k, color=disc_color, opacity=min(1.0, one)))
             if op < 0.99:
                 out.append(VMobject())          # the ghost is drawn first, the slice over it
             out.append(body)
         # the radius: on the sketch, then on the slice's face that shows (hidden inside a solid being swept)
-        show = p["rad"] * (1.0 if (one > 0.5 or op < 0.5) else max(0.0, 1 - sw / 0.04))
-        if show > 0.01:
+        vis = 1.0 if (one > 0.5 or op < 0.5) else max(0.0, 1 - sw / 0.04)
+        radii = [("rad", edge, rad_color, rad_label, rad_side)]
+        if hole:
+            radii.append(("rin", hole, rin_color, rin_label, -rad_side))
+        for key, fn, col, tex, side in radii:
+            show = p[key] * vis
+            if show < 0.01:
+                continue
             off = 0.0
             if one > 0.5:
                 n = np.array([1.0, 0, 0]) if axis == "x" else np.array([0, 0, 1.0])
                 off = dd / 2 * (1 if n @ v.toward() >= 0 else -1)
-            p0, p1 = v.P(*world(*_gpt(axis, at, k), off)), v.P(*world(*_gpt(axis, at, edge(at)), off))
-            p1 = p0 + (p1 - p0) * min(1.0, p["rad"])
+            p0, p1 = v.P(*world(*_gpt(axis, at, k), off)), v.P(*world(*_gpt(axis, at, fn(at)), off))
+            u = p1 - p0
+            u = u / max(np.linalg.norm(u), 1e-6)
+            perp = np.array([-u[1], u[0], 0.0]) * (-side)
+            if hole:                            # R and r side by side, each nudged to its own side
+                p0, p1 = p0 + perp * 0.05, p1 + perp * 0.05
+            p1 = p0 + (p1 - p0) * min(1.0, p[key])
             out.append(Line(p0, p1, color=BG, stroke_width=11, stroke_opacity=min(1.0, show)))
-            out.append(Line(p0, p1, color=rad_color, stroke_width=6, stroke_opacity=min(1.0, show)))
-            if p["rad"] > 0.98 and rad_label:
-                lab = st.label("rad", rad_label, 32, rad_color)
-                u = p1 - p0
-                u = u / max(np.linalg.norm(u), 1e-6)
-                perp = np.array([-u[1], u[0], 0.0]) * (-rad_side)
+            out.append(Line(p0, p1, color=col, stroke_width=6, stroke_opacity=min(1.0, show)))
+            if p[key] > 0.98 and tex:
+                lab = st.label(key, tex, 32, col)
                 lab.set_opacity(min(1.0, show))
                 lab.move_to((p0 + p1) / 2 + _away(perp, lab, 0.1))
                 if one > 0.5:                   # on the slice's face: a backing so it reads on any color
@@ -1468,7 +1594,7 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
 
     st = Stage(draw, View(scale=scale, yaw=FLAT_UP["yaw"], pitch=FLAT_UP["pitch"]), fresh_labels=True, **params)
     full = {f"c{i}": 1.0 for i in range(len(curves) + len(lines))}
-    flat_pose = dict(FLAT_UP, **full, shade=1, axis=1, rad=1)
+    flat_pose = dict(FLAT_UP, **full, shade=1, axis=1, rad=1, rin=1 if hole else 0)
     angled = [dict(yaw=y_, pitch=pose[1], **full, shade=1, axis=1, sweep=1) for y_ in (pose[0], pose[0] + turn)]
 
     def box(pose_):
@@ -1531,4 +1657,4 @@ def rev_cues(st):
                 f(sc)
         return cue
     return dict(draw=draw, shade=lambda rt=0.8: one_param("shade", rt), axis=lambda rt=0.8: one_param("axis", rt),
-                rad=lambda rt=0.8: one_param("rad", rt), spin=spin, slice=slice_, flat=flat, both=both)
+                rad=lambda rt=0.8: one_param("rad", rt), rin=lambda rt=0.8: one_param("rin", rt), spin=spin, slice=slice_, flat=flat, both=both)

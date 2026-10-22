@@ -1,7 +1,7 @@
 """Topic 8.12: Volume with the washer method: revolving around other axes.
 
 CED: CHA-5.D (CHA-5.D.7, CHA-5.D.8): about a horizontal or vertical line that doesn't bound the region, slices are
-washers with radii measured from the axis (bigger - smaller); which curve is outer depends on where the axis is.
+washers with radii measured on the picture from the axis to each curve; which curve is outer depends on where the axis is.
 Lesson example: y = x and y = x^2 about y = -1 (7 pi/15) and about y = 2 (8 pi/15). Worked examples: same region about
 x = -1 (pi/2); x^2 and y = 4 about y = -2 (1408 pi/15); sqrt x and x/2 about y = 3 (16 pi/3).
 """
@@ -30,11 +30,11 @@ NOTES = [
 
     Section("Measure from the axis"),
     Text(r"Every radius starts at the axis of revolution. With the axis $y = -1$ below the region, the distance up to $y = x$ is $x - (-1) = x + 1$."),
-    Formula("Radii about $y = k$ or $x = k$", (r"Radius $=$ (farther value) $-$ (nearer value): \blank{curve $- k$} if the axis is below (or left), \blank{$k -$ curve} if it is above (or right). Then \[ V = \pi\int \left(R^2 - r^2\right). \]")),
+    Formula("Radii about $y = k$ or $x = k$", (r"Each radius is the distance from the \blank{axis} to its \blank{curve}, found on the picture: about $y = -1$, it is one unit up to the $x$-axis and then $x$ more up to the line, so $R = \blank{x + 1}$. Then \[ V = \pi\int \left(R^2 - r^2\right). \]")),
     FIG,
     VideoExample('About y = −1', work="4.6cm"),
-    Text(r"\textbf{Outer depends on the axis.} About $y = 2$ (above the region), the parabola is farther: $R = 2 - x^2$, $r = 2 - x$, and $V = \frac{8\pi}{15}$."),
-    BigIdea(r"Sketch the axis and both radii first. Each radius is bigger minus smaller, measured from the axis; then $V = \pi\int (R^2 - r^2)$."),
+    Text(r"\textbf{Outer depends on the axis.} About $y = 2$ (above the region), each distance down is $2$ minus the height, and the parabola is farther: $R = 2 - x^2$, $r = 2 - x$, and $V = \frac{8\pi}{15}$."),
+    BigIdea(r"Sketch the axis and both radii first. Each radius is the distance from the axis to its curve, found on the picture; then $V = \pi\int (R^2 - r^2)$."),
     Check(r"The region between $y = 1$ and $y = 2$ for $0 \le x \le 3$ is revolved about $y = -1$. Find the volume.", selfcheck(r"15\pi"), r"$R = 3$, $r = 2$: $\pi\int_0^3 (9 - 4)\,dx = 15\pi$."),
 ]
 

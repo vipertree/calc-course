@@ -1485,7 +1485,7 @@ def _front_ring(v, axis, k, s, c, frac, color, n=64):
 def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), ticks=None, color=ACCUM, disc_color=SECANT,
               rad_color=TANGENT, axis_color=None, axis_tex=None, axis_lab=None, scale=1.0, pose=(-30.0, 20.0), turn=24.0, d=None,
               hole=None, rad_label="R", rad_side=-1, ghost=0.35, nt=48, extra=None, extra_params=None, rin_color=None, rin_label="r",
-              inner=None):
+              inner=None, lab_at=0.5):
     """The picture for a solid-of-revolution worked example, as a Stage that starts as the student's flat 2D sketch
     (the upright graph seen straight on, FLAT_UP), the revolution counterpart of base_stage.
 
@@ -1494,7 +1494,8 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
     shade: (top, bot, a, b, var) the region, as upright_region takes it. outline: the region's CCW outline (graph
     coordinates: region_outline / outline_y) that revolve() sweeps about the axis ("x": the line y = k, "y": x = k).
     edge(s): the curve's cross coordinate at slice position s, so R(s) = |edge(s) - k|; hole(s): the inner edge for a
-    washer (8.11 on). at: the slice we care about. axis_tex: draw the axis of revolution as a dashed line with this
+    washer (8.11 on). at: the slice we care about. lab_at: where along R (and r) their labels sit (0.5: the middle; move it
+    when the middle would put a label on a coordinate axis). axis_tex: draw the axis of revolution as a dashed line with this
     label at graph point axis_lab (for an axis other than a coordinate axis).
     extra(st, v, p) -> items drawn on top, with extra_params {name: start value} as more params.
     Washers (hole= given): rin draws the inner radius r from the axis to hole(at) (rin_color, default DERIV), R and r
@@ -1636,7 +1637,7 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
             if p[key] > 0.98 and tex:
                 lab = st.label(key, tex, 32, col)
                 lab.set_opacity(min(1.0, show))
-                lab.move_to((p0 + p1) / 2 + _away(perp, lab, 0.1))
+                lab.move_to(p0 + (p1 - p0) * lab_at + _away(perp, lab, 0.1))
                 if one > 0.5:                   # on the slice's face: a backing so it reads on any color
                     out.append(SurroundingRectangle(lab, buff=0.05, corner_radius=0.06, stroke_width=0).set_fill(BG, 0.85 * min(1.0, show)))
                 out.append(lab)

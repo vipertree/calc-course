@@ -35,8 +35,8 @@ def below(scale=1.7, at=0.7, pose=(-36.0, 18.0), turn=-22.0, extra=None, extra_p
     """The region between y = x and y = x^2, with the axis y = -1 below it."""
     return rev_stage([(LINE, 0, 1.18, FUNC, "y = x", (0.55, 0.95), "x"), (PAR, 0, 1.1, FUNC, "y = x^2", (1.4, 0.75), "x")],
                      region_outline(LINE, PAR, 0, 1), "x", -1.0, LINE, (-0.4, 1.7), (-1.5, 1.45), at=at, shade=(LINE, PAR, 0, 1, "x"), hole=PAR,
-                     axis_tex="y = -1", axis_lab=(-0.15, -1.25), ticks={"x": [1], "y": [1]}, scale=scale, pose=pose, turn=turn,
-                     extra=extra, extra_params=extra_params)
+                     axis_tex="y = -1", axis_lab=(1.45, -1.25), ticks={"x": [1], "y": [1]}, scale=scale, pose=pose, turn=turn,
+                     extra=extra, extra_params=extra_params, lab_at=0.3)
 
 
 class Lesson(TranscriptScene):
@@ -54,8 +54,8 @@ class Lesson(TranscriptScene):
             c["shade"]()(self)
             c["axis"]()(self)
             b.line(1)
-            c["spin"](rt=1.6, sweep=5.0, hold=0)(self)
-            self.play(st.spin(-14), run_time=2)
+            c["spin"](rt=1.6, sweep=4.4, hold=0)(self)
+            self.play(st.spin(-14), run_time=1.4)
             b.line(2)
             tag = T("from the end", 34, DIM).move_to(tag_at)
             self.play(st.to("yaw", -90), st.to("pitch", 4), FadeIn(tag), run_time=3)
@@ -97,9 +97,9 @@ class Lesson(TranscriptScene):
             self.play(Write(r_), FadeIn(rw), run_time=1)
             b.line(3)
             self.play(st.to("gap", 0), run_time=0.4)
-            c["spin"](rt=1.4, sweep=3.0, hold=0.8)(self)
+            c["spin"](rt=1.4, sweep=3.0, hold=0.4)(self)
             c["slice"](rt=1.2)(self)
-            self.wait(1.0)
+            self.wait(0.4)
             c["flat"](rt=1.4)(self)
             b.line(4)
             self.play(FadeIn(last), run_time=1)
@@ -121,7 +121,7 @@ class Lesson(TranscriptScene):
         with self.beat("An axis above the region") as b:
             st = rev_stage([(LINE, 0, 1.18, FUNC, "y = x", (0.55, 0.95), "x"), (PAR, 0, 1.1, FUNC, "y = x^2", (1.4, 0.75), "x")],
                            region_outline(LINE, PAR, 0, 1), "x", 2.0, PAR, (-0.4, 1.7), (-0.4, 2.6), at=0.55, shade=(LINE, PAR, 0, 1, "x"), hole=LINE,
-                           axis_tex="y = 2", axis_lab=(-0.1, 2.3), ticks={"x": [1], "y": [1]}, scale=1.7, pose=(-36.0, 18.0), turn=-20.0)
+                           axis_tex="y = 2", axis_lab=(1.4, 2.25), ticks={"x": [1], "y": [1]}, scale=1.7, pose=(-36.0, 18.0), turn=-20.0)
             st.move_to(LEFT * 3.4 + DOWN * 0.1)
             c = rev_cues(st)
             self.play(FadeIn(st), run_time=0.6)
@@ -170,9 +170,9 @@ class Lesson(TranscriptScene):
                            3: c["both"](c["rad"](), c["rin"](), lambda sc: sc.wait(0.6), c["flat"](rt=1.4))})
         # Example 2: x^2 and y = 4 about y = -2
         FOUR = lambda s: 4.0
-        st = rev_stage([(PAR, -2.15, 2.15, FUNC, "y = x^2", (2.55, 3.4), "x"), (FOUR, -2.5, 2.5, FUNC, "y = 4", (-2.0, 4.4), "x")],
+        st = rev_stage([(PAR, -2.15, 2.15, FUNC, "y = x^2", (2.55, 3.4), "x"), (FOUR, -2.5, 2.5, FUNC, "y = 4", (-1.0, 4.4), "x")],
                        region_outline(FOUR, PAR, -2, 2), "x", -2.0, FOUR, (-2.8, 3.0), (-2.6, 4.9), at=0.8, shade=(FOUR, PAR, -2, 2, "x"), hole=PAR,
-                       axis_tex="y = -2", axis_lab=(1.9, -2.35), ticks={"x": [-2, 2], "y": [4]}, scale=0.62, pose=(-40.0, 16.0), turn=-16.0)
+                       axis_tex="y = -2", axis_lab=(1.9, -2.35), ticks={"x": [-2, 2]}, scale=0.62, pose=(-40.0, 16.0), turn=-16.0)
         c = rev_cues(st)
         self.example("Example 2: About y = −2", r"The region between $y = x^2$ and $y = 4$ is revolved about the line $y = -2$. Find the volume.",
                      [r"TEXT:Sketch: the parabola, the line $y = 4$, the region; the axis $y = -2$", r"x^2 = 4 \text{ at } x = \pm 2", r"TEXT:One slice at $x$: a washer centered on $y = -2$",

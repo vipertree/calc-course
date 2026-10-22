@@ -229,7 +229,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         # Example 1: root x and x about the x-axis
-        st = rev_stage([(SQ, 0, 1.15, FUNC, r"y = \sqrt x", (0.32, 1.0), "x"), (LINE, 0, 1.15, FUNC, "y = x", (0.95, 0.55), "x")],
+        st = rev_stage([(SQ, 0, 1.15, FUNC, r"y = \sqrt x", (0.62, 1.12), "x"), (LINE, 0, 1.15, FUNC, "y = x", (0.95, 0.55), "x")],
                        region_outline(SQ, LINE, 0, 1), "x", 0.0, SQ, (-0.3, 1.6), (-1.2, 1.45), at=0.45, shade=(SQ, LINE, 0, 1, "x"), hole=LINE,
                        ticks={"x": [1], "y": [1]}, scale=1.6, pose=(-36.0, 18.0))
         c = rev_cues(st)

@@ -1,8 +1,8 @@
 """Topic 8.7: Volumes with cross sections: squares and rectangles.
 
 CED: CHA-5.C (CHA-5.C.1): the volume of a solid with known cross sections of area A(x) perpendicular to the x-axis is
-the integral of A(x) dx (or A(y) dy for cross sections perpendicular to the y-axis). The side of a cross section is
-top - bottom across the base. Lesson example: squares on y = sqrt x, 0 <= x <= 4 (8). Worked examples: squares between
+the integral of A(x) dx (or A(y) dy for cross sections perpendicular to the y-axis). Each example finds the area of
+one cross section, reading its side off the sketch of the base. Lesson example: squares on y = sqrt x, 0 <= x <= 4 (8). Worked examples: squares between
 y = x and y = x^2 (1/30); rectangles of height 3 on y = 4 - x^2 (32); squares perpendicular to the y-axis between
 x = y^2 and x = 4 (512/15).
 """
@@ -34,12 +34,12 @@ NOTES = [
     Formula("Volume by cross sections", (r"If the cross section perpendicular to the $x$-axis at $x$ has area $A(x)$, \[ V = \blank{\int_a^b A(x)\,dx}. \] "
                                           r"For cross sections perpendicular to the $y$-axis, $V = \int_c^d A(y)\,dy$.")),
     Section("Squares and rectangles on a base"),
-    Text(r"The base region lies flat. At each $x$, the segment across the base runs from the bottom curve to the top curve: that segment is a side of the cross section, $s(x) = \text{top} - \text{bottom}$."),
+    Text(r"The base region lies flat. At each $x$, a segment runs straight across the base: that segment is a side of the cross section, with length $s(x)$. The job is the area $A(x)$ of the cross section standing on it. Read the side off the sketch: where the segment starts and where it ends."),
     Text(r"On paper, sketch only the flat base and one slice across it, and picture the cross section standing on that slice."),
     FIG_BASE,
     Formula("Areas to know", (r"Square with side $s$: $A = \blank{s^2}$. Rectangle with base $s$ and height $h$: $A = \blank{sh}$ (the height is given: a number, or a multiple of $s$).")),
     VideoExample('Squares on a root', work="3cm"),
-    BigIdea(r"$V = \int A(x)\,dx$. The side of each cross section is top $-$ bottom across the base; square it for squares, multiply by the height for rectangles."),
+    BigIdea(r"$V = \int A(x)\,dx$, where $A(x)$ is the area of one cross section. Read its side off the base; square it for squares, multiply by the height for rectangles."),
     Check(r"The base is the region under $y = 2$ for $0 \le x \le 3$; cross sections perpendicular to the $x$-axis are squares. Find the volume.", selfcheck(r"12"), r"$\int_0^3 4\,dx$: a $3 \times 2 \times 2$ box."),
 ]
 
@@ -79,10 +79,10 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"The base is the region between $y = 2x$ and $y = x^2$. Which gives the volume if cross sections perpendicular to the $x$-axis are squares?",
-            [r"$\int_0^2 \left(4x^2 - x^4\right) dx$", r"$\int_0^2 \left(2x - x^2\right) dx$", r"$\int_0^2 \left(2x - x^2\right)^2 dx$", r"$\int_0^4 \left(2x - x^2\right)^2 dx$"], "C", r"Side $2x - x^2$, squared.",
+            [r"$\int_0^2 \left(4x^2 - x^4\right) dx$", r"$\int_0^2 \left(2x - x^2\right) dx$", r"$\int_0^2 \left(2x - x^2\right)^2 dx$", r"$\int_0^4 \left(2x - x^2\right)^2 dx$"], "C", r"The side runs from $y = x^2$ up to $y = 2x$, so it is $2x - x^2$; the area is its square.",
             why_not={"A": "squared each curve instead of the side"}),
         MCQ(r"The base is the region between $y = 3$ and $y = x^2 - 1$. Which gives the volume if cross sections perpendicular to the $x$-axis are squares?",
-            [r"$\int_{-2}^{2} \left(4 - x^2\right)^2 dx$", r"$\int_{-2}^{2} \left(9 - (x^2 - 1)^2\right) dx$", r"$\int_{0}^{2} \left(4 - x^2\right)^2 dx$", r"$\int_{-2}^{2} \left(4 - x^2\right) dx$"], "A", r"Side $3 - (x^2 - 1) = 4 - x^2$.",
+            [r"$\int_{-2}^{2} \left(4 - x^2\right)^2 dx$", r"$\int_{-2}^{2} \left(9 - (x^2 - 1)^2\right) dx$", r"$\int_{0}^{2} \left(4 - x^2\right)^2 dx$", r"$\int_{-2}^{2} \left(4 - x^2\right) dx$"], "A", r"The side runs from $y = x^2 - 1$ up to $y = 3$, so it is $3 - (x^2 - 1) = 4 - x^2$; the area is its square.",
             why_not={"B": "squared each curve instead of the side"}),
     ),
     Variants(

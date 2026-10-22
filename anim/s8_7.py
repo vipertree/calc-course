@@ -195,7 +195,7 @@ class Lesson(TranscriptScene):
         with self.beat("The side across the base") as b:
             up = lambda s: 2.3 + 0.3 * np.sin(1.1 * s)
             lo = lambda s: 0.5 + 0.25 * np.cos(1.3 * s)
-            st = base_stage([(up, 0, 4.2, FUNC, r"\text{top}", (4.55, 2.15), "x"), (lo, 0, 4.2, DERIV, r"\text{bottom}", (4.7, 0.75), "x")],
+            st = base_stage([(up, 0, 4.2, FUNC, None, None, "x"), (lo, 0, 4.2, DERIV, None, None, "x")],
                             (up, lo, 0.3, 3.9), "square", (-0.4, 4.8), (-0.4, 3.0), at=2.2, n=8, scale=1.2, seg_label=None)
             st.move_to(LEFT * 2.6 + DOWN * 0.4)
             cue = base_cues(st)
@@ -203,13 +203,14 @@ class Lesson(TranscriptScene):
             cue["draw"](0, 1)(self)
             cue["shade"]()(self)
             cue["seg"]()(self)
-            sx = M(r"s(x) = \text{top} - \text{bottom}", 40, SECANT).move_to(RIGHT * 3.3 + UP * 1.6)
+            sx = M(r"s(x) = \text{length of the segment}", 38, SECANT).move_to(RIGHT * 3.6 + UP * 2.2)
             self.play(Write(sx), run_time=1)
             b.line(1)
-            self.play(Indicate(sx, color=SECANT), run_time=1)
-            b.line(2)
             cue["stand"]()(self)
-            area = M(r"\text{square: } A = s^2", 40, ACCUM).next_to(sx, DOWN, buff=0.7)
+            ax = M(r"A(x) = \text{area of the cross section}", 38, INK).next_to(sx, DOWN, buff=0.6)
+            self.play(Write(ax), run_time=1)
+            b.line(2)
+            area = M(r"\text{square: } A = s^2", 40, ACCUM).next_to(ax, DOWN, buff=0.6)
             self.play(Write(area), run_time=1)
         self.clear()
 
@@ -219,7 +220,7 @@ class Lesson(TranscriptScene):
         c = base_cues(st)
         self.example("Squares on a root", r"The base of a solid is the region bounded by $y = \sqrt x$, the $x$-axis, and $x = 4$. Cross sections perpendicular to the $x$-axis are squares. Find the volume.",
                      [r"TEXT:$y = \sqrt x$: starts at the origin, rises, bends over", r"TEXT:The base: under $y = \sqrt x$, from $x = 0$ to $x = 4$",
-                      r"s(x) = \sqrt x - 0 = \sqrt x", r"TEXT:On paper: draw the base and one slice", r"A(x) = s^2 = \left(\sqrt x\right)^2 = x", r"V = \int_0^4 x\,dx",
+                      r"s(x) = \text{height of the region} = \sqrt x", r"TEXT:On paper: draw the base and one slice", r"A(x) = s^2 = \left(\sqrt x\right)^2 = x", r"V = \int_0^4 x\,dx",
                       r"= \left[\tfrac{x^2}{2}\right]_0^4", r"= 8"], at=[1, 2, 3, 4, 5, 6, 6, 6], figure=st, figure_at=1, follow=True, size=42,
                      ref=r"V = \int_a^b A(x)\,dx, \quad A = s^2",
                      cues={0: c["draw"](0), 1: c["both"](c["draw"](1), c["shade"]()), 2: c["seg"](), 3: c["both"](c["stand"](), c["fill"](), c["flat"]())})
@@ -248,11 +249,11 @@ class Lesson(TranscriptScene):
             self.play(r1.to("rise", 1), FadeIn(l1), run_time=1.4)
             self.play(r2.to("rise", 1), FadeIn(l2), run_time=1.4)
             b.line(2)
-            self.play(FadeIn(M(r"s(x) = \text{top} - \text{bottom}", 38, SECANT).to_edge(DOWN, buff=0.3)), run_time=0.8)
+            self.play(FadeIn(M(r"V = \int_a^b A(x)\,dx", 38, ACCUM).to_edge(DOWN, buff=0.3)), run_time=0.8)
         self.clear()
 
         with self.beat("Close") as b:
-            card = VGroup(formula_box(M(r"V = \int_a^b A(x)\,dx", 50, ACCUM), ACCUM), M(r"\text{side } s(x) = \text{top} - \text{bottom of the base}", 38),
+            card = VGroup(formula_box(M(r"V = \int_a^b A(x)\,dx", 50, ACCUM), ACCUM), M(r"A(x) = \text{area of one cross section}", 38),
                           M(r"\text{square: } s^2 \qquad \text{rectangle: base} \times \text{height}", 38, SECANT), T("sketch the base flat; picture the slice", 36, DIM)).arrange(DOWN, buff=0.5)
             self.play(LaggedStart(*[FadeIn(c_) for c_ in card], lag_ratio=0.4), run_time=2)
         self.clear()
@@ -260,29 +261,29 @@ class Lesson(TranscriptScene):
         self.examples_card()
         # Example 1: between y = x and y = x^2
         st = base_stage([(lambda s: s, -0.1, 1.25, FUNC, "y = x", (1.32, 1.12), "x"), (lambda s: s * s, -0.1, 1.15, DERIV, "y = x^2", (1.38, 1.48), "x")],
-                        (lambda s: s, lambda s: s * s, 0, 1), "square", (-0.25, 1.5), (-0.25, 1.45), at=0.5625, n=8, ticks={"x": [1], "y": [1]}, scale=3.4, pose=(-14.0, 48.0))
+                        (lambda s: s, lambda s: s * s, 0, 1), "square", (-0.25, 1.5), (-0.25, 1.45), at=0.5625, n=8, ticks={"x": [1], "y": [1]}, scale=3.4, pose=(-36.0, 46.0))
         c = base_cues(st)
         self.example("Example 1: Squares between two curves", r"The base is the region between $y = x$ and $y = x^2$. Cross sections perpendicular to the $x$-axis are squares. Find the volume.",
                      [r"TEXT:$y = x$: a line; $y = x^2$: a parabola", r"x^2 = x", r"x^2 - x = 0", r"x(x - 1) = 0, \text{ so } x = 0, \ x = 1", r"TEXT:On $(0, 1)$, $x$ is on top.",
-                      r"s(x) = x - x^2", r"TEXT:On paper: draw the base and one slice", r"A(x) = \left(x - x^2\right)^2 = x^2 - 2x^3 + x^4", r"V = \int_0^1 \left(x^2 - 2x^3 + x^4\right) dx", r"= \tfrac13 - \tfrac12 + \tfrac15",
-                      r"= \tfrac{1}{30}"], at=[1, 2, 2, 2, 3, 3, 4, 5, 6, 6, 6], figure=st, figure_at=1, size=42, ref=r"V = \int_a^b A(x)\,dx, \quad A = s^2",
-                     cues={0: c["draw"](0, 1), 4: c["shade"](), 5: c["seg"](), 6: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.0), c["flat"]())})
+                      r"TEXT:The side runs from $y = x^2$ up to $y = x$:", r"s(x) = x - x^2", r"TEXT:On paper: draw the base and one slice", r"A(x) = s^2 = \left(x - x^2\right)^2", r"= x^2 - 2x^3 + x^4", r"V = \int_0^1 \left(x^2 - 2x^3 + x^4\right) dx", r"= \tfrac13 - \tfrac12 + \tfrac15",
+                      r"= \tfrac{1}{30}"], at=[1, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 6, 6], figure=st, figure_at=1, size=42, ref=r"V = \int_a^b A(x)\,dx, \quad A = s^2",
+                     cues={0: c["draw"](0, 1), 4: c["shade"](), 5: c["seg"](), 7: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         # Example 2: rectangles of height 3 on 4 - x^2
         par = lambda s: 4 - s * s
         st = base_stage([(par, -2.15, 2.15, FUNC, "y = 4 - x^2", (1.9, 3.4), "x")], (par, ZERO, -2, 2), "rect", (-2.7, 2.9), (-0.4, 4.6), at=0.25, n=8,
                         ticks={"x": [-2, 2], "y": [4]}, height=3.0, scale=0.85)
         c = base_cues(st)
         self.example("Example 2: Rectangles of height 3", r"The base is the region between $y = 4 - x^2$ and the $x$-axis. Cross sections perpendicular to the $x$-axis are rectangles of height $3$. Find the volume.",
-                     [r"4 - x^2 = 0 \text{ at } x = \pm2", r"s(x) = 4 - x^2", r"TEXT:On paper: draw the base and one slice", r"A(x) = 3\left(4 - x^2\right)", r"V = \int_{-2}^{2} 3\left(4 - x^2\right) dx", r"= 3\left[4x - \tfrac{x^3}{3}\right]_{-2}^{2}",
+                     [r"4 - x^2 = 0 \text{ at } x = \pm2", r"\text{base} = \text{height of the region} = 4 - x^2", r"TEXT:On paper: draw the base and one slice", r"A(x) = \text{base} \times \text{height} = 3\left(4 - x^2\right)", r"V = \int_{-2}^{2} 3\left(4 - x^2\right) dx", r"= 3\left[4x - \tfrac{x^3}{3}\right]_{-2}^{2}",
                       r"= 3 \cdot \tfrac{32}{3}", r"= 32"], at=[1, 2, 3, 4, 5, 5, 5, 5], figure=st, figure_at=1, size=42, ref=r"V = \int_a^b A(x)\,dx, \quad A = \text{base} \times \text{height}",
-                     cues={0: c["both"](c["draw"](0), c["shade"]()), 1: c["seg"](), 2: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.5), c["flat"]())})
+                     cues={0: c["both"](c["draw"](0), c["shade"]()), 1: c["seg"](), 2: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         # Example 3: perpendicular to the y-axis
         st = base_stage([(lambda y: y * y, -2.2, 2.2, DERIV, "x = y^2", (3.1, 2.25), "y")], (lambda y: 4.0, lambda y: y * y, -2, 2), "square", (-0.4, 5.0), (-2.6, 2.8),
                         at=0.25, n=8, var="y", ticks={"x": [4], "y": [-2, 2]}, scale=0.75, pose=(-50.0, 26.0), lines=[(4, -2.4, 4, 2.4, FUNC, "x = 4", (4.6, 1.5))])
         c = base_cues(st)
         self.example("Example 3: Perpendicular to the y-axis", r"The base is the region between $x = y^2$ and $x = 4$. Cross sections perpendicular to the $y$-axis are squares. Find the volume.",
-                     [r"TEXT:Horizontal slices: integrate in $y$.", r"y^2 = 4 \text{ at } y = \pm2", r"s(y) = 4 - y^2", r"TEXT:On paper: draw the base and one slice", r"A(y) = \left(4 - y^2\right)^2 = 16 - 8y^2 + y^4",
+                     [r"TEXT:Horizontal slices: integrate in $y$.", r"y^2 = 4 \text{ at } y = \pm2", r"TEXT:The side runs from $x = y^2$ across to $x = 4$:", r"s(y) = 4 - y^2", r"TEXT:On paper: draw the base and one slice", r"A(y) = s^2 = \left(4 - y^2\right)^2", r"= 16 - 8y^2 + y^4",
                       r"V = \int_{-2}^{2} \left(16 - 8y^2 + y^4\right) dy", r"= 2\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)", r"= \tfrac{512}{15} \approx 34.13"],
-                     at=[1, 2, 3, 4, 5, 6, 6, 6], figure=st, figure_at=1, size=42, ref=r"V = \int_c^d A(y)\,dy, \quad A = s^2",
-                     cues={0: c["draw"](0, 1), 1: c["shade"](), 2: c["seg"](), 3: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.5), c["flat"]())})
+                     at=[1, 2, 3, 3, 4, 5, 5, 6, 6, 6], figure=st, figure_at=1, size=42, ref=r"V = \int_c^d A(y)\,dy, \quad A = s^2",
+                     cues={0: c["draw"](0, 1), 1: c["shade"](), 3: c["seg"](), 4: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         self.finish()

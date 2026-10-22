@@ -132,7 +132,7 @@ class Lesson(TranscriptScene):
             b.line(2)
             self.play(FadeIn(ir), Write(f3), run_time=1)
             b.line(3)
-            self.play(FadeIn(M(r"s = \text{top} - \text{bottom}", 40, INK).to_edge(DOWN, buff=0.6)), run_time=0.8)
+            self.play(FadeIn(T("read s off the base, then find the area", 36, INK).to_edge(DOWN, buff=0.6)), run_time=0.8)
         self.clear()
 
         # ---------------------------------------------------------------- the lesson example: sketch, slice, solve
@@ -140,12 +140,12 @@ class Lesson(TranscriptScene):
                         ticks={"x": [-2, 2], "y": [4]}, color=DERIV, scale=0.85)
         c = base_cues(st)
         self.example("Semicircles on a parabola", r"The base of a solid is the region between $y = 4 - x^2$ and the $x$-axis. Cross sections perpendicular to the $x$-axis are semicircles. Find the volume.",
-                     [r"TEXT:$y = 4 - x^2$: opens down from $(0, 4)$", r"4 - x^2 = 0 \text{ at } x = \pm2", r"s(x) = 4 - x^2", r"TEXT:On paper: draw the base and one slice",
+                     [r"TEXT:$y = 4 - x^2$: opens down from $(0, 4)$", r"4 - x^2 = 0 \text{ at } x = \pm2", r"s(x) = \text{height of the region} = 4 - x^2", r"TEXT:On paper: draw the base and one slice",
                       r"r = \tfrac s2 = \tfrac{4 - x^2}{2}", r"A(x) = \tfrac12\pi r^2 = \tfrac\pi8\left(4 - x^2\right)^2", r"\left(4 - x^2\right)^2 = 16 - 8x^2 + x^4",
                       r"V = \tfrac\pi8\int_{-2}^{2} \left(16 - 8x^2 + x^4\right) dx", r"= \tfrac\pi8 \cdot 2\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)",
                       r"= \tfrac\pi8 \cdot \tfrac{512}{15}", r"= \tfrac{64\pi}{15} \approx 13.40"], at=[1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 9], figure=st, figure_at=1, follow=True, size=42,
                      ref=r"V = \int_a^b A(x)\,dx, \quad A = \tfrac\pi8 s^2",
-                     cues={0: c["draw"](0), 1: c["shade"](), 2: c["seg"](), 3: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.0), c["flat"]())})
+                     cues={0: c["draw"](0), 1: c["shade"](), 2: c["seg"](), 3: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
 
         with self.beat("Leg or hypotenuse?") as b:
             def tri(kind, color):
@@ -179,7 +179,7 @@ class Lesson(TranscriptScene):
             tab = table([r"\text{shape (side } s \text{ on the base)}", r"A"], [[r"\text{square}", r"s^2"], [r"\text{equilateral triangle}", r"\tfrac{\sqrt3}{4}s^2"],
                         [r"\text{isosceles right, leg on base}", r"\tfrac12 s^2"], [r"\text{isosceles right, hypotenuse on base}", r"\tfrac14 s^2"], [r"\text{semicircle, diameter on base}", r"\tfrac\pi8 s^2"]], size=34).shift(UP * 0.5)
             self.play(FadeIn(tab), run_time=1.4)
-            self.play(FadeIn(M(r"V = \int A(x)\,dx, \quad s = \text{top} - \text{bottom}", 40, ACCUM).next_to(tab, DOWN, buff=0.5)), run_time=0.8)
+            self.play(FadeIn(M(r"V = \int A(x)\,dx, \quad A(x) = \text{area of one cross section}", 40, ACCUM).next_to(tab, DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
         self.examples_card()
@@ -188,10 +188,10 @@ class Lesson(TranscriptScene):
                         ticks={"x": [1, 2, 3, 4], "y": [1, 2]}, color=TANGENT, scale=1.15, lines=[(4, 0, 4, 2.4, DIM, "x = 4", (4.0, 2.75))])
         c = base_cues(st)
         self.example("Example 1: Equilateral triangles", r"The base is the region under $y = \sqrt x$ for $0 \le x \le 4$. Cross sections perpendicular to the $x$-axis are equilateral triangles. Find the volume.",
-                     [r"TEXT:The base: under $y = \sqrt x$, from $0$ to $4$", r"s = \sqrt x", r"TEXT:On paper: draw the base and one slice", r"A(x) = \tfrac{\sqrt3}{4}\left(\sqrt x\right)^2 = \tfrac{\sqrt3}{4}x",
+                     [r"TEXT:The base: under $y = \sqrt x$, from $0$ to $4$", r"s = \text{height of the region} = \sqrt x", r"TEXT:On paper: draw the base and one slice", r"A(x) = \tfrac{\sqrt3}{4}\left(\sqrt x\right)^2 = \tfrac{\sqrt3}{4}x",
                       r"V = \tfrac{\sqrt3}{4}\int_0^4 x\,dx", r"= \tfrac{\sqrt3}{4}(8)", r"= 2\sqrt3 \approx 3.46"], at=[1, 2, 3, 4, 5, 5, 5], figure=st, figure_at=1, size=42,
                      ref=r"V = \int_a^b A(x)\,dx, \quad A = \tfrac{\sqrt3}{4}s^2",
-                     cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 1: c["seg"](), 2: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.0), c["flat"]())})
+                     cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 1: c["seg"](), 2: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         # Example 2: the disk, hypotenuse on the base
         ct = lambda s: np.sqrt(max(4 - s * s, 0.0))
         cb = lambda s: -ct(s)
@@ -199,18 +199,19 @@ class Lesson(TranscriptScene):
                         (-2.7, 2.9), (-2.7, 2.9), at=0.25, n=8, ticks={"x": [-2, 2], "y": [-2, 2]}, color=ACCUM, scale=0.85, pose=(-40.0, 28.0))
         c = base_cues(st)
         self.example("Example 2: Hypotenuse on a disk", r"The base is the disk $x^2 + y^2 \le 4$. Cross sections perpendicular to the $x$-axis are isosceles right triangles with the hypotenuse on the base. Find the volume.",
-                     [r"\text{top: } y = \sqrt{4 - x^2}", r"\text{bottom: } y = -\sqrt{4 - x^2}", r"s = 2\sqrt{4 - x^2}", r"TEXT:On paper: draw the base and one slice",
-                      r"A = \tfrac14 s^2 = \tfrac14 \cdot 4\left(4 - x^2\right) = 4 - x^2", r"V = \int_{-2}^{2} \left(4 - x^2\right) dx", r"= \tfrac{32}{3}"], at=[1, 1, 2, 3, 4, 5, 5], figure=st, figure_at=1, size=42,
+                     [r"\text{upper half: } y = \sqrt{4 - x^2}", r"\text{lower half: } y = -\sqrt{4 - x^2}", r"TEXT:The side runs from the lower half up to the upper half:", r"s = 2\sqrt{4 - x^2}", r"TEXT:On paper: draw the base and one slice",
+                      r"A = \tfrac14 s^2 = \tfrac14 \cdot 4\left(4 - x^2\right) = 4 - x^2", r"V = \int_{-2}^{2} \left(4 - x^2\right) dx", r"= \tfrac{32}{3}"], at=[1, 1, 2, 2, 3, 4, 5, 5], figure=st, figure_at=1, size=42,
                      ref=r"V = \int_a^b A(x)\,dx, \quad A = \tfrac14 s^2",
-                     cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 2: c["seg"](), 3: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.0), c["flat"]())})
+                     cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 2: c["seg"](), 4: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         # Example 3: between 2x and x^2, a leg on the base
         st = base_stage([(lambda s: 2 * s, -0.1, 2.25, FUNC, "y = 2x", (1.55, 4.15), "x"), (lambda s: s * s, -0.1, 2.15, DERIV, "y = x^2", (2.65, 4.3), "x")],
-                        (lambda s: 2 * s, lambda s: s * s, 0, 2), "leg", (-0.3, 2.8), (-0.3, 4.9), at=1.125, n=8, ticks={"x": [1, 2], "y": [2, 4]}, scale=1.0, pose=(-14.0, 46.0))
+                        (lambda s: 2 * s, lambda s: s * s, 0, 2), "leg", (-0.3, 2.8), (-0.3, 4.9), at=1.125, n=8, ticks={"x": [1, 2], "y": [2, 4]}, scale=1.0, pose=(-36.0, 42.0))
         c = base_cues(st)
         self.example("Example 3: Leg on the base", r"The base is the region between $y = 2x$ and $y = x^2$. Cross sections perpendicular to the $x$-axis are isosceles right triangles with a leg on the base. Find the volume.",
-                     [r"TEXT:$y = 2x$: a line, slope $2$; $y = x^2$: a parabola", r"x^2 = 2x", r"x(x - 2) = 0, \text{ so } x = 0, \ x = 2", r"TEXT:On $(0, 2)$, $2x$ is on top.", r"s = 2x - x^2",
+                     [r"TEXT:$y = 2x$: a line, slope $2$; $y = x^2$: a parabola", r"x^2 = 2x", r"x(x - 2) = 0, \text{ so } x = 0, \ x = 2", r"TEXT:On $(0, 2)$, $2x$ is on top.",
+                      r"TEXT:The side runs from $y = x^2$ up to $y = 2x$:", r"s = 2x - x^2",
                       r"TEXT:On paper: draw the base and one slice", r"A = \tfrac12 s^2 = \tfrac12\left(2x - x^2\right)^2", r"\left(2x - x^2\right)^2 = 4x^2 - 4x^3 + x^4",
                       r"V = \tfrac12\int_0^2 \left(4x^2 - 4x^3 + x^4\right) dx", r"= \tfrac12\left(\tfrac{32}{3} - 16 + \tfrac{32}{5}\right)", r"= \tfrac12 \cdot \tfrac{16}{15} = \tfrac{8}{15}"],
-                     at=[1, 2, 2, 3, 3, 4, 5, 5, 6, 6, 7], figure=st, figure_at=1, size=42, ref=r"V = \int_a^b A(x)\,dx, \quad A = \tfrac12 s^2",
-                     cues={0: c["draw"](0, 1), 3: c["shade"](), 4: c["seg"](), 5: c["both"](c["stand"](), c["fill"](), lambda sc: sc.wait(1.0), c["flat"]())})
+                     at=[1, 2, 2, 3, 3, 3, 4, 5, 5, 6, 6, 7], figure=st, figure_at=1, size=42, ref=r"V = \int_a^b A(x)\,dx, \quad A = \tfrac12 s^2",
+                     cues={0: c["draw"](0, 1), 3: c["shade"](), 4: c["seg"](), 6: c["both"](c["stand"](), c["fill"](hold=2.2), c["flat"]())})
         self.finish()

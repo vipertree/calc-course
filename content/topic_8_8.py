@@ -1,6 +1,6 @@
 """Topic 8.8: Volumes with cross sections: triangles and semicircles.
 
-CED: CHA-5.C (CHA-5.C.1): V = integral of A(x) dx with A from the side s = top - bottom: equilateral triangle
+CED: CHA-5.C (CHA-5.C.1): V = integral of A(x) dx, A the area of one cross section from its side s read off the base: equilateral triangle
 (sqrt 3/4) s^2; isosceles right triangle with a leg on the base s^2/2, with the hypotenuse on the base s^2/4; semicircle
 with diameter on the base (pi/8) s^2. Lesson example: semicircles on y = 4 - x^2 (64 pi/15). Worked examples:
 equilateral triangles on sqrt x (2 sqrt 3); hypotenuse on the disk x^2 + y^2 <= 4 (32/3); leg on the base between
@@ -29,7 +29,7 @@ NOTES = [
     Video("s8_8.py::Lesson", "Cross sections: triangles and semicircles", 5),
 
     Section("Areas in terms of the side on the base"),
-    Text(r"The same kind of volume problem as in 8.7: a flat base, with cross sections of a known shape standing on it, perpendicular to an axis. The volume is the sum of infinitely many thin slices: $V = \int A(x)\,dx$ with $s(x) = \text{top} - \text{bottom}$ across the base. Only the area formula changes."),
+    Text(r"The same kind of volume problem as in 8.7: a flat base, with cross sections of a known shape standing on it, perpendicular to an axis. The volume is the sum of infinitely many thin slices: $V = \int A(x)\,dx$, where $A(x)$ is the area of one cross section. Read its side $s$ off the base; only the area formula changes."),
     Table(r"square & $s^2$ \\ equilateral triangle & $\mblank{\frac{\sqrt3}{4}s^2}$ \\ isosceles right triangle, leg on the base & $\mblank{\frac12 s^2}$ \\ "
           r"isosceles right triangle, hypotenuse on the base & $\mblank{\frac14 s^2}$ \\ semicircle, diameter on the base & $\mblank{\frac\pi8 s^2}$ \\",
           "ll", header=r"Cross section (side $s$ on the base) & Area $A$"),
@@ -47,7 +47,7 @@ PRACTICE = [
     Item(r"Base: under $y = \sqrt x$ for $0 \le x \le 4$. Semicircles perpendicular to the $x$-axis. Find the volume.", num(vol(SEMI, sp.sqrt(x), 0, 4), tol=1e-3), r"$\frac\pi8\int_0^4 x\,dx = \pi$.", work="1.6cm"),
     Item(r"Base: between $y = x$ and $y = x^2$. Semicircles perpendicular to the $x$-axis. Find the volume.", num(vol(SEMI, x - x**2, 0, 1), tol=1e-4), r"$\frac\pi8 \cdot \frac1{30} = \frac{\pi}{240}$.", work="1.8cm"),
     Item(r"Base: under $y = 2 - x$ for $0 \le x \le 2$. Isosceles right triangles with a leg on the base, perpendicular to the $x$-axis. Find the volume.", num(vol(LEG, 2 - x, 0, 2)), r"$\frac12\int_0^2 (2 - x)^2\,dx = \frac43$.", work="1.8cm"),
-    Item(r"Base: the disk $x^2 + y^2 \le 9$. Squares perpendicular to the $x$-axis. Find the volume.", num(vol(1, 2 * sp.sqrt(9 - x**2), -3, 3)), r"$s = 2\sqrt{9 - x^2}$: $\int_{-3}^3 4(9 - x^2)\,dx = 144$.", work="2cm"),
+    Item(r"Base: the disk $x^2 + y^2 \le 9$. Squares perpendicular to the $x$-axis. Find the volume.", num(vol(1, 2 * sp.sqrt(9 - x**2), -3, 3)), r"The side runs across the disk from $y = -\sqrt{9 - x^2}$ up to $y = \sqrt{9 - x^2}$, so $s = 2\sqrt{9 - x^2}$: $\int_{-3}^3 4(9 - x^2)\,dx = 144$.", work="2cm"),
     Item(r"Base: the disk $x^2 + y^2 \le 9$. Equilateral triangles perpendicular to the $x$-axis. Find the volume.", num(vol(EQ, 2 * sp.sqrt(9 - x**2), -3, 3), tol=1e-2), r"$\frac{\sqrt3}{4} \cdot 144 = 36\sqrt3 \approx 62.35$.", work="1.6cm"),
     Item(r"Base: under $y = \frac{1}{x}$ for $1 \le x \le 2$. Isosceles right triangles with the hypotenuse on the base. Find the volume.", num(vol(HYP, 1 / x, 1, 2)), r"$\frac14\int_1^2 x^{-2}\,dx = \frac18$.", work="1.6cm"),
     Item(r"Base: between $x = y^2$ and $x = 4$. Semicircles perpendicular to the $y$-axis. Find the volume.", num(vol(SEMI, 4 - y**2, -2, 2, y), tol=1e-3), r"$\frac\pi8 \cdot \frac{512}{15} = \frac{64\pi}{15}$.", work="1.8cm"),
@@ -76,7 +76,7 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"Base: the region between $y = x^2$ and $y = 1$. Which gives the volume for semicircles perpendicular to the $x$-axis?", [r"$\frac\pi8\int_{-1}^1 \left(1 - x^2\right)^2 dx$", r"$\frac\pi2\int_{-1}^1 \left(1 - x^2\right)^2 dx$",
-            r"$\pi\int_{-1}^1 \left(1 - x^2\right)^2 dx$", r"$\frac\pi8\int_{0}^1 \left(1 - x^2\right) dx$"], "A", r"$s = 1 - x^2$, $A = \frac\pi8 s^2$."),
+            r"$\pi\int_{-1}^1 \left(1 - x^2\right)^2 dx$", r"$\frac\pi8\int_{0}^1 \left(1 - x^2\right) dx$"], "A", r"The side runs from $y = x^2$ up to $y = 1$, so $s = 1 - x^2$, and $A = \frac\pi8 s^2$."),
         MCQ(r"Base: the region between $y = \sqrt x$ and the $x$-axis, $0 \le x \le 4$. Which gives the volume for equilateral triangles perpendicular to the $x$-axis?", [r"$\frac{\sqrt3}{2}\int_0^4 x\,dx$",
             r"$\frac{\sqrt3}{4}\int_0^4 \sqrt x\,dx$", r"$\frac{\sqrt3}{4}\int_0^4 x\,dx$", r"$\frac12\int_0^4 x\,dx$"], "C", r"$s^2 = x$."),
     ),
@@ -94,7 +94,7 @@ MCQS = [
     MCQ(r"The base of a solid is the region under $y = \sqrt{x}$ for $0 \le x \le 2$. Cross sections perpendicular to the $x$-axis are equilateral triangles. The volume is", [r"$\frac{\sqrt3}{2}$", r"$\sqrt3$", r"$2\sqrt3$", r"$\frac{\sqrt3}{4}$"], "A",
         r"$\frac{\sqrt3}{4}\int_0^2 x\,dx = \frac{\sqrt3}{2}$."),
     MCQ(r"The base of a solid is the disk $x^2 + y^2 \le 4$. Cross sections perpendicular to the $x$-axis are semicircles. The volume is", [r"$\frac{8\pi}{3}$", r"$\frac{32\pi}{3}$", r"$\frac{16\pi}{3}$", r"$4\pi$"], "C",
-        r"$s = 2\sqrt{4 - x^2}$: $\frac\pi8\int_{-2}^2 4(4 - x^2)\,dx = \frac\pi2 \cdot \frac{32}{3} = \frac{16\pi}{3}$, half a ball of radius $2$.", why_not={"B": "the whole ball"}),
+        r"The side runs across the disk from $y = -\sqrt{4 - x^2}$ up to $y = \sqrt{4 - x^2}$, so $s = 2\sqrt{4 - x^2}$: $\frac\pi8\int_{-2}^2 4(4 - x^2)\,dx = \frac\pi2 \cdot \frac{32}{3} = \frac{16\pi}{3}$, half a ball of radius $2$.", why_not={"B": "the whole ball"}),
     MCQ(r"The base of a solid is the region between $y = 1 - x$ and the axes. Cross sections perpendicular to the $x$-axis are isosceles right triangles with the hypotenuse on the base. The volume is", [r"$\frac16$", r"$\frac13$", r"$\frac14$", r"$\frac{1}{12}$"], "D",
         r"$\frac14\int_0^1 (1 - x)^2\,dx = \frac{1}{12}$.", why_not={"A": "used a leg on the base"}),
     MCQ(r"The base of a solid is the region under $y = e^{x/2}$ for $0 \le x \le 2$. Cross sections perpendicular to the $x$-axis are semicircles. To three decimal places, the volume is", [r"$1.254$", rf"${_m4:.3f}$", r"$5.018$", r"$10.036$"], "B",

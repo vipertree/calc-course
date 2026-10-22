@@ -1178,7 +1178,7 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
     params.update(extra_params or {})
     axis_color = axis_color or INK
     span = (xr[1] - xr[0]) if axis == "x" else (yr[1] - yr[0])
-    dd = d if d is not None else 0.035 * span
+    dd = d if d is not None else 0.012 * span          # one thin slice: its thickness is negligible
     fit_to = [1.0, np.zeros(3)]
 
     def world(gx, gy, off=0.0):

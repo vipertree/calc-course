@@ -67,8 +67,12 @@ class Beat:
         """Wait until narration line i (0-based) of this beat begins."""
         if 0 < i < self.n:
             mark = f"L{i}"
-            if mark in getattr(self.tr, "bookmark_times", {}):
+            seen = self.__dict__.setdefault("_seen", set())
+            first, _ = i not in seen, seen.add(i)
+            if first and mark in getattr(self.tr, "bookmark_times", {}):     # later steps on the same line aren't late
                 late = float(self.scene.renderer.time) - self.tr.bookmark_times[mark]
+                if os.environ.get("CALC_TIMING"):
+                    print(f"TIMING {self.scene.NUM} {self.scene._beat_now!r} line {i}: {late:+.1f} s", file=sys.stderr)
                 if late > 0.5:      # the pictures fell behind the words: shorten the animations before this line
                     print(f"LATE {self.scene.NUM} {self.scene._beat_now!r} line {i}: {late:.1f} s", file=sys.stderr)
             self.scene.wait_until_bookmark(mark)

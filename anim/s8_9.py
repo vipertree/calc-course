@@ -16,7 +16,7 @@ from style import *
 ZERO = lambda s: 0.0
 SQ = lambda s: np.sqrt(max(s, 0.0))
 B = lambda s: 1.15 + 0.5 * np.sin(1.25 * s)         # "One big solid": a bead-shaped profile, 0.67 to 1.65 on [0, 4]
-X0, DX = 2.3, 0.26                                   # where the bead is sliced, and the slice's thickness
+X0, DX = 2.3, 0.14                                   # where the bead is sliced, and the slice's thickness
 BEAD = region_outline(B, ZERO, 0, 4, n=40)
 BEAD_L = region_outline(B, ZERO, 0, X0 - DX / 2, n=24)
 BEAD_R = region_outline(B, ZERO, X0 + DX / 2, 4, n=20)
@@ -119,14 +119,13 @@ class Lesson(TranscriptScene):
             b.line(1)
             self.play(st.to("yaw", -32), st.to("pitch", 20), run_time=2)
             tag = T("a quarter turn", 36, DIM).move_to(tag_at)
-            self.play(st.to("sweep", 0.25), FadeIn(tag), run_time=2.6)
+            self.play(st.to("sweep", 0.25), FadeIn(tag), run_time=2.4)
             b.line(2)
             new = T("halfway", 36, DIM).move_to(tag_at)
-            self.play(st.to("sweep", 0.5), FadeOut(tag), FadeIn(new), run_time=2.6)
+            self.play(st.to("sweep", 0.5), FadeOut(tag), FadeIn(new), run_time=2.0)
             tag = new
-            self.wait(0.4)
             new = T("all the way around", 36, DIM).move_to(tag_at)
-            self.play(st.to("sweep", 1), FadeOut(tag), FadeIn(new), run_time=3.2)
+            self.play(st.to("sweep", 1), FadeOut(tag), FadeIn(new), run_time=2.4)
             tag = new
             b.line(3)
             self.play(FadeOut(tag), st.to("yaw", 0), st.to("pitch", 0), run_time=2.6)
@@ -150,14 +149,14 @@ class Lesson(TranscriptScene):
             self.play(st.to("pieces", 0), run_time=1.2)
             st.set("cut", 0)
             face = T("face on: a circle", 36, DIM).move_to(tag_at)
-            self.play(st.to("yaw", -90), st.to("pitch", 6), FadeIn(face), run_time=2.6)
+            self.play(st.to("yaw", -90), st.to("pitch", 6), FadeIn(face), run_time=2.2)
             self.wait(1.0)
             edge = T("edge on: thin", 36, DIM).move_to(tag_at)
-            self.play(st.to("yaw", 0), st.to("pitch", 4), FadeOut(face), FadeIn(edge), run_time=2.6)
+            self.play(st.to("yaw", 0), st.to("pitch", 4), FadeOut(face), FadeIn(edge), run_time=2.2)
             v = bead_view(st)
             dx = nudge_arrow(v.P(X0 - DX / 2, 0, B(X0)) + UP * 0.3, v.P(X0 + DX / 2, 0, B(X0)) + UP * 0.3, label=r"\Delta x", side=UP)
             self.play(FadeIn(dx), run_time=0.6)
-            self.wait(1.4)
+            self.wait(1.0)
             self.play(FadeOut(dx), FadeOut(edge), st.to("yaw", -38), st.to("pitch", 22), run_time=2.4)
             b.line(2)
             self.play(st.to("ghost", 1), st.to("top", 1), run_time=1.2)
@@ -201,7 +200,7 @@ class Lesson(TranscriptScene):
         # ---------------------------------------------------------------- the cone check
         with self.beat("A check with a cone") as b:
             half = lambda s: s / 2
-            st = rev_stage([(half, 0, 6.4, FUNC, r"y = \tfrac x2", (6.0, 3.75), "x")], region_outline(half, ZERO, 0, 6), "x", 0.0, half, (-0.5, 7.0), (-3.4, 3.9),
+            st = rev_stage([(half, 0, 6.4, FUNC, r"y = \tfrac x2", (6.0, 3.75), "x")], region_outline(half, ZERO, 0, 6), "x", 0.0, half, (-0.5, 7.0), (-0.5, 3.8),
                            at=4.0, shade=(half, ZERO, 0, 6, "x"), lines=[(6, 0, 6, 3, DIM, None, None)], ticks={"x": [6], "y": [3]}, scale=0.8, pose=(-34.0, 18.0), turn=-18.0)
             st.move_to(LEFT * 3.4 + DOWN * 0.2)
             c = rev_cues(st)
@@ -254,8 +253,8 @@ class Lesson(TranscriptScene):
         self.examples_card()
         # Example 1: x^2 on [0, 2] about the x-axis
         sq = lambda s: s * s
-        st = rev_stage([(sq, 0, 2.08, FUNC, "y = x^2", (1.45, 3.9), "x")], region_outline(sq, ZERO, 0, 2), "x", 0.0, sq, (-0.4, 2.6), (-4.4, 4.7),
-                       at=1.5, shade=(sq, ZERO, 0, 2, "x"), lines=[(2, 0, 2, 4, DIM, "x = 2", (2.35, 2.0))], ticks={"x": [1, 2], "y": [-4, 4]}, scale=0.7, pose=(-36.0, 18.0))
+        st = rev_stage([(sq, 0, 2.08, FUNC, "y = x^2", (1.45, 3.9), "x")], region_outline(sq, ZERO, 0, 2), "x", 0.0, sq, (-0.4, 2.6), (-0.6, 4.7),
+                       at=1.5, shade=(sq, ZERO, 0, 2, "x"), lines=[(2, 0, 2, 4, DIM, "x = 2", (2.35, 2.0))], ticks={"x": [1, 2], "y": [4]}, scale=1.3, pose=(-36.0, 18.0))
         c = rev_cues(st)
         self.example("Example 1: A parabola about the x-axis", r"The region under $y = x^2$ for $0 \le x \le 2$ is revolved about the $x$-axis. Find the volume.",
                      [r"TEXT:The region: under $y = x^2$, from $0$ to $2$", r"TEXT:One slice at $x$: a disc", r"R = x^2", r"V = \pi\int_0^2 \left(x^2\right)^2 dx", r"= \pi\int_0^2 x^4\,dx",
@@ -263,8 +262,8 @@ class Lesson(TranscriptScene):
                      cues={0: c["both"](c["draw"](0, 1), c["shade"]()), 1: c["both"](c["spin"](rt=1.4, sweep=2.8, hold=1.0), c["slice"](rt=1.0)),
                            2: c["both"](c["rad"](), lambda sc: sc.wait(0.6), c["flat"](rt=1.4))})
         # Example 2: e^x on [0, 1] about the x-axis
-        st = rev_stage([(np.exp, 0, 1.12, FUNC, "y = e^x", (1.35, 3.35), "x")], region_outline(np.exp, ZERO, 0, 1), "x", 0.0, np.exp, (-0.4, 1.6), (-3.2, 3.5),
-                       at=0.6, shade=(np.exp, ZERO, 0, 1, "x"), lines=[(1, 0, 1, np.e, DIM, "x = 1", (1.3, 1.3))], ticks={"x": [1], "y": [1, 3]}, scale=1.0, pose=(-44.0, 18.0), d=0.05)
+        st = rev_stage([(np.exp, 0, 1.12, FUNC, "y = e^x", (1.35, 3.35), "x")], region_outline(np.exp, ZERO, 0, 1), "x", 0.0, np.exp, (-0.4, 1.6), (-0.5, 3.3),
+                       at=0.6, shade=(np.exp, ZERO, 0, 1, "x"), lines=[(1, 0, 1, np.e, DIM, "x = 1", (1.3, 1.3))], ticks={"x": [1], "y": [1, 3]}, scale=1.7, pose=(-44.0, 18.0))
         c = rev_cues(st)
         self.example("Example 2: An exponential about the x-axis", r"The region under $y = e^x$ for $0 \le x \le 1$ is revolved about the $x$-axis. Find the volume.",
                      [r"TEXT:The region: under $y = e^x$, from $0$ to $1$", r"TEXT:One slice at $x$: a disc", r"R = e^x, \ \ R^2 = e^{2x}", r"V = \pi\int_0^1 e^{2x}\,dx",
@@ -275,7 +274,7 @@ class Lesson(TranscriptScene):
         cube = lambda s: s ** 3
         cbrt = lambda y: np.cbrt(max(y, 0.0))
         st = rev_stage([(cube, 0, 2.03, FUNC, "y = x^3", (2.55, 6.2), "x")], outline_y(cbrt, ZERO, 0, 8), "y", 0.0, cbrt, (-2.6, 3.0), (-0.8, 9.4),
-                       at=4.0, shade=(cbrt, ZERO, 0, 8, "y"), lines=[(0, 8, 2, 8, DIM, "y = 8", (2.75, 8.6))], ticks={"x": [-2, 2], "y": [8]}, scale=0.5, pose=(-24.0, 26.0), turn=-12.0)
+                       at=4.0, shade=(cbrt, ZERO, 0, 8, "y"), lines=[(0, 8, 2, 8, DIM, "y = 8", (2.75, 8.6))], ticks={"x": [-2, 2], "y": [8]}, scale=0.6, pose=(-24.0, 26.0), turn=-12.0)
         c = rev_cues(st)
         self.example("Example 3: A cubic about the y-axis", r"The region bounded by $y = x^3$, $y = 8$, and the $y$-axis is revolved about the $y$-axis. Find the volume.",
                      [r"TEXT:The region: between $y = x^3$ and the $y$-axis, below $y = 8$", r"TEXT:Horizontal discs: integrate in $y$ from $0$ to $8$.", r"x = y^{1/3}, \ \ R = y^{1/3}",

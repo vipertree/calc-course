@@ -24,6 +24,13 @@ Body(faces, convex, closed)              faces drawn together. Convex bodies are
                                          by center depth. body.moved(R=, t=, about=) rotates/translates a copy.
 merge(*bodies)                           one non-convex Body: all faces sorted together (a surface plus its axis).
 render(view, items)                      -> VGroup. items: Mobjects (drawn as given, e.g. floor art first) and Bodies.
+SortLine(p0, p1, mob=, dashed=, tip=)    an axis in world coordinates. With no solid of revolution in the picture it is
+SortMark(mob, pt)                        just `mob` (the flat sketch is unchanged); otherwise render() cuts it into short
+                                         pieces after the last body and keeps the pieces no opaque solid of revolution
+                                         hides from the viewer (a see-through ghost dims them), so an axis pokes out of
+                                         a disc's face, an end cap or a washer's hole and vanishes inside a solid.
+                                         revolve() records each solid's shape on its Body (body.rev; a shifted copy
+                                         keeps it) for this test. upright_axes and rev_stage's axis of revolution use it.
 
 Stage(draw, view, box=, **params)    a live picture: draw(stage, view, **values) -> list of items, redrawn each
                                          frame when a param or the view changes. Params are ValueTrackers:
@@ -61,8 +68,10 @@ axis_line(axis, at, lo, hi)              the axis of revolution as sortable line
 Lesson helpers (8.7, 8.8):
 base_stage(curves, region, kind, ...)    a cross-section example as one Stage that starts as the flat 2D sketch (pitch
                                          90): params c0.. (draw each boundary), shade, seg (the slice), one (stand the
-                                         highlighted section), many (stand n slabs), fit (zoom the angled pose into the
-                                         sketch's box). base_cues(st) gives example() cue functions: draw(i, ...),
+                                         highlighted section), many (the solid around it), fit (zoom the angled pose
+                                         into the sketch's box). d=None (default): one thin slice, 1.2% of the range,
+                                         with the smooth solid as a see-through ghost around it and the side's label
+                                         by its base edge; d="slab": the older look, the section one of n slabs. base_cues(st) gives example() cue functions: draw(i, ...),
                                          shade(), seg(), stand(), fill() (with a slow turn), flat(), both(*cues).
 Stage.reserve(*poses)                    fix a stage's footprint to the union of its pictures in those poses.
 draw() may return (items, view)          to render with a changed view (zoom/pan driven by a param).
@@ -219,9 +228,10 @@ class Body:
     """Faces drawn as one object. convex: back-face cull, no sorting needed (exact). closed: cull, then sort faces by
     depth (a closed non-convex surface). Neither: two-sided (an open surface you can see inside), sorted by depth."""
 
-    def __init__(self, faces, convex=False, closed=False, name=None):
+    def __init__(self, faces, convex=False, closed=False, name=None, rev=None):
         self.faces = [f for f in faces if f is not None]
         self.convex, self.closed, self.name = convex, closed, name
+        self.rev = rev          # a solid of revolution's shape (see revolve), so axis lines can tell where it hides them
         pts = np.vstack([f.pts for f in self.faces]) if self.faces else np.zeros((1, 3))
         self.lo, self.hi = pts.min(axis=0), pts.max(axis=0)
         self.center = (self.lo + self.hi) / 2
@@ -236,7 +246,10 @@ class Body:
             g = Face((f.pts - c) @ R.T + c + t, f.color, None if f.normal is None else _unit(R @ f.normal), f.edge, f.opacity, f.line, f.width,
                      None if f.decor is None else [(d - c) @ R.T + c + t for d in f.decor], f.decor_color, f.shade, f.edge_width)
             out.append(g)
-        return Body(out, self.convex, self.closed, self.name)
+        rev = None
+        if self.rev is not None and np.allclose(R, np.eye(3)):
+            rev = dict(self.rev, shift=self.rev["shift"] + t)        # a shifted solid of revolution still hides lines
+        return Body(out, self.convex, self.closed, self.name, rev=rev)
 
     def recolor(self, color, opacity=None):
         for f in self.faces:
@@ -376,8 +389,149 @@ def _body_cmp(view):
     return cmp
 
 
+class SortLine:
+    """A straight line in world coordinates (an axis) that solids of revolution can hide. render() draws `mob` in place
+    when no solid of revolution is in the picture (the flat sketch, unchanged); otherwise it cuts the line into short
+    pieces after the last body and draws each piece that no opaque solid hides (dimmed by a see-through one), so an
+    axis pokes out of a disc's face, an end cap or a washer's hole, and vanishes inside the solid. dashed: draw every
+    other piece (dash length in screen units). tip: a mobject (an arrowhead) drawn when the end p1 shows."""
+
+    def __init__(self, p0, p1, mob=None, color=INK, width=2.5, dashed=None, tip=None, frac=1.0):
+        self.p0, self.p1 = np.asarray(p0, dtype=float), np.asarray(p1, dtype=float)
+        self.mob, self.color, self.width, self.dashed, self.tip, self.frac = mob, color, width, dashed, tip, frac
+
+
+class SortMark:
+    """A small mobject (a tick mark) pinned to one world point: drawn in place, or with the axis pieces when that point
+    shows (see SortLine)."""
+
+    def __init__(self, mob, pt):
+        self.mob, self.pt = mob, np.asarray(pt, dtype=float)
+
+
+def _in_poly(px, py, poly):
+    """Even-odd point-in-polygon for arrays of points against one polygon (k, 2)."""
+    x0, y0 = poly[:, 0], poly[:, 1]
+    x1, y1 = np.roll(x0, -1), np.roll(y0, -1)
+    PX, PY = px[..., None], py[..., None]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        cross = ((y0 > PY) != (y1 > PY)) & (PX < (x1 - x0) * (PY - y0) / (y1 - y0) + x0)
+    return np.count_nonzero(cross, axis=-1) % 2 == 1
+
+
+def _rev_inside(rev, P):
+    """Which world points (n, 3) lie inside a solid of revolution (revolve()'s rev record)."""
+    q = P - rev["shift"]
+    at, poly = rev["at"], rev["poly"]
+    if rev["axis"] == "x":
+        s, a, b = q[:, 0], -q[:, 1], q[:, 2] - at          # a = r sin(th), b = r cos(th) for the graph offset r
+    else:
+        s, a, b = q[:, 2], -q[:, 1], q[:, 0] - at
+    rho = np.hypot(a, b)
+    th = np.arctan2(a, b)
+    hit = np.zeros(len(q), dtype=bool)
+    for sgn, dth in ((1.0, 0.0), (-1.0, PI)):
+        c = at + sgn * rho
+        inside = _in_poly(s, c, poly) if rev["axis"] == "x" else _in_poly(c, s, poly)
+        if not rev["full"]:
+            span = rev["t1"] - rev["t0"]
+            inside &= np.mod(th + dth - rev["t0"], TAU) <= span + 1e-9
+        hit |= inside
+    return hit
+
+
+def _hidden_by(view, rev, lo, hi, P, n=40):
+    """For world points P (m, 3): True where the sight line toward the viewer passes through the solid (box lo..hi)."""
+    w = view.toward()
+    m = len(P)
+    # where each ray is inside the solid's box (slab method), from just off the point
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ta, tb = (lo - P) / w, (hi - P) / w
+    t_in = np.where(np.abs(w) < 1e-12, np.where((P >= lo) & (P <= hi), -np.inf, np.inf), np.minimum(ta, tb)).max(axis=1)
+    t_out = np.where(np.abs(w) < 1e-12, np.where((P >= lo) & (P <= hi), np.inf, -np.inf), np.maximum(ta, tb)).min(axis=1)
+    eps = 1e-4 * max(float(np.max(hi - lo)), 1e-6)
+    t_in = np.maximum(t_in, eps)
+    ok = t_out > t_in
+    if not ok.any():
+        return np.zeros(m, dtype=bool)
+    u = np.linspace(0.0, 1.0, n)
+    T = t_in[:, None] + (t_out - t_in)[:, None] * u[None, :]
+    # thin pieces of the shape along the axis (a disc's thickness): also sample where the ray crosses their middles
+    k = 0 if rev["axis"] == "x" else 1
+    ss = np.unique(np.round(rev["poly"][:, k], 9))
+    gaps = np.diff(ss)
+    thin = (ss[:-1] + gaps / 2)[gaps < (ss[-1] - ss[0]) / n * 2] if len(ss) > 1 else np.zeros(0)
+    ax = np.array([1.0, 0, 0]) if rev["axis"] == "x" else np.array([0, 0, 1.0])
+    ws = w @ ax
+    if len(thin) and abs(ws) > 1e-9:
+        s0 = (P - rev["shift"]) @ ax
+        Tm = (thin[None, :] - s0[:, None]) / ws
+        Tm = np.where((Tm > t_in[:, None]) & (Tm < t_out[:, None]), Tm, t_in[:, None])
+        T = np.hstack([T, Tm])
+    pts = P[:, None, :] + T[..., None] * w[None, None, :]
+    inside = _rev_inside(rev, pts.reshape(-1, 3)).reshape(T.shape)
+    return ok & inside.any(axis=1)
+
+
+def _late_lines(view, lines, occ, sw_scale):
+    """Mobjects for the SortLines and SortMarks, each piece kept (and dimmed) by what hides it."""
+    def keep(P):
+        f = np.ones(len(P))
+        for b in occ:
+            op = b.faces[0].opacity if b.faces else 1.0
+            if op < 0.02:
+                continue
+            f = np.where(_hidden_by(view, b.rev, b.lo, b.hi, P), f * (1 - min(op, 1.0)), f)
+        return f
+    out = []
+    for it in lines:
+        if isinstance(it, SortMark):
+            f = keep(it.pt[None, :])[0]
+            if f > 0.02:
+                out.append(it.mob.copy().set_stroke(opacity=f) if f < 0.98 else it.mob)
+            continue
+        p1 = it.p0 + (it.p1 - it.p0) * it.frac
+        L = float(np.linalg.norm(view.P(p1) - view.P(it.p0)))
+        if L < 1e-4:
+            continue
+        step = it.dashed if it.dashed else 0.05
+        n = max(2, int(np.ceil(L / step)))
+        s = np.linspace(0.0, 1.0, n + 1)
+        A = it.p0[None, :] + (p1 - it.p0)[None, :] * s[:-1, None]
+        B = it.p0[None, :] + (p1 - it.p0)[None, :] * s[1:, None]
+        f = keep((A + B) / 2)
+        sa, sb = view.P(A), view.P(B)
+        i = 0
+        while i < n:                                   # join runs of pieces with the same look into one line
+            if (it.dashed and i % 2) or f[i] < 0.02:
+                i += 1
+                continue
+            j = i
+            while j + 1 < n and not it.dashed and abs(f[j + 1] - f[i]) < 1e-6:
+                j += 1
+            out.append(Line(sa[i], sb[j], color=it.color, stroke_width=it.width, stroke_opacity=float(f[i])))
+            i = j + 1
+        if it.tip is not None and it.frac > 0.999:
+            ft = keep(it.p1[None, :])[0]
+            if ft > 0.02:
+                out.append(it.tip if ft > 0.98 else it.tip.copy().set_opacity(ft))
+    return out
+
+
 def render(view, items, sw_scale=1.0):
-    """Draw a list of items: Mobjects as they are (in order), runs of Bodies sorted far to near."""
+    """Draw a list of items: Mobjects as they are (in order), runs of Bodies sorted far to near. SortLines and
+    SortMarks (axes) are drawn in place, or, when solids of revolution are in the picture, after the last body, with
+    the parts those solids hide left out."""
+    flat = []
+    for it in items:
+        if isinstance(it, (list, tuple)):
+            flat.extend(it)
+        elif it is not None:
+            flat.append(it)
+    items = flat
+    occ = [it for it in items if isinstance(it, Body) and it.rev is not None]
+    last = max((i for i, it in enumerate(items) if isinstance(it, Body)), default=-1)
+    late = []
     out = VGroup()
     mobs, seen = [], set()          # collected here and set once: VGroup.add per face was quadratic in the face count
 
@@ -410,15 +564,28 @@ def render(view, items, sw_scale=1.0):
         run.clear()
 
     run = []
-    for it in items:
-        if isinstance(it, Body):
+    for i, it in enumerate(items):
+        if isinstance(it, (SortLine, SortMark)):
+            if occ and i < last:
+                late.append(it)                 # drawn after the last body, below whatever follows it (labels)
+            elif occ:
+                flush(run)
+                mobs.extend(_late_lines(view, [it], occ, sw_scale))
+            elif isinstance(it, SortMark) or it.mob is not None:
+                flush(run)
+                put(it.mob)
+            else:
+                flush(run)
+                mobs.extend(_late_lines(view, [it], [], sw_scale))
+        elif isinstance(it, Body):
             run.append(it)
-        elif isinstance(it, (list, tuple)):
-            for x in it:
-                (run.append(x) if isinstance(x, Body) else (flush(run), put(x)))
-        elif it is not None:
+        else:
             flush(run)
             put(it)
+        if i == last:
+            flush(run)
+            if late:
+                mobs.extend(_late_lines(view, late, occ, sw_scale))
     flush(run)
     out.submobjects = mobs
     return out
@@ -854,7 +1021,8 @@ def revolve(outline, axis="x", at=0.0, t0=0.0, t1=TAU, nt=48, color=ACCUM, cap_c
                 (x0, y0), (x1, y1) = pts2[j], pts2[(j + 1) % k]
                 if abs(x1 - x0) + abs(y1 - y0) > 1e-9:
                     faces.append(Face([_rev(axis, at, x0, y0, th), _rev(axis, at, x1, y1, th)], rim, line=True, width=1.6))
-    return Body(faces, closed=full)
+    return Body(faces, closed=full, rev=dict(poly=np.array(pts2, dtype=float), axis=axis, at=float(at), t0=float(t0), t1=float(t1),
+                                             full=full, shift=np.zeros(3)))
 
 
 def _cap_strips(pts2, axis, n=40):
@@ -939,7 +1107,9 @@ def upright_axes(st, v, xr, yr, color=None, size=28, ticks=None, tick_size=26, l
     color = color or DIM
     xa = Arrow(v.P(xr[0], 0, 0), v.P(xr[1], 0, 0), buff=0, color=color, stroke_width=2.5, tip_length=0.18, max_tip_length_to_length_ratio=0.08)
     ya = Arrow(v.P(0, 0, yr[0]), v.P(0, 0, yr[1]), buff=0, color=color, stroke_width=2.5, tip_length=0.18, max_tip_length_to_length_ratio=0.08)
-    out = [xa, ya]
+    # the axes go to render() as SortLines: drawn as these arrows on the flat sketch, cut where a solid hides them
+    out = [SortLine((xr[0], 0, 0), (xr[1], 0, 0), mob=xa, color=color, width=2.5, tip=xa.get_tip()),
+           SortLine((0, 0, yr[0]), (0, 0, yr[1]), mob=ya, color=color, width=2.5, tip=ya.get_tip())]
     if labels:
         lx, ly = st.label("ux", "x", size, color), st.label("uy", "y", size, color)
         out += [lx.next_to(xa.get_end(), RIGHT, buff=0.08), ly.next_to(ya.get_end(), UP, buff=0.08)]
@@ -947,13 +1117,13 @@ def upright_axes(st, v, xr, yr, color=None, size=28, ticks=None, tick_size=26, l
     for t in (ticks or {}).get("x", []):
         c = v.P(t, 0, 0)
         d = uz / max(np.linalg.norm(uz), 1e-6) * 0.07
-        out.append(Line(c - d, c + d, color=color, stroke_width=2))
+        out.append(SortMark(Line(c - d, c + d, color=color, stroke_width=2), (t, 0, 0)))
         lab = st.label(("utx", t), _num(t), tick_size, color)
         out.append(lab.move_to(c + _away(-uz, lab)))
     for t in (ticks or {}).get("y", []):
         c = v.P(0, 0, t)
         d = ux / max(np.linalg.norm(ux), 1e-6) * 0.07
-        out.append(Line(c - d, c + d, color=color, stroke_width=2))
+        out.append(SortMark(Line(c - d, c + d, color=color, stroke_width=2), (0, 0, t)))
         lab = st.label(("uty", t), _num(t), tick_size, color)
         out.append(lab.move_to(c + _away(-ux, lab)))
     return out
@@ -1040,7 +1210,7 @@ FLAT = {"yaw": 0.0, "pitch": 90.0}
 
 
 def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, height=None, color=ACCUM, scale=1.0, pose=(-32.0, 26.0),
-               seg_label="s", gap=0.25, lines=()):
+               seg_label="s", gap=0.25, lines=(), d=None, ghost=0.3):
     """The picture for a cross-section worked example, as a Stage that starts as the student's flat 2D sketch.
 
     curves: [(f, lo, hi, color, tex, (lx, ly), var), ...] boundary curves on the floor (f of x for var "x", of y for
@@ -1048,11 +1218,18 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
     lines: [(x0, y0, x1, y1, color, tex, (lx, ly))] straight boundaries (x = 4, say), drawn with the curves.
     Params (all start at 0): c0, c1, ... draw each curve (and line) 0 -> 1; shade the base; seg the slice segment at
     `at` with its label; one stands the cross section on it (0 -> 1); many stands n slabs on the base; yaw/pitch.
+    d: the highlighted slice's thickness. None (the default, for worked examples) is one thin slice, 1.2% of the
+    slicing range, thickness negligible; then `many` raises the smooth solid as a see-through ghost (opacity `ghost`)
+    around that one slice, and the side's label stays on the slice's base edge. d="slab" is the older look: the
+    highlighted section is one of the n slabs (a visible wedge, thickness (b - a)/n). A number is that thickness.
     Cues: base_cues(st, pose) gives the usual moves as scene functions."""
     k_lines = len(curves)
     params = {f"c{i}": 0.0 for i in range(len(curves) + len(lines))}
     params.update(shade=0.0, seg=0.0, one=0.0, many=0.0, n=float(n), fit=0.0)
     top, bot, a, b = region
+    thin = d != "slab"
+    span = (xr[1] - xr[0]) if var == "x" else (yr[1] - yr[0])
+    dd = (0.012 * span if d is None else float(d)) if thin else None     # one thin slice: its thickness is negligible
     fit_to = [1.0, np.zeros(3)]                 # zoom and shift (creation units) that fit the angled pose in the flat box
 
     def draw(st, v, **p):
@@ -1083,21 +1260,40 @@ def base_stage(curves, region, kind, xr, yr, at, n=10, var="x", ticks=None, heig
         nn = max(int(round(p["n"])), 1)
         w = (b - a) / nn
         k_at = min(nn - 1, max(0, int((at - a) / w)))          # the slab the highlighted one stands in for
-        if p["many"] > 0.01:
-            many = slabs(kind, top, bot, a, b, nn, gap=gap, axis=var, color=color, height=height, rise=p["many"])
-            bodies += [bb for i, bb in enumerate(many) if not (p["one"] > 0.01 and i == k_at)]
-        if p["one"] > 0.01:
-            c = a + (k_at + 0.5) * w if p["many"] > 0.01 else at
-            bodies.append(slab(kind, top, bot, c, w * (1 - gap), axis=var, color=SECANT, height=height, rise=p["one"]))
+        if thin:
+            if p["many"] > 0.01:
+                # the smooth solid as a see-through ghost, drawn first; the one thin slice goes over it
+                out.append(section_solid(kind, top, bot, a, b, axis=var, color=color, height=height, rise=p["many"],
+                                         opacity=ghost * min(1.0, p["many"] / 0.3)))
+                out.append(VMobject())
+            if p["one"] > 0.01:
+                bodies.append(slab(kind, top, bot, at, dd, axis=var, color=SECANT, height=height, rise=p["one"], cap_edge_width=2.6))
+        else:
+            if p["many"] > 0.01:
+                many = slabs(kind, top, bot, a, b, nn, gap=gap, axis=var, color=color, height=height, rise=p["many"])
+                bodies += [bb for i, bb in enumerate(many) if not (p["one"] > 0.01 and i == k_at)]
+            if p["one"] > 0.01:
+                c = a + (k_at + 0.5) * w if p["many"] > 0.01 else at
+                bodies.append(slab(kind, top, bot, c, w * (1 - gap), axis=var, color=SECANT, height=height, rise=p["one"]))
         out += [bb for bb in bodies if bb is not None]
-        if p["seg"] > 0.98 and seg_label and p["one"] < 0.01:
-            # the segment's label sits off its middle, on the side away from the solid's front
+        if p["seg"] > 0.98 and seg_label and (p["one"] < 0.01 or (thin and p["fit"] > 0.5)):
+            # the segment's label sits off its middle, on the side away from the solid's front (on a backing once the
+            # thin slice stands, so it reads over the ghost)
             m = (bot(at) + top(at)) / 2
             pt = v.P(at, m, 0) if var == "x" else v.P(m, at, 0)
             lab = st.label("seg", seg_label, 30, SECANT)
-            d = (v.P(1, 0, 0) - v.P(0, 0, 0)) if var == "x" else (v.P(0, 1, 0) - v.P(0, 0, 0))
-            d = -d / max(np.linalg.norm(d), 1e-6)
-            out.append(lab.move_to(pt + d * (0.12 + lab.width / 2 + 0.05)))
+            u = (v.P(1, 0, 0) - v.P(0, 0, 0)) if var == "x" else (v.P(0, 1, 0) - v.P(0, 0, 0))
+            u = -u / max(np.linalg.norm(u), 1e-6)
+            if thin and p["one"] > 0.01:
+                # beside the slice's base edge, on the screen-down side (the slice rises above it)
+                q0, q1 = (v.P(at, bot(at), 0), v.P(at, top(at), 0)) if var == "x" else (v.P(bot(at), at, 0), v.P(top(at), at, 0))
+                e = q1 - q0
+                u = np.array([e[1], -e[0], 0.0]) / max(np.linalg.norm(e), 1e-6)
+                u = u if u[1] < 0 else -u
+            lab.move_to(pt + _away(u, lab, 0.14))
+            if p["one"] > 0.01:
+                out.append(SurroundingRectangle(lab, buff=0.05, corner_radius=0.06, stroke_width=0).set_fill(BG, 0.85))
+            out.append(lab)
         return out, v
 
     st = Stage(draw, View(scale=scale, yaw=FLAT["yaw"], pitch=FLAT["pitch"]), **params)
@@ -1230,7 +1426,8 @@ def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), 
         if axis_tex and p["axis"] > 0.01:
             (g0, g1) = ((xr[0], k), (xr[1], k)) if axis == "x" else ((k, yr[0]), (k, yr[1]))
             q0, q1 = v.P(*world(*g0)), v.P(*world(*g1))
-            out.append(DashedLine(q0, q0 + (q1 - q0) * p["axis"], color=axis_color, stroke_width=4, dash_length=0.14))
+            out.append(SortLine(world(*g0), world(*g1), mob=DashedLine(q0, q0 + (q1 - q0) * p["axis"], color=axis_color, stroke_width=4, dash_length=0.14),
+                                color=axis_color, width=4, dashed=0.14, frac=p["axis"]))
             if p["axis"] > 0.98 and axis_lab is not None and flat:
                 out.append(st.label("axis", axis_tex, 28, axis_color).move_to(v.P(*world(*axis_lab))))
         sw, op, one = p["sweep"], p["solid"], p["one"]

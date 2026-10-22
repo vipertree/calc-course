@@ -66,7 +66,12 @@ class Beat:
     def line(self, i):
         """Wait until narration line i (0-based) of this beat begins."""
         if 0 < i < self.n:
-            self.scene.wait_until_bookmark(f"L{i}")
+            mark = f"L{i}"
+            if mark in getattr(self.tr, "bookmark_times", {}):
+                late = float(self.scene.renderer.time) - self.tr.bookmark_times[mark]
+                if late > 0.5:      # the pictures fell behind the words: shorten the animations before this line
+                    print(f"LATE {self.scene.NUM} {self.scene._beat_now!r} line {i}: {late:.1f} s", file=sys.stderr)
+            self.scene.wait_until_bookmark(mark)
 
     def rest(self):
         """Seconds of narration left in this beat."""

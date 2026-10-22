@@ -78,10 +78,10 @@ Bread (the loaf prop).
 import functools
 
 import numpy as np
-from manim import (DEGREES, PI, TAU, Mobject, ValueTracker, VGroup, VMobject, Arrow, Line, DashedLine, Polygon,
-                   ManimColor, interpolate_color, WHITE, BLACK, FadeIn, FadeOut, ORIGIN, RIGHT, UP, DOWN, LEFT)
+from manim import (DEGREES, PI, TAU, Mobject, ValueTracker, VGroup, VMobject, Arrow, Line, DashedLine, Polygon, SurroundingRectangle,
+                   ManimColor, interpolate_color, WHITE, BLACK, FadeIn, FadeOut, ORIGIN, RIGHT, UP, DOWN, LEFT, smooth)
 
-from style import BG, INK, DIM, FUNC, AREA, ACCUM, SECANT, M
+from style import BG, INK, DIM, FUNC, AREA, ACCUM, SECANT, TANGENT, M
 
 # ---------------------------------------------------------------------------------------------------------- view
 
@@ -241,31 +241,93 @@ def rot(axis, degrees):
 # ---------------------------------------------------------------------------------------------------------- drawing
 
 
-def _poly(pts2, fill, opacity, stroke, sw):
-    m = VMobject()
-    m.set_points_as_corners(list(pts2) + [pts2[0]])
-    m.set_fill(fill, opacity)
-    m.set_stroke(stroke, sw, opacity=1.0 if opacity > 0.99 else opacity)
+_PROTO = []
+
+
+_RGB = {}
+
+
+def _rgb(c):
+    if isinstance(c, np.ndarray):
+        return c
+    key = c if isinstance(c, str) else None
+    if key is not None and key in _RGB:
+        return _RGB[key]
+    out = np.asarray(ManimColor(c).to_rgb(), dtype=float)
+    if key is not None:
+        _RGB[key] = out
+    return out
+
+
+def _fast_vm(points, fill_rgba, stroke_rgba, sw):
+    """A VMobject made by copying a template's state instead of running VMobject.__init__ (which was most of the time
+    of a redraw: a solid is a thousand or more faces, rebuilt every frame)."""
+    if not _PROTO:
+        _PROTO.append(VMobject())
+    m = VMobject.__new__(VMobject)
+    d = dict(_PROTO[0].__dict__)
+    d.update(submobjects=[], updaters=[], points=points, fill_rgbas=fill_rgba.reshape(1, 4), stroke_rgbas=stroke_rgba.reshape(1, 4),
+             background_stroke_rgbas=_PROTO[0].background_stroke_rgbas.copy(), sheen_direction=_PROTO[0].sheen_direction.copy(),
+             fill_opacity=float(fill_rgba[3]), stroke_opacity=float(stroke_rgba[3]), stroke_width=sw)
+    m.__dict__ = d
     return m
+
+
+def _corners(P):
+    """Bezier points of the straight path through the points P (n, 3), as set_points_as_corners makes them."""
+    a, b = P[:-1], P[1:]
+    return np.stack([a, a + (b - a) / 3, a + 2 * (b - a) / 3, b], axis=1).reshape(-1, 3)
+
+
+def _poly(pts2, fill, opacity, stroke, sw):
+    P = np.asarray(pts2, dtype=float)
+    P = np.vstack([P, P[:1]])
+    return _fast_vm(_corners(P), np.append(_rgb(fill), opacity), np.append(_rgb(stroke), 1.0 if opacity > 0.99 else opacity), sw)
+
+
+def _seg(p0, p1, color, sw):
+    P = np.array([p0, p1], dtype=float)
+    return _fast_vm(_corners(P), np.append(_rgb(color), 0.0), np.append(_rgb(color), 1.0), sw)
+
+
+def _mix(a, b, t):
+    return a + (b - a) * t
+
+
+_BLACK, _WHITE = np.zeros(3), np.ones(3)
+
+
+def _shade_rgb(view, color, n, flip=False, ambient=0.38):
+    """View.shade as an rgb array (the same arithmetic, without making ManimColors)."""
+    sn = view.screen_normal(np.asarray(n, dtype=float))
+    if flip:
+        sn = -sn
+    k = ambient + (1 - ambient) * max(0.0, float(sn @ view.light))
+    c = _rgb(color)
+    if k < 0.75:
+        return _mix(_mix(c, _BLACK, 0.5), c, k / 0.75)
+    return _mix(c, _mix(c, _WHITE, 0.35), (k - 0.75) / 0.25)
 
 
 def _face_mobs(view, f, flip, sw_scale):
     if f.line:
         p = view.P(f.pts)
-        return [Line(p[0], p[1], color=f.color, stroke_width=f.width * sw_scale)]
-    col = view.shade(f.color, f.normal, flip=flip) if f.shade else ManimColor(f.color)
+        return [_seg(p[0], p[1], f.color, f.width * sw_scale)]
+    col = _shade_rgb(view, f.color, f.normal, flip=flip) if f.shade else _rgb(f.color)
     if flip:
-        col = interpolate_color(col, BLACK, 0.12)             # insides read a touch darker
+        col = _mix(col, _BLACK, 0.12)                           # insides read a touch darker
     p2 = view.P(f.pts)
     if f.edge is True:
-        stroke, sw = interpolate_color(ManimColor(f.color), BLACK, 0.45), f.edge_width
+        stroke, sw = _mix(_rgb(f.color), _BLACK, 0.45), f.edge_width
     elif f.edge:
-        stroke, sw = ManimColor(f.edge), f.edge_width
-    else:
+        stroke, sw = _rgb(f.edge), f.edge_width
+    elif f.opacity > 0.99:
         stroke, sw = col, 1.0                                   # same color: hides the seams between mesh faces
+    else:
+        stroke, sw = col, 0.0                                   # see-through: a seam stroke would double up into a grid
     out = [_poly(p2, col, f.opacity, stroke, sw * sw_scale)]
     if f.decor:
-        dc = ManimColor(f.decor_color or interpolate_color(ManimColor(f.color), BLACK, 0.25))
+        dc = _rgb(f.decor_color) if f.decor_color else _mix(_rgb(f.color), _BLACK, 0.25)
         for d in f.decor:
             out.append(_poly(view.P(d), dc, f.opacity, dc, 0.5))
     return out
@@ -298,17 +360,25 @@ def _body_cmp(view):
 def render(view, items, sw_scale=1.0):
     """Draw a list of items: Mobjects as they are (in order), runs of Bodies sorted far to near."""
     out = VGroup()
+    mobs, seen = [], set()          # collected here and set once: VGroup.add per face was quadratic in the face count
+
+    def put(m):
+        if id(m) in seen:           # as VGroup.add: a mobject listed twice is drawn once, at its last place
+            mobs.remove(m)
+        seen.add(id(m))
+        mobs.append(m)
 
     def flush(run):
         if not run:
             return
-        run = sorted(run, key=functools.cmp_to_key(_body_cmp(view)))
-        for b in run:
+        # sort a copy and clear the caller's list (rebinding `run` here once left the bodies in it, drawn twice: again
+        # at the end, over whatever was meant to sit on top of them)
+        for b in sorted(run, key=functools.cmp_to_key(_body_cmp(view))):
             if b.convex:
                 for f in b.faces:
                     vis, flip = _visible(view, f, True)
                     if vis:
-                        out.add(*_face_mobs(view, f, flip, sw_scale))
+                        mobs.extend(_face_mobs(view, f, flip, sw_scale))
             else:
                 faces = []
                 for f in b.faces:
@@ -317,7 +387,7 @@ def render(view, items, sw_scale=1.0):
                         faces.append((float(view.depth(f.pts.mean(axis=0))), f, flip))
                 faces.sort(key=lambda t: -t[0])
                 for _, f, flip in faces:
-                    out.add(*_face_mobs(view, f, flip, sw_scale))
+                    mobs.extend(_face_mobs(view, f, flip, sw_scale))
         run.clear()
 
     run = []
@@ -326,11 +396,12 @@ def render(view, items, sw_scale=1.0):
             run.append(it)
         elif isinstance(it, (list, tuple)):
             for x in it:
-                (run.append(x) if isinstance(x, Body) else (flush(run), out.add(x)))
+                (run.append(x) if isinstance(x, Body) else (flush(run), put(x)))
         elif it is not None:
             flush(run)
-            out.add(it)
+            put(it)
     flush(run)
+    out.submobjects = mobs
     return out
 
 
@@ -348,10 +419,15 @@ class Stage(VGroup):
 
     Don't animate a Stage with .animate (its children are rebuilt); move it with shift/scale/next_to, or FadeIn/Out."""
 
-    def __init__(self, draw, view=None, sw_scale=1.0, box=None, **params):
+    fresh_labels = False
+
+    def __init__(self, draw, view=None, sw_scale=1.0, box=None, fresh_labels=False, **params):
         """box: (x0, y0, x1, y1) screen rectangle (where the stage is created) that the stage always occupies, drawn
-        invisibly: the room the picture needs in every pose, so a layout made around it holds while it tilts."""
+        invisibly: the room the picture needs in every pose, so a layout made around it holds while it tilts.
+        fresh_labels: label() hands out a copy each frame, so labels sort with the picture during a play (otherwise a
+        label is drawn over the solids while animating; 8.7 and 8.8 were rendered without it)."""
         super().__init__()
+        self.fresh_labels = fresh_labels
         self._box0 = box
         self.draw_fn = draw
         self.view0 = view or View()
@@ -406,6 +482,12 @@ class Stage(VGroup):
         want = h0 * self._place()[1] / k0
         if m.height > 0 and abs(m.height - want) > 1e-4:
             m.scale(want / m.height)
+        if self.fresh_labels:
+            # a copy each frame: during a play the renderer's list still names the cached label on its own, and that
+            # later entry wins, so a cached label is drawn over everything (tick numbers showing through a solid)
+            c = m.copy()
+            c.clear_updaters()
+            return c
         return m
 
     def redraw(self, force=False):
@@ -735,14 +817,57 @@ def revolve(outline, axis="x", at=0.0, t0=0.0, t1=TAU, nt=48, color=ACCUM, cap_c
             a_, b_ = ths[i], ths[i + 1]
             q = np.array([_rev(axis, at, x0, y0, a_), _rev(axis, at, x1, y1, a_), _rev(axis, at, x1, y1, b_), _rev(axis, at, x0, y0, b_)])
             nrm = _rev_dir(axis, nx, ny, (a_ + b_) / 2)
-            edge = (ManimColor(interpolate_color(ManimColor(color), BLACK, 0.2)) if grid and i % 4 == 0 else False)
+            wall = abs(x1 - x0) < 1e-9 if axis == "x" else abs(y1 - y0) < 1e-9       # an end wall: no grid spokes on it
+            edge = (ManimColor(interpolate_color(ManimColor(color), BLACK, 0.2)) if grid and i % 4 == 0 and not wall else False)
             faces.append(Face(q, color, normal=nrm, edge=edge, opacity=opacity, edge_width=0.8))
     if caps and not full:
+        # each cap is the region itself, cut into thin strips across the axis so it depth-sorts against the small
+        # surface faces (one big polygon sorted by its center showed through the solid's narrow end); its outline is
+        # drawn as sortable line pieces
+        strips = _cap_strips(pts2, axis)
+        rim = interpolate_color(ManimColor(cap_color), BLACK, 0.45)
         for th, sgn in ((t0, -1), (t1, 1)):
-            q = np.array([_rev(axis, at, x, y, th) for x, y in pts2])
             tang = _rev_dir(axis, 0, 1, th + PI / 2) if axis == "x" else _rev_dir(axis, 1, 0, th + PI / 2)
-            faces.append(Face(q, cap_color, normal=sgn * tang, edge=True, opacity=opacity))
+            for quad in strips:
+                q = np.array([_rev(axis, at, x, y, th) for x, y in quad])
+                faces.append(Face(q, cap_color, normal=sgn * tang, edge=False, opacity=opacity))
+            for j in range(k):
+                (x0, y0), (x1, y1) = pts2[j], pts2[(j + 1) % k]
+                if abs(x1 - x0) + abs(y1 - y0) > 1e-9:
+                    faces.append(Face([_rev(axis, at, x0, y0, th), _rev(axis, at, x1, y1, th)], rim, line=True, width=1.6))
     return Body(faces, closed=full)
+
+
+def _cap_strips(pts2, axis, n=40):
+    """A polygon (graph coordinates) cut into quads between n + 1 lines across the axis (x = const for a horizontal
+    axis, y = const for a vertical one). Each line meets the outline in pairs of crossings (the region's intervals);
+    a strip joins matching intervals on neighboring lines."""
+    i_s, i_c = (0, 1) if axis == "x" else (1, 0)
+    S = np.array([p[i_s] for p in pts2])
+    C = np.array([p[i_c] for p in pts2])
+    k = len(pts2)
+
+    def cuts(s):
+        xs = []
+        for j in range(k):
+            s0, s1 = S[j], S[(j + 1) % k]
+            if (s0 <= s < s1) or (s1 <= s < s0):
+                xs.append(C[j] + (s - s0) / (s1 - s0) * (C[(j + 1) % k] - C[j]))
+        xs.sort()
+        return list(zip(xs[0::2], xs[1::2]))
+    lo, hi = S.min(), S.max()
+    eps = 1e-7 * max(hi - lo, 1e-9)
+    grid = np.linspace(lo + eps, hi - eps, n + 1)
+    rows = [cuts(s) for s in grid]
+    out = []
+    for i in range(n):
+        A, B = rows[i], rows[i + 1]
+        if len(A) != len(B):
+            continue
+        for (a0, a1), (b0, b1) in zip(A, B):
+            quad = [(grid[i], a0), (grid[i + 1], b0), (grid[i + 1], b1), (grid[i], a1)]
+            out.append([(q[0], q[1]) if axis == "x" else (q[1], q[0]) for q in quad])
+    return out
 
 
 def disc(R, x, d, axis="x", at=0.0, color=ACCUM, nt=56, **kw):
@@ -789,13 +914,30 @@ def upright_region(v, top, bot, a, b, color=AREA, opacity=0.45, var="x", n=60):
     return Polygon(*v.P(np.array(pts, dtype=float)), stroke_width=0, fill_color=color, fill_opacity=opacity)
 
 
-def upright_axes(st, v, xr, yr, color=None, size=28):
-    """The graph's x and y axes in the upright plane (world x and z), with labels."""
+def upright_axes(st, v, xr, yr, color=None, size=28, ticks=None, tick_size=26, labels=True):
+    """The graph's x and y axes in the upright plane (world x and z), with labels. ticks: {"x": [...], "y": [...]}
+    adds tick marks with numbers (below the x-axis, left of the y-axis, as on paper; beside them when turned)."""
     color = color or DIM
     xa = Arrow(v.P(xr[0], 0, 0), v.P(xr[1], 0, 0), buff=0, color=color, stroke_width=2.5, tip_length=0.18, max_tip_length_to_length_ratio=0.08)
     ya = Arrow(v.P(0, 0, yr[0]), v.P(0, 0, yr[1]), buff=0, color=color, stroke_width=2.5, tip_length=0.18, max_tip_length_to_length_ratio=0.08)
-    lx, ly = st.label("ux", "x", size, color), st.label("uy", "y", size, color)
-    return [xa, ya, lx.next_to(xa.get_end(), RIGHT, buff=0.08), ly.next_to(ya.get_end(), UP, buff=0.08)]
+    out = [xa, ya]
+    if labels:
+        lx, ly = st.label("ux", "x", size, color), st.label("uy", "y", size, color)
+        out += [lx.next_to(xa.get_end(), RIGHT, buff=0.08), ly.next_to(ya.get_end(), UP, buff=0.08)]
+    ux, uz = v.P(1, 0, 0) - v.P(0, 0, 0), v.P(0, 0, 1) - v.P(0, 0, 0)
+    for t in (ticks or {}).get("x", []):
+        c = v.P(t, 0, 0)
+        d = uz / max(np.linalg.norm(uz), 1e-6) * 0.07
+        out.append(Line(c - d, c + d, color=color, stroke_width=2))
+        lab = st.label(("utx", t), _num(t), tick_size, color)
+        out.append(lab.move_to(c + _away(-uz, lab)))
+    for t in (ticks or {}).get("y", []):
+        c = v.P(0, 0, t)
+        d = ux / max(np.linalg.norm(ux), 1e-6) * 0.07
+        out.append(Line(c - d, c + d, color=color, stroke_width=2))
+        lab = st.label(("uty", t), _num(t), tick_size, color)
+        out.append(lab.move_to(c + _away(-ux, lab)))
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------- labels
@@ -999,3 +1141,178 @@ def base_cues(st):
                 f(sc)
         return cue
     return dict(draw=draw, shade=shade, seg=seg, stand=stand, fill=fill, flat=flat, both=both)
+
+
+# ---------------------------------------------------------------------------------------------------------- revolution lessons
+
+FLAT_UP = {"yaw": 0.0, "pitch": 0.0}             # the upright graph seen straight on: exactly the student's 2D sketch
+
+
+def _gpt(axis, s, c):
+    """Graph point of slice position s (x for a horizontal axis, y for a vertical one) and cross coordinate c."""
+    return (s, c) if axis == "x" else (c, s)
+
+
+def rev_stage(curves, outline, axis, k, edge, xr, yr, at, shade=None, lines=(), ticks=None, color=ACCUM, disc_color=SECANT,
+              rad_color=TANGENT, axis_color=None, axis_tex=None, axis_lab=None, scale=1.0, pose=(-30.0, 20.0), turn=24.0, d=None,
+              hole=None, rad_label="R", rad_side=-1, ghost=0.35, nt=48, extra=None, extra_params=None):
+    """The picture for a solid-of-revolution worked example, as a Stage that starts as the student's flat 2D sketch
+    (the upright graph seen straight on, FLAT_UP), the revolution counterpart of base_stage.
+
+    curves: [(f, lo, hi, color, tex, (lx, ly), var), ...] boundary curves (y = f(x) for var "x", x = f(y) for "y"),
+    each with its label's graph position. lines: [(x0, y0, x1, y1, color, tex, (lx, ly))] straight boundaries.
+    shade: (top, bot, a, b, var) the region, as upright_region takes it. outline: the region's CCW outline (graph
+    coordinates: region_outline / outline_y) that revolve() sweeps about the axis ("x": the line y = k, "y": x = k).
+    edge(s): the curve's cross coordinate at slice position s, so R(s) = |edge(s) - k|; hole(s): the inner edge for a
+    washer (8.11 on). at: the slice we care about. axis_tex: draw the axis of revolution as a dashed line with this
+    label at graph point axis_lab (for an axis other than a coordinate axis).
+    extra(st, v, p) -> items drawn on top, with extra_params {name: start value} as more params.
+
+    Params (all start at 0 unless noted): c0, c1, ... draw each curve (and line) 0 -> 1; shade; axis (the dashed axis
+    line); rad (the R segment at `at` and its label); sweep (the region turning about the axis, 0 -> 1 = a full turn; the
+    part swept so far stays); solid (1: its opacity, faded to `ghost` to see a slice inside); one (the disc at `at`, with
+    R drawn on its face); fit (zoom the angled pose into the sketch's box); yaw/pitch. Cues: rev_cues(st)."""
+    k_lines = len(curves)
+    params = {f"c{i}": 0.0 for i in range(len(curves) + len(lines))}
+    params.update(shade=0.0, axis=0.0, rad=0.0, sweep=0.0, solid=1.0, one=0.0, fit=0.0)
+    params.update(extra_params or {})
+    axis_color = axis_color or INK
+    span = (xr[1] - xr[0]) if axis == "x" else (yr[1] - yr[0])
+    dd = d if d is not None else 0.035 * span
+    fit_to = [1.0, np.zeros(3)]
+
+    def world(gx, gy, off=0.0):
+        """Graph point to world, nudged `off` along the slicing direction (onto a disc's face)."""
+        return (gx + off, 0.0, gy) if axis == "x" else (gx, 0.0, gy + off)
+
+    def draw(st, v, **p):
+        if p["fit"] > 0:
+            z = 1 + (fit_to[0] - 1) * p["fit"]
+            kk = v.scale / st.view0.scale
+            v = v.turned(origin=v.origin + fit_to[1] * kk * p["fit"], scale=v.scale * z)
+        flat = p["fit"] < 0.5
+        out = list(upright_axes(st, v, xr, yr, ticks=ticks))
+        lit = p["shade"] * max(0.0, 1 - p["sweep"] / 0.04)        # once it turns, the region is the solid's end face
+        if shade and lit > 0.01:
+            top, bot, a, b, var = shade
+            out.append(upright_region(v, top, bot, a, b, var=var, opacity=0.45 * lit))
+        for i, (f, lo, hi, col, tex, lab, cvar) in enumerate(curves):
+            t = p[f"c{i}"]
+            if t > 0.01:
+                out.append(upright_curve(v, f, lo, lo + (hi - lo) * t, var=cvar, color=col))
+            if t > 0.98 and tex and flat:
+                out.append(st.label(("curve", i), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
+        for j, (x0, y0, x1, y1, col, tex, lab) in enumerate(lines):
+            t = p[f"c{k_lines + j}"]
+            if t > 0.01:
+                out.append(Line(v.P(x0, 0, y0), v.P(x0 + (x1 - x0) * t, 0, y0 + (y1 - y0) * t), color=col, stroke_width=4))
+            if t > 0.98 and tex and flat:
+                out.append(st.label(("line", j), tex, 28, col).move_to(v.P(lab[0], 0, lab[1])))
+        if axis_tex and p["axis"] > 0.01:
+            (g0, g1) = ((xr[0], k), (xr[1], k)) if axis == "x" else ((k, yr[0]), (k, yr[1]))
+            q0, q1 = v.P(*world(*g0)), v.P(*world(*g1))
+            out.append(DashedLine(q0, q0 + (q1 - q0) * p["axis"], color=axis_color, stroke_width=4, dash_length=0.14))
+            if p["axis"] > 0.98 and axis_lab is not None and flat:
+                out.append(st.label("axis", axis_tex, 28, axis_color).move_to(v.P(*world(*axis_lab))))
+        sw, op, one = p["sweep"], p["solid"], p["one"]
+        if sw > 1e-3 and op > 0.01:
+            t1 = TAU if sw > 0.999 else sw * TAU
+            out.append(revolve(outline, axis, k, 0.0, t1, nt=nt, color=color, opacity=1.0 if op > 0.99 else op, grid=op < 0.99))
+        if one > 0.01:
+            R = abs(edge(at) - k)
+            body = (washer(R, abs(hole(at) - k), at, dd, axis, k, color=disc_color, opacity=min(1.0, one))
+                    if hole else disc(R, at, dd, axis, k, color=disc_color, opacity=min(1.0, one)))
+            if op < 0.99:
+                out.append(VMobject())          # the ghost is drawn first, the slice over it
+            out.append(body)
+        # the radius: on the sketch, then on the slice's face that shows (hidden inside a solid being swept)
+        show = p["rad"] * (1.0 if (one > 0.5 or op < 0.5) else max(0.0, 1 - sw / 0.04))
+        if show > 0.01:
+            off = 0.0
+            if one > 0.5:
+                n = np.array([1.0, 0, 0]) if axis == "x" else np.array([0, 0, 1.0])
+                off = dd / 2 * (1 if n @ v.toward() >= 0 else -1)
+            p0, p1 = v.P(*world(*_gpt(axis, at, k), off)), v.P(*world(*_gpt(axis, at, edge(at)), off))
+            p1 = p0 + (p1 - p0) * min(1.0, p["rad"])
+            out.append(Line(p0, p1, color=BG, stroke_width=11, stroke_opacity=min(1.0, show)))
+            out.append(Line(p0, p1, color=rad_color, stroke_width=6, stroke_opacity=min(1.0, show)))
+            if p["rad"] > 0.98 and rad_label:
+                lab = st.label("rad", rad_label, 32, rad_color)
+                u = p1 - p0
+                u = u / max(np.linalg.norm(u), 1e-6)
+                perp = np.array([-u[1], u[0], 0.0]) * (-rad_side)
+                lab.set_opacity(min(1.0, show))
+                lab.move_to((p0 + p1) / 2 + _away(perp, lab, 0.1))
+                if one > 0.5:                   # on the slice's face: a backing so it reads on any color
+                    out.append(SurroundingRectangle(lab, buff=0.05, corner_radius=0.06, stroke_width=0).set_fill(BG, 0.85 * min(1.0, show)))
+                out.append(lab)
+        if extra:
+            out += list(extra(st, v, p))
+        return out, v
+
+    st = Stage(draw, View(scale=scale, yaw=FLAT_UP["yaw"], pitch=FLAT_UP["pitch"]), fresh_labels=True, **params)
+    full = {f"c{i}": 1.0 for i in range(len(curves) + len(lines))}
+    flat_pose = dict(FLAT_UP, **full, shade=1, axis=1, rad=1)
+    angled = [dict(yaw=y_, pitch=pose[1], **full, shade=1, axis=1, sweep=1) for y_ in (pose[0], pose[0] + turn)]
+
+    def box(pose_):
+        for k_, v_ in pose_.items():
+            st.trackers[k_].set_value(v_)
+        st.redraw(force=True)
+        g = VGroup(*[m for m in st.submobjects[1:] if len(m.get_family()) > 1 or len(m.points)])
+        return np.array([g.get_left()[0], g.get_bottom()[1], g.get_right()[0], g.get_top()[1]])
+    F = box(flat_pose)
+    Bs = [box(a_) for a_ in angled]
+    B = np.array([min(b_[0] for b_ in Bs), min(b_[1] for b_ in Bs), max(b_[2] for b_ in Bs), max(b_[3] for b_ in Bs)])
+    o = st.view0.origin
+    z = 0.97 * min((F[2] - F[0]) / (B[2] - B[0]), (F[3] - F[1]) / (B[3] - B[1]))
+    Fc, Bc = np.array([(F[0] + F[2]) / 2, (F[1] + F[3]) / 2, 0]), np.array([(B[0] + B[2]) / 2, (B[1] + B[3]) / 2, 0])
+    fit_to[0], fit_to[1] = z, Fc - o - z * (Bc - o)
+    for k_ in st.trackers:
+        st.trackers[k_].set_value(params.get(k_, FLAT_UP.get(k_, 0.0)))
+    st.reserve(flat_pose)
+    st.pose, st.turn_by, st.ghost = pose, turn, ghost
+    return st
+
+
+def rev_cues(st):
+    """Scene functions for a rev_stage: draw(i) a curve, shade(), axis(), rad(); spin() turns the sketch to the angled
+    view and sweeps the region around the axis (the swept part stays), then turns the whole solid slowly; slice() fades
+    the solid to a ghost and stands the one disc at `at` in it with its R; flat() goes back to the 2D sketch (on paper:
+    the region and one R)."""
+    def draw(*idx, rt=1.2):
+        return lambda sc: sc.play(*[st.to(f"c{i}", 1) for i in idx], run_time=rt)
+
+    def one_param(name, rt):
+        return lambda sc: sc.play(st.to(name, 1), run_time=rt)
+
+    def spin(rt=2.0, sweep=4.0, hold=2.5):
+        def cue(sc):
+            sc.play(st.to("yaw", st.pose[0]), st.to("pitch", st.pose[1]), st.to("fit", 1), run_time=rt)
+            sc.play(st.to("sweep", 1), run_time=sweep, rate_func=smooth)
+            if hold:
+                sc.play(st.spin(st.turn_by), run_time=hold)
+        return cue
+
+    def slice_(rt=1.4, hold=0.0):
+        def cue(sc):
+            sc.play(st.to("solid", st.ghost), st.to("one", 1), run_time=rt)
+            if hold:
+                sc.play(st.spin(-st.turn_by / 2), run_time=hold)
+        return cue
+
+    def flat(rt=1.8):
+        def cue(sc):
+            sc.play(st.to("one", 0), st.to("solid", 0), run_time=0.8)
+            st.set("sweep", 0)
+            st.set("solid", 1)
+            sc.play(st.to("yaw", FLAT_UP["yaw"]), st.to("pitch", FLAT_UP["pitch"]), st.to("fit", 0), run_time=rt)
+        return cue
+
+    def both(*fns):
+        def cue(sc):
+            for f in fns:
+                f(sc)
+        return cue
+    return dict(draw=draw, shade=lambda rt=0.8: one_param("shade", rt), axis=lambda rt=0.8: one_param("axis", rt),
+                rad=lambda rt=0.8: one_param("rad", rt), spin=spin, slice=slice_, flat=flat, both=both)

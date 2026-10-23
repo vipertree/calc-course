@@ -3,6 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
+from kit import _ramp
 from style import *
 
 
@@ -12,38 +13,62 @@ class Lesson(TranscriptScene):
     def construct(self):
         road = lambda s: 1.5 + 0.9 * np.sin(1.1 * s) + 0.15 * s
         with self.beat("How long is a curve?") as b:
-            ax, _ = plot_axes([0, 6, 1], [0, 3.5, 1], w=8, h=4.4, coords=False)
-            ax.shift(DOWN * 0.3)
+            ax, _ = plot_axes([0, 6, 1], [0, 3.5, 1], w=6.6, h=3.8, coords=False)
+            ax.to_edge(LEFT, buff=0.6).shift(DOWN * 0.2)
             curve = ax.plot(road, x_range=[0.3, 5.7], color=FUNC, stroke_width=6)
             A, B = Dot(ax.c2p(0.3, road(0.3)), color=INK), Dot(ax.c2p(5.7, road(5.7)), color=INK)
             self.play(Create(curve), FadeIn(A), FadeIn(B), FadeIn(M("A", 32).next_to(A, LEFT)), FadeIn(M("B", 32).next_to(B, RIGHT)), run_time=1.4)
             chord = DashedLine(A.get_center(), B.get_center(), color=DIM)
-            self.play(Create(chord), FadeIn(T("too short", 28, DIM).next_to(chord, DOWN, buff=0.1)), run_time=0.8)
+            # "too short" sits under the left part of the chord, where the road bulges up above it and nothing is below
+            self.play(Create(chord), FadeIn(T("too short", 28, DIM).next_to(chord.point_from_proportion(0.22), DOWN, buff=0.15)), run_time=0.8)
             b.line(1)
-            lab = None
-            for n in (4, 8, 16):
+            col = RIGHT * 3.9
+            lab, segs = None, None
+            for n in (4, 8, 16, 64):
                 xs = np.linspace(0.3, 5.7, n + 1)
-                segs = VGroup(*[Line(ax.c2p(p, road(p)), ax.c2p(q, road(q)), color=SECANT, stroke_width=4) for p, q in zip(xs, xs[1:])])
+                new_segs = VGroup(*[Line(ax.c2p(p, road(p)), ax.c2p(q, road(q)), color=SECANT, stroke_width=4) for p, q in zip(xs, xs[1:])])
                 length = sum(np.hypot(q - p, road(q) - road(p)) for p, q in zip(xs, xs[1:]))
-                new = M(rf"{n} \text{{ segments: }} {length:.3f}", 34, SECANT).to_edge(UP, buff=0.4)
-                self.play(FadeIn(segs), Transform(lab, new) if lab else FadeIn(new), run_time=1)
-                lab = lab or new
-                self.wait(0.3)
-                self.play(FadeOut(segs), run_time=0.3)
+                new = M(rf"{n} \text{{ segments: }} {length:.3f}", 34, SECANT).move_to(col + UP * 2.5)
+                self.play(FadeIn(new_segs), *([FadeOut(segs)] if segs else []), Transform(lab, new) if lab else FadeIn(new), run_time=1)
+                lab, segs = lab or new, new_segs
+                self.wait(0.4)
             b.line(2)
+            s1 = M(r"L \approx \sum \Delta s", 44).next_to(lab, DOWN, buff=0.6)
+            self.play(Write(s1), run_time=0.8)
+            b.line(3)
+            # the analytic meaning used all course: an integral adds up infinitely many little pieces (8.7: slices)
+            box = formula_box(VGroup(M(r"L = \int ds", 48, ACCUM), T("add up infinitely many tiny lengths", 28, DIM)).arrange(DOWN, buff=0.15), ACCUM).next_to(s1, DOWN, buff=0.6)
+            self.play(FadeOut(segs), curve.animate.set_color(SECANT), FadeIn(box), run_time=1.2)
         self.clear()
         self.title()
 
         with self.beat("Pythagoras on a tiny piece") as b:
-            ax, _ = plot_axes([0, 6, 1], [0, 3.5, 1], w=5.4, h=3.6, coords=False)
-            ax.to_edge(LEFT, buff=0.4).shift(UP * 0.4)
-            self.play(Create(ax.plot(road, x_range=[0.3, 5.7], color=FUNC, stroke_width=5)), run_time=0.8)
-            x0, dx = 2.2, 0.9
-            p, q = ax.c2p(x0, road(x0)), ax.c2p(x0 + dx, road(x0 + dx))
-            corner = np.array([q[0], p[1], 0])
-            tri = VGroup(Line(p, corner, color=DIM, stroke_width=4), Line(corner, q, color=DIM, stroke_width=4), Line(p, q, color=SECANT, stroke_width=5))
-            labs = VGroup(M("dx", 30).next_to(tri[0], DOWN, buff=0.1), M("dy", 30).next_to(tri[1], RIGHT, buff=0.1), M("ds", 30, SECANT).next_to(tri[2].get_center(), UL, buff=0.1))
-            self.play(Create(tri), FadeIn(labs), run_time=1)
+            # a calculator-style zoom on one piece (Adder 8.13: the dx, dy labels ran into the curve): the triangle is
+            # drawn at every zoom level, and its labels fade in only once the legs have room, set outside the triangle
+            # on the side away from the curve (the curve is concave up here, so it sags below the hypotenuse)
+            x0, DX, W, H = 4.6, 0.3, 6.0, 4.6
+            cx = x0 + DX / 2
+            cy = road(cx)
+            home = LEFT * 3.7 + UP * 0.3
+
+            def view(R):
+                g = tick_view(road, R, w=W, h=H, labels=True, cx=cx, cy=cy)
+                fr = g[0]
+                to = lambda u, v: fr.get_center() + RIGHT * (u - cx) / R * W / 2 + UP * (v - cy) / R * W / 2
+                p, q = to(x0, road(x0)), to(x0 + DX, road(x0 + DX))
+                c = np.array([q[0], p[1], 0])
+                g.add(Line(p, c, color=DIM, stroke_width=4), Line(c, q, color=DIM, stroke_width=4), Line(p, q, color=SECANT, stroke_width=5))
+                a = _ramp(q[0] - p[0], 1.2, 2.2)
+                if a > 0:
+                    u = (q - p) / np.linalg.norm(q - p)
+                    labs = VGroup(nudge_arrow(p, c, "dx", DOWN, size=32), nudge_arrow(c, q, "dy", RIGHT, size=32),
+                                  M("ds", 34, SECANT).move_to((p + q) / 2 + np.array([-u[1], u[0], 0]) * 0.45))
+                    g.add(labs.set_opacity(a) if a < 1 else labs)
+                return g.shift(home - fr.get_center())
+
+            z, vw = zoom_tracker(3.0, view)
+            self.play(FadeIn(vw), run_time=0.8)
+            self.play(zoom_to(z, 0.3), run_time=3, rate_func=smooth)
             b.line(1)
             rows = [r"ds^2 = dx^2 + dy^2", r"ds = \sqrt{dx^2 + dy^2}", r"ds = \sqrt{1 + \left(\tfrac{dy}{dx}\right)^2}\,dx"]
             board = VGroup(*[M(r, 38) for r in rows]).arrange(DOWN, aligned_edge=LEFT, buff=0.35).to_edge(RIGHT, buff=0.4).shift(UP * 1.2)
@@ -52,10 +77,11 @@ class Lesson(TranscriptScene):
             self.play(Write(board[1]), run_time=0.8)
             self.play(Write(board[2]), run_time=1)
             b.line(3)
-            box = formula_box(VGroup(M(r"L = \int_a^b \sqrt{1 + [f'(x)]^2}\,dx", 42, ACCUM), T("add up the tiny hypotenuses", 28, DIM)).arrange(DOWN, buff=0.15), ACCUM).next_to(board, DOWN, buff=0.5)
+            box = formula_box(VGroup(M(r"L = \int_a^b \sqrt{1 + [f'(x)]^2}\,dx", 42, ACCUM), T(r"$L = \int ds$: add up the tiny hypotenuses", 28, DIM)).arrange(DOWN, buff=0.15), ACCUM).next_to(board, DOWN, buff=0.5)
             self.play(FadeIn(box), run_time=0.8)
             b.line(4)
             self.play(FadeIn(T("$f'$ continuous: a smooth curve", 28, DIM).next_to(box, DOWN, buff=0.3)), run_time=0.6)
+        vw.clear_updaters()
         self.clear()
 
         with self.beat("A check with a line") as b:

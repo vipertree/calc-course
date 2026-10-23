@@ -3,11 +3,14 @@ import numpy as np
 from manim import *
 
 from kit import *
+from props import walk_along
 from style import *
 
 
 class Lesson(TranscriptScene):
     NUM = "9.3"
+    # the arc length formula stays in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = r"L = \int_a^b \sqrt{\left(\tfrac{dx}{dt}\right)^2 + \left(\tfrac{dy}{dt}\right)^2}\,dt"
 
     def construct(self):
         bx = lambda s: 2.5 * np.sin(1.3 * s)
@@ -15,11 +18,14 @@ class Lesson(TranscriptScene):
         with self.beat("How far did it go?") as b:
             ax, _ = plot_axes([-3, 3, 1], [-2.6, 2.6, 1], w=6, h=4.8, coords=False)
             ax.to_edge(LEFT, buff=0.6)
-            path = param_curve(ax, bx, by, 0, 3)
-            bug = ladybug(0.4).move_to(ax.c2p(0, 0))
+            tt = ValueTracker(0)
+            path = always_redraw(lambda: param_curve(ax, bx, by, 0, max(0.01, tt.get_value())))
+            bug = walk_along(ladybug(0.4), ax, bx, by, tt)      # she turns to face the way she walks (Adder, 2026-10-14)
             pedo = VGroup(RoundedRectangle(width=2.2, height=0.9, corner_radius=0.15, stroke_color=INK), T("pedometer", 24, DIM)).arrange(DOWN, buff=0.1).to_corner(UR, buff=0.6)
+            self.add(path)
             self.play(FadeIn(ax), FadeIn(bug), FadeIn(pedo), run_time=0.8)
-            self.play(Create(path), MoveAlongPath(bug, path), run_time=2.6, rate_func=linear)
+            self.play(tt.animate.set_value(3), run_time=3.2, rate_func=linear)
+            path.clear_updaters()
             old = VGroup(M(r"L = \int \sqrt{1 + [f'(x)]^2}\,dx", 34), M("?", 48, TANGENT)).arrange(RIGHT, buff=0.3).next_to(pedo, DOWN, buff=0.8)
             self.play(FadeIn(old), run_time=0.8)
             b.line(1)

@@ -3,11 +3,15 @@ import numpy as np
 from manim import *
 
 from kit import *
+from props import walk_along
 from style import *
 
 
 class Lesson(TranscriptScene):
     NUM = "9.4"
+    # velocity, acceleration and speed stay in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = (r"\begin{aligned}\vec v(t) &= \vec r\,'(t) = \langle x'(t),\ y'(t)\rangle\\ \vec a(t) &= \vec r\,''(t) = \langle x''(t),\ y''(t)\rangle\\"
+                   r" \text{speed} &= |\vec v(t)| = \sqrt{(x')^2 + (y')^2}\end{aligned}")
 
     def construct(self):
         bx = lambda s: 2.5 * np.sin(1.3 * s)
@@ -19,7 +23,7 @@ class Lesson(TranscriptScene):
             tt = ValueTracker(0.2)
             self.play(FadeIn(ax), Create(param_curve(ax, bx, by, 0, 3.2, color=DIM, width=2)), run_time=1)
             pos = always_redraw(lambda: Arrow(ax.c2p(0, 0), ax.c2p(bx(tt.get_value()), by(tt.get_value())), buff=0, color=FUNC, stroke_width=5))
-            bug = always_redraw(lambda: ladybug(0.35).move_to(ax.c2p(bx(tt.get_value()), by(tt.get_value()))))
+            bug = walk_along(ladybug(0.35), ax, bx, by, tt)      # she faces her velocity (Adder, 2026-10-14)
             self.add(pos, bug)
             self.play(tt.animate.set_value(1.4), run_time=2)
             b.line(1)

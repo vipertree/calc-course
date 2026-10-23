@@ -37,7 +37,7 @@ class Lesson(TranscriptScene):
 
         # a brisk review of vectors before vector-valued functions (Adder, 2026-10-14)
         def grid():
-            ax, _ = plot_axes([-3.5, 5.5, 1], [-2.5, 4.5, 1], w=6.3, h=4.9, coords=False)
+            ax, _ = plot_axes([-3.5, 5.5, 1], [-2.5, 4.5, 1], w=7.2, h=5.6, coords=False)
             return ax.to_edge(LEFT, buff=0.5).shift(DOWN * 0.2)
 
         def arrow(ax, p, q, color=FUNC, w=6):
@@ -45,14 +45,14 @@ class Lesson(TranscriptScene):
 
         with self.beat("What a vector is") as b:
             ax = grid()
-            pl = NumberPlane(x_range=[-3.5, 5.5, 1], y_range=[-2.5, 4.5, 1], x_length=6.3, y_length=4.9,
+            pl = NumberPlane(x_range=[-3.5, 5.5, 1], y_range=[-2.5, 4.5, 1], x_length=7.2, y_length=5.6,
                              background_line_style={"stroke_color": DIM, "stroke_width": 1, "stroke_opacity": 0.35},
                              axis_config={"stroke_opacity": 0}).move_to(ax.c2p(1, 1))
             self.play(FadeIn(pl), FadeIn(ax), run_time=0.8)
             v = arrow(ax, (0, 0), (3, 2))
             self.play(GrowArrow(v), run_time=1.2)
-            notes = VGroup(T("a vector: a length and a direction", 32), M(r"\langle 3,\ 2\rangle", 46, FUNC), T("3 right, 2 up", 30, DIM),
-                           T("the same vector, drawn anywhere", 30, SECANT)).arrange(DOWN, buff=0.45).to_edge(RIGHT, buff=0.5).shift(UP * 0.6)
+            notes = VGroup(T("a vector: a length and a direction", 36), M(r"\langle 3,\ 2\rangle", 52, FUNC), T("3 right, 2 up", 34, DIM),
+                           T("the same vector, drawn anywhere", 34, SECANT)).arrange(DOWN, buff=0.45).to_edge(RIGHT, buff=0.5).shift(UP * 0.6)
             self.play(FadeIn(notes[0]), run_time=0.6)
             b.line(1)
             legs = VGroup(DashedLine(ax.c2p(0, 0), ax.c2p(3, 0), color=DERIV, stroke_width=4), DashedLine(ax.c2p(3, 0), ax.c2p(3, 2), color=DERIV, stroke_width=4))
@@ -72,7 +72,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(ax), run_time=0.6)
             u = arrow(ax, (0, 0), (3, 1), FUNC)
             vt = arrow(ax, (3, 1), (4, 3), DERIV)
-            ul = M(r"\vec u", 32, FUNC).next_to(ax.c2p(1.5, 0.5), DOWN, buff=0.2)
+            ul = M(r"\vec u", 34, FUNC).move_to(ax.c2p(3.55, 0.45))
             vl = M(r"\vec v", 32, DERIV).next_to(ax.c2p(3.5, 2), RIGHT, buff=0.15)
             self.play(GrowArrow(u), FadeIn(ul), run_time=0.9)
             self.play(GrowArrow(vt), FadeIn(vl), run_time=0.9)
@@ -86,14 +86,13 @@ class Lesson(TranscriptScene):
             b.line(2)
             self.play(FadeOut(VGroup(u, vt, sm, ul, vl, sl)), board.animate.set_opacity(0.4), run_time=0.6)
             v1 = arrow(ax, (0, 0), (1, 2), DERIV, 8)
-            v2 = arrow(ax, (0, 0), (2, 4), FUNC, 5)
+            v2 = arrow(ax, (1.5, 0), (3.5, 4), FUNC, 6)
             vn = arrow(ax, (0, 0), (-1, -2), SECANT, 6)
-            v1l = M(r"\vec v = \langle 1,\ 2\rangle", 32, DERIV).next_to(ax.c2p(1, 2), RIGHT, buff=0.2)
-            v2l = M(r"2\vec v = \langle 2,\ 4\rangle", 32, FUNC).next_to(ax.c2p(2, 4), RIGHT, buff=0.15)
+            v1l = M(r"\vec v = \langle 1,\ 2\rangle", 32, DERIV).next_to(ax.c2p(-0.2, 2.1), LEFT, buff=0)
+            v2l = M(r"2\vec v = \langle 2,\ 4\rangle", 32, FUNC).next_to(ax.c2p(3.5, 4), RIGHT, buff=0.15)
             vnl = M(r"-\vec v = \langle -1,\ -2\rangle", 32, SECANT).next_to(ax.c2p(-1, -2), LEFT, buff=0.15).shift(UP * 0.25)
             self.play(GrowArrow(v1), FadeIn(v1l), run_time=0.8)
             self.play(GrowArrow(v2), FadeIn(v2l), run_time=1.2)
-            self.bring_to_front(v1)
             self.play(GrowArrow(vn), FadeIn(vnl), run_time=1.0)
         self.clear()
 

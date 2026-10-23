@@ -31,7 +31,7 @@ NOTES = [
     Video("s8_13.py::Lesson", "Arc length", 6),
 
     Section("Adding up tiny hypotenuses"),
-    Text(r"A tiny piece of a smooth curve is almost straight: the hypotenuse of a right triangle with legs $dx$ and $dy$. So $ds^2 = dx^2 + dy^2$ and $ds = \sqrt{1 + \left(\frac{dy}{dx}\right)^2}\,dx$."),
+    Text(r"A tiny piece of a smooth curve is almost straight: the hypotenuse of a right triangle with legs $dx$ and $dy$. So $ds^2 = dx^2 + dy^2$ and $ds = \sqrt{1 + \left(\frac{dy}{dx}\right)^2}\,dx$. An integral is an accumulation, the sum of infinitely many little pieces, so adding up the tiny lengths gives $L = \int ds$."),
     Formula("Arc length", (r"If $f'$ is continuous on $[a, b]$, the length of $y = f(x)$ from $x = a$ to $x = b$ is \[ L = \blank{\int_a^b \sqrt{1 + [f'(x)]^2}\,dx}. \] "
                            r"For $x = g(y)$, $c \le y \le d$: $L = \int_c^d \sqrt{1 + [g'(y)]^2}\,dy$.")),
     Text(r"\textbf{Check on a line.} $y = 2x$ on $[0, 3]$: $\int_0^3 \sqrt5\,dx = 3\sqrt5 = \sqrt{3^2 + 6^2}$, the distance formula."),

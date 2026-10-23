@@ -20,7 +20,7 @@ class Lesson(TranscriptScene):
             self.play(Create(curve), FadeIn(A), FadeIn(B), FadeIn(M("A", 32).next_to(A, LEFT)), FadeIn(M("B", 32).next_to(B, RIGHT)), run_time=1.4)
             chord = DashedLine(A.get_center(), B.get_center(), color=DIM)
             # "too short" sits under the left part of the chord, where the road bulges up above it and nothing is below
-            self.play(Create(chord), FadeIn(T("too short", 28, DIM).next_to(chord.point_from_proportion(0.22), DOWN, buff=0.15)), run_time=0.8)
+            self.play(Create(chord), FadeIn(T("too short", 28, DIM).next_to(A.get_center() + 0.22 * (B.get_center() - A.get_center()), DOWN, buff=0.15)), run_time=0.8)
             b.line(1)
             col = RIGHT * 3.9
             lab, segs = None, None

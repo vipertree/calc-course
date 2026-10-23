@@ -111,7 +111,7 @@ class Lesson(TranscriptScene):
             tan = always_redraw(tangent)
             self.play(FadeIn(tan), run_time=0.5)
             rows = [["0.5", "1", "-2.25"], ["0.2", "0.4", "-7.2"], ["0.05", "0.1", r"\approx -29.9"]]
-            tab = table(["t", r"\tfrac{dx}{dt}", r"\tfrac{dy}{dx}"], rows, size=32, gap=0.3).next_to(f1, DOWN, buff=0.5)
+            tab = table(["t", r"\frac{dx}{dt}", r"\frac{dy}{dx}"], rows, size=36, gap=0.3).next_to(f1, DOWN, buff=0.5)
             for cell in tab.cells[1:]:
                 for m in cell:
                     m.set_opacity(0)

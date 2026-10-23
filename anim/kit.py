@@ -349,6 +349,10 @@ class TranscriptScene(LessonScene):
             if ref:
                 # the rule being practiced stays up in the top-right corner (Adder: 2.1's definition, 3.1's chain rule)
                 card = formula_box(M(ref, 30), DERIV).set_max_width(3.9).to_corner(UR, buff=0.3)
+                room = 12.5 - card.width - 0.4
+                if isinstance(problem, str) and head.width > room * 1.15:
+                    # a one-line problem squeezed beside the card goes tiny: wrap it onto lines instead (Unit 9 cards)
+                    head = T(wrap_tex(problem, max(30, int(62 * room / 12.5))), 40, tex_environment="flushleft")
                 head.set_max_width(12.5 - card.width - 0.4).to_edge(UP, buff=0.5).to_edge(LEFT, buff=0.5)
                 self.play(FadeIn(card), FadeIn(head, shift=DOWN * 0.2), run_time=0.8)
             else:

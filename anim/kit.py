@@ -1064,12 +1064,14 @@ def solid_about_vertical(ax, r_out, c, d, r_in=None, axis_x=0.0, n=9, color=ACCU
 
 
 def ladybug(size=0.5):
-    """A small ladybug (vector art), facing up; rotate to aim it along a path."""
+    """A small ladybug (vector art), facing up. props.walk_along walks her along a parametric path, facing her way."""
     shell = Ellipse(width=size, height=size * 1.15, stroke_color=INK, stroke_width=2, fill_color="#D7263D", fill_opacity=1)
     head = Circle(radius=size * 0.22, stroke_width=0, fill_color=INK, fill_opacity=1).next_to(shell, UP, buff=-size * 0.12)
     seam = Line(shell.get_top(), shell.get_bottom(), color=INK, stroke_width=2)
     spots = VGroup(*[Dot(shell.get_center() + np.array([sx * size * 0.22, sy * size * 0.25, 0]), radius=size * 0.07, color=INK) for sx in (-1, 1) for sy in (-0.6, 0.5)])
-    return VGroup(head, shell, seam, spots)
+    bug = VGroup(head, shell, seam, spots)
+    bug.body = shell        # her center for walking a path and turning (props.walk_along)
+    return bug
 
 
 def param_curve(ax, xf, yf, t0, t1, color=FUNC, width=4):

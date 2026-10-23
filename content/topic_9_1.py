@@ -31,11 +31,14 @@ NOTES = [
 
     Section("Parametric curves"),
     Text(r"Parametric equations give each coordinate in terms of a parameter $t$: $x = x(t)$, $y = y(t)$. Plot points in order of $t$; the direction of increasing $t$ is the \emph{orientation}. "
-         r"A parametric curve can loop or double back, which $y = f(x)$ cannot."),
+         r"A parametric curve can come back over $x$ values it has already passed, which $y = f(x)$ cannot: such a path fails the vertical line test, so $y$ is not a function of $x$, but as parametric equations it's no problem."),
     FIG,
     Formula("Slope of a parametric curve", (r"By the chain rule, $\frac{dy}{dt} = \frac{dy}{dx}\cdot\frac{dx}{dt}$, so \[ \frac{dy}{dx} = \blank{\frac{dy/dt}{dx/dt}} \quad \text{where } \frac{dx}{dt} \ne 0. \]")),
     VideoExample('A tangent line', work="3.6cm"),
     Formula("Horizontal and vertical tangents", (r"Horizontal tangent: \blank{$\frac{dy}{dt} = 0$} and $\frac{dx}{dt} \ne 0$. Vertical tangent: \blank{$\frac{dx}{dt} = 0$} and $\frac{dy}{dt} \ne 0$. If both are $0$, look more closely.")),
+    Text(r"\textbf{Why a zero on the bottom means vertical.} As $\frac{dx}{dt}$ shrinks toward $0$ while $\frac{dy}{dt}$ doesn't, the slope $\frac{dy/dt}{dx/dt}$ goes off to infinity, and a line with an infinite slope is vertical. "
+         r"For $x = t^2 - 1$, $y = t^3 - 3t$ near $t = 0$: the slope is $-2.25$ at $t = 0.5$, $-7.2$ at $t = 0.2$, and about $-29.9$ at $t = 0.05$. "
+         r"It's the same as for a regular function: the circle $x^2 + y^2 = 25$ has $\frac{dy}{dx} = -\frac xy$, with vertical tangents where the denominator $y$ is $0$."),
     Text(r"\textbf{Eliminating the parameter.} Solve one equation for $t$ and substitute: $x = 2t + 1$, $y = t^2$ gives $y = \frac{(x - 1)^2}{4}$."),
     BigIdea(r"$\frac{dy}{dx} = \frac{dy/dt}{dx/dt}$. Find the point by plugging the same $t$ into $x(t)$ and $y(t)$."),
     Check(r"$x = 3t$, $y = t^2 + 1$. Find $\frac{dy}{dx}$ at $t = 3$.", selfcheck(r"2"), r"$\frac{2t}{3}$ at $t = 3$."),

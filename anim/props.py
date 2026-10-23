@@ -485,3 +485,26 @@ def car_on_graph(ax, f, x, way, width=0.75):
     c.add_updater(upd)
     c.update()
     return c
+
+
+def walk_along(sprite, ax, xf, yf, t, h=1e-3):
+    """Keep a top-down sprite drawn facing UP (the ladybug, kit.ladybug) on the parametric path (x(t), y(t)) of axes ax,
+    turned to face its direction of travel: the heading is the angle of the velocity (x'(t), y'(t)), measured on screen.
+    t is a ValueTracker; animate it to walk. Where the velocity is zero (a stop or a cusp) she keeps her last heading,
+    and each turn is the short way round, so she never spins. Adder, 2026-10-14: the ladybug turns with the path."""
+    if not hasattr(sprite, "heading"):
+        sprite.heading = PI / 2
+
+    def upd(m):
+        u = t.get_value()
+        p = ax.c2p(xf(u), yf(u))
+        v = np.array(ax.c2p(xf(u + h), yf(u + h))) - np.array(ax.c2p(xf(u - h), yf(u - h)))
+        if np.hypot(v[0], v[1]) > 1e-6:
+            want = float(np.arctan2(v[1], v[0]))
+            turn = (want - m.heading + PI) % TAU - PI
+            m.rotate(turn, about_point=getattr(m, "body", m).get_center())
+            m.heading += turn
+        m.shift(p - getattr(m, "body", m).get_center())     # pin the body (not the bounding box) to the path
+    sprite.add_updater(upd)
+    sprite.update()
+    return sprite

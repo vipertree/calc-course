@@ -11,14 +11,37 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("The harmonic series grows forever") as b:
-            r1 = M(r"1 + \tfrac12 + \tfrac13 + \tfrac14 + \tfrac15 + \tfrac16 + \tfrac17 + \tfrac18 + \cdots", 46).shift(UP * 2)
-            self.play(Write(r1), run_time=1.2)
+            # Adder (2026-10-14): show a graph of the harmonic series' values. One dot per n, never a curve
+            head = M(r"1 + \tfrac12 + \tfrac13 + \tfrac14 + \cdots", 48).to_edge(UP, buff=0.4)
+            ax, al = plot_axes([0, 42, 5], [0, 4.6, 1], w=10.4, h=5.0, xlabel="n", ylabel="")
+            VGroup(ax, al).next_to(head, DOWN, buff=0.35).set_x(-0.2)
+            self.play(Write(head), FadeIn(ax), FadeIn(al), run_time=1.2)
+            terms = VGroup(*[Dot(ax.c2p(k, 1 / k), radius=0.05, color=DERIV) for k in range(1, 41)])
+            self.play(LaggedStart(*[FadeIn(d, scale=0.5) for d in terms], lag_ratio=0.08), run_time=2.4)
+            t_lab = T(r"the sequence: $\frac1n \to 0$", 32, DERIV).next_to(ax.c2p(40, 0), UP, buff=0.55).shift(LEFT * 1.2)
+            self.play(FadeIn(t_lab), run_time=0.6)
             b.line(1)
+            sums, tot = [], 0.0
+            for k in range(1, 41):
+                tot += 1 / k
+                sums.append(Dot(ax.c2p(k, tot), radius=0.055, color=TANGENT))
+            sums = VGroup(*sums)
+            self.play(LaggedStart(*[FadeIn(d, scale=0.5) for d in sums], lag_ratio=0.1), run_time=3.2)
+            s_lab = T(r"the series: $S_n$", 32, TANGENT).move_to(ax.c2p(9, 4.1))
+            last = M(r"S_{40} \approx 4.28", 32, TANGENT).next_to(sums[-1], DOWN, buff=0.5).shift(LEFT * 0.4)
+            self.play(FadeIn(s_lab), FadeIn(last), Indicate(sums[-1], scale_factor=2), run_time=1)
+            b.line(2)
+            self.play(Indicate(sums, color=TANGENT, scale_factor=1.15), run_time=1.2)
+        self.clear()
+
+        with self.beat("Grouping the terms") as b:
+            r1 = M(r"1 + \tfrac12 + \tfrac13 + \tfrac14 + \tfrac15 + \tfrac16 + \tfrac17 + \tfrac18 + \cdots", 46).shift(UP * 2)
             r2 = M(r"1 + \tfrac12 + \left(\tfrac13 + \tfrac14\right) + \left(\tfrac15 + \tfrac16 + \tfrac17 + \tfrac18\right) + \cdots", 44).next_to(r1, DOWN, buff=0.6)
+            self.play(FadeIn(r1), run_time=0.6)
             self.play(Write(r2), run_time=1.2)
             unders = VGroup(M(r"\ge \tfrac12", 34, SECANT).next_to(r2, DOWN, buff=0.3).shift(LEFT * 0.6), M(r"\ge \tfrac12", 34, SECANT).next_to(r2, DOWN, buff=0.3).shift(RIGHT * 2.6))
             self.play(FadeIn(unders), run_time=0.8)
-            b.line(2)
+            b.line(1)
             sums = M(r"S_1 = 1,\ S_2 = 1.5,\ S_4 \ge 2,\ S_8 \ge 2.5,\ S_{16} \ge 3, \ \ldots", 38, TANGENT).next_to(unders, DOWN, buff=0.7)
             self.play(Write(sums), FadeIn(T("diverges", 40, TANGENT).next_to(sums, DOWN, buff=0.4)), run_time=1.2)
         self.clear()
@@ -38,6 +61,8 @@ class Lesson(TranscriptScene):
                       FadeIn(T("converges", 30, DERIV).next_to(conv, UP, buff=0.2)), FadeIn(M("p", 34).next_to(line, RIGHT, buff=0.2)), run_time=1.2)
         self.clear()
 
+        # the test stays up in the corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&\textstyle\sum \frac{1}{n^p}\text{ converges if } p > 1,\\ &\text{diverges if } p \le 1\end{aligned}"
         line = NumberLine(x_range=[0, 3.5, 1], length=6, include_numbers=True, font_size=26, color=DIM)
         marks = [(1.01, "a", DERIV), (0.5, "b", TANGENT), (np.pi, "c", DERIV), (0.99, "d", TANGENT)]
         fig = VGroup(line, Line(line.n2p(0), line.n2p(1), color=TANGENT, stroke_width=6), Line(line.n2p(1), line.n2p(3.5), color=DERIV, stroke_width=6),

@@ -9,12 +9,14 @@ from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part
 
 x = sp.symbols("x", positive=True)
 p_int = lambda p: sp.integrate(x**(-p), (x, 1, sp.oo))
+close("harmonic", sum(sp.Rational(1, k) for k in range(1, 41)), 4.28, 0.005)
 same("p-series", [p_int(sp.Rational(3, 2)), p_int(1), p_int(sp.Rational(1, 2)), p_int(4)], [2, sp.oo, sp.oo, sp.Rational(1, 3)])
 
 NOTES = [
-    Video("s10_5.py::Lesson", "Harmonic and p-series", 3),
+    Video("s10_5.py::Lesson", "Harmonic and p-series", 4),
 
     Section("The harmonic series"),
+    Text(r"\textbf{Graph it.} Plot one dot per $n$: the sequence $\frac1n$ falls toward $0$, while the partial sums $S_n = 1 + \frac12 + \cdots + \frac1n$ keep climbing, more and more slowly ($S_{40} \approx 4.28$), and never level off."),
     Text(r"$1 + \frac12 + \left(\frac13 + \frac14\right) + \left(\frac15 + \cdots + \frac18\right) + \cdots$: each group is at least $\frac12$, so the partial sums grow without bound. The harmonic series \textbf{diverges}, even though its terms go to $0$."),
     Formula("$p$-series", (r"\[ \sum_{n=1}^\infty \frac{1}{n^p} \ \text{ converges if } \blank{p > 1} \ \text{ and diverges if } \blank{p \le 1}. \] (By the integral test: $\int_1^\infty x^{-p}\,dx$ is finite exactly when $p > 1$.)")),
     VideoExample('Classifying p-series', work="3cm"),

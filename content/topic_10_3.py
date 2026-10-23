@@ -13,11 +13,14 @@ L = lambda a: sp.limit(a, n, sp.oo)
 
 same("lesson", [L(n / (2 * n + 1))], [sp.Rational(1, 2)])
 same("ex", [L((1 + 1 / n)**n), L(1 / sp.sqrt(n))], [sp.E, 0])
+same("orders", [L(n / (2 * n - 1)), sum(sp.Rational(k, 2 * k - 1) for k in range(1, 4))], [sp.Rational(1, 2), sp.Rational(34, 15)])
 
 NOTES = [
-    Video("s10_3.py::Lesson", "The nth term test", 4),
+    Video("s10_3.py::Lesson", "The nth term test", 5),
 
     Section("The test"),
+    Text(r"\textbf{Sequence vs.\ series.} A sequence is a list of numbers: $a_1, a_2, a_3, \ldots$ A series is the sum of that list: $a_1 + a_2 + a_3 + \cdots$. The sequence $\frac12, \frac14, \frac18, \ldots$ converges to $0$; the series $\frac12 + \frac14 + \frac18 + \cdots$ converges to $1$."),
+    Text(r"\textbf{Orders that stay big.} If the $n$th order at the bar is $\frac{n}{2n - 1}$ of a beer ($1, \frac23, \frac35, \frac47, \ldots \to \frac12$), every order adds about half a beer, so the total grows without bound."),
     Formula("$n$th term test for divergence", (r"If $\lim_{n\to\infty} a_n \ne 0$ or the limit does not exist, then $\sum a_n$ \blank{diverges}. If $\lim_{n\to\infty} a_n = 0$, the test is \blank{inconclusive}.")),
     Text(r"\textbf{Why.} If $\sum a_n = S$, then $a_n = S_n - S_{n-1} \to S - S = 0$."),
     VideoExample('Using the test', work="2.6cm"),

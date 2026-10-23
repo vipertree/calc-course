@@ -40,7 +40,7 @@ def math_checks(path):
     """Evaluate hidden <!-- check: lhs == rhs --> lines with sympy. Returns failures."""
     import sympy as sp
     ns = {n: getattr(sp, n) for n in ["limit", "sqrt", "sin", "cos", "tan", "exp", "log", "pi", "oo", "E",
-                                       "Rational", "Abs", "diff", "integrate", "simplify", "Symbol", "S",
+                                       "Rational", "Abs", "diff", "integrate", "simplify", "Symbol", "S", "summation",
                                        "expand", "factor", "cancel", "solve", "nsimplify", "N", "Float", "cot", "sec", "csc", "asin", "acos", "atan"]}
     ns.update({v: sp.Symbol(v) for v in "xthnkua"})
     bad = []

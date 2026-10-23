@@ -107,6 +107,116 @@ def face(car, way):
     return car
 
 
+def bar_counter(top=-1.75, width=13.6):
+    """A wooden bar counter whose top surface is at y = top (10.1, 10.3): things set on it stand at top."""
+    wood, wood_dk = "#9A6B43", "#6E4A2C"
+    return VGroup(Rectangle(width=width, height=0.28, stroke_width=0, fill_color=wood, fill_opacity=1).move_to([0, top - 0.14, 0]),
+                  Rectangle(width=width - 0.4, height=1.1, stroke_width=0, fill_color=wood_dk, fill_opacity=1).move_to([0, top - 0.83, 0]),
+                  Line([-(width / 2 - 0.4), top - 0.5, 0], [width / 2 - 0.4, top - 0.5, 0], stroke_color=wood, stroke_width=3, stroke_opacity=0.5))
+
+
+def bartender(height=3.2):
+    """A bartender in a long black apron, walking to the right (10.1's joke). Mirror with face() to walk left."""
+    b = sprite("bartender", height, rim=True)
+    b.facing = 1
+    return b
+
+
+# The pint (assets/beer_pint.png) is a full glass with a foam head. beer_glass(level) redraws it holding any amount:
+# rows of the original image, measured once: the rim under the foam, the beer's surface when full, the bottom of the beer.
+_PINT_RIM, _PINT_TOP, _PINT_BOT, _PINT_WALL = 112, 205, 806, 9
+_pint_cache = {}
+
+
+def _pint_arrays():
+    if "full" in _pint_cache:
+        return _pint_cache["full"]
+    full = np.array(Image.open(os.path.join(ASSETS, "beer_pint.png")).convert("RGBA")).astype(np.int16)
+    rgb, a = full[..., :3], full[..., 3]
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    beer = (a > 128) & ((mx - mn) / (mx + 1) > 0.42) & (rgb[..., 2] < 140)
+    H, W = a.shape
+    span = np.zeros((H, 2), int)
+    for y in range(H):
+        xs = np.nonzero(a[y] > 128)[0]
+        span[y] = (xs[0], xs[-1]) if len(xs) else (0, -1)
+    # the empty glass: no head, the wall colour copied down from a row where the wall shows, a faint tint inside,
+    # two highlight streaks, a rim line, and the base as painted
+    empty = full.copy()
+    empty[:_PINT_RIM, :, 3] = 0
+    wall = full[160, span[160, 0]:span[160, 0] + _PINT_WALL].copy()
+    for y in range(_PINT_RIM, _PINT_BOT):
+        l, r = span[y]
+        if r <= l:
+            continue
+        inner = slice(l + _PINT_WALL, r - _PINT_WALL + 1)
+        row = empty[y]
+        if y < _PINT_BOT - 40:
+            row[inner] = (232, 240, 243, 60)
+            row[l:l + _PINT_WALL] = wall
+            row[r - _PINT_WALL + 1:r + 1] = wall[::-1]
+        else:                                    # the curved bottom of the beer, inside the painted base
+            m = beer[y]
+            row[m] = (232, 240, 243, 60)
+            continue
+        w = r - l
+        row[l + int(0.13 * w):l + int(0.17 * w)] = (255, 255, 255, 120)
+        row[l + int(0.21 * w):l + int(0.225 * w)] = (255, 255, 255, 90)
+    for y in range(_PINT_RIM, _PINT_RIM + 5):
+        l, r = span[y]
+        empty[y, l:r + 1] = (205, 222, 228, 230)
+    # how much the glass holds below each row: sum of (interior width)^2 over the rows of beer (a solid of revolution)
+    width = np.array([max(span[y, 1] - span[y, 0] - 2 * _PINT_WALL, 0) for y in range(H)], float)
+    vol = np.zeros(H)
+    acc = 0.0
+    for y in range(_PINT_BOT, _PINT_TOP - 1, -1):
+        acc += width[y] ** 2
+        vol[y] = acc
+    vol /= acc
+    _pint_cache["full"] = (full, empty, beer, span, vol)
+    return _pint_cache["full"]
+
+
+def pint_image(level):
+    """The pint holding `level` of a beer (0 to 1, by volume) as an RGBA array: beer below the surface, a thin head."""
+    level = round(float(np.clip(level, 0, 1)), 3)
+    if level in _pint_cache:
+        return _pint_cache[level]
+    full, empty, beer, span, vol = _pint_arrays()
+    if level >= 0.999:
+        out = full
+    else:
+        out = empty.copy()
+        if level > 0.002:
+            ys = _PINT_TOP + int(np.argmin(np.abs(vol[_PINT_TOP:_PINT_BOT + 1] - level)))
+            body = beer.copy()
+            body[:ys] = False
+            out[body] = full[body]
+            for y in range(max(ys - 9, _PINT_RIM + 5), ys + 2):          # the head: a thin band of foam
+                l, r = span[y]
+                out[y, l + _PINT_WALL:r - _PINT_WALL + 1] = (252, 245, 222, 255) if y < ys else (236, 214, 160, 255)
+    out = out.astype(np.uint8)
+    _pint_cache[level] = out
+    return out
+
+
+def beer_glass(level=1.0, height=2.6):
+    """A painted pint glass holding `level` of a beer (by volume, so half a beer really is half). Redraw it with
+    pint_image() for a rising level, or use PintFill."""
+    g = ImageMobject(pint_image(level))
+    g.set_height(height)
+    return g
+
+
+def pint_fill(glass, level0, level1):
+    """An animation: `glass` (a beer_glass) fills from level0 to level1, keeping its place and size."""
+    def update(m, t):
+        h, c = m.height, m.get_center()
+        m.pixel_array = pint_image(level0 + (level1 - level0) * t)
+        m.set_height(h).move_to(c)
+    return UpdateFromAlphaFunc(glass, update)
+
+
 def ladder(foot, top, width=0.42):
     """The wooden ladder sprite spanning foot -> top: its length is the distance between them, its feet on `foot`."""
     foot, top = np.array(foot, dtype=float), np.array(top, dtype=float)

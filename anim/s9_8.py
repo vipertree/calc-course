@@ -20,7 +20,7 @@ class Lesson(TranscriptScene):
             ax, labs = plot_axes([0, 4.6, 1], [0, 2.4, 1], w=5.6, h=3.4, coords=False)
             VGroup(ax, labs).to_edge(LEFT, buff=0.6).shift(UP * 0.5)
             curve = ax.plot(f, x_range=[0, 4.4], color=FUNC, stroke_width=4)
-            fl = M("y = f(x)", 32, FUNC).next_to(ax.c2p(0.5, f(0.5)), UP, buff=0.35)
+            fl = M("y = f(x)", 32, FUNC).next_to(ax.c2p(4.4, f(4.4)), UP, buff=0.2)
             self.play(FadeIn(ax), FadeIn(labs), run_time=0.6)
             self.play(Create(curve), FadeIn(fl), run_time=1.5)
             edges = np.linspace(0.3, 3.6, 12)
@@ -48,14 +48,15 @@ class Lesson(TranscriptScene):
                 ys = [car(v) * np.sin(v) for v in s if abs(car(v) * np.cos(v) - x) < 0.04]
                 return max(ys) if ys else 0
             bad = VGroup(*[Rectangle(width=px.c2p(0.25, 0)[0] - px.c2p(0, 0)[0], height=2 * (px.c2p(0, half_height(x))[1] - px.c2p(0, 0)[1]),
-                                     stroke_color=DIM, stroke_width=2).move_to(px.c2p(x, 0)) for x in np.arange(-0.125, 2.0, 0.25)])
+                                     stroke_color=INK, stroke_width=3).move_to(px.c2p(x, 0)) for x in np.arange(-0.125, 2.0, 0.25)])
             self.play(LaggedStart(*[FadeIn(r) for r in bad], lag_ratio=0.3), run_time=1.8)
             b.line(3)
             pizza = VGroup(Circle(radius=1.3, stroke_color="#C68B59", stroke_width=8, fill_color="#F2C14E", fill_opacity=1),
                            *[Line(ORIGIN, 1.3 * np.array([np.cos(a), np.sin(a), 0]), color="#C68B59", stroke_width=3) for a in np.linspace(0, TAU, 9)[:-1]]).move_to(ax)
             self.play(FadeOut(VGroup(ax, labs, curve, fl, rects, hgt, wid, area, bad)), run_time=0.8)
             self.play(FadeIn(pizza), run_time=0.8)
-            wedges = VGroup(*[polar_wedge(px, car, k * TAU / 24, TAU / 24, color=SECANT if k % 2 else DERIV, opacity=0.55, arc=True) for k in range(24)])
+            mid = lambda d: (lambda s: car(s + d / 2))          # radius at the middle of each wedge, so the fan hugs the curve
+            wedges = VGroup(*[polar_wedge(px, mid(TAU / 36), k * TAU / 36, TAU / 36, color=SECANT if k % 2 else DERIV, opacity=0.55, arc=True) for k in range(36)])
             self.play(LaggedStart(*[FadeIn(w) for w in wedges], lag_ratio=0.4), run_time=4.0)
         self.clear()
         self.title()
@@ -77,7 +78,7 @@ class Lesson(TranscriptScene):
             ax, _ = plot_axes([-0.6, 2.3, 1], [-1.5, 1.5, 1], w=5.1, h=5.25, coords=False)
             ax.to_edge(LEFT, buff=0.8)
             self.play(FadeIn(ax), Create(polar_curve(ax, car, 0, TAU)), run_time=1.5)
-            self.play(FadeIn(M(r"r = 1 + \cos\theta", 32, FUNC).next_to(ax.c2p(1.1, 1.25), UR, buff=0.1)), run_time=0.5)
+            self.play(FadeIn(M(r"r = 1 + \cos\theta", 32, FUNC).next_to(ax.c2p(1.5, -1.35), RIGHT, buff=0.1)), run_time=0.5)
             t0, dt = 0.75, 0.3
             O = ax.c2p(0, 0)
             ray = sample_r(ax, car, t0, label=r"r(\theta)", side=-1)
@@ -110,8 +111,8 @@ class Lesson(TranscriptScene):
                 more.add(w)
             b.line(4)
             self.play(FadeOut(w0), FadeOut(more), run_time=0.5)
-            n = 48
-            many = VGroup(*[polar_wedge(ax, car, k * TAU / n, TAU / n, color=SECANT if k % 2 else DERIV, opacity=0.55, arc=True) for k in range(n)])
+            n = 60
+            many = VGroup(*[polar_wedge(ax, lambda s: car(s + PI / n), k * TAU / n, TAU / n, color=SECANT if k % 2 else DERIV, opacity=0.55, arc=True) for k in range(n)])
             self.play(LaggedStart(*[FadeIn(w) for w in many], lag_ratio=0.3), run_time=4.0)
             b.line(5)
             box = formula_box(M(r"A = \tfrac12\int_\alpha^\beta r^2\,d\theta", 46, ACCUM), ACCUM).to_edge(RIGHT, buff=0.8).shift(DOWN * 0.6)

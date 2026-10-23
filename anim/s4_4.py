@@ -108,7 +108,7 @@ class Lesson(TranscriptScene):
 
         self.example("The ripple",
                      r"A stone drops into a pond, and a circular ripple spreads out. Write an equation that relates the area inside the ripple and its radius, then differentiate with respect to time.",
-                     [r"TEXT:Changing: the radius $r$ and the area $A$.", r"A = \pi r^2", r"\frac{d}{dt}\big[A\big] = \frac{d}{dt}\big[\pi r^2\big]",
+                     [r"TEXT:Changing: $r$ and $A$.", r"A = \pi r^2", r"\frac{d}{dt}\big[A\big] = \frac{d}{dt}\big[\pi r^2\big]",
                       r"\frac{dA}{dt} = 2\pi r\,\frac{dr}{dt}"], at=[1, 2, 3, 4], figure=fig_ripple(), follow=True)
 
         with self.beat("Close") as b:
@@ -121,22 +121,22 @@ class Lesson(TranscriptScene):
         self.examples_card()
         self.example("Example 1: The ladder",
                      r"A $13$-ft ladder leans against a wall, and its bottom slides away from the wall. Write an equation that relates the bottom's distance from the wall and the height of the top, then differentiate with respect to time.",
-                     [r"TEXT:Changing: $x$ (wall to foot) and $y$ (height of the top).", r"TEXT:The ladder stays $13$ ft long: a number.",
+                     [r"TEXT:Changing: $x$ and $y$.", r"TEXT:The ladder stays $13$ ft.",
                       r"x^2 + y^2 = 13^2", r"\frac{d}{dt}\big[x^2 + y^2\big] = \frac{d}{dt}\big[13^2\big]", r"2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt} = 0"],
                      at=[1, 2, 3, 4, 5], figure=fig_ladder(), follow=True)
         self.example("Example 2: Two cars",
                      r"Priya drives west toward an intersection, and Kai drives north away from it. Write an equation that relates the distance between the two cars to each car's distance from the intersection, then differentiate with respect to time.",
-                     [r"TEXT:Changing: $x$ (Priya to the intersection),", r"TEXT:\quad $y$ (Kai to it), $z$ (between them).",
+                     [r"TEXT:Changing: $x$, $y$ and $z$.",
                       r"z^2 = x^2 + y^2", r"\frac{d}{dt}\big[z^2\big] = \frac{d}{dt}\big[x^2 + y^2\big]",
-                      r"2z\,\frac{dz}{dt} = 2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt}"], at=[1, 1, 2, 3, 4], figure=fig_cars())
+                      r"2z\,\frac{dz}{dt} = 2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt}"], at=[1, 2, 3, 4], figure=fig_cars())
         self.example("Example 3: A shadow",
                      r"Ana, who is $5$ ft tall, walks away from a $15$-ft lamppost. Write an equation that relates her distance from the post and the length of her shadow, then differentiate with respect to time.",
-                     [r"TEXT:Changing: $x$ (Ana to the post) and $s$ (her shadow).", r"TEXT:The heights stay $15$ ft and $5$ ft.",
+                     [r"TEXT:Changing: $x$ and $s$.", r"TEXT:The heights stay $15$ and $5$ ft.",
                       r"\frac{15}{x + s} = \frac{5}{s}", r"15s = 5x + 5s", r"10s = 5x,\ \text{so}\ s = \frac x2", r"\frac{ds}{dt} = \frac12\,\frac{dx}{dt}"],
                      at=[1, 2, 3, 4, 5, 6], figure=fig_shadow(), follow=True)
         self.example("Example 4: Filling a cone",
                      r"Water pours into a cone, point down, that is $9$ ft tall with radius $3$ ft at the top. Write an equation that relates the volume of the water and its depth, then differentiate with respect to time. (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)",
-                     [r"TEXT:Changing: $V$, $h$, and the water's radius $r$.", r"TEXT:The cone stays $9$ ft tall, radius $3$ ft.",
+                     [r"TEXT:Changing: $V$, $h$ and $r$.", r"TEXT:The cone stays $9$~ft tall, radius~$3$~ft.",
                       r"\frac rh = \frac39,\ \text{so}\ r = \frac h3", r"V = \frac13\pi\left(\frac h3\right)^2 h", r"V = \frac{\pi}{27}h^3",
                       r"\frac{dV}{dt} = \frac{\pi}{9}h^2\,\frac{dh}{dt}"], at=[1, 2, 3, 4, 5, 6], figure=fig_cone())
         self.finish()

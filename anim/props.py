@@ -434,7 +434,7 @@ def fig_cars(x=2.8, y=2.1):
                  MathTex(r"\text{N}", font_size=28, color=DIM).next_to(ny, UP, buff=0.08), z, ca, cb,
                  _lab("x").next_to(Line(o, a), DOWN, buff=0.12).shift(LEFT * 0.7), _lab("y").next_to(Line(o, b), LEFT, buff=0.12).shift(DOWN * 0.5),
                  _lab("z", 36, FUNC).move_to((a + b) / 2 + np.array([0.3, 0.3, 0])),
-                 va, _lab(r"\tfrac{dx}{dt}", 28, TANGENT).next_to(va, DOWN, buff=0.06), vb, _lab(r"\tfrac{dy}{dt}", 28, TANGENT).next_to(vb, LEFT, buff=0.06))
+                 va, _lab(r"\tfrac{dx}{dt}", 34, TANGENT).next_to(va, DOWN, buff=0.06), vb, _lab(r"\tfrac{dy}{dt}", 34, TANGENT).next_to(vb, LEFT, buff=0.06))
 
 
 def fig_shadow(H=3.0, h=1.0, x=2.2):

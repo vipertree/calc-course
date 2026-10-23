@@ -1119,10 +1119,24 @@ def polar_region(ax, f, t0, t1, inner=None, color=AREA, opacity=0.45, n=120):
     return Polygon(*pts, stroke_width=0, fill_color=color, fill_opacity=opacity)
 
 
-def polar_wedge(ax, f, t, dt, color=SECANT, opacity=0.7):
-    """A thin sector from the origin at angle t, width dt, radius f(t)."""
+def polar_wedge(ax, f, t, dt, color=SECANT, opacity=0.7, arc=False):
+    """A thin sector from the origin at angle t, width dt, radius f(t). arc=True rounds its outer edge (a true sector of a
+    circle of radius f(t)); the default closes it with a chord."""
     r = f(t)
-    return Polygon(ax.c2p(0, 0), ax.c2p(r * np.cos(t), r * np.sin(t)), ax.c2p(r * np.cos(t + dt), r * np.sin(t + dt)), stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity)
+    s = np.linspace(t, t + dt, 16) if arc else (t, t + dt)
+    return Polygon(ax.c2p(0, 0), *[ax.c2p(r * np.cos(v), r * np.sin(v)) for v in s], stroke_color=color, stroke_width=2, fill_color=color, fill_opacity=opacity)
+
+
+def sample_r(ax, f, t, label="r", side=1, color=SECANT, size=30, width=5):
+    """A sample radius on a polar graph: a line from the pole to the curve r = f(theta) at angle t, a dot on the curve and
+    the label `label` beside the line's middle (side=1: counterclockwise of the line, -1: clockwise). Adder, 9.8:
+    every polar area example shows a sample r on the graph."""
+    O, P = ax.c2p(0, 0), ax.c2p(f(t) * np.cos(t), f(t) * np.sin(t))
+    d = (P - O) / np.linalg.norm(P - O)
+    n = np.array([-d[1], d[0], 0.0]) * side
+    lab = M(label, size, color)
+    lab.move_to((O + P) / 2 + n * (0.12 + 0.5 * max(lab.width * abs(n[0]), lab.height * abs(n[1])) + 0.08))
+    return VGroup(Line(O, P, color=color, stroke_width=width), Dot(P, radius=0.07, color=color), lab)
 
 
 # ---------------------------------------------------------------- Unit 0: trig review

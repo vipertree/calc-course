@@ -24,10 +24,11 @@ FIG = graph("t9_8_rose", [], (-1.2, 1.2), (-1.2, 1.2), extra=r"\addplot[fn, doma
             caption=r"The rose $r = \sin 2\theta$: one petal for each interval of length $\frac\pi2$.")
 
 NOTES = [
-    Video("s9_8.py::Lesson", "Polar area", 5),
+    Video("s9_8.py::Lesson", "Polar area", 6),
 
     Section("Wedges, not rectangles"),
     Text(r"A sector of a circle with angle $\Delta\theta$ is the fraction $\frac{\Delta\theta}{2\pi}$ of the whole circle, so its area is $\frac{\Delta\theta}{2\pi}\cdot\pi r^2 = \frac12 r^2\,\Delta\theta$."),
+    Text(r"Remember that $r$ is a function of $\theta$. A thin wedge at angle $\theta$ that spans a small angle $\Delta\theta$ is almost a sector of radius $r(\theta)$, so its area is about $\frac12\,[r(\theta)]^2\,\Delta\theta$. Add up the wedges and let $\Delta\theta$ shrink, the same way Riemann rectangles of area $f(x)\,\Delta x$ became $\int f(x)\,dx$."),
     Formula("Polar area", (r"The area of the region swept by $r = f(\theta)$ for $\alpha \le \theta \le \beta$ is \[ A = \blank{\frac12\int_\alpha^\beta r^2\,d\theta}. \]")),
     VideoExample('The area inside a cardioid', work="4.6cm"),
     Section("Choosing the limits"),

@@ -1,8 +1,11 @@
 """Topic 4.5: Solving related rates problems.
 
 CED: CHA-3.E (CHA-3.E.1): the full procedure, with geometry (Pythagorean theorem, similar triangles, volume formulas,
-right-triangle trig) to relate the quantities. 4.5 solves the same examples 4.4 set up: the shadow, the 13-ft ladder, the
-cone, two cars, the ripple. 3D volume formulas are stated in every problem that needs one, as on the AP exam.
+right-triangle trig) to relate the quantities. Adder (2026-10-23): 4.5 goes through the same problems as 4.4, in the same
+order (ripple, ladder, two cars, shadow, cone), now with the numbers, solved with the strategy: know (fixed quantities
+noted here), want, equation (fixed ones go in as numbers), differentiate, substitute and solve, answer with units. No
+separate "fixed" step. The car problem: Priya drives TOWARD the intersection at 20 m/s (dx/dt = -20), Kai away at 15 m/s.
+3D volume formulas are stated in every problem that needs one, as on the AP exam.
 """
 import sympy as sp
 
@@ -22,32 +25,35 @@ def solve_rate(lhs, rhs, want, known):
 
 same("ladder", solve_rate(x**2 + y**2, 169, y, {d(x): 2, x: 5, y: 12}), sp.Rational(-5, 6))
 same("cone", solve_rate(sp.pi / 27 * h**3, V, h, {d(V): 2, h: 6}), 1 / (2 * sp.pi))
-same("cars", solve_rate(z**2, x**2 + y**2, z, {d(x): 40, d(y): 30, x: 80, y: 60, z: 100}), 50)
+same("cars z", sp.sqrt(80**2 + 60**2), 100)
+same("cars", solve_rate(z**2, x**2 + y**2, z, {d(x): -20, d(y): 15, x: 80, y: 60, z: 100}), -7)
+same("ripple", solve_rate(sp.pi * r**2, V, V, {d(r): 2, r: 10}), 40 * sp.pi)
+same("shadow", sp.solve(sp.Eq(15 * s, 5 * (x + s)), s), [x / 2])
+same("shadow rate", solve_rate(s, x / 2, s, {d(x): 4, x: 10}), 2)
 
 NOTES = [
     Video("s4_5.py::Lesson", "Solving related rates", 6),
 
-    Section("A procedure"),
+    Section("A strategy"),
     Formula("Solving a related rates problem", (
-        r"\textbf{1. Know:} the quantities at the instant (e.g. $x = 5$ ft) and the given rates (e.g. $\frac{dx}{dt} = 2$ ft/s), with units. "
-        r"Shrinking quantities have \blank{negative} rates. \par "
+        r"\textbf{1. Know:} draw and label the picture, and list the rates (e.g. $\frac{dx}{dt} = 2$ ft/s) and the values at the "
+        r"instant (e.g. $x = 5$ ft) you are given, with units. Note anything \blank{fixed} here too (e.g. the ladder's length is fixed "
+        r"at $13$ ft). Shrinking quantities have \blank{negative} rates. \par "
         r"\textbf{2. Want:} the rate you are looking for (e.g. $\frac{dy}{dt} = ?$). \par "
-        r"\textbf{3. Fixed:} constants that never change (a ladder's length, a cone's proportions). These can be substituted from the start. \par "
-        r"\textbf{4. Equation:} relate the quantities. \par "
-        r"\textbf{5. Differentiate} with respect to $t$ \emph{before} substituting any value that \blank{changes}. \par "
-        r"\textbf{6. Substitute and solve:} put in the values at the instant, solve for the rate, and answer with units.")),
-    Text(r"Steps 1 to 5 are Topic 4.4's setup. The examples below are the ones set up there; each picks up at step 6."),
-    FigureRow([FIG_LADDER, FIG_CONE, FIG_CARS]),
-
-    Section("Where the equation comes from"),
-    Text(r"Most equations come from a few sources: the \blank{Pythagorean theorem} for right triangles, similar triangles for shadows "
-         r"and cones, volume and area formulas, and right-triangle trig for angles. A volume formula for a solid is given in the problem "
-         r"(for example, ``the volume of a cone is $V = \frac13\pi r^2 h$''); the flat ones you know by heart."),
-    Text(r"\textbf{Eliminate first.} If a problem gives a rate for only one of two linked variables (like $r$ and $h$ in a cone with fixed "
-         r"proportions), use the geometry to write one variable in terms of the other \emph{before} differentiating."),
-    FigureRow([FIG_SHADOW, FIG_RIPPLE]),
-    VideoExample('A shadow', work="3cm"),
-    BigIdea(r"Know, want, fixed, an equation that holds at every moment, differentiate, then substitute the values at the moment asked and solve."),
+        r"\textbf{3. Equation:} relate the quantities, as in Topic 4.4. A fixed quantity goes in as a number (e.g. $x^2 + y^2 = 13^2$). \par "
+        r"\textbf{4. Differentiate} with respect to $t$ \emph{before} substituting any value that \blank{changes}. \par "
+        r"\textbf{5. Substitute and solve:} put in the values at the instant (find any missing one from the equation first), and solve for the rate. \par "
+        r"\textbf{6. Answer} with units, and say what the sign means.")),
+    Text(r"\textbf{The common mistake.} Substituting $r = 10$ \emph{before} differentiating turns $A = \pi r^2$ into $A = 100\pi$, whose "
+         r"derivative is $0$. The radius is $10$ only for an instant. Differentiate first, \blank{then} substitute."),
+    Text(r"\textbf{Signs.} $\dfrac{dx}{dt} > 0$ means $x$ is increasing, and $\dfrac{dx}{dt} < 0$ means $x$ is decreasing. A car driving "
+         r"toward an intersection at $20$ m/s has $\dfrac{dx}{dt} = -20$ m/s, where $x$ is its distance from the intersection."),
+    Text(r"These are Topic 4.4's problems, in the same order, now with the numbers: the ripple, the ladder, two cars, the shadow and the "
+         r"cone. Each worked example reuses its 4.4 equation and shows the whole solution."),
+    FigureRow([FIG_RIPPLE, FIG_LADDER, FIG_CARS]),
+    FigureRow([FIG_SHADOW, FIG_CONE]),
+    VideoExample('The ripple', work="3cm"),
+    BigIdea(r"Know, want, an equation that holds at every moment, differentiate, then substitute the values at the moment asked, solve, and answer with units."),
     Check(r"In a related rates problem, a quantity is shrinking at $3$ cm/s. What value do you use for its rate?", num(-3),
           r"$-3$ cm/s: shrinking means a negative rate."),
 ]
@@ -55,7 +61,7 @@ NOTES = [
 # ---------------------------------------------------------------- practice
 PRACTICE = [
     Item(r"A $10$-ft ladder leans against a wall. The bottom slides away at $1$ ft/s. How fast does the top slide down when the bottom is $6$ ft from the wall?",
-         num(sp.Rational(-3, 4)), r"Know $\dfrac{dx}{dt} = 1$, $x = 6$; want $\dfrac{dy}{dt}$; fixed $10$ ft. $x^2 + y^2 = 100$, so $2x\dfrac{dx}{dt} + 2y\dfrac{dy}{dt} = 0$. "
+         num(sp.Rational(-3, 4)), r"Know $\dfrac{dx}{dt} = 1$, $x = 6$, and the ladder is fixed at $10$ ft; want $\dfrac{dy}{dt}$. $x^2 + y^2 = 100$, so $2x\dfrac{dx}{dt} + 2y\dfrac{dy}{dt} = 0$. "
          r"At $x = 6$, $y = 8$: $2(6)(1) + 2(8)\dfrac{dy}{dt} = 0$, so $\dfrac{dy}{dt} = -\frac34$ ft/s.", work="2.8cm"),
     Item(r"A $25$-ft ladder slides so that its top falls at $2$ ft/s. How fast is the bottom moving when the top is $7$ ft high?", num(sp.Rational(7, 12)),
          r"At $y = 7$, $x = 24$. $2(24)\dfrac{dx}{dt} + 2(7)(-2) = 0$, so $\dfrac{dx}{dt} = \frac{7}{12}$ ft/s.", work="2.6cm"),
@@ -64,8 +70,11 @@ PRACTICE = [
          work="2.8cm"),
     Item(r"Sand pours into a conical pile whose height always equals its radius, at $9\pi$ ft$^3$/min. How fast is the height rising when $h = 3$ ft? (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)", num(1),
          r"$V = \frac{\pi}{3}h^3$, so $9\pi = \pi h^2\dfrac{dh}{dt} = 9\pi\dfrac{dh}{dt}$: $\dfrac{dh}{dt} = 1$ ft/min.", work="2.4cm"),
-    Item(r"Two cyclists leave the same point, one north at $12$ mph and one east at $16$ mph. How fast is the distance between them growing after $1$ hour?",
-         num(20), r"$x = 16$, $y = 12$, $z = 20$. $20\dfrac{dz}{dt} = 16(16) + 12(12) = 400$, so $\dfrac{dz}{dt} = 20$ mph.", work="2.6cm"),
+    Item(r"Mateo bikes south toward a corner at $5$ m/s, and Jun bikes east away from it at $4$ m/s. How fast is the distance between "
+         r"them changing when Mateo is $12$ m from the corner and Jun is $16$ m from it?", num(sp.Rational(1, 5)),
+         r"Know $\dfrac{dy}{dt} = -5$ (Mateo, toward), $y = 12$, $\dfrac{dx}{dt} = 4$, $x = 16$; want $\dfrac{dz}{dt}$. $z^2 = x^2 + y^2$, so "
+         r"$z\dfrac{dz}{dt} = x\dfrac{dx}{dt} + y\dfrac{dy}{dt}$. $z = 20$: $20\dfrac{dz}{dt} = 16(4) + 12(-5) = 4$, so "
+         r"$\dfrac{dz}{dt} = 0.2$ m/s. Positive: the distance is growing, slowly.", work="2.8cm"),
     Item(r"A spherical balloon is inflated at $36\pi$ cm$^3$/s. How fast is the radius growing when $r = 3$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(1),
          r"$36\pi = 4\pi(9)\dfrac{dr}{dt}$, so $\dfrac{dr}{dt} = 1$ cm/s.", work="2cm"),
     Item(r"For the same balloon, how fast is the surface area $S = 4\pi r^2$ growing when $r = 3$ cm?", num(24 * sp.pi),
@@ -89,10 +98,10 @@ PRACTICE = [
 th0 = sp.symbols("theta")
 same("p", [solve_rate(x**2 + y**2, 100, y, {d(x): 1, x: 6, y: 8}), solve_rate(x**2 + y**2, 625, x, {d(y): -2, x: 24, y: 7}),
            solve_rate(sp.pi / 12 * h**3, V, h, {d(V): -2, h: 4}), solve_rate(sp.pi / 3 * h**3, V, h, {d(V): 9 * sp.pi, h: 3}),
-           solve_rate(z**2, x**2 + y**2, z, {d(x): 16, d(y): 12, x: 16, y: 12, z: 20}), solve_rate(sp.Rational(4, 3) * sp.pi * r**3, V, r, {d(V): 36 * sp.pi, r: 3}),
+           solve_rate(z**2, x**2 + y**2, z, {d(x): 4, d(y): -5, x: 16, y: 12, z: 20}), solve_rate(sp.Rational(4, 3) * sp.pi * r**3, V, r, {d(V): 36 * sp.pi, r: 3}),
            solve_rate(z**2, x**2 + 3600, z, {d(x): 5, x: 80, z: 100}), solve_rate(z**2, x**2 + 36, z, {d(x): 500, x: 8, z: 10}),
            solve_rate(sp.tan(th), y / 30, th, {d(y): 4, th: sp.pi / 4}), solve_rate(sp.pi * r**2, V, r, {d(V): 50, r: 5})],
-     [sp.Rational(-3, 4), sp.Rational(7, 12), -1 / (2 * sp.pi), 1, 20, 1, 4, 400, sp.Rational(1, 15), 5 / sp.pi])
+     [sp.Rational(-3, 4), sp.Rational(7, 12), -1 / (2 * sp.pi), 1, sp.Rational(1, 5), 1, 4, 400, sp.Rational(1, 15), 5 / sp.pi])
 
 # ---------------------------------------------------------------- quiz
 QUIZ = [
@@ -105,12 +114,15 @@ QUIZ = [
              r"$y = 4$. $2(3)(1) + 2(4)\dfrac{dy}{dt} = 0$, so $\dfrac{dy}{dt} = -\frac34$ m/s.", work="2.4cm"),
     ),
     Variants(
-        Item(r"Two cars leave an intersection: one north at $30$ mph, one east at $40$ mph. How fast is the distance between them growing after $1$ hour?", num(50),
-             r"$x = 40$, $y = 30$, $z = 50$: $50\dfrac{dz}{dt} = 40(40) + 30(30) = 2500$, so $50$ mph.", work="2.4cm"),
-        Item(r"Two boats leave a dock: one south at $5$ km/h, one west at $12$ km/h. How fast is the distance between them growing after $2$ hours?", num(13),
-             r"$x = 24$, $y = 10$, $z = 26$: $26\dfrac{dz}{dt} = 24(12) + 10(5) = 338$, so $13$ km/h.", work="2.4cm"),
-        Item(r"Two runners leave a corner: one north at $6$ m/s, one east at $8$ m/s. How fast is the distance between them growing after $5$ s?", num(10),
-             r"$x = 40$, $y = 30$, $z = 50$: $50\dfrac{dz}{dt} = 40(8) + 30(6) = 500$, so $10$ m/s.", work="2.4cm"),
+        Item(r"Dev drives west toward an intersection at $10$ m/s, and Rosa drives north away from it at $15$ m/s. How fast is the distance "
+             r"between the cars changing when Dev is $30$ m from the intersection and Rosa is $40$ m from it?", num(6),
+             r"$\dfrac{dx}{dt} = -10$ (toward), $z = 50$: $50\dfrac{dz}{dt} = 30(-10) + 40(15) = 300$, so $\dfrac{dz}{dt} = 6$ m/s: growing.", work="2.4cm"),
+        Item(r"A truck drives south toward a crossing at $12$ m/s, and a bus drives east away from it at $9$ m/s. How fast is the distance "
+             r"between them changing when the truck is $80$ m from the crossing and the bus is $60$ m from it?", num(sp.Rational(-21, 5)),
+             r"$\dfrac{dy}{dt} = -12$ (toward), $z = 100$: $100\dfrac{dz}{dt} = 60(9) + 80(-12) = -420$, so $\dfrac{dz}{dt} = -4.2$ m/s: shrinking.", work="2.4cm"),
+        Item(r"Noor runs toward a corner at $5$ m/s, and Eli runs away from it at $3$ m/s, on paths at a right angle. How fast is the distance "
+             r"between them changing when Noor is $12$ m from the corner and Eli is $9$ m from it?", num(sp.Rational(-11, 5)),
+             r"Noor's rate is $-5$ (toward), $z = 15$: $15\dfrac{dz}{dt} = 12(-5) + 9(3) = -33$, so $\dfrac{dz}{dt} = -2.2$ m/s: shrinking.", work="2.4cm"),
     ),
     Variants(
         Item(r"A sphere's volume grows at $100\pi$ cm$^3$/s. How fast is the radius growing when $r = 5$ cm? (The volume of a sphere with radius $r$ is $V = \tfrac43\pi r^3$.)", num(1), r"$100\pi = 4\pi(25)\dfrac{dr}{dt}$.", work="1.8cm"),
@@ -134,9 +146,10 @@ QUIZ = [
     ),
 ]
 same("q", [solve_rate(x**2 + y**2, 169, y, {d(x): 3, x: 12, y: 5}), solve_rate(x**2 + y**2, 289, y, {d(x): 2, x: 8, y: 15}),
-           solve_rate(x**2 + y**2, 25, y, {d(x): 1, x: 3, y: 4}), solve_rate(z**2, x**2 + y**2, z, {d(x): 12, d(y): 5, x: 24, y: 10, z: 26}),
-           solve_rate(z**2, x**2 + y**2, z, {d(x): 8, d(y): 6, x: 40, y: 30, z: 50}), solve_rate(sp.Rational(4, 3) * sp.pi * r**3, V, r, {d(V): -8 * sp.pi, r: 2})],
-     [sp.Rational(-36, 5), sp.Rational(-16, 15), sp.Rational(-3, 4), 13, 10, sp.Rational(-1, 2)])
+           solve_rate(x**2 + y**2, 25, y, {d(x): 1, x: 3, y: 4}), solve_rate(z**2, x**2 + y**2, z, {d(x): -10, d(y): 15, x: 30, y: 40, z: 50}),
+           solve_rate(z**2, x**2 + y**2, z, {d(x): 9, d(y): -12, x: 60, y: 80, z: 100}),
+           solve_rate(z**2, x**2 + y**2, z, {d(x): -5, d(y): 3, x: 12, y: 9, z: 15}), solve_rate(sp.Rational(4, 3) * sp.pi * r**3, V, r, {d(V): -8 * sp.pi, r: 2})],
+     [sp.Rational(-36, 5), sp.Rational(-16, 15), sp.Rational(-3, 4), 6, sp.Rational(-21, 5), sp.Rational(-11, 5), sp.Rational(-1, 2)])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
@@ -190,5 +203,6 @@ same("frq c", dh5[0] / 2, -3 / (8 * sp.pi))
 TOPIC = Topic(
     number="4.5", title="Solving Related Rates Problems",
     unit="Unit 4: Contextual Applications of Differentiation", ced=["CHA-3.E", "CHA-3.E.1"],
-    goals=r"Solve related rates problems: draw and label, relate the quantities, differentiate with respect to time, then substitute.",
+    goals=r"Solve related rates problems: list what you know and want, relate the quantities, differentiate with respect to time, "
+          r"then substitute, solve and answer with units.",
     notes=NOTES, practice=PRACTICE, quiz=QUIZ, mcq=MCQS, frq=FRQS)

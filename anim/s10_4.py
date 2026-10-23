@@ -39,15 +39,49 @@ class Lesson(TranscriptScene):
             box = formula_box(T(r"$f$ positive, continuous, decreasing, $a_n = f(n)$: $\sum a_n$ and $\int_1^\infty f(x)\,dx$ both converge or both diverge", 30, ACCUM).set_max_width(11), ACCUM).to_edge(DOWN, buff=0.4)
             self.play(FadeIn(box), run_time=1)
             b.line(3)
+            self.play(Indicate(box, color=ACCUM, scale_factor=1.04), run_time=1)
         self.clear()
 
-        self.example("Using the integral test", r"Use the integral test to decide whether $\displaystyle\sum_{n=1}^{\infty} \frac{n}{n^2 + 1}$ converges.",
+        with self.beat("The integral is not the sum") as b:
+            # Adder (2026-10-14): pause an extra beat on this and show it. 1/x^2: area 1, rectangles pi^2/6
+            g = lambda s: 1 / s**2
+            ax, al = plot_axes([0, 7.5, 1], [0, 1.25, 0.5], w=6.4, h=4.4)
+            VGroup(ax, al).to_edge(LEFT, buff=0.6).shift(DOWN * 0.4)
+            curve = ax.plot(g, x_range=[0.85, 7.4], color=FUNC, stroke_width=4)
+            area = region(ax, g, lambda s: 0, 1, 7.4, opacity=0.35)
+            rects = riemann_boxes(ax, g, list(range(1, 8)), kind="left", color=SECANT, opacity=0.35)
+            corners = VGroup(*[region(ax, lambda s, k=k: 1 / k**2, g, k, k + 1, color=TANGENT, opacity=0.75) for k in range(1, 7)])
+            self.play(FadeIn(ax), FadeIn(al), Create(curve), FadeIn(area), FadeIn(rects), run_time=1)
+            b.line(1)
+            warn = T(r"The integral is \textbf{NOT} equal\\to the sum of the series.", 44, TANGENT, tex_environment="flushleft").set_max_width(5.6)
+            warn.to_edge(RIGHT, buff=0.5).set_y(1.9)
+            self.play(Write(warn), run_time=1.4)
+            b.line(2)
+            self.play(Indicate(warn, color=TANGENT, scale_factor=1.08), run_time=1.2)
+            self.play(Indicate(warn, color=TANGENT, scale_factor=1.08), run_time=1.2)
+            b.line(3)
+            l1 = T(r"area under the curve:\\$\int_1^\infty \frac{dx}{x^2} = 1$", 34, FUNC, tex_environment="flushleft")
+            l2 = T(r"rectangles:\\$\sum \frac{1}{n^2} = \frac{\pi^2}{6} \approx 1.645$", 34, SECANT, tex_environment="flushleft")
+            VGroup(l1, l2).arrange(DOWN, aligned_edge=LEFT, buff=0.35).next_to(warn, DOWN, buff=0.5).align_to(warn, LEFT)
+            self.play(Indicate(area, color=FUNC), FadeIn(l1), run_time=1)
+            self.play(Indicate(rects, color=SECANT), FadeIn(l2), run_time=1)
+            b.line(4)
+            l3 = T(r"the extra corners: about $0.645$", 32, TANGENT).next_to(l2, DOWN, buff=0.35).align_to(warn, LEFT)
+            self.play(FadeIn(corners), FadeIn(l3), run_time=1)
+            b.line(5)
+            l4 = T("same behavior, different numbers", 34, ACCUM).next_to(l3, DOWN, buff=0.4).align_to(warn, LEFT)
+            self.play(FadeIn(l4), run_time=0.8)
+        self.clear()
+
+        # the test stays up in the corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&f \text{ positive, continuous,}\\ &\text{decreasing; } a_n = f(n)\text{:}\\ &\textstyle\sum a_n,\ \int_1^\infty f(x)\,dx\\ &\text{both converge or both diverge}\end{aligned}"
+        self.example("Using the integral test", r"Use the integral test: does $\displaystyle\sum_{n=1}^{\infty} \frac{n}{n^2 + 1}$ converge?",
                      [r"f(x) = \frac{x}{x^2 + 1}", r"TEXT:Positive for $x \ge 1$; continuous.", r"f'(x) = \frac{1 - x^2}{(x^2 + 1)^2} \le 0 \text{ for } x \ge 1: \ \text{decreasing}",
                       r"\int_1^\infty \frac{x}{x^2 + 1}\,dx = \lim_{b\to\infty} \tfrac12\ln(x^2 + 1)\Big|_1^b", r"= \lim_{b\to\infty} \tfrac12\left[\ln(b^2 + 1) - \ln 2\right] = \infty", r"TEXT:The integral diverges, so the series diverges."],
                      at=[1, 1, 2, 3, 4, 5], follow=True)
 
         with self.beat("Close") as b:
-            card = VGroup(T("$f$ positive, continuous, decreasing; $a_n = f(n)$", 36), T("$\\sum a_n$ and $\\int f(x)\\,dx$ behave the same", 36, ACCUM), T("the integral's value is not the series' sum", 34, TANGENT)).arrange(DOWN, buff=0.5)
+            card = VGroup(T("$f$ positive, continuous, decreasing; $a_n = f(n)$", 36), T("$\\sum a_n$ and $\\int f(x)\\,dx$ behave the same", 36, ACCUM), T(r"the integral is \textbf{NOT} the sum of the series", 34, TANGENT)).arrange(DOWN, buff=0.5)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 

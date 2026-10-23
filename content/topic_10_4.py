@@ -13,15 +13,17 @@ x = sp.symbols("x", positive=True)
 Ii = lambda f, a: sp.integrate(f, (x, a, sp.oo))
 
 same("lesson", [Ii(x / (x**2 + 1), 1)], [sp.oo])
+same("not the sum", [sp.pi**2 / 6 - Ii(1 / x**2, 1)], [sp.pi**2 / 6 - 1])
 same("ex", [Ii(1 / x**2, 1), sp.simplify(Ii(x * sp.exp(-x**2), 1)), Ii(1 / (x * sp.log(x)), 2)], [1, 1 / (2 * sp.E), sp.oo])
 
 NOTES = [
-    Video("s10_4.py::Lesson", "The integral test", 4),
+    Video("s10_4.py::Lesson", "The integral test", 5),
 
     Section("Rectangles and a curve"),
     Text(r"Rectangles of width $1$ and heights $f(1), f(2), \ldots$ have total area $\sum f(n)$. Shifted right they fit under $y = f(x)$; shifted left they cover it. So the series and the improper integral are both finite or both infinite."),
     Formula("Integral test", (r"If $f$ is \blank{positive}, \blank{continuous}, and \blank{decreasing} for $x \ge N$, and $a_n = f(n)$, then \[ \sum_{n=N}^\infty a_n \quad \text{and} \quad \int_N^\infty f(x)\,dx \] both converge or both diverge.")),
-    Text(r"State all three conditions when you use the test. The test decides convergence; it does not give the sum: $\int_1^\infty \frac{dx}{x^2} = 1$, but $\sum \frac{1}{n^2} = \frac{\pi^2}{6}$."),
+    Text(r"Check all three conditions when you use the test, and state them in a justification."),
+    Text(r"\textbf{The integral is NOT the sum of the series.} The test decides convergence only: $\int_1^\infty \frac{dx}{x^2} = 1$, but $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6} \approx 1.645$. The rectangles poke out above the curve, and those extra corners add up to about $0.645$."),
     VideoExample('Using the integral test', work="4cm"),
     BigIdea(r"For positive, continuous, decreasing $f$, $\sum f(n)$ and $\int f(x)\,dx$ converge or diverge together."),
     Check(r"Does $\sum \frac{1}{n^3}$ converge? Use the integral test.", selfcheck(r"\text{converges}"), r"$\int_1^\infty x^{-3}\,dx = \frac12$."),

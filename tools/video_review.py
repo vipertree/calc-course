@@ -7,7 +7,7 @@ For each topic it writes to DIR (default /tmp/video_review):
   issue_<slug>_NN.png the frame at each moment the render's layout audit flagged (text on text or on a picture,
                       or anything outside the visible frame), with what collided printed below
 The audit itself runs inside every render (anim/kit.py, TranscriptScene._audit) and is saved next to the media as
-anim/media/pub_<slug>/layout_<slug>.json. Overlaps inside one group (a table's own cells, a formula's own parts)
+anim/media/pub_<slug>_light/layout_<slug>.json (the light render; older renders wrote pub_<slug>/). Overlaps inside one group (a table's own cells, a formula's own parts)
 are not reported; overlaps between separately placed things are.
 """
 import argparse
@@ -40,7 +40,9 @@ def review(num, out):
     d = duration(mp4)
     subprocess.run([str(BIN / "ffmpeg"), "-v", "error", "-y", "-i", str(mp4), "-vf", f"fps=24/{d},scale=320:-1,tile=6x4",
                     "-frames:v", "1", str(out / f"sheet_{slug}.png")], check=True)
-    audit = MEDIA / f"pub_{slug}" / f"layout_{slug}.json"
+    # publish.sh renders each look into its own folder; the light one is the published <slug>.mp4
+    audit = next((p for p in (MEDIA / f"pub_{slug}_light" / f"layout_{slug}.json", MEDIA / f"pub_{slug}" / f"layout_{slug}.json")
+                  if p.exists()), MEDIA / f"pub_{slug}_light" / f"layout_{slug}.json")
     issues = json.loads(audit.read_text()) if audit.exists() else None
     if audit.exists() and audit.stat().st_mtime < mp4.stat().st_mtime - 600:
         print(f"{num}: warning, the layout audit is older than the video")

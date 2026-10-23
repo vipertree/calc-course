@@ -19,10 +19,11 @@ same("lesson", [gsum(3 * sp.Rational(2, 5)**n, 0)], [5])
 same("ex", [gsum(sp.Rational(-1, 3)**n, 1), gsum(sp.Rational(7, 10) * sp.Rational(1, 10)**n, 0)], [-sp.Rational(1, 4), sp.Rational(7, 9)])
 
 NOTES = [
-    Video("s10_2.py::Lesson", "Geometric series", 4),
+    Video("s10_2.py::Lesson", "Geometric series", 5),
 
     Section("Partial sums"),
-    Text(r"A geometric series has first term $a$ and ratio $r$: $a + ar + ar^2 + \cdots$. Subtracting $rS_n$ from $S_n$ cancels everything but $a - ar^n$."),
+    Text(r"A geometric series has first term $a$ and ratio $r$: $a + ar + ar^2 + \cdots$. Subtracting $rS_n$ from $S_n$ cancels everything but $a - ar^n$: $S_n - rS_n = a - ar^n$. Factor out $S_n$ on the left and $a$ on the right: $S_n(1 - r) = a\left(1 - r^n\right)$. Divide by $1 - r$ (for $r \ne 1$)."),
+    Text(r"\textbf{Discrete values.} A ball dropped from $10$ ft that bounces to $60\%$ of each height reaches $10, 6, 3.6, 2.16, \ldots$ ft. The motion is continuous, but the series adds only the heights, one per bounce."),
     Formula("Geometric partial sum", (r"\[ S_n = a + ar + \cdots + ar^{n-1} = \blank{\frac{a\left(1 - r^n\right)}{1 - r}} \quad (r \ne 1). \]")),
     Formula("Geometric series", (r"\[ a + ar + ar^2 + \cdots = \blank{\frac{a}{1 - r}} \ \text{ if } |r| < 1, \] and the series \blank{diverges} if $|r| \ge 1$. In words: first term over one minus the ratio.")),
     VideoExample('Summing a geometric series', work="3cm"),

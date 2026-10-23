@@ -8,6 +8,9 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.5"
+    # integrating a vector, and position from velocity, stay in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = (r"\begin{aligned}\int \langle x, y\rangle\,dt &= \left\langle \int x\,dt,\ \int y\,dt\right\rangle\\"
+                   r" \vec r(b) &= \vec r(a) + \int_a^b \vec v(t)\,dt\end{aligned}")
 
     def construct(self):
         px = lambda s: -2.5 + 1.6 * s

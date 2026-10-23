@@ -8,6 +8,9 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.7"
+    # the polar slope recipe stays in the corner during the worked examples (Adder, 2026-10-14); examples 1 and 3 swap in
+    # the formula they use
+    example_ref = (r"\begin{aligned}x &= r\cos\theta,\ \ y = r\sin\theta\\ \frac{dy}{dx} &= \frac{dy/d\theta}{dx/d\theta}\end{aligned}")
 
     def construct(self):
         with self.beat("A different way to say where") as b:
@@ -99,10 +102,12 @@ class Lesson(TranscriptScene):
         ax, _ = plot_axes([-2.5, 2.5, 1], [-0.5, 4.5, 1], w=3.2, h=3.6)
         fig1 = VGroup(ax, polar_curve(ax, lambda s: 4 * np.sin(s), 0, PI))
         self.example("Example 1: Converting a polar equation", r"Write $r = 4\sin\theta$ in rectangular form and identify the curve.",
-                     [r"r^2 = 4r\sin\theta", r"x^2 + y^2 = 4y", r"x^2 + y^2 - 4y + 4 = 4", r"x^2 + (y - 2)^2 = 4", r"\text{a circle, radius } 2, \text{ center } (0, 2)"], at=[1, 1, 2, 2, 2], figure=fig1)
+                     [r"r^2 = 4r\sin\theta", r"x^2 + y^2 = 4y", r"x^2 + y^2 - 4y + 4 = 4", r"x^2 + (y - 2)^2 = 4", r"\text{a circle, radius } 2, \text{ center } (0, 2)"], at=[1, 1, 2, 2, 2], figure=fig1,
+                     ref=r"x = r\cos\theta, \ \ y = r\sin\theta, \ \ r^2 = x^2 + y^2")
         self.example("Example 2: A spiral's slope", r"Find the slope of $r = \theta$ at $\theta = \frac\pi2$.",
                      [r"x = \theta\cos\theta, \ \ y = \theta\sin\theta", r"\tfrac{dx}{d\theta} = \cos\theta - \theta\sin\theta, \ \ \tfrac{dy}{d\theta} = \sin\theta + \theta\cos\theta", r"\theta = \tfrac\pi2: \ \tfrac{dx}{d\theta} = -\tfrac\pi2, \ \ \tfrac{dy}{d\theta} = 1",
                       r"\frac{dy}{dx} = \frac{1}{-\pi/2} = -\frac2\pi \approx -0.64"], at=[1, 1, 2, 3])
         self.example("Example 3: Toward or away?", r"For $r = 1 + 2\sin\theta$, is the curve moving toward or away from the origin at $\theta = \frac\pi3$?",
-                     [r"r\left(\tfrac\pi3\right) = 1 + \sqrt3 > 0", r"\tfrac{dr}{d\theta} = 2\cos\theta = 2 \cdot \tfrac12 = 1 > 0", r"TEXT:$r$ is positive and increasing: moving away from the origin."], at=[1, 2, 3])
+                     [r"r\left(\tfrac\pi3\right) = 1 + \sqrt3 > 0", r"\tfrac{dr}{d\theta} = 2\cos\theta = 2 \cdot \tfrac12 = 1 > 0", r"TEXT:$r$ is positive and increasing: moving away from the origin."], at=[1, 2, 3],
+                     ref=r"\begin{aligned}&\tfrac{dr}{d\theta} > 0: \text{ away from the origin}\\ &\tfrac{dr}{d\theta} < 0: \text{ toward it} \ \ (r > 0)\end{aligned}")
         self.finish()

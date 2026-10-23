@@ -8,6 +8,9 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.8"
+    # the polar area formula and the identities it needs stay in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = (r"\begin{aligned}A &= \tfrac12\int_\alpha^\beta r^2\,d\theta\\ \cos^2\theta &= \tfrac12(1 + \cos 2\theta)\\"
+                   r" \sin^2\theta &= \tfrac12(1 - \cos 2\theta)\end{aligned}")
 
     def construct(self):
         car = lambda s: 1 + np.cos(s)

@@ -8,6 +8,9 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.6"
+    # the motion toolkit stays in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = (r"\begin{aligned}x(b) &= x(a) + \int_a^b x'(t)\,dt\\ \text{speed} &= \sqrt{(x')^2 + (y')^2}\\"
+                   r" \text{distance} &= \int_a^b \text{speed}\,dt\\ \tfrac{dy}{dx} &= \tfrac{y'}{x'}\end{aligned}")
 
     def construct(self):
         with self.beat("Everything at once") as b:

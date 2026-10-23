@@ -8,6 +8,8 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.9"
+    # the area-between formula stays in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = r"\begin{aligned}A &= \tfrac12\int_\alpha^\beta \left(R^2 - r^2\right) d\theta\\ &R \text{ outer},\ r \text{ inner}\end{aligned}"
 
     def construct(self):
         circ = lambda s: 3 * np.cos(s)

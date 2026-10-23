@@ -8,6 +8,8 @@ from style import *
 
 class Lesson(TranscriptScene):
     NUM = "9.2"
+    # the second-derivative formula stays in the corner during every worked example (Adder, 2026-10-14)
+    example_ref = r"\frac{d^2y}{dx^2} = \frac{\frac{d}{dt}\left(\frac{dy}{dx}\right)}{dx/dt}"
 
     def construct(self):
         X = lambda s: s * s - 1

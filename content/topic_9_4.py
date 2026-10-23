@@ -21,6 +21,7 @@ def at(vec, s):
 
 
 rL = [t**2, t**3 - 3 * t]
+same("review", [[3 + 1, 1 + 2], [2 * 1, 2 * 2], sp.sqrt(sp.Integer(4)**2 + 3**2)], [[4, 3], [2, 4], 5])
 same("lesson", [at(vel(rL), 2), at(vel(vel(rL)), 2), sp.sqrt(sum(c**2 for c in at(vel(rL), 2)))], [[4, 9], [2, 12], sp.sqrt(97)])
 same("ex", [at(vel([sp.exp(2 * t), sp.log(t + 1)]), 0), at(vel(vel([sp.exp(2 * t), sp.log(t + 1)])), 0), at(vel([t**2 - 4 * t, t**3]), 1)], [[2, 1], [4, -1], [-2, 3]])
 
@@ -30,7 +31,13 @@ def vec(v):
 
 
 NOTES = [
-    Video("s9_4.py::Lesson", "Vector-valued functions", 4),
+    Video("s9_4.py::Lesson", "Vector-valued functions", 6),
+
+    Section("A quick review of vectors"),
+    Text(r"A vector is an arrow with a length and a direction. Its components say how far it goes across and up: $\langle 3, 2\rangle$ goes 3 right and 2 up. Drawn from the origin or anywhere else, it is the same vector."),
+    Text(r"\textbf{Adding and scaling.} Add tip to tail, or add components: $\langle 3, 1\rangle + \langle 1, 2\rangle = \langle 4, 3\rangle$. A number scales the arrow: $2\langle 1, 2\rangle = \langle 2, 4\rangle$; a negative number turns it around."),
+    Formula("Magnitude (length)", (r"The components are the legs of a right triangle, so $|\langle a, b\rangle| = \blank{\sqrt{a^2 + b^2}}$. For example, $|\langle 4, 3\rangle| = \sqrt{25} = 5$.")),
+    Text(r"A \textbf{position vector} starts at the origin and points to a point; its components are the point's coordinates."),
 
     Section("Vectors made of functions"),
     Text(r"A vector-valued function $\vec r(t) = \langle x(t), y(t)\rangle$ points from the origin to the moving point. It carries the same information as the parametric equations $x = x(t)$, $y = y(t)$."),

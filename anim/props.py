@@ -111,7 +111,7 @@ def bar_counter(top=-1.75, width=13.6):
     """A wooden bar counter whose top surface is at y = top (10.1, 10.3): things set on it stand at top."""
     wood, wood_dk = "#9A6B43", "#6E4A2C"
     return VGroup(Rectangle(width=width, height=0.28, stroke_width=0, fill_color=wood, fill_opacity=1).move_to([0, top - 0.14, 0]),
-                  Rectangle(width=width - 0.4, height=1.1, stroke_width=0, fill_color=wood_dk, fill_opacity=1).move_to([0, top - 0.83, 0]),
+                  Rectangle(width=width - 0.4, height=1.5, stroke_width=0, fill_color=wood_dk, fill_opacity=1).move_to([0, top - 1.03, 0]),
                   Line([-(width / 2 - 0.4), top - 0.5, 0], [width / 2 - 0.4, top - 0.5, 0], stroke_color=wood, stroke_width=3, stroke_opacity=0.5))
 
 

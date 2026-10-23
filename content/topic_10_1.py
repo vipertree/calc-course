@@ -17,15 +17,21 @@ def ssum(a, start=1):
 
 
 same("lesson", [ssum(1 / (n * (n + 1))), sp.simplify(sp.summation(1 / (n * (n + 1)), (n, 1, N)))], [1, N / (N + 1)])
-same("ex", [sp.limit(3 * N / (N + 1), N, sp.oo), ssum(1 / n - 1 / (n + 2))], [3, sp.Rational(3, 2)])
+same("ex", [sp.limit(3 * N / (N + 1), N, sp.oo), sp.limit(3 * N / N, N, sp.oo), ssum(1 / n - 1 / (n + 2))], [3, 3, sp.Rational(3, 2)])
+same("joke", [sp.summation(sp.Rational(1, 2)**n, (n, 1, N)).subs(N, 3), ssum(sp.Rational(1, 2)**n)], [sp.Rational(7, 8), 1])
+same("seq vs series", [sp.limit(N / (N + 1), N, sp.oo), sp.summation(n / (n + 1), (n, 1, sp.oo))], [1, sp.oo])
+same("ex3 S_n", [sp.simplify(sp.summation(1 / n - 1 / (n + 2), (n, 1, N)) - (1 + sp.Rational(1, 2) - 1 / (N + 1) - 1 / (N + 2)))], [0])
 
 NOTES = [
-    Video("s10_1.py::Lesson", "Convergent and divergent series", 4),
+    Video("s10_1.py::Lesson", "Convergent and divergent series", 7),
 
     Section("Partial sums"),
+    Text(r"\textbf{Not an integral.} Units 6 to 8 added up a continuous function with integrals. A series adds up separate numbers $a_1, a_2, a_3, \ldots$, one at a time: no curve, no area."),
+    Text(r"\textbf{The bar joke.} Infinitely many mathematicians order $\frac12$, $\frac14$, $\frac18$, $\ldots$ of a beer. Poured into one glass, the totals are $\frac12, \frac34, \frac78, \ldots$, closer and closer to one full beer: $\frac12 + \frac14 + \frac18 + \cdots = 1$."),
     Text(r"An infinite series $\sum_{n=1}^\infty a_n = a_1 + a_2 + a_3 + \cdots$ can't be added term by term forever. Instead, add the first $n$ terms."),
-    Formula("Convergence of a series", (r"The $n$th partial sum is $S_n = \blank{a_1 + a_2 + \cdots + a_n}$. The series \blank{converges} to $S$ if $\lim_{n\to\infty} S_n = S$; otherwise it \blank{diverges}.")),
+    Formula("Convergence of a series", (r"The $n$th partial sum is $S_n = a_1 + a_2 + \cdots + a_n$. The series \blank{converges} to $S$ if $\lim_{n\to\infty} S_n = S$; otherwise it \blank{diverges}.")),
     Text(r"\textbf{Three behaviors.} $\sum 1$: $S_n = n \to \infty$ (diverges). $\sum (-1)^{n+1}$: $S_n$ alternates $1, 0, 1, 0, \ldots$ (diverges). $\sum \left(\frac12\right)^n$: $S_n \to 1$ (converges to $1$)."),
+    Text(r"\textbf{Sequence vs.\ series.} A sequence is a list of numbers; a series is the sum of that list. The sequence $a_n = \frac{n}{n + 1}$ ($\frac12, \frac23, \frac34, \ldots$) converges to $1$, but the series $\sum \frac{n}{n + 1}$ diverges: each term adds almost $1$ to the total."),
     VideoExample('A telescoping series', work="3.6cm"),
     Text(r"\textbf{Telescoping.} When each term is a difference like $\frac1n - \frac{1}{n + 1}$, the partial sum collapses: only the first and last pieces survive."),
     BigIdea(r"A series converges exactly when its partial sums approach a limit; that limit is the sum."),

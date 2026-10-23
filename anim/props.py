@@ -618,3 +618,8 @@ def walk_along(sprite, ax, xf, yf, t, h=1e-3):
     sprite.add_updater(upd)
     sprite.update()
     return sprite
+
+
+def empire_state_building(height=5.0):
+    """The Empire State Building, painted, base to antenna tip (10.6: bigger than it tells you it's huge)."""
+    return sprite("empire_state_building", height)

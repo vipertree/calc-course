@@ -16,11 +16,12 @@ same("lesson", [L((2 * n + 1) / (n**3 - n + 5) / (1 / n**2))], [2])
 same("ex", [L((1 / (2**n - 1)) / (1 / 2**n))], [1])
 
 NOTES = [
-    Video("s10_6.py::Lesson", "Comparison tests", 4),
+    Video("s10_6.py::Lesson", "Comparison tests", 6),
 
     Section("Direct comparison"),
     Formula("Direct comparison test", (r"Suppose $0 \le a_n \le b_n$ for all $n$ (from some point on). If $\sum b_n$ converges, then $\sum a_n$ \blank{converges}. If $\sum a_n$ diverges, then $\sum b_n$ \blank{diverges}.")),
-    Text(r"Smaller than convergent: converges. Bigger than divergent: diverges. Smaller than divergent, or bigger than convergent: no conclusion."),
+    Text(r"\textbf{A ceiling and a floor.} Think of a convergent series as small and a divergent series as big. Smaller than something small (convergent): small, so it converges. Bigger than something big (divergent): big, so it diverges."),
+    Text(r"\textbf{Settles nothing.} Bigger than something small, or smaller than something big, tells you nothing. Knowing a building is bigger than the Empire State Building tells you it's huge; knowing it's smaller doesn't say much about its size (though at least it's under 1,454 feet). Smaller than something infinitely big doesn't narrow anything down at all. Pick a different series to compare with, or a different test."),
     VideoExample('A direct comparison', work="2.6cm"),
     Section("Limit comparison"),
     Formula("Limit comparison test", (r"If $a_n, b_n > 0$ and $\lim_{n\to\infty} \frac{a_n}{b_n} = c$ with \blank{$0 < c < \infty$}, then $\sum a_n$ and $\sum b_n$ both converge or both diverge.")),

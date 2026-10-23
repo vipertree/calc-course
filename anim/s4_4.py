@@ -1,16 +1,15 @@
 """Topic 4.4: Introduction to related rates. Narration comes from transcripts/4_4.md.
 
-Adder (2026-10-03): 4.4 only SETS UP related rates problems. Every example ends at the differentiated equation, written
-in five named steps (know, want, fixed, equation, differentiate). Topic 4.5 solves the same examples."""
+Adder (2026-10-23): 4.4 and 4.5 go through the SAME problems in the same order (ripple, ladder, two cars, shadow, cone).
+Here no problem gives a rate or a value at an instant: each asks for the equation relating the quantities, then its
+derivative with respect to time. Four steps (draw and label, name what changes, relate, differentiate); a fixed quantity
+is noted when the equation is written, never as a step of its own. Topic 4.5 adds the numbers and solves."""
 import numpy as np
 from manim import *
 
 from kit import *
 from style import *
-from props import fig_cars, fig_cone, fig_ladder, fig_ripple, fig_shadow, fig_square, pond_ripple
-
-CONE_V = r" (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)"
-SETUP = r" Set it up: stop at the differentiated equation."
+from props import fig_cars, fig_cone, fig_ladder, fig_ripple, fig_shadow, pond_ripple, water_cone
 
 
 def stone():
@@ -62,22 +61,6 @@ class Lesson(TranscriptScene):
             self.play(l2[1].animate.set_color(SECANT), Circumscribe(l2[1], color=SECANT), run_time=1.2)
         self.clear()
 
-        with self.beat("Differentiate first, then substitute") as b:
-            top = M(r"A = \pi r^2", 56).to_edge(UP, buff=0.5)
-            self.play(Write(top), run_time=0.8)
-            wrong = VGroup(M(r"r = 10:\ A = 100\pi", 42), M(r"\frac{dA}{dt} = 0", 42, TANGENT)).arrange(DOWN, buff=0.4).shift(LEFT * 3.4 + DOWN * 0.4)
-            self.play(FadeIn(wrong), run_time=1)
-            self.play(Create(Cross(wrong, stroke_color=TANGENT, scale_factor=0.8)), run_time=0.6)
-            b.line(1)
-            right = VGroup(M(r"\frac{dA}{dt} = 2\pi r\,\frac{dr}{dt}", 46, DERIV), T(r"then $r = 10$, $\frac{dr}{dt} = 2$ go in", 32, DIM)).arrange(DOWN, buff=0.45)
-            right.shift(RIGHT * 3.2 + DOWN * 0.4)
-            self.play(FadeIn(right[0]), run_time=1)
-            b.line(2)
-            self.play(FadeIn(right[1]), run_time=0.8)
-            nxt = T(r"Substituting and solving: Topic 4.5", 34, SECANT).to_edge(DOWN, buff=0.8)
-            self.play(FadeIn(nxt), run_time=0.8)
-        self.clear()
-
         with self.beat("Formulas you need") as b:
             head = T(r"No formula sheet on the AP exam", 46, SECANT).to_edge(UP, buff=0.5)
             self.play(FadeIn(head), run_time=0.8)
@@ -95,50 +78,65 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(given), run_time=0.8)
         self.clear()
 
-        steps = VGroup(T(r"1. \textbf{Know:} values at the instant, and the given rates", 38),
-                       T(r"2. \textbf{Want:} the rate you're after", 38),
-                       T(r"3. \textbf{Fixed:} constants that never change", 38),
-                       T(r"4. \textbf{Equation:} relate the quantities", 38),
-                       T(r"5. \textbf{Differentiate} with respect to $t$", 38)).arrange(DOWN, buff=0.38, aligned_edge=LEFT)
-        with self.beat("Five steps to the equation") as b:
+        with self.beat("Where the equation comes from") as b:
+            tri = VGroup(Polygon(ORIGIN, RIGHT * 2, RIGHT * 2 + UP * 1.4, color=INK), M(r"x^2 + y^2 = z^2", 32))
+            sim = VGroup(VGroup(Polygon(ORIGIN, RIGHT * 2.2, UP * 1.5, color=INK), Polygon(ORIGIN, RIGHT * 1.1, UP * 0.75, color=SECANT)), M(r"\frac{r}{h} = \frac{R}{H}", 32))
+            cone, _, _ = water_cone(0.6, H=1.6, R=0.8)
+            vol = VGroup(cone, M(r"V = \tfrac13\pi r^2 h \ \ (\text{given})", 30))
+            ang = VGroup(VGroup(Polygon(ORIGIN, RIGHT * 2, RIGHT * 2 + UP * 1.4, color=INK), Arc(0.5, 0, np.arctan(0.7), color=TANGENT)), M(r"\tan\theta = \frac{y}{x}", 32))
+            cards = VGroup(tri, sim, vol, ang)
+            for c in cards:
+                c.arrange(DOWN, buff=0.35)
+            cards.arrange_in_grid(2, 2, buff=(1.6, 0.8)).shift(DOWN * 0.2)
+            b.line(1)
+            self.play(FadeIn(tri), run_time=0.6)
+            self.play(FadeIn(sim), run_time=0.6)
+            b.line(2)
+            self.play(FadeIn(vol), FadeIn(ang), run_time=0.8)
+        self.clear()
+
+        steps = VGroup(T(r"1. \textbf{Draw and label} a picture", 38),
+                       T(r"2. \textbf{Name what changes:} each changing quantity is a variable", 38),
+                       T(r"3. \textbf{Relate:} an equation that holds at every moment", 38),
+                       T(r"4. \textbf{Differentiate} both sides with respect to $t$", 38)).arrange(DOWN, buff=0.45, aligned_edge=LEFT)
+        steps.set_max_width(12.4)
+        with self.beat("Four steps to the equation") as b:
             for i, m in enumerate(steps):
                 b.line(i + 1)
                 self.play(FadeIn(m, shift=RIGHT * 0.2), run_time=0.6)
         self.clear()
 
-        self.example("A growing square", r"The side $s$ of a square grows at $3$ cm/s. How fast is its area $A$ growing when $s = 4$ cm? Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{ds}{dt} = 3$ cm/s,", r"TEXT:\quad and $s = 4$ cm now.", r"TEXT:Want: $\frac{dA}{dt}$. Fixed: none.",
-                      r"A = s^2", r"\frac{dA}{dt} = 2s\,\frac{ds}{dt}"], at=[1, 1, 2, 3, 4], figure=fig_square(), follow=True)
+        self.example("The ripple",
+                     r"A stone drops into a pond, and a circular ripple spreads out. Write an equation that relates the area inside the ripple and its radius, then differentiate with respect to time.",
+                     [r"TEXT:Changing: the radius $r$ and the area $A$.", r"A = \pi r^2", r"\frac{d}{dt}\big[A\big] = \frac{d}{dt}\big[\pi r^2\big]",
+                      r"\frac{dA}{dt} = 2\pi r\,\frac{dr}{dt}"], at=[1, 2, 3, 4], figure=fig_ripple(), follow=True)
 
         with self.beat("Close") as b:
             again = steps.copy().scale(0.9)
             self.play(FadeIn(again), run_time=0.8)
             b.line(1)
-            self.play(again[4].animate.set_color(SECANT), run_time=0.8)
+            self.play(again[3].animate.set_color(SECANT), run_time=0.8)
         self.clear()
 
         self.examples_card()
-        self.example("Example 1: The ripple's area", r"A ripple's radius grows at $2$ cm/s. How fast is the area growing when $r = 10$ cm? Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{dr}{dt} = 2$ cm/s, $r = 10$ cm.", r"TEXT:Want: $\frac{dA}{dt}$.", r"A = \pi r^2",
-                      r"\frac{dA}{dt} = 2\pi r\,\frac{dr}{dt}"], at=[1, 1, 2, 3], figure=fig_ripple())
-        self.example("Example 2: The ladder",
-                     r"A $13$-ft ladder leans against a wall. The bottom slides away at $2$ ft/s. How fast is the top sliding down when the bottom is $5$ ft from the wall? Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{dx}{dt} = 2$ ft/s, $x = 5$ ft.", r"TEXT:Want: $\frac{dy}{dt}$.",
-                      r"TEXT:Fixed: the ladder, $13$ ft.", r"x^2 + y^2 = 13^2", r"2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt} = 0"],
+        self.example("Example 1: The ladder",
+                     r"A $13$-ft ladder leans against a wall, and its bottom slides away from the wall. Write an equation that relates the bottom's distance from the wall and the height of the top, then differentiate with respect to time.",
+                     [r"TEXT:Changing: $x$ (wall to foot) and $y$ (height of the top).", r"TEXT:The ladder stays $13$ ft long: a number.",
+                      r"x^2 + y^2 = 13^2", r"\frac{d}{dt}\big[x^2 + y^2\big] = \frac{d}{dt}\big[13^2\big]", r"2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt} = 0"],
                      at=[1, 2, 3, 4, 5], figure=fig_ladder(), follow=True)
-        self.example("Example 3: Filling a cone",
-                     r"Water pours into a cone, point down, $9$ ft tall with radius $3$ ft, at $2$ ft$^3$/min. How fast is the water rising when it is $6$ ft deep? (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.) Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{dV}{dt} = 2$ ft$^3$/min, $h = 6$ ft.", r"TEXT:Want: $\frac{dh}{dt}$.",
-                      r"TEXT:Fixed: the cone's shape.", r"\frac rh = \frac39,\ \text{so}\ r = \frac h3",
-                      r"V = \frac13\pi\left(\frac h3\right)^2 h = \frac{\pi}{27}h^3", r"\frac{dV}{dt} = \frac{\pi}{9}h^2\,\frac{dh}{dt}"],
-                     at=[1, 1, 2, 2, 3, 4], figure=fig_cone(), follow=True)
-        self.example("Example 4: Two cars",
-                     r"Two cars leave an intersection at the same time, one north at $30$ mph and one east at $40$ mph. How fast is the distance between them growing after $2$ hours? Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{dx}{dt} = 40$ mph east,", r"TEXT:\quad $\frac{dy}{dt} = 30$ mph north, $t = 2$ h.", r"TEXT:Want: $\frac{dz}{dt}$.",
-                      r"z^2 = x^2 + y^2", r"2z\,\frac{dz}{dt} = 2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt}"], at=[1, 1, 2, 3, 4], figure=fig_cars())
-        self.example("Example 5: A shadow",
-                     r"Ana, who is $5$ ft tall, walks away from a $15$-ft lamppost at $4$ ft/s. How fast is her shadow lengthening? Set it up: stop at the differentiated equation.",
-                     [r"TEXT:Know: $\frac{dx}{dt} = 4$ ft/s.", r"TEXT:Want: $\frac{ds}{dt}$. Fixed: $15$ and $5$ ft.",
-                      r"\frac{15}{x + s} = \frac{5}{s}", r"15s = 5x + 5s,\ \text{so}\ s = \frac x2", r"\frac{ds}{dt} = \frac12\,\frac{dx}{dt}"],
-                     at=[1, 1, 2, 3, 4], figure=fig_shadow())
+        self.example("Example 2: Two cars",
+                     r"Priya drives west toward an intersection, and Kai drives north away from it. Write an equation that relates the distance between the two cars to each car's distance from the intersection, then differentiate with respect to time.",
+                     [r"TEXT:Changing: $x$ (Priya to the intersection),", r"TEXT:\quad $y$ (Kai to it), $z$ (between them).",
+                      r"z^2 = x^2 + y^2", r"\frac{d}{dt}\big[z^2\big] = \frac{d}{dt}\big[x^2 + y^2\big]",
+                      r"2z\,\frac{dz}{dt} = 2x\,\frac{dx}{dt} + 2y\,\frac{dy}{dt}"], at=[1, 1, 2, 3, 4], figure=fig_cars())
+        self.example("Example 3: A shadow",
+                     r"Ana, who is $5$ ft tall, walks away from a $15$-ft lamppost. Write an equation that relates her distance from the post and the length of her shadow, then differentiate with respect to time.",
+                     [r"TEXT:Changing: $x$ (Ana to the post) and $s$ (her shadow).", r"TEXT:The heights stay $15$ ft and $5$ ft.",
+                      r"\frac{15}{x + s} = \frac{5}{s}", r"15s = 5x + 5s", r"10s = 5x,\ \text{so}\ s = \frac x2", r"\frac{ds}{dt} = \frac12\,\frac{dx}{dt}"],
+                     at=[1, 2, 3, 4, 5, 6], figure=fig_shadow(), follow=True)
+        self.example("Example 4: Filling a cone",
+                     r"Water pours into a cone, point down, that is $9$ ft tall with radius $3$ ft at the top. Write an equation that relates the volume of the water and its depth, then differentiate with respect to time. (The volume of a cone with radius $r$ and height $h$ is $V = \tfrac13\pi r^2 h$.)",
+                     [r"TEXT:Changing: $V$, $h$, and the water's radius $r$.", r"TEXT:The cone stays $9$ ft tall, radius $3$ ft.",
+                      r"\frac rh = \frac39,\ \text{so}\ r = \frac h3", r"V = \frac13\pi\left(\frac h3\right)^2 h", r"V = \frac{\pi}{27}h^3",
+                      r"\frac{dV}{dt} = \frac{\pi}{9}h^2\,\frac{dh}{dt}"], at=[1, 2, 3, 4, 5, 6], figure=fig_cone())
         self.finish()

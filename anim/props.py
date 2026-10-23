@@ -416,22 +416,25 @@ def fig_cone(depth=0.67, H=3.6, R=1.2):
 
 
 def fig_cars(x=2.8, y=2.1):
-    """The intersection: one car east (x), one north (y), the distance z between them, and each car's speed."""
+    """The intersection: Priya's car on the east road driving west, TOWARD the intersection (x shrinking), Kai's car on
+    the north road driving away (y growing), and the distance z between them. Rates are labeled as symbols so 4.4 (no
+    numbers) and 4.5 (numbers) show the same picture (Adder, 2026-10-23)."""
     o = np.array([0.0, 0.0, 0.0])
-    ex = Arrow(o, o + RIGHT * (x + 0.9), buff=0, color=DIM, stroke_width=3, max_tip_length_to_length_ratio=0.06)
-    ny = Arrow(o, o + UP * (y + 0.9), buff=0, color=DIM, stroke_width=3, max_tip_length_to_length_ratio=0.08)
+    road = lambda a, b: Line(a, b, color=DIM, stroke_width=14, stroke_opacity=0.35)
+    ex = road(o + LEFT * 0.4, o + RIGHT * (x + 1.0))
+    ny = road(o + DOWN * 0.4, o + UP * (y + 1.0))
     a, b = o + RIGHT * x, o + UP * y
     z = Line(a, b, color=FUNC, stroke_width=5)
-    ca = car_sprite(0.75).move_to(a + UP * 0.2)
+    ca = face(car_sprite(0.75), -1).move_to(a + UP * 0.2)
     cb = car_sprite(0.75)
     cb.rotate(PI / 2).move_to(b + RIGHT * 0.2)
-    va = Arrow(a + DOWN * 0.35, a + DOWN * 0.35 + RIGHT * 0.8, buff=0, color=TANGENT, stroke_width=4, max_tip_length_to_length_ratio=0.3)
+    va = Arrow(a + DOWN * 0.35, a + DOWN * 0.35 + LEFT * 0.8, buff=0, color=TANGENT, stroke_width=4, max_tip_length_to_length_ratio=0.3)
     vb = Arrow(b + LEFT * 0.35, b + LEFT * 0.35 + UP * 0.7, buff=0, color=TANGENT, stroke_width=4, max_tip_length_to_length_ratio=0.3)
     return Group(ex, ny, MathTex(r"\text{E}", font_size=28, color=DIM).next_to(ex, RIGHT, buff=0.08),
                  MathTex(r"\text{N}", font_size=28, color=DIM).next_to(ny, UP, buff=0.08), z, ca, cb,
-                 _lab("x").next_to(Line(o, a), DOWN, buff=0.12).shift(LEFT * 0.5), _lab("y").next_to(Line(o, b), LEFT, buff=0.12).shift(DOWN * 0.3),
+                 _lab("x").next_to(Line(o, a), DOWN, buff=0.12).shift(LEFT * 0.7), _lab("y").next_to(Line(o, b), LEFT, buff=0.12).shift(DOWN * 0.5),
                  _lab("z", 36, FUNC).move_to((a + b) / 2 + np.array([0.3, 0.3, 0])),
-                 va, _lab(r"40", 26, TANGENT).next_to(va, DOWN, buff=0.06), vb, _lab(r"30", 26, TANGENT).next_to(vb, LEFT, buff=0.06))
+                 va, _lab(r"\tfrac{dx}{dt}", 28, TANGENT).next_to(va, DOWN, buff=0.06), vb, _lab(r"\tfrac{dy}{dt}", 28, TANGENT).next_to(vb, LEFT, buff=0.06))
 
 
 def fig_shadow(H=3.0, h=1.0, x=2.2):

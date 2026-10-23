@@ -12,6 +12,7 @@ import numpy as np
 from manim import *
 
 from kit import *
+from props import washing_machine
 from solids import *
 from style import *
 
@@ -34,6 +35,50 @@ def thickness(st, v, p):
                     max_tip_length_to_length_ratio=0.45).shift(UP * 0.12)
     lab = st.label("dx", r"\Delta x", 30, INK).next_to(a, UP, buff=0.08)
     return [a.set_opacity(p["dx"]), lab.set_opacity(p["dx"])]
+
+
+WOOD_GRAIN = "#9A6B3C"
+
+
+def hardware_washer(stv):
+    """8.11's real washer: a steel washer (the same radii ratio as the slice at X0) with a wood screw through it, in its
+    own Stage. Params: drop (the screw above, 1 -> seated, 0), sop (its opacity), board (a board's opacity), rise (0 ->
+    1: the board comes up and the screw turns into it), out (the screw backs out), tip (0: axis upright; 1: on edge,
+    axis along x), go (0 -> 1: moves onto the slice of the hollow solid, drawn with stv["v"]), thin (to the slice's
+    thickness), fade (its opacity)."""
+    R0, r0 = TOP(X0), BOT(X0)
+    rw = r0 / R0
+
+    def draw(st_, v, drop, sop, board, rise, out, tip, go, thin, fade):
+        tw = 0.12 + (0.15 / R0 - 0.12) * thin
+        items = []
+        zb = -tw / 2 - 2.0 * (1 - rise)
+        if board > 0.01:
+            bd = prism([(-1.5, zb - 0.45), (1.5, zb - 0.45), (1.5, zb), (-1.5, zb)], -1.8, 1.8, "x", color=WOOD_SIDE, cap_color=WOOD_SIDE,
+                       side_color=WOOD, opacity=board)
+            xs = np.linspace(-1.8, 1.8, 40)
+            for f in bd.faces:                  # wood grain: thin wavy strips along the board, on its top and front
+                if f.normal[2] > 0.9:
+                    f.decor = [np.array([(x, y + 0.04 * np.sin(2.1 * x + 7 * y), zb + 1e-3) for x in xs] +
+                                        [(x, y + 0.012 + 0.04 * np.sin(2.1 * x + 7 * y), zb + 1e-3) for x in xs[::-1]]) for y in (-1.2, -0.7, -0.15, 0.45, 1.0)]
+                elif f.normal[1] < -0.9:
+                    f.decor = [np.array([(x, -1.5 - 1e-3, z + 0.03 * np.sin(1.7 * x + 9 * z)) for x in xs] +
+                                        [(x, -1.5 - 1e-3, z + 0.012 + 0.03 * np.sin(1.7 * x + 9 * z)) for x in xs[::-1]]) for z in (zb - 0.34, zb - 0.21, zb - 0.1)]
+                f.decor_color = WOOD_GRAIN
+            items.append(bd)
+        w = washer(1.0, rw, 0.0, tw, axis="y", color=STEEL, inner_color=STEEL_DARK, opacity=fade)
+        sc = []
+        if sop > 0.01:
+            sc = screw(tw / 2 + 1.4 * drop + 2.0 * out, turn=540 * rise - 540 * out, clip=zb if board > 0.01 else None, opacity=sop)
+        if sc:
+            items += [merge(w, sc[0], closed=True)] + sc[1:]
+        else:
+            items.append(w.moved(R=rot("y", 90 * tip), about=(0, 0, 0)) if tip > 1e-3 else w)
+        if go > 1e-3 and "v" in stv:
+            t = stv["v"]
+            v = v.turned(origin=(1 - go) * v.origin + go * t.P(X0, 0, 0), scale=(1 - go) * v.scale + go * t.scale * R0)
+        return items, v
+    return Stage(draw, View(scale=1.9, yaw=-30, pitch=30), drop=1.0, sop=0.0, board=0.0, rise=0.0, out=0.0, tip=0.0, go=0.0, thin=0.0, fade=1.0)
 
 
 def hollow_bowl(scale=1.6, at=0.6, pose=(-36.0, 18.0), turn=-24.0):
@@ -108,8 +153,16 @@ class Lesson(TranscriptScene):
             self.wait(1.0)
             self.play(st.to("wedge", 0), FadeOut(tag), st.spin(14), run_time=1.8)
 
-        # ---------------------------------------------------------------- slice it: one washer, from every side
-        with self.beat("Every slice is a washer") as b:
+        # ---------------------------------------------------------------- slice it: one slice, from every side
+        stv = {}
+        draw0 = st.draw_fn
+
+        def keep_view(s_, v_, **p_):            # the (zoomed) view the slice is drawn with, for lining up the hardware washer
+            items, vv = draw0(s_, v_, **p_)
+            stv["v"] = vv
+            return items, vv
+        st.draw_fn = keep_view
+        with self.beat("One slice") as b:
             self.play(st.to("cut_line", 1), run_time=1.6)
             b.line(1)
             st.set("cut_line", 0)
@@ -126,8 +179,52 @@ class Lesson(TranscriptScene):
             wall = T("at an angle: the wall of the hole", 32, DIM).move_to(tag_at)
             self.play(st.to("dx", 0), FadeOut(edge), FadeIn(wall), st.to("yaw", -58), st.to("pitch", 22), run_time=2.6)
             self.play(st.spin(-14), run_time=2.2)
-            b.line(2)
             self.play(FadeOut(wall), st.to("yaw", -36), st.to("pitch", 18), run_time=1.6)
+
+        # ---------------------------------------------------------------- what a washer is (Adder, 2026-10-23)
+        with self.beat("What a washer is") as b:
+            tag = T("a washer", 40, INK).move_to(tag_at)
+            self.play(FadeIn(tag), run_time=0.8)
+            b.line(1)
+            wm = washing_machine(4.6).move_to(LEFT * 1.6 + DOWN * 0.1)
+            new = T("not this washer", 36, TANGENT).move_to(tag_at)
+            self.play(FadeOut(st), FadeOut(tag), run_time=0.6)
+            self.play(FadeIn(wm, shift=UP * 0.2), FadeIn(new), run_time=0.9)
+            tag = new
+            b.line(2)
+            hw = hardware_washer(stv)
+            hw.move_to(LEFT * 1.5 + UP * 0.9)
+            new = T("this washer", 36, INK).move_to(tag_at)
+            self.play(FadeOut(wm), FadeOut(tag), run_time=0.6)
+            self.play(FadeIn(hw), FadeIn(new), run_time=0.8)
+            tag = new
+            self.play(hw.to("sop", 1), hw.to("drop", 0), run_time=2.2)
+            self.play(hw.spin(-30), run_time=2.6)
+            b.line(3)
+            new = T("from the side", 36, DIM).move_to(tag_at)
+            self.play(hw.to("pitch", 7), hw.to("yaw", -24), hw.to("board", 1), FadeOut(tag), FadeIn(new), run_time=1.8)
+            tag = new
+            self.play(hw.to("rise", 1), run_time=3.0)
+            self.wait(1.0)
+            b.line(4)
+            self.play(hw.to("out", 1), hw.to("sop", 0), FadeOut(tag), run_time=1.3)
+            self.play(hw.to("board", 0), run_time=0.4)
+            self.play(hw.to("tip", 1), hw.to("pitch", 18), hw.to("yaw", -36), run_time=1.6)
+            b.line(5)
+            new = T("the slice at $x$: the same shape", 32, DIM).move_to(tag_at)
+            self.play(hw.to("go", 1), FadeIn(new), run_time=2.0)
+            tag = new
+            st.redraw(force=True)
+            self.add(st)
+            self.bring_to_front(hw)
+            self.play(hw.to("thin", 1), run_time=0.6)
+            self.play(hw.to("fade", 0), run_time=1.2)
+            self.remove(hw)
+            self.wait(1.0)
+            self.play(FadeOut(tag), run_time=0.6)
+
+        # ---------------------------------------------------------------- R and r, the area, the solid from washers
+        with self.beat("Every slice is a washer") as b:
             st.set("solid", 0)
             st.set("split", 0)
             st.set("one", 1)
@@ -135,7 +232,7 @@ class Lesson(TranscriptScene):
             self.play(st.to("rad", 1), run_time=1.0)
             self.wait(0.6)
             self.play(st.to("rin", 1), run_time=1.0)
-            b.line(3)
+            b.line(1)
             b1 = M(r"A(x) = \pi R^2 - \pi r^2", 42)
             b2 = M(r"\text{one washer: } \pi\left(R^2 - r^2\right)\Delta x", 38)
             b3 = formula_box(M(r"V = \pi\int_a^b \left([R(x)]^2 - [r(x)]^2\right) dx", 40, ACCUM), ACCUM)
@@ -143,7 +240,7 @@ class Lesson(TranscriptScene):
             board = VGroup(b1, b2, b3, b4).arrange(DOWN, buff=0.42).move_to(RIGHT * 3.6 + DOWN * 0.2)
             self.play(Write(b1), run_time=1)
             self.play(Write(b2), run_time=1)
-            b.line(4)
+            b.line(2)
             self.play(st.to("rad", 0), st.to("rin", 0), st.to("solid", 0), st.to("one", 0), run_time=0.8)
             st.set("solid", 1)
             tag = M("n = 8", 34, DIM).move_to(LEFT * 3.0 + UP * 3.3)

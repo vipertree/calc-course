@@ -28,7 +28,7 @@ NOTES = [
     Video("s8_11.py::Lesson", "The washer method", 5),
 
     Section("Outer and inner radius"),
-    Text(r"If there is a gap between the region and the axis, each slice is a washer: a disc with a hole."),
+    Text(r"If there is a gap between the region and the axis, each slice is a washer: a disc with a hole, the same shape as the flat metal ring that sits under the head of a screw."),
     Formula("Washer method", (r"\[ V = \pi\int_a^b \blank{\left(R(x)^2 - r(x)^2\right)}\,dx, \] where $R$ is the distance from the axis to the outer edge (the farther curve) and $r$ the distance from the axis to the edge of the hole (the nearer curve), each found on the picture. "
                               r"About the $y$-axis, use $dy$ and radii in terms of $y$.")),
     Text(r"\textbf{Square each radius separately.} $(R - r)^2 \ne R^2 - r^2$: with $R = 3$, $r = 2$, $(3 - 2)^2 = 1$ but $9 - 4 = 5$."),

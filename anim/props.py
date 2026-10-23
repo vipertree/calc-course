@@ -78,6 +78,11 @@ def coffee_mug(height=1.4):
     return sprite("coffee_mug", height)
 
 
+def washing_machine(height=4.0):
+    """A white front-loading washing machine (8.11: not the washer we mean)."""
+    return sprite("washing_machine", height)
+
+
 def lamppost(height=4.0):
     return sprite("lamppost", height, rim=True)
 

@@ -106,6 +106,8 @@ Speed: faces are built by copying a template VMobject's state (_fast_vm) and col
 a full solid redraws in well under 0.1 s. Pictures are pixel-identical to the first version.
 
 Props: bread_slices(...) a sliced sandwich loaf (crust, crumb faces with holes, end heels), cutting_board(...).
+screw(...) a wood screw standing on the z axis (pan head with a cross slot, threads, a point), clipped at a board top;
+with washer(..., axis="y") under its head it is the hardware washer of 8.11.
 
 Gotcha (why redraw empties old children in place): during an animation the Cairo renderer draws the family members
 it listed when the animation began, so replaced children would linger as ghosts.
@@ -1284,6 +1286,54 @@ def bread_slices(x0, x1, n, gap=0.0, w=1.0, h=0.6, dome=0.34, rim=5.0):
 def cutting_board(x0, x1, y0, y1, t=0.08):
     """A wooden board on the floor, top at z = 0 (so things on it stand on the floor)."""
     return prism([(y0, -t), (y1, -t), (y1, 0), (y0, 0)], x0, x1, "x", color=WOOD_SIDE, cap_color=WOOD_SIDE, side_color=WOOD, edge=True)
+
+
+STEEL, STEEL_DARK, SLOT = "#B9C1C9", "#8C959E", "#2C3035"
+
+
+def _clip_below(pts2, z0):
+    """A (r, z) polygon cut to the part with z >= z0 (Sutherland-Hodgman, one half-plane)."""
+    out = []
+    n = len(pts2)
+    for i in range(n):
+        a, b = pts2[i], pts2[(i + 1) % n]
+        ia, ib = a[1] >= z0, b[1] >= z0
+        if ia:
+            out.append(a)
+        if ia != ib:
+            t = (z0 - a[1]) / (b[1] - a[1])
+            out.append((a[0] + t * (b[0] - a[0]), z0))
+    return out
+
+
+def screw(z_head, length=2.0, rs=0.3, head_r=0.66, head_h=0.32, pitch=0.16, tip=0.38, turn=0.0, clip=None, color=STEEL_DARK,
+          opacity=1.0, nt=48):
+    """A wood screw on the z axis, its head's underside at z = z_head and its point `length` below: a pan head with a
+    cross slot on top, a threaded shank (ridges of radius rs), a pointed tip. turn: degrees about its axis (the slot
+    turns as it is driven). clip: a board's top z; the part below it is inside the wood and not drawn. Returns Bodies."""
+    zb, zt = z_head - length, z_head - length + tip
+    pts = [(0.0, zb), (rs * 0.55, zt - tip * 0.25)]
+    z = zt
+    while z + pitch < z_head - 0.04:                 # thread ridges: crest, root, crest, ...
+        pts += [(rs, z + pitch * 0.35), (rs * 0.74, z + pitch)]
+        z += pitch
+    pts += [(rs * 0.74, z_head), (head_r, z_head), (head_r, z_head + head_h * 0.45), (head_r * 0.93, z_head + head_h * 0.8),
+            (head_r * 0.78, z_head + head_h), (0.0, z_head + head_h)]
+    if clip is not None:
+        if z_head + head_h <= clip:
+            return []
+        pts = _clip_below(pts, clip)
+    body = revolve(pts, "y", 0.0, nt=nt, color=color, opacity=opacity)
+    out = [body]
+    top = z_head + head_h + 1e-3
+    w, L = head_r * 0.11, head_r * 0.62
+    slot = []
+    for a in (0.0, 90.0):
+        q = np.array([(-L, -w, top), (L, -w, top), (L, w, top), (-L, w, top)]) @ rot("z", a + turn).T
+        slot.append(Face(q, SLOT, normal=(0, 0, 1), edge=False, opacity=opacity, shade=False))
+    if clip is None or top > clip:
+        out.append(Body(slot))
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------- lessons

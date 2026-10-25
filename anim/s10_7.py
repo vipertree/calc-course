@@ -3,6 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
+from props import Frog
 from style import *
 
 
@@ -11,19 +12,29 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("Two steps forward, one step back") as b:
-            line = NumberLine(x_range=[0, 1.1, 0.25], length=11, include_numbers=True, decimal_number_config={"num_decimal_places": 2}, font_size=24, color=DIM).shift(DOWN * 0.6)
-            frog = VGroup(Ellipse(width=0.5, height=0.36, stroke_color=GRASS_DK, stroke_width=2, fill_color=GRASS, fill_opacity=1),
-                          Dot([-0.12, 0.14, 0], radius=0.05, color=INK), Dot([0.12, 0.14, 0], radius=0.05, color=INK)).move_to(line.n2p(0) + UP * 0.35)
+            # Adder (2026-10-14): a real-looking frog, actually animated, slower, leaving a trail of its path (props.Frog)
+            line = NumberLine(x_range=[0, 1.1, 0.25], length=11, include_numbers=True, decimal_number_config={"num_decimal_places": 2}, font_size=24, color=DIM).shift(DOWN * 2.3)
+            frog = Frog(line.n2p(0), height=0.85)
+            self.add(frog.trail)
             self.play(Create(line), FadeIn(frog), run_time=0.8)
-            s = 0.0
+            sums, s = [], 0.0
             for k in range(1, 9):
                 s += (-1)**(k + 1) / k
-                arc = ArcBetweenPoints(frog.get_center(), line.n2p(s) + UP * 0.35, angle=-PI / 2 if k % 2 else PI / 2, color=SECANT)
-                self.play(MoveAlongPath(frog, arc), run_time=0.45)
+                sums.append(s)
+            hop_col = lambda k: DERIV if k % 2 else FUNC          # rightward hops one color, leftward the other
+            for k in range(1, 5):
+                frog.hop(self, line.n2p(sums[k - 1]), run_time=1.8, peak=max(abs(sums[k - 1] - (sums[k - 2] if k > 1 else 0)) * 10 / 3, 1.0), color=hop_col(k), trail_opacity=0.8)
             b.line(1)
-            self.play(Create(DashedLine(line.n2p(np.log(2)) + UP * 1.2, line.n2p(np.log(2)) + DOWN * 0.3, color=ACCUM)), FadeIn(M(r"\ln 2 \approx 0.69", 32, ACCUM).next_to(line.n2p(np.log(2)), UP, buff=1.3)), run_time=1)
+            row = M(r"S_1 = 1,\ \ S_2 = 0.5,\ \ S_3 \approx 0.83,\ \ S_4 \approx 0.58,\ \ \ldots", 36).move_to(UP * 2.35)
+            self.play(LaggedStart(*[FadeIn(part) for part in row[0]], lag_ratio=0.04), run_time=2.4)
             b.line(2)
-            self.play(FadeIn(M(r"1 - \tfrac12 + \tfrac13 - \tfrac14 + \cdots", 42).to_edge(UP, buff=0.5)), run_time=0.8)
+            for k, rt in zip(range(5, 9), [1.8, 1.7, 1.6, 1.5]):
+                frog.hop(self, line.n2p(sums[k - 1]), run_time=rt, peak=1.0, color=hop_col(k), trail_opacity=0.8)     # arcs clear the frog
+            x2 = line.n2p(np.log(2))
+            self.play(Create(DashedLine(x2 + DOWN * 0.15, x2 + UP * 3.4, color=ACCUM)), FadeIn(M(r"\approx 0.69", 32, ACCUM).next_to(x2 + UP * 3.4, UP, buff=0.12)),
+                      frog.sit.animate.set_opacity(0.45), run_time=1)      # the frog steps back so its trail shows
+            b.line(3)
+            self.play(FadeIn(M(r"1 - \tfrac12 + \tfrac13 - \tfrac14 + \cdots", 42).to_edge(UP, buff=0.35)), run_time=0.8)
         self.clear()
         self.title()
 
@@ -46,6 +57,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("terms alternate in sign, shrink in size, and go to zero", 32).to_edge(DOWN, buff=0.4)), run_time=0.8)
         self.clear()
 
+        # the alternating series test stays up in the corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&\textstyle\sum (-1)^{n+1} b_n,\ b_n > 0\text{,}\\ &\text{converges if } b_n \text{ is decreasing}\\ &\text{and } \lim b_n = 0\end{aligned}"
         self.example("The alternating harmonic series", r"Show that $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n}$ converges.",
                      [r"b_n = \tfrac1n > 0", r"b_{n+1} = \tfrac{1}{n + 1} < \tfrac1n = b_n: \ \text{decreasing}", r"\lim \tfrac1n = 0", r"TEXT:By the alternating series test, the series converges.", r"\text{(its sum is } \ln 2 \approx 0.693)"], at=[1, 2, 3, 3, 3], follow=True)
 
@@ -64,7 +77,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: Root of n", r"Does $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^n}{\sqrt n}$ converge?", [r"b_n = \tfrac{1}{\sqrt n}: \ \text{positive, decreasing, } \to 0", r"\text{converges by the alternating series test}"], at=[1, 1])
-        self.example("Example 2: Sizes that don't shrink to zero", r"Does $\displaystyle\sum_{n=1}^{\infty} (-1)^n \frac{2n}{n + 3}$ converge?", [r"b_n = \tfrac{2n}{n + 3} \to 2 \ne 0", r"\text{diverges by the } n\text{th term test}"], at=[1, 1])
+        self.example("Example 2: Sizes that don't shrink to zero", r"Does $\displaystyle\sum_{n=1}^{\infty} (-1)^n \frac{2n}{n + 3}$ converge?", [r"b_n = \tfrac{2n}{n + 3} \to 2 \ne 0", r"\text{diverges by the } n\text{th term test}"], at=[1, 1], ref=r"\begin{aligned}&n\text{th term test:}\\ &\lim a_n \ne 0\text{, so}\\ &\textstyle\sum a_n \text{ diverges}\end{aligned}")
         self.example("Example 3: A log in the denominator", r"Does $\displaystyle\sum_{n=2}^{\infty} \frac{(-1)^n}{\ln n}$ converge?",
                      [r"b_n = \tfrac{1}{\ln n} > 0 \text{ for } n \ge 2", r"\ln n \text{ increases, so } b_n \text{ decreases}", r"\lim \tfrac{1}{\ln n} = 0", r"\text{converges by the alternating series test}"], at=[1, 1, 2, 2])
         self.finish()

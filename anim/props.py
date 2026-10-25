@@ -654,3 +654,86 @@ def walk_along(sprite, ax, xf, yf, t, h=1e-3):
 def empire_state_building(height=5.0):
     """The Empire State Building, painted, base to antenna tip (10.6: bigger than it tells you it's huge)."""
     return sprite("empire_state_building", height)
+
+
+# ---------------------------------------------------------------- the frog (10.7, 10.10)
+# Two painted poses from one Scenario round, cut at the same source scale (assets/CREDITS.md): sitting, and stretched out
+# mid-leap. A hop is crouch (the sitting frog squashes down), leap (swap to the stretched pose, fly along a parabola,
+# tilted with it), land (swap back, squash, settle). Adder (2026-10-14): a real-looking frog, actually animated, slow
+# enough to follow, leaving a trail of its path.
+_FROG_SIT_PX, _FROG_LEAP_PX = 551, 354                   # image heights in source pixels: same frog, same scale
+
+
+class Frog(Group):
+    """A side-view frog standing with its feet at `feet`, facing right (facing = 1) or left (-1). frog.hop(scene, x)
+    plays one hop to the point x (feet), leaving a faint arc on frog.trail (add it to the scene once, behind the frog)."""
+
+    def __init__(self, feet=ORIGIN, height=0.75, facing=1):
+        sit = sprite("frog_sitting", height, rim=True)
+        leap = sprite("frog_leaping", height * _FROG_LEAP_PX / _FROG_SIT_PX, rim=True)
+        super().__init__(sit, leap)
+        self.sit, self.leap = sit, leap
+        self._sit0, self._leap0 = sit.points.copy(), leap.points.copy()      # pristine geometry, centered at the origin
+        self._sit0 -= sit.get_center()
+        self._leap0 -= leap.get_center()
+        self.feet = np.array(feet, dtype=float)
+        self.facing = facing
+        self.trail = VGroup()
+        self._pose(self.feet, "sit")
+
+    def _pose(self, p, which, squash=0.0, tilt=0.0, facing=None):
+        """Draw the frog at foot point p: 'sit' (squash 0..1 crouches it) or 'leap' (centered just above p, tilted)."""
+        f = self.facing if facing is None else facing
+        self.sit.points = self._sit0.copy()
+        self.leap.points = self._leap0.copy()
+        if which == "sit":
+            self.sit.stretch(f * (1 + 0.10 * squash), 0).stretch(1 - 0.24 * squash, 1)
+            self.sit.move_to(p + UP * self.sit.height / 2)
+            self.sit.set_opacity(1)
+            self.leap.move_to(p + UP * self.leap.height / 2).set_opacity(0)
+        else:
+            self.leap.stretch(f, 0).rotate(tilt)
+            self.leap.move_to(p + UP * self.leap.height * 0.45)
+            self.leap.set_opacity(1)
+            self.sit.move_to(p + UP * self.sit.height / 2).set_opacity(0)
+        return self
+
+    def hop(self, scene, to, run_time=1.6, peak=None, color=DIM, trail_opacity=0.5, mark=True):
+        """One hop from the frog's feet to the point `to`, along a parabola `peak` high (default: a third of the distance,
+        at least 0.45). It turns to face the way it goes, crouches, leaps, lands and settles. The arc it flew stays on
+        self.trail, faint, with a small tick where it landed (mark=True)."""
+        a, b = self.feet.copy(), np.array(to, dtype=float)
+        d = float(np.linalg.norm(b - a))
+        h = peak if peak is not None else max(0.45, d / 3)
+        way = 1 if b[0] >= a[0] else -1
+        path = lambda s: a + (b - a) * s + UP * 4 * h * s * (1 - s)
+        arc = ParametricFunction(path, t_range=[0, 1], color=color, stroke_width=3).set_stroke(opacity=trail_opacity)
+        seen = arc.copy().pointwise_become_partial(arc, 0, 0)
+        self.trail.add(seen)
+        T0, T1 = 0.28, 0.80                                # crouch until T0, fly until T1, then land and settle
+
+        def upd(m, t):
+            if t < T0:
+                m._pose(a, "sit", squash=smooth(t / T0) * 0.9, facing=way)
+            elif t < T1:
+                s = (t - T0) / (T1 - T0)
+                p0, p1 = path(max(s - 0.02, 0)), path(min(s + 0.02, 1))
+                ang = float(np.arctan2(p1[1] - p0[1], abs(p1[0] - p0[0]) + 1e-9))
+                m._pose(path(s), "leap", tilt=way * float(np.clip(ang, -0.6, 0.6)), facing=way)
+            else:
+                s = (t - T1) / (1 - T1)
+                m._pose(b, "sit", squash=(1 - smooth(s)) * 0.8, facing=way)
+
+        def draw(m, t):                                    # the trail is animated too, or manim freezes it
+            m.pointwise_become_partial(arc, 0, float(np.clip((t - T0) / (T1 - T0), 0, 1)))
+
+        self.facing = way
+        scene.play(UpdateFromAlphaFunc(self, upd, rate_func=linear), UpdateFromAlphaFunc(seen, draw, rate_func=linear), run_time=run_time)
+        seen.become(arc)
+        self.feet = b
+        self._pose(b, "sit")
+        if mark:
+            tick = Line(b + DOWN * 0.1, b + UP * 0.1, color=color, stroke_width=4).set_stroke(opacity=min(1, trail_opacity + 0.3))
+            self.trail.add(tick)
+            scene.add(tick)
+        return self

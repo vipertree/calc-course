@@ -11,6 +11,8 @@ from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Formula, Item, Part
 n = sp.symbols("n", positive=True)
 L = lambda a: sp.limit(a, n, sp.oo)
 same("ex", [L(1 / n), L(2 * n / (n + 3)), L(1 / sp.log(n))], [0, 2, 0])
+close("S3", float(sp.Rational(5, 6)), 0.83, 0.005)
+close("S4", float(sp.Rational(7, 12)), 0.58, 0.005)
 close("ln2", float(sum((-1)**(k + 1) / k for k in range(1, 200001))), float(sp.log(2)), 1e-5)
 
 NOTES = [
@@ -18,7 +20,7 @@ NOTES = [
 
     Section("The test"),
     Formula("Alternating series test", (r"If $b_n > 0$, $b_n$ is \blank{decreasing}, and $\lim_{n\to\infty} b_n = \blank{0}$, then $\sum (-1)^{n+1} b_n$ (or $\sum (-1)^n b_n$) converges.")),
-    Text(r"The partial sums zigzag inside shrinking intervals and settle on a limit. State both conditions when you use the test."),
+    Text(r"\textbf{Picture a frog} on a number line hopping $1$ right, $\frac12$ left, $\frac13$ right, $\frac14$ left, and so on. Each landing spot is a partial sum ($S_1 = 1$, $S_2 = 0.5$, $S_3 \approx 0.83$, $S_4 \approx 0.58$): the partial sums zigzag inside shrinking intervals and settle on a limit (here $\ln 2 \approx 0.69$). State both conditions when you use the test."),
     VideoExample('The alternating harmonic series', work="2.8cm"),
     Text(r"\textbf{When it doesn't apply.} If $b_n \not\to 0$, the series diverges by the $n$th term test. If $b_n \to 0$ but isn't decreasing, the alternating series test is inconclusive."),
     BigIdea(r"Alternating, decreasing in size, sizes $\to 0$: converges. Signs can rescue a series that would diverge without them ($\sum \frac{(-1)^n}{\sqrt n}$)."),

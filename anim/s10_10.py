@@ -3,6 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
+from props import Frog
 from style import *
 
 
@@ -11,20 +12,37 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("How far off is a partial sum?") as b:
-            line = NumberLine(x_range=[0.4, 1.05, 0.1], length=11, include_numbers=True, decimal_number_config={"num_decimal_places": 1}, font_size=24, color=DIM).shift(DOWN * 0.8)
-            target = np.log(2)
-            self.play(Create(line), Create(DashedLine(line.n2p(target) + UP * 1.4, line.n2p(target) + DOWN * 0.3, color=ACCUM)), FadeIn(M("S", 32, ACCUM).next_to(line.n2p(target), UP, buff=1.45)), run_time=1)
-            s, prev = 0.0, 0.0
-            dot = Dot(line.n2p(0.4), color=SECANT)
-            for k in range(1, 5):
+            # Adder (2026-10-14): bring back 10.7's animated frog (props.Frog), with its trail
+            line = NumberLine(x_range=[0, 1.1, 0.25], length=11, include_numbers=True, numbers_to_include=[0, 0.5, 1], decimal_number_config={"num_decimal_places": 1}, font_size=24, color=DIM).shift(DOWN * 1.6)
+            frog = Frog(line.n2p(0), height=0.85)
+            self.add(frog.trail)
+            self.play(Create(line), FadeIn(frog), run_time=0.8)
+            target, sums, s = np.log(2), [], 0.0
+            for k in range(1, 6):
                 s += (-1)**(k + 1) / k
-                self.play(dot.animate.move_to(line.n2p(max(s, 0.4))), run_time=0.4)
-            self.play(FadeIn(M("S_4", 30, SECANT).next_to(dot, DOWN, buff=0.25)), FadeIn(Line(line.n2p(s), line.n2p(target), color=TANGENT, stroke_width=8).shift(UP * 0.25)), run_time=0.8)
+                sums.append(s)
+            hop_col = lambda k: DERIV if k % 2 else FUNC          # 10.7's colors: rightward hops, leftward hops
+            for k in range(1, 5):
+                d = abs(line.n2p(sums[k - 1])[0] - frog.feet[0])
+                frog.hop(self, line.n2p(sums[k - 1]), run_time=1.8, peak=min(max(d / 3, 1.0), 2.6), color=hop_col(k), trail_opacity=0.8)
+            p4, pS, p5 = line.n2p(sums[3]), line.n2p(target), line.n2p(sums[4])
+            y1, y2 = line.get_center()[1] - 0.4, line.get_center()[1] - 0.8
+            lab4 = M("S_4", 30, SECANT).move_to([p4[0], y2 - 0.45, 0])
+            self.play(FadeIn(lab4), run_time=0.6)
             b.line(1)
-            nxt = s + 1 / 5
-            self.play(Create(CurvedArrow(line.n2p(s) + UP * 0.5, line.n2p(nxt) + UP * 0.5, angle=-PI / 2, color=DERIV)), FadeIn(M("b_5", 30, DERIV).next_to(line.n2p((s + nxt) / 2), UP, buff=0.9)), run_time=1)
+            sline = DashedLine(pS + UP * 0.7, [pS[0], y2 - 0.15, 0], color=ACCUM)
+            labS = M("S", 30, ACCUM).move_to([pS[0], y2 - 0.45, 0])
+            err = Line([p4[0], y1, 0], [pS[0], y1, 0], color=TANGENT, stroke_width=9)
+            err_lab = T("error", 28, TANGENT).next_to(err, RIGHT, buff=0.25)
+            self.play(Create(sline), FadeIn(labS), run_time=0.8)
+            self.play(Create(err), FadeIn(err_lab), run_time=0.8)
             b.line(2)
-            self.play(FadeIn(T("the next jump always overshoots the target", 32).to_edge(UP, buff=0.5)), run_time=0.6)
+            frog.hop(self, p5, run_time=1.8, peak=1.0, color=hop_col(5), trail_opacity=0.8)
+            jump = Line([p4[0], y2, 0], [p5[0], y2, 0], color=DERIV, stroke_width=9)
+            jump_lab = M("b_5", 30, DERIV).next_to(jump, RIGHT, buff=0.25)
+            self.play(Create(jump), FadeIn(jump_lab), run_time=0.8)
+            b.line(3)
+            self.play(FadeIn(T("the next jump always overshoots the target", 32).to_edge(UP, buff=0.5)), Indicate(err, color=TANGENT), run_time=1.0)
         self.clear()
         self.title()
 
@@ -38,6 +56,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("$S$ is between $S_n$ and $S_{n+1}$: the error has the sign of the first omitted term", 30, SECANT).next_to(words, DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
+        # the error bound stays up in the corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&\text{passes the AST:}\\ &|S - S_n| \le b_{n+1}\\ &\text{(first omitted term)}\end{aligned}"
         self.example("Bounding an error", r"Use $S_4$ to approximate $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n^2}$. Bound the error, and say whether $S_4$ is an overestimate or an underestimate.",
                      [r"TEXT:The series passes the AST: $\frac{1}{n^2}$ decreases to $0$.", r"S_4 = 1 - \tfrac14 + \tfrac19 - \tfrac{1}{16}", r"= \tfrac{115}{144} \approx 0.7986", r"\text{error} \le b_5 = \tfrac{1}{25} = 0.04",
                       r"TEXT:The first omitted term, $+\frac{1}{25}$, is positive: $S_4$ is an underestimate.", r"\text{(true sum } \tfrac{\pi^2}{12} \approx 0.8225)"], at=[1, 2, 2, 3, 4, 5], follow=True)

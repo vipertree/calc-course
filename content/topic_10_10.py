@@ -21,6 +21,7 @@ NOTES = [
     Video("s10_10.py::Lesson", "Alternating series error bound", 4),
 
     Section("The bound"),
+    Text(r"\textbf{The frog again.} Picture 10.7's frog hopping $1$ right, $\frac12$ left, $\frac13$ right, and so on. Every hop overshoots the sum $S$, so $S$ always lies between where the frog sits ($S_n$) and where its next hop lands ($S_{n+1}$). The error is smaller than that next hop, $b_{n+1}$."),
     Formula("Alternating series error bound", (r"If $\sum (-1)^{n+1} b_n$ satisfies the alternating series test and has sum $S$, then \[ |S - S_n| \le \blank{b_{n+1}}, \] the first omitted term.")),
     Text(r"\textbf{Over or under?} $S$ lies between $S_n$ and $S_{n+1}$. If the first omitted term is positive, $S_n$ is an underestimate; if negative, an overestimate."),
     VideoExample('Bounding an error', work="4cm"),

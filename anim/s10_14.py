@@ -28,7 +28,8 @@ class Lesson(TranscriptScene):
             Ps = []
             for k, deg in enumerate((1, 2, 4, 8)):
                 P = lambda s, d=deg: sum(s**j / math.factorial(j) for j in range(d + 1))
-                Ps.append(ax.plot(P, x_range=[-3, 2.6], color=cols[k], stroke_width=3))
+                xs = [t for t in np.linspace(-3, 2.6, 561) if -1 <= P(t) <= 12]       # stay inside the window
+                Ps.append(ax.plot(P, x_range=[xs[0], xs[-1]], color=cols[k], stroke_width=3))
             est = VGroup(T("a few terms: an estimate", 34, SECANT), M(r"P_3(0.1) = 1.105167", 36), M(r"e^{0.1} \approx 1.105171", 36, FUNC),
                          M(r"\text{error} \le 0.000005", 34, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.4).to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
             self.play(Create(Ps[0]), Create(Ps[1]), FadeIn(est[0]), run_time=1.2)

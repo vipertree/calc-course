@@ -35,10 +35,10 @@ class Lesson(TranscriptScene):
             A = 2.9          # each degree hugs a wider stretch here (within 0.12: 0.3, 1.3, 2.0, 3.1 wide)
             d = [f(A), np.cos(A - 2.2), -np.sin(A - 2.2), -np.cos(A - 2.2)]
             polys = [lambda s, k=k: sum(d[j] / math.factorial(j) * (s - A)**j for j in range(k + 1)) for k in range(4)]
-            ax, al = plot_axes([0, 6.2, 1], [0, 4.4, 1], w=6.8, h=4.6, coords=False)
-            VGroup(ax, al).to_edge(LEFT, buff=0.5).shift(DOWN * 0.2)
+            ax, al = plot_axes([0, 6.2, 1], [0, 4.4, 1], w=7.0, h=5.0, coords=False)
+            VGroup(ax, al).to_edge(LEFT, buff=0.4).shift(DOWN * 0.1)
             curve = ax.plot(f, x_range=[0, 6.2], color=FUNC, stroke_width=5)
-            fl = M("y = f(x)", 30, FUNC).next_to(ax.c2p(0.7, f(0.7)), UP, buff=0.3)
+            fl = M("y = f(x)", 30, FUNC).next_to(ax.c2p(6.2, f(6.2)), RIGHT, buff=0.15)
             pt = Dot(ax.c2p(A, f(A)), radius=0.09, color=INK)
             drop = DashedLine(ax.c2p(A, 0), ax.c2p(A, f(A)), color=DIM, stroke_width=2, dash_length=0.1)
             alab = M("a", 32).next_to(ax.c2p(A, 0), DOWN, buff=0.15)
@@ -75,7 +75,7 @@ class Lesson(TranscriptScene):
                            T("$f'''$: how the bending changes", 30, ACCUM)).arrange(DOWN, aligned_edge=LEFT, buff=0.45).move_to(labs, aligned_edge=LEFT)
             self.play(FadeOut(labs), FadeIn(means), run_time=1)
             b.line(6)
-            easy = T("polynomials: only adding and multiplying", 30, DIM).next_to(means, DOWN, buff=0.7).align_to(means, LEFT)
+            easy = VGroup(T("polynomials are easy:", 30, DIM), T("only adding and multiplying", 30, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.15).next_to(means, DOWN, buff=0.7).align_to(means, LEFT)
             self.play(FadeIn(easy), run_time=0.8)
         self.clear()
 

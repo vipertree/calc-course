@@ -6,7 +6,7 @@ choices. Every keyed value is checked with sympy.
 """
 import sympy as sp
 
-from calclib import FRQ, MCQ, Part, UnitTest, Variants, close, expr, num, same, selfcheck
+from calclib import FRQ, MCQ, Part, pointslope, UnitTest, Variants, close, expr, num, same, selfcheck
 
 x, t = sp.symbols("x t")
 pi = sp.pi
@@ -77,15 +77,15 @@ A = [
     ),
     Variants(
         pick(r"Using the line tangent to $y = \sqrt x$ at $x = 16$, the approximation of $\sqrt{16.4}$ is", r"$4.05$",
-             [r"$4.1$", r"$4.4$", r"$4.025$"], "B", r"$4 + \frac18(0.4) = 4.05$.", {r"$4.1$": "used slope $\\frac14$"}),
+             [r"$4.1$", r"$4.4$", r"$4.025$"], "B", r"Point $(16, 4)$, slope $m = \frac{1}{2\sqrt{16}} = \frac18$: $y - 4 = \frac18(x - 16)$, so $\sqrt{16.4} \approx 4 + \frac18(0.4) = 4.05$.", {r"$4.1$": "used slope $\\frac14$"}),
         pick(r"Using the line tangent to $y = \sqrt[3]{x}$ at $x = 27$, the approximation of $\sqrt[3]{27.54}$ is", r"$3.02$",
-             [r"$3.18$", r"$3.54$", r"$3.06$"], "A", r"$3 + \frac{1}{27}(0.54) = 3.02$.", {r"$3.18$": "used slope $\\frac13$"}),
+             [r"$3.18$", r"$3.54$", r"$3.06$"], "A", r"Point $(27, 3)$, slope $m = \frac{1}{3 \cdot 27^{2/3}} = \frac{1}{27}$: $y - 3 = \frac{1}{27}(x - 27)$, so $\sqrt[3]{27.54} \approx 3 + \frac{1}{27}(0.54) = 3.02$.", {r"$3.18$": "used slope $\\frac13$"}),
     ),
     Variants(
         pick(r"$f(1) = 3$ and $f'(1) = -2$. Using the line tangent to the graph of $f$ at $x = 1$, $f(1.2) \approx$", r"$2.6$",
-             [r"$3.4$", r"$2.8$", r"$-0.4$"], "C", r"$3 + (-2)(0.2) = 2.6$.", {r"$3.4$": "lost the sign", r"$-0.4$": "that's only the change"}),
+             [r"$3.4$", r"$2.8$", r"$-0.4$"], "C", r"Point $(1, 3)$, slope $m = -2$: $y - 3 = -2(x - 1)$, so $f(1.2) \approx 3 + (-2)(0.2) = 2.6$.", {r"$3.4$": "lost the sign", r"$-0.4$": "that's only the change"}),
         pick(r"$f(4) = -1$ and $f'(4) = 5$. Using the line tangent to the graph of $f$ at $x = 4$, $f(3.9) \approx$", r"$-1.5$",
-             [r"$-0.5$", r"$0.5$", r"$-0.9$"], "D", r"$-1 + 5(-0.1) = -1.5$.", {r"$-0.5$": "moved the wrong way"}),
+             [r"$-0.5$", r"$0.5$", r"$-0.9$"], "D", r"Point $(4, -1)$, slope $m = 5$: $y + 1 = 5(x - 4)$, so $f(3.9) \approx -1 + 5(-0.1) = -1.5$.", {r"$-0.5$": "moved the wrong way"}),
     ),
     Variants(
         pick(r"\[ \lim_{x \to 0} \frac{e^{2x} - 1}{\sin x} = \]", r"$2$", [r"$0$", r"$1$", r"Does not exist"], "A",
@@ -138,10 +138,10 @@ B = [
     ),
     Variants(
         pick(r"Let $f(x) = xe^{x/3}$. Using the line tangent to the graph of $f$ at $x = 2$, $f(2.1)$ is approximately", r"$4.220$",
-             [r"$4.229$", r"$3.896$", r"$3.571$"], "C", r"$f(2) = 2e^{2/3} \approx 3.896$ and $f'(2) = \frac53e^{2/3} \approx 3.246$, so $3.896 + 0.325 \approx 4.220$.",
+             [r"$4.229$", r"$3.896$", r"$3.571$"], "C", r"$f(2) = 2e^{2/3} \approx 3.896$ and $f'(2) = \frac53e^{2/3} \approx 3.246$. Point $(2, 3.896)$, slope $m \approx 3.246$: $y - 3.896 = 3.246(x - 2)$, so $f(2.1) \approx 3.896 + 0.325 \approx 4.220$.",
              {r"$3.896$": "that's $f(2)$", r"$4.229$": "that's $f(2.1)$ itself"}, calc=True),
         pick(r"Let $f(x) = \ln\left(x^2 + 1\right)$. Using the line tangent to the graph of $f$ at $x = 2$, $f(1.9)$ is approximately", r"$1.529$",
-             [r"$1.609$", r"$1.689$", r"$1.536$"], "A", r"$f(2) = \ln 5 \approx 1.609$ and $f'(2) = \frac45$, so $1.609 - 0.08 \approx 1.529$.",
+             [r"$1.609$", r"$1.689$", r"$1.536$"], "A", r"$f(2) = \ln 5 \approx 1.609$ and $f'(2) = \frac45$. Point $(2, \ln 5)$, slope $m = \frac45$: $y - \ln 5 = \frac45(x - 2)$, so $f(1.9) \approx 1.609 - 0.08 \approx 1.529$.",
              {r"$1.609$": "that's $f(2)$", r"$1.536$": "that's $f(1.9)$ itself"}, calc=True),
     ),
     Variants(
@@ -240,7 +240,7 @@ def approx_frq(a, fa1, sign, at, den, den_tex):
         rf"The function $f$ is twice differentiable for all real numbers, with $f({a}) = 0$ and $f'({a}) = {fa1}$. It is known that "
         rf"$f''(x) {cmp} 0$ for all $x$."), [
         Part("a", rf"Write an equation for the line tangent to the graph of $f$ at $x = {a}$. Use the tangent line to approximate $f({float(at)})$.", num(est),
-             rf"$y = {fa1}(x - {a})$, so $f({float(at)}) \approx {fa1}({float(at - a)}) = {float(est)}$.", [(1, "tangent line"), (1, "estimate")], work="2cm"),
+             rf"Point $({a}, 0)$, slope $m = f'({a}) = {fa1}$, so the tangent line is ${pointslope(a, 0, fa1)}$. Then $f({float(at)}) \approx {fa1}({float(at - a)}) = {float(est)}$.", [(1, "tangent line"), (1, "estimate")], work="2cm"),
         Part("b", rf"Is the approximation in part (a) an overestimate or an underestimate of $f({float(at)})$? Give a reason for your answer.",
              selfcheck(rf"\text{{{word.capitalize()}}}"),
              rf"Since $f''(x) {cmp} 0$, the graph of $f$ is concave {'up' if sign > 0 else 'down'} and lies {side} its tangent line, so the "

@@ -84,7 +84,7 @@ PRACTICE += [
     Item(r"The line $y = 4x - 7$ is tangent to the graph of an invertible $f$ at $x = 2$. Find $\left(f^{-1}\right)'(1)$.", num(sp.Rational(1, 4)),
          r"$f(2) = 4(2) - 7 = 1$ and $f'(2) = 4$. So $\left(f^{-1}\right)'(1) = \dfrac14$.", work="1.8cm"),
     Item(r"Let $g = f^{-1}$ with $f(x) = x^3 + x + 1$. Find the equation for the line tangent to $g$ at $x = 3$.", expr("x/4 + 1/4"),
-         r"$f(1) = 3$, so $g(3) = 1$. $f'(1) = 4$, so $g'(3) = \dfrac14$. Line: $y - 1 = \frac14(x - 3)$, so $y = \frac14x + \frac14$.", work="2.4cm"),
+         r"$f(1) = 3$, so $g(3) = 1$. $f'(1) = 4$, so $g'(3) = \dfrac14$. Point $(3, 1)$, slope $m = \frac14$. Line: $y - 1 = \frac14(x - 3)$, so $y = \frac14x + \frac14$.", work="2.4cm"),
     Item(r"$f(x) = e^{2x}$. Find $\left(f^{-1}\right)'(1)$ two ways: with the formula, and by finding $f^{-1}$.", num(sp.Rational(1, 2)),
          r"Formula: $f(0) = 1$, $f'(0) = 2$, so $\frac12$. Directly: $f^{-1}(x) = \frac12\ln x$, derivative $\frac{1}{2x} = \frac12$ at $x = 1$.",
          work="2.4cm"),
@@ -171,7 +171,7 @@ MCQS = [
         r"$f(1) = 1$ and $f'(1) = 1 + 1 = 2$, so $\frac12$."),
     MCQ(r"$g$ is the inverse of $f(x) = 2x + \cos x$. Which is an equation of the line tangent to $g$ at $x = 1$?",
         [r"$y = \frac12x - \frac12$", r"$y = \frac12(x - 1)$", r"$y = 2(x - 1)$", r"$y - 1 = \frac12x$"], "B",
-        r"$f(0) = 1$, so $g(1) = 0$. $f'(0) = 2 - \sin 0 = 2$, so $g'(1) = \frac12$: $y = \frac12(x - 1)$.",
+        r"$f(0) = 1$, so $g(1) = 0$. $f'(0) = 2 - \sin 0 = 2$, so $g'(1) = \frac12$. Point $(1, 0)$, slope $m = \frac12$: $y - 0 = \frac12(x - 1)$.",
         why_not={"C": "used $f'$ instead of its reciprocal"}),
 ]
 same("m", [inv_slope(x**3 + 4 * x - 1, 1), inv_slope(sp.log(x) + x, 1), inv_slope(2 * x + sp.cos(x), 0)],
@@ -189,7 +189,7 @@ FRQS = [
              [(1, "$g(3) = 1$"), (1, "answer $2$")], work="2.4cm"),
         Part("b", r"Write an equation for the line tangent to the graph of $y = g(x)$ at $x = 4$.", expr("4*x - 13"),
              r"$g(4)$ asks: what $x$ gives an $f$ value of $4$? $f(3) = 4$, so $g(4) = 3$ and $g'(4) = \dfrac{1}{f'(3)} = 4$. "
-             r"The tangent line is $y = 3 + 4(x - 4)$.",
+             r"Point $(4, 3)$, slope $m = 4$: the tangent line is $y - 3 = 4(x - 4)$.",
              [(1, "$g(4) = 3$"), (1, "$g'(4) = 4$ and the tangent line equation")], work="2.4cm"),
         Part("c", r"Let $k$ be the function defined by $k(x) = x\,g(x)$. Find $k'(4)$. Show the work that leads to your answer.",
              num(19),

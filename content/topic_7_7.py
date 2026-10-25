@@ -81,7 +81,7 @@ same("frq vals", [d2(0, 3), 3 + 1 * sp.Rational(2, 10)], [2, sp.Rational(16, 5)]
 FRQS = [
     FRQ("A separable differential equation", (r"Consider the differential equation $\dfrac{dy}{dx} = (x + 1)(y - 2)$. Let $y = f(x)$ be the particular solution with $f(0) = 3$."), [
         Part("a", r"Write an equation for the line tangent to the graph of $f$ at $x = 0$. Use the tangent line to approximate $f(0.2)$.", num(sp.Rational(16, 5)),
-             r"$\frac{dy}{dx}\Big|_{(0, 3)} = (1)(1) = 1$. The tangent line is $y = 3 + x$, so $f(0.2) \approx 3.2$.", [(1, "tangent line"), (1, "approximation")], work="2.4cm"),
+             r"$\frac{dy}{dx}\Big|_{(0, 3)} = (1)(1) = 1$. Point $(0, 3)$, slope $m = 1$: the tangent line is $y - 3 = 1(x - 0)$, so $y = 3 + x$ so $f(0.2) \approx 3.2$.", [(1, "tangent line"), (1, "approximation")], work="2.4cm"),
         Part("b", r"Given that $\dfrac{d^2y}{dx^2} = (y - 2)\left(1 + (x + 1)^2\right)$, is the approximation in part (a) an overestimate or an underestimate? Give a reason for your answer.",
              selfcheck(r"\text{underestimate}"), r"At $(0, 3)$, $\frac{d^2y}{dx^2} = (1)(2) = 2 > 0$, so the graph of $f$ is concave up near $x = 0$ and lies above its tangent line: an underestimate.",
              [(1, "underestimate with reason")], work="1.8cm"),

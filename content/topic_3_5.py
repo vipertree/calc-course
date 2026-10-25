@@ -63,7 +63,7 @@ PRACTICE += [
          r"Product and chain: $2f f'\cdot g + f^2 g' = 2(2)(3)(-1) + 4(4) = -12 + 16 = 4$.", work="2cm"),
     Item(r"Find the slope of $y = x e^{x^2}$ at $x = 1$.", num(3 * sp.E), r"$e^{x^2} + 2x^2e^{x^2} = 3e$ at $x = 1$.", work="1.6cm"),
     Item(r"Find the equation for the line tangent to $y = \ln(2x - 1)$ at $x = 1$.", expr("2*x - 2"),
-         r"Point $(1, 0)$, slope $\dfrac{2}{2x - 1} = 2$: $y = 2x - 2$.", work="1.8cm"),
+         r"Point $(1, 0)$, slope $m = \dfrac{2}{2(1) - 1} = 2$: $y - 0 = 2(x - 1)$, so $y = 2x - 2$.", work="1.8cm"),
     Item(r"Chen says $\dfrac{d}{dx}\left[\dfrac{5}{x^3}\right]$ needs the quotient rule. Suggest a faster way and give the derivative.",
          expr("-15/x**4"), r"Rewrite as $5x^{-3}$: $-15x^{-4}$.", work="1.4cm"),
     Item(r"Find the $x$-values in $(0, 2\pi)$ where $y = \sin x\cos x$ has horizontal tangents. Enter the smallest.", num(pi / 4),

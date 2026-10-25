@@ -143,7 +143,7 @@ FRQS = [
              [(1, "relative maximum at $x = -2$ with justification"), (1, "relative minimum at $x = 1$ with justification")],
              work="3cm"),
         Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 0$.", expr("3 - 2*x"),
-             r"$f'(0) = (-1)(2)(1) = -2$ and $f(0) = 3$, so the tangent line is $y = 3 - 2x$.",
+             r"$f'(0) = (-1)(2)(1) = -2$ and $f(0) = 3$. Point $(0, 3)$, slope $m = -2$: the tangent line is $y - 3 = -2(x - 0)$, so $y = 3 - 2x$.",
              [(1, "$f'(0) = -2$"), (1, "tangent line equation")], work="2cm"),
         Part("c", r"Use the tangent line from part (b) to approximate $f(0.1)$. Is this approximation an overestimate or an "
                   r"underestimate of $f(0.1)$? Give a reason for your answer.", num(sp.Rational(14, 5)),

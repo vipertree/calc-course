@@ -79,9 +79,9 @@ PRACTICE += [
     Item(r"Find the slope of the tangent line to $y = \csc x$ at $x = \dfrac\pi6$.", num(-2 * sp.sqrt(3)),
          r"$-\csc\frac\pi6\cot\frac\pi6 = -2\sqrt3$.", work="1.4cm"),
     Item(r"Find the equation for the line tangent to $y = \sec x$ at $x = 0$.", expr("1"),
-         r"Point $(0, 1)$, slope $\sec 0\tan 0 = 0$: the horizontal line $y = 1$.", work="1.8cm"),
+         r"Point $(0, 1)$, slope $m = \sec 0\tan 0 = 0$: $y - 1 = 0(x - 0)$, the horizontal line $y = 1$.", work="1.8cm"),
     Item(r"Find the equation for the line tangent to $y = 2\tan x$ at $x = \dfrac\pi4$.", expr("4*x - pi + 2"),
-         r"Point $\left(\frac\pi4, 2\right)$, slope $2\sec^2\frac\pi4 = 4$: $y - 2 = 4\left(x - \frac\pi4\right)$, so $y = 4x - \pi + 2$.",
+         r"Point $\left(\frac\pi4, 2\right)$, slope $m = 2\sec^2\frac\pi4 = 4$: $y - 2 = 4\left(x - \frac\pi4\right)$, so $y = 4x - \pi + 2$.",
          work="2cm"),
     Item(r"Use the quotient rule on $\cot x = \dfrac{\cos x}{\sin x}$ to show that its derivative is $-\csc^2 x$.",
          selfcheck(r"-\csc^2 x"),
@@ -135,11 +135,11 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"The tangent line to $y = \tan x$ at $x = 0$ is", [r"$y = 0$", r"$y = 1$", r"$y = x$", r"$y = x + 1$"], "C",
-            r"Point $(0, 0)$, slope $\sec^2 0 = 1$: $y = x$."),
+            r"Point $(0, 0)$, slope $m = \sec^2 0 = 1$: $y - 0 = 1(x - 0)$, so $y = x$."),
         MCQ(r"The tangent line to $y = \sec x$ at $x = 0$ is", [r"$y = 1$", r"$y = x$", r"$y = x + 1$", r"$y = 0$"], "A",
-            r"Point $(0, 1)$, slope $\sec 0\tan 0 = 0$: the horizontal line $y = 1$."),
+            r"Point $(0, 1)$, slope $m = \sec 0\tan 0 = 0$: $y - 1 = 0(x - 0)$, the horizontal line $y = 1$."),
         MCQ(r"The tangent line to $y = \cot x$ at $x = \dfrac\pi2$ is", [r"$y = x - \frac\pi2$", r"$y = 0$", r"$y = -1$", r"$y = -x + \frac\pi2$"], "D",
-            r"Point $\left(\frac\pi2, 0\right)$, slope $-\csc^2\frac\pi2 = -1$: $y = -\left(x - \frac\pi2\right)$."),
+            r"Point $\left(\frac\pi2, 0\right)$, slope $m = -\csc^2\frac\pi2 = -1$: $y - 0 = -1\left(x - \frac\pi2\right)$."),
     ),
 ]
 same("q slopes", [D(sp.tan(x)).subs(x, pi / 3), D(1 / sp.cos(x)).subs(x, pi / 4), D(sp.cot(x)).subs(x, pi / 4)], [4, sp.sqrt(2), -2])
@@ -180,8 +180,8 @@ FRQS = [
              [(1, "sets $30\\sec^2\\theta = 60$"), (1, "answer $\\frac{\\pi}{4}$")], work="2.4cm"),
         Part("c", r"Write an equation for the line tangent to the graph of $H$ at $\theta = \frac{\pi}{4}$.",
              selfcheck(r"y = 30 + 60\left(\theta - \tfrac{\pi}{4}\right)"),
-             r"$H\!\left(\frac\pi4\right) = 30\tan\frac\pi4 = 30$ and $H'\!\left(\frac\pi4\right) = 60$, so the tangent line is "
-             r"$y = 30 + 60\left(\theta - \frac{\pi}{4}\right)$.",
+             r"$H\!\left(\frac\pi4\right) = 30\tan\frac\pi4 = 30$ and $H'\!\left(\frac\pi4\right) = 60$. Point $\left(\frac\pi4, 30\right)$, slope $m = 60$: the tangent line is "
+             r"$y - 30 = 60\left(\theta - \frac{\pi}{4}\right)$.",
              [(1, "tangent line equation")], work="2cm"),
     ], frq_type="Rate in context"),
 ]

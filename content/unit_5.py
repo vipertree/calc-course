@@ -6,7 +6,7 @@ choices. Every keyed value is checked with sympy.
 """
 import sympy as sp
 
-from calclib import FRQ, MCQ, Part, UnitTest, Variants, check, close, expr, num, same, selfcheck
+from calclib import FRQ, MCQ, Part, pointslope, UnitTest, Variants, check, close, expr, num, same, selfcheck
 from calclib.figs import graph
 
 x, y = sp.symbols("x y", real=True)
@@ -197,7 +197,7 @@ def graph_frq(name, verts, c, fc):
              rf"$f$ is increasing where $f' > 0$, and the graph is concave down where $f'$ is decreasing. Both hold on ${iv(both)}$.",
              [(1, "intervals"), (1, "reason")], work="2.4cm"),
         Part("d", rf"Write an equation for the line tangent to the graph of $f$ at $x = {c}$.", expr(str(line)),
-             rf"From the graph, $f'({c}) = {sp.latex(slope_c)}$, and $f({c}) = {fc}$. The tangent line is $y = {fc} + ({sp.latex(slope_c)})(x - {c})$.",
+             rf"From the graph, $f'({c}) = {sp.latex(slope_c)}$, and $f({c}) = {fc}$. Point $({c}, {fc})$, slope $m = {sp.latex(slope_c)}$, so the tangent line is ${pointslope(c, fc, slope_c)}$.",
              [(1, f"$f'({c}) = {sp.latex(slope_c)}$ from the graph"), (1, "tangent line equation")], work="2.2cm"),
     ], frq_type="Graph of f'", figure=fig)
     return frq, [mx, mn, infl, both, line]

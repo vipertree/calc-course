@@ -50,7 +50,7 @@ PRACTICE = [
     Item(r"$x = 2t - 1$, $y = t^2 + 3t$. Find the slope of the curve at $t = 1$.", num(slope(2 * t - 1, t**2 + 3 * t).subs(t, 1)), r"$\frac{2t + 3}{2} = \frac52$.", work="1.2cm"),
     Item(r"$x = e^t$, $y = e^{2t}$. Find $\frac{dy}{dx}$ at $t = 0$.", num(slope(sp.exp(t), sp.exp(2 * t)).subs(t, 0)), r"$\frac{2e^{2t}}{e^t} = 2e^t = 2$.", work="1.2cm"),
     Item(r"$x = 3\cos t$, $y = 2\sin t$. Find $\frac{dy}{dx}$ at $t = \frac\pi4$.", num(slope(3 * sp.cos(t), 2 * sp.sin(t)).subs(t, sp.pi / 4)), r"$\frac{2\cos t}{-3\sin t} = -\frac23$.", work="1.4cm"),
-    Item(r"$x = t^2 + 1$, $y = 2t^3$. Find the equation of the tangent line at $t = 1$.", selfcheck(r"y - 2 = 3(x - 2)"), r"Point $(2, 2)$; slope $\frac{6t^2}{2t} = 3t = 3$.", work="1.8cm"),
+    Item(r"$x = t^2 + 1$, $y = 2t^3$. Find the equation of the tangent line at $t = 1$.", selfcheck(r"y - 2 = 3(x - 2)"), r"Point $(2, 2)$, slope $m = \frac{6t^2}{2t} = 3t = 3$: $y - 2 = 3(x - 2)$.", work="1.8cm"),
     Item(r"$x = t^3 - 3t$, $y = t^2$. At what values of $t$ is the tangent line vertical?", selfcheck(r"t = \pm1"), r"$\frac{dx}{dt} = 3t^2 - 3 = 0$ at $t = \pm1$, where $\frac{dy}{dt} = \pm2 \ne 0$.", work="1.4cm"),
     Item(r"$x = t^2 - 4t$, $y = t^2 - 2t$. Find the point where the tangent line is horizontal.", selfcheck(r"(-3, -1)"), r"$\frac{dy}{dt} = 2t - 2 = 0$ at $t = 1$ ($\frac{dx}{dt} = -2$): $(-3, -1)$.", work="1.6cm"),
     Item(r"$x = \sqrt t$, $y = t + 1$. Eliminate the parameter.", selfcheck(r"y = x^2 + 1, \ x \ge 0"), r"$t = x^2$, so $y = x^2 + 1$ with $x \ge 0$.", work="1.2cm"),
@@ -74,8 +74,8 @@ QUIZ = [
         Item(r"$x = \cos t$, $y = \sin t$. Find $\frac{dy}{dx}$ at $t = \frac\pi6$.", num(slope(sp.cos(t), sp.sin(t)).subs(t, sp.pi / 6), tol=1e-3), r"$-\cot\frac\pi6 = -\sqrt3 \approx -1.732$.", work="1.4cm"),
     ),
     Variants(
-        Item(r"$x = t + 1$, $y = t^2$. Write the tangent line at $t = 2$.", selfcheck(r"y - 4 = 4(x - 3)"), r"Point $(3, 4)$, slope $2t = 4$.", work="1.6cm"),
-        Item(r"$x = t^2$, $y = 3t$. Write the tangent line at $t = 1$.", selfcheck(r"y - 3 = \tfrac32(x - 1)"), r"Point $(1, 3)$, slope $\frac{3}{2t} = \frac32$.", work="1.6cm"),
+        Item(r"$x = t + 1$, $y = t^2$. Write the tangent line at $t = 2$.", selfcheck(r"y - 4 = 4(x - 3)"), r"Point $(3, 4)$, slope $m = \frac{2t}{1} = 4$: $y - 4 = 4(x - 3)$.", work="1.6cm"),
+        Item(r"$x = t^2$, $y = 3t$. Write the tangent line at $t = 1$.", selfcheck(r"y - 3 = \tfrac32(x - 1)"), r"Point $(1, 3)$, slope $m = \frac{3}{2t} = \frac32$: $y - 3 = \frac32(x - 1)$.", work="1.6cm"),
     ),
     Variants(
         MCQ(r"Eliminating the parameter from $x = t - 2$, $y = t^2$ gives", [r"$y = x^2 - 2$", r"$y = (x - 2)^2$", r"$y = (x + 2)^2$", r"$y = x^2 + 4$"], "C", r"$t = x + 2$."),
@@ -89,7 +89,7 @@ MCQS = [
     MCQ(r"For $x = t^3 + t$, $y = t^4 - 2t^2$, $\frac{dy}{dx}$ at $t = 1$ is", [r"$0$", r"$1$", r"$-1$", r"$\frac14$"], "A", r"$\frac{4t^3 - 4t}{3t^2 + 1} = \frac04 = 0$."),
     MCQ(r"The curve $x = t^2$, $y = t^3 - 12t$ has horizontal tangents at", [r"$(0, 0)$ only", r"$(2, -16)$ only", r"$(4, -16)$ and $(4, 16)$", r"$(2, \pm16)$"], "C", r"$3t^2 - 12 = 0$ at $t = \pm2$: $(4, -16)$ and $(4, 16)$."),
     MCQ(r"An equation of the tangent line to $x = \sec t$, $y = \tan t$ at $t = \frac\pi4$ is", [r"$y - 1 = \sqrt2(x - \sqrt2)$", r"$y - 1 = \frac{1}{\sqrt2}(x - 1)$", r"$y - \sqrt2 = \sqrt2(x - 1)$", r"$y - 1 = \frac{1}{\sqrt2}(x - \sqrt2)$"], "A",
-        r"$\frac{dy}{dx} = \frac{\sec^2 t}{\sec t\tan t} = \frac{\sec t}{\tan t} = \sqrt2$ at $\frac\pi4$; point $(\sqrt2, 1)$."),
+        r"$\frac{dy}{dx} = \frac{\sec^2 t}{\sec t\tan t} = \frac{\sec t}{\tan t} = \sqrt2$ at $\frac\pi4$. Point $(\sqrt2, 1)$, slope $m = \sqrt2$: $y - 1 = \sqrt2(x - \sqrt2)$."),
     MCQ(r"For $x = t^2 + \sin t$, $y = te^t$, to three decimal places $\frac{dy}{dx}$ at $t = 1$ is", [r"$2.000$", rf"${_m4:.3f}$", r"$0.394$", r"$5.437$"], "B", rf"$\frac{{(1 + t)e^t}}{{2t + \cos t}}$ at $t = 1$: $\frac{{2e}}{{2 + \cos 1}} \approx {_m4:.3f}$.", calc=True),
 ]
 same("m", [slope(t**3 + t, t**4 - 2 * t**2).subs(t, 1), slope(sp.sec(t), sp.tan(t)).subs(t, sp.pi / 4)], [0, sp.sqrt(2)])

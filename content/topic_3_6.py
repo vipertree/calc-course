@@ -165,8 +165,8 @@ FRQS = [
         Part("c", r"The function $h$ is given by $h(x) = \cos(kx)\,f(x)$ for all real numbers, where $k$ is a constant. Find $h'(x)$ "
                   r"and write an equation for the line tangent to the graph of $h$ at $x = 0$.",
              expr("3 - 2*x"),
-             r"$h'(x) = -k\sin(kx)\,f(x) + \cos(kx)\,f'(x)$. Then $h(0) = \cos(0)f(0) = 3$ and $h'(0) = 0 + \cos(0)f'(0) = -2$, so the "
-             r"tangent line is $y = 3 - 2x$.",
+             r"$h'(x) = -k\sin(kx)\,f(x) + \cos(kx)\,f'(x)$. Then $h(0) = \cos(0)f(0) = 3$ and $h'(0) = 0 + \cos(0)f'(0) = -2$. Point $(0, 3)$, slope "
+             r"$m = -2$: the tangent line is $y - 3 = -2(x - 0)$, so $y = 3 - 2x$.",
              [(1, "$h'(x)$ with the product and chain rules"), (1, "$h(0) = 3$ and $h'(0) = -2$"), (1, "tangent line equation")],
              work="3cm"),
     ], frq_type="Function analysis"),

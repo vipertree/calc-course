@@ -66,7 +66,7 @@ PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), so
 PRACTICE += [
     Item(r"$f(1) = 2$, $f'(1) = 3$, $g(1) = -4$, $g'(1) = 5$. If $h(x) = f(x)g(x)$, find $h'(1)$.", num(-2),
          r"$3(-4) + 2(5) = -2$.", work="1.6cm"),
-    Item(r"Find the equation for the line tangent to $y = xe^x$ at $x = 0$.", expr("x"), r"$y' = e^x + xe^x = 1$ at $0$; point $(0,0)$: $y = x$.",
+    Item(r"Find the equation for the line tangent to $y = xe^x$ at $x = 0$.", expr("x"), r"$y' = e^x + xe^x = 1$ at $0$. Point $(0, 0)$, slope $m = 1$: $y - 0 = 1(x - 0)$, so $y = x$.",
          work="1.8cm"),
     Item(r"Where does $y = xe^x$ have a horizontal tangent line?", num(-1), r"$e^x(1 + x) = 0$ gives $x = -1$.", work="1.6cm"),
     Item(r"Use the product rule twice to find $\dfrac{d}{dx}\left[x^2e^x\sin x\right]$.",
@@ -90,7 +90,7 @@ PRACTICE += [
     Item(r"Using the same values, let $k(x) = x^2 f(x)$. Find $k'(3)$.", num(30),
          r"$k'(x) = 2xf(x) + x^2f'(x)$, so $k'(3) = 6(-1) + 9(4) = 30$.", work="1.6cm"),
     Item(r"Find the equation for the line tangent to $y = x\ln x$ at $x = 1$.", expr("x-1"),
-         r"$y' = \ln x + 1$, which is $1$ at $x = 1$. Point $(1, 0)$: $y = x - 1$.", work="1.8cm"),
+         r"$y' = \ln x + 1$, which is $1$ at $x = 1$. Point $(1, 0)$, slope $m = 1$: $y - 0 = 1(x - 1)$, so $y = x - 1$.", work="1.8cm"),
     Item(r"Where does $y = x^2e^x$ have horizontal tangent lines? Enter the negative $x$-value.", num(-2),
          r"$y' = 2xe^x + x^2e^x = xe^x(2 + x)$. Since $e^x > 0$, $y' = 0$ at $x = 0$ and $x = -2$.", work="2cm"),
     Item(r"Zuri says $\dfrac{d}{dx}\left[x^2\sin x\right] = 2x\cos x$. Explain the mistake and give the correct derivative.",
@@ -154,7 +154,7 @@ MCQS = [
         [r"$-4$", r"$-17$", r"$23$", r"$17$"], "C", r"$4(5) + (-3)(-1) = 23$.", why_not={"A": "multiplied the derivatives",
                                                                                            "D": "sign error"}),
     MCQ(r"An equation for the line tangent to $y = (x + 1)e^x$ at $x = 0$ is", [r"$y = 2x + 1$", r"$y = x + 1$", r"$y = 2x$", r"$y = e x + 1$"], "A",
-        r"$y' = e^x + (x+1)e^x = 2$ at $x = 0$; point $(0, 1)$."),
+        r"$y' = e^x + (x+1)e^x = 2$ at $x = 0$. Point $(0, 1)$, slope $m = 2$: $y - 1 = 2(x - 0)$, so $y = 2x + 1$."),
     MCQ(r"The width of a rectangle is $2$ cm and growing at $0.5$ cm/s; its length is $7$ cm and shrinking at $0.2$ cm/s. At that "
         r"moment the area is changing at", [r"$-0.1$ cm²/s", r"$3.9$ cm²/s", r"$3.1$ cm²/s", r"$-0.4$ cm²/s"], "C",
         r"$A' = w'l + wl' = 0.5(7) + 2(-0.2) = 3.1$.", why_not={"A": "multiplied the rates", "B": "sign error"}),
@@ -175,8 +175,8 @@ FRQS = [
              num(4), r"$k'(x) = 2xf(x) + x^2f'(x)$, so $k'(1) = 2(1)(3) + (1)^2(-2) = 4$.",
              [(1, "$k'(x)$ by the product rule"), (1, "answer $4$")], work="2.2cm"),
         Part("c", r"Write an equation for the line tangent to the graph of $h$ at $x = 1$.", expr("-5*x+17"),
-             r"$h(1) = f(1)g(1) = 12$ and $h'(1) = f'(1)g(1) + f(1)g'(1) = (-2)(4) + 3(1) = -5$. The tangent line is "
-             r"$y = 12 - 5(x - 1)$.",
+             r"$h(1) = f(1)g(1) = 12$ and $h'(1) = f'(1)g(1) + f(1)g'(1) = (-2)(4) + 3(1) = -5$. Point $(1, 12)$, slope "
+             r"$m = -5$: the tangent line is $y - 12 = -5(x - 1)$.",
              [(1, "$h(1) = 12$ and $h'(1) = -5$"), (1, "tangent line equation")], work="2.4cm"),
     ], frq_type="Derivatives from a table"),
 ]

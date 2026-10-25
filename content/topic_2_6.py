@@ -54,7 +54,7 @@ SOL = [r"$28x^3 - 6x$.", r"$\frac12 x^4 - 4$.", r"$3x^{-1/2} - 6x^{-3}$.", r"Exp
 PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), sol, work="1.8cm") for (tex, e), sol in zip(P, SOL)]
 PRACTICE += [
     Item(r"Find the equation for the line tangent to $f(x) = x^3 - 4x^2 + 2$ at $x = 1$.", expr("-5*x+4"),
-         r"$f(1) = -1$, $f'(x) = 3x^2 - 8x$, $f'(1) = -5$: $y = -5x + 4$.", work="2.2cm"),
+         r"$f(1) = -1$, $f'(x) = 3x^2 - 8x$, $f'(1) = -5$. Point $(1, -1)$, slope $m = -5$: $y + 1 = -5(x - 1)$, so $y = -5x + 4$.", work="2.2cm"),
     Item(r"At what $x$-values does $y = 2x^3 + 3x^2 - 36x$ have horizontal tangents? Enter the positive one.", num(2),
          r"$6x^2 + 6x - 36 = 6(x+3)(x-2) = 0$: $x = -3$ or $x = 2$.", work="2cm"),
     Item(r"A ball's height is $h(t) = 64t - 16t^2 + 6$ feet after $t$ seconds. Find $h'(1)$ and interpret it.", num(32),
@@ -76,7 +76,7 @@ for tex, e, sol in P2:
     PRACTICE.append(Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), sol, work="1.8cm"))
 PRACTICE += [
     Item(r"Find the equation for the line tangent to $f(x) = 2x^2 - \dfrac{4}{x}$ at $x = 2$.", expr("9*x-12"),
-         r"$f(2) = 8 - 2 = 6$. $f'(x) = 4x + 4x^{-2}$, so $f'(2) = 8 + 1 = 9$. $y - 6 = 9(x - 2)$, so $y = 9x - 12$.",
+         r"$f(2) = 8 - 2 = 6$. $f'(x) = 4x + 4x^{-2}$, so $f'(2) = 8 + 1 = 9$. Point $(2, 6)$, slope $m = 9$: $y - 6 = 9(x - 2)$, so $y = 9x - 12$.",
          work="2.4cm"),
     Item(r"Find the $x$-value where the tangent line to $y = x^2 - 6x + 1$ is parallel to $y = 2x + 5$.", num(4),
          r"Parallel means slope $2$: $2x - 6 = 2$, so $x = 4$.", work="1.8cm"),

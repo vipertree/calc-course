@@ -170,6 +170,22 @@ def limchain(c, steps, value, var="x", side=""):
     return r"$\displaystyle " + chain + " = " + str(value) + "$"
 
 
+def pointslope(x0, y0, m, var="x", y="y"):
+    r"""Point-slope form with the signs folded in: pointslope(-1, 1, 2) -> "y - 1 = 2(x + 1)". Zero is kept ("y - 0") so the
+    point is still visible, as Adder writes it."""
+    def shift(name, v):
+        v = sp.sympify(v)
+        return f"{name} + {sp.latex(-v)}" if v.is_number and v < 0 else f"{name} - {sp.latex(v)}"
+    return f"{shift(y, y0)} = {sp.latex(sp.sympify(m))}({shift(var, x0)})"
+
+
+def tangent_tex(x0, y0, m, var="x", y="y"):
+    r"""Every tangent line states the point and the slope, labeled, before point-slope form (Adder, 6.5, 2026-10-14):
+    "Point $(1, 0)$, slope $m = 2$: $y - 0 = 2(x - 1)$"."""
+    L = lambda v: sp.latex(sp.sympify(v))
+    return rf"Point $({L(x0)}, {L(y0)})$, slope $m = {L(m)}$: ${pointslope(x0, y0, m, var, y)}$"
+
+
 def num(v, tol=0.0, display=""):
     return Answer("number", v, tol=tol, display=display)
 

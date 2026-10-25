@@ -75,7 +75,7 @@ PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for $y = {tex}$.", expr(str(D(e)))
 PRACTICE += [
     Item(r"Find the slope of the tangent line to $y = x^{-1}$ at $x = 2$.", num(sp.Rational(-1, 4)), r"$-x^{-2} = -\frac14$.", work="1.4cm"),
     Item(r"Find the equation for the line tangent to $y = x^3$ at $x = -2$.", expr("12*x+16"),
-         r"Slope $3(4) = 12$, point $(-2, -8)$: $y = 12x + 16$.", work="2cm"),
+         r"Point $(-2, -8)$, slope $m = 3(-2)^2 = 12$: $y + 8 = 12(x + 2)$, so $y = 12x + 16$.", work="2cm"),
     Item(r"At what $x$-value does $y = x^{3/2}$ have a tangent line with slope $3$?", num(4),
          r"$\frac32 x^{1/2} = 3$, so $\sqrt x = 2$ and $x = 4$.", work="1.8cm"),
     Item(r"The volume of a cube with edge $s$ inches is $V = s^3$. Find $\dfrac{dV}{ds}$ when $s = 3$ and include units.", num(27),
@@ -97,7 +97,7 @@ PRACTICE += [
     Item(r"Find the slope of the tangent line to $y = \sqrt{x}$ at $x = 16$.", num(sp.Rational(1, 8)),
          r"$\dfrac{dy}{dx} = \frac12 x^{-1/2} = \dfrac{1}{2\sqrt x}$, and at $x = 16$ that is $\dfrac{1}{8}$.", work="1.6cm"),
     Item(r"Find the equation for the line tangent to $y = \dfrac{1}{x^2}$ at $x = 1$.", expr("3-2*x"),
-         r"$\dfrac{dy}{dx} = -2x^{-3}$, so the slope at $x = 1$ is $-2$. Point $(1, 1)$: $y - 1 = -2(x - 1)$, so $y = -2x + 3$.",
+         r"$\dfrac{dy}{dx} = -2x^{-3}$, so the slope at $x = 1$ is $-2$. Point $(1, 1)$, slope $m = -2$: $y - 1 = -2(x - 1)$, so $y = -2x + 3$.",
          work="2cm"),
     Item(r"Where does $y = x^4$ have a tangent line with slope $32$?", num(2),
          r"$4x^3 = 32$, so $x^3 = 8$ and $x = 2$.", work="1.6cm"),
@@ -140,11 +140,11 @@ QUIZ = [
     ),
     Variants(
         MCQ(r"The tangent line to $y = x^4$ at $x = 1$ is", [r"$y = 4x - 3$", r"$y = 4x + 1$", r"$y = x^3$", r"$y = 4x$"], "A",
-            r"Slope $4$, point $(1, 1)$: $y = 4x - 3$."),
+            r"Point $(1, 1)$, slope $m = 4(1)^3 = 4$: $y - 1 = 4(x - 1)$, so $y = 4x - 3$."),
         MCQ(r"The tangent line to $y = x^3$ at $x = 2$ is", [r"$y = 12x$", r"$y = 3x + 2$", r"$y = 12x - 16$", r"$y = 12x + 8$"], "C",
-            r"Slope $3(4) = 12$, point $(2, 8)$: $y - 8 = 12(x - 2)$."),
+            r"Point $(2, 8)$, slope $m = 3(2)^2 = 12$: $y - 8 = 12(x - 2)$."),
         MCQ(r"The tangent line to $y = \sqrt{x}$ at $x = 4$ is", [r"$y = \frac14x + 1$", r"$y = \frac14x + 2$", r"$y = 4x - 14$", r"$y = \frac12x$"], "A",
-            r"Slope $\frac{1}{2\sqrt4} = \frac14$, point $(4, 2)$: $y = \frac14x + 1$."),
+            r"Point $(4, 2)$, slope $m = \frac{1}{2\sqrt4} = \frac14$: $y - 2 = \frac14(x - 4)$, so $y = \frac14x + 1$."),
     ),
 ]
 same("q versions", [D(x**sp.Rational(7, 2)), D(x**sp.Rational(-1, 2)), D(x**sp.Rational(1, 2)).subs(x, 25), sp.expand(X**0 * (8 + 12 * (X - 2)))],
@@ -167,8 +167,8 @@ same("m3", sp.limit(((2 + x)**5 - 32) / x, x, 0), 80)
 FRQS = [
     FRQ("Tangent lines to a power function", r"Let $f$ be the function defined by $f(x) = x^{2/3}$ for all real numbers $x$.", [
         Part("a", r"Write an equation for the line tangent to the graph of $f$ at $x = 8$.", expr("x/3 + 4/3"),
-             r"$f'(x) = \frac23 x^{-1/3}$, so $f'(8) = \frac23\cdot\frac12 = \frac13$, and $f(8) = 4$. The tangent line is "
-             r"$y = 4 + \frac13(x - 8)$.",
+             r"$f'(x) = \frac23 x^{-1/3}$, so $f'(8) = \frac23\cdot\frac12 = \frac13$, and $f(8) = 4$. Point $(8, 4)$, slope "
+             r"$m = \frac13$: the tangent line is $y - 4 = \frac13(x - 8)$.",
              [(1, "$f'(8) = \\frac13$"), (1, "tangent line equation")], work="2.6cm"),
         Part("b", r"Find the $x$-coordinate of the point on the graph of $f$ at which the line tangent to the graph is parallel to "
                   r"the line $y = \frac23 x + 5$.", num(1),

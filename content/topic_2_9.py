@@ -57,7 +57,7 @@ PRACTICE += [
     Item(r"$f(2) = 6$, $f'(2) = 1$, $g(2) = 3$, $g'(2) = -2$. Find the derivative of $\dfrac{f(x)}{g(x)}$ at $x = 2$.", num(sp.Rational(5, 3)),
          r"$\dfrac{3(1) - 6(-2)}{3^2} = \dfrac{15}{9} = \dfrac53$.", work="1.8cm"),
     Item(r"Find the equation for the line tangent to $y = \dfrac{x}{x - 1}$ at $x = 2$.", expr("-x+4"),
-         r"$y' = \dfrac{-1}{(x-1)^2} = -1$ at $x=2$; point $(2, 2)$: $y = -x + 4$.", work="2.2cm"),
+         r"$y' = \dfrac{-1}{(x-1)^2} = -1$ at $x=2$. Point $(2, 2)$, slope $m = -1$: $y - 2 = -1(x - 2)$, so $y = -x + 4$.", work="2.2cm"),
     Item(r"Where does $y = \dfrac{\ln x}{x}$ have a horizontal tangent line?", num(sp.E), r"$\dfrac{1 - \ln x}{x^2} = 0$ gives $x = e$.",
          work="1.8cm"),
     Item(r"Kai writes $\dfrac{d}{dx}\left[\dfrac{f}{g}\right] = \dfrac{fg' - gf'}{g^2}$. What is wrong?", selfcheck(r"\text{sign reversed}"),
@@ -80,8 +80,8 @@ PRACTICE += [
     Item(r"$f(1) = 4$, $f'(1) = -2$, $g(1) = 2$, $g'(1) = 3$. Find the derivative of $\dfrac{f(x)}{g(x)}$ at $x = 1$.",
          num(-4), r"$\dfrac{g(1)f'(1) - f(1)g'(1)}{g(1)^2} = \dfrac{2(-2) - 4(3)}{4} = -4$.", work="1.8cm"),
     Item(r"Find the equation for the line tangent to $y = \dfrac{2x}{x + 1}$ at $x = 1$.", expr("x/2+1/2"),
-         r"$y' = \dfrac{(x+1)(2) - 2x}{(x+1)^2} = \dfrac{2}{(x+1)^2}$, which is $\frac12$ at $x = 1$. Point $(1, 1)$: "
-         r"$y = \frac12 x + \frac12$.", work="2.2cm"),
+         r"$y' = \dfrac{(x+1)(2) - 2x}{(x+1)^2} = \dfrac{2}{(x+1)^2}$, which is $\frac12$ at $x = 1$. Point $(1, 1)$, "
+         r"slope $m = \frac12$: $y - 1 = \frac12(x - 1)$, so $y = \frac12 x + \frac12$.", work="2.2cm"),
     Item(r"Where does $y = \dfrac{x^2}{x + 1}$ have horizontal tangent lines? Enter the nonzero $x$-value.", num(-2),
          r"$y' = \dfrac{(x+1)(2x) - x^2}{(x+1)^2} = \dfrac{x^2 + 2x}{(x+1)^2}$. The numerator $x(x + 2)$ is $0$ at $x = 0$ "
          r"and $x = -2$.", work="2.2cm"),
@@ -179,7 +179,7 @@ FRQS = [
              r"$C'(3) = \dfrac{20 - 45}{13^2} = -\dfrac{25}{169} < 0$, so the concentration is decreasing at $t = 3$.",
              [(1, "decreasing, because $C'(3) < 0$")], work="2cm"),
         Part("c", r"Write an equation for the line tangent to the graph of $C$ at $t = 1$.", expr("1 + 3*(t - 1)/5", var="t"),
-             r"$C(1) = \dfrac{5}{5} = 1$ and $C'(1) = \dfrac35$, so the tangent line is $y = 1 + \dfrac35(t - 1)$.",
+             r"$C(1) = \dfrac{5}{5} = 1$ and $C'(1) = \dfrac35$. Point $(1, 1)$, slope $m = \dfrac35$: the tangent line is $y - 1 = \dfrac35(t - 1)$.",
              [(1, "tangent line equation")], work="2cm"),
     ], frq_type="Rate in context"),
 ]

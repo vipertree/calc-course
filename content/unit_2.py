@@ -5,7 +5,7 @@ Covers 2.1-2.10. Every keyed answer is checked with sympy below its question.
 """
 import sympy as sp
 
-from calclib import FRQ, MCQ, Part, UnitTest, Variants, check, close, expr, limchain, num, same, selfcheck
+from calclib import FRQ, MCQ, Part, pointslope, UnitTest, Variants, check, close, expr, limchain, num, same, selfcheck
 
 x, t, h = sp.symbols("x t h")
 pi = sp.pi
@@ -207,7 +207,7 @@ def table_frq(c1, c2, vals):
              rf"$k'({c1}) = \dfrac{{g({c1})f'({c1}) - f({c1})g'({c1})}}{{g({c1})^2}} = \dfrac{{({g1})({df1}) - ({f1})({dg1})}}{{{g1**2}}} = {sp.latex(kp)}$.",
              [(1, "quotient rule"), (1, f"answer ${sp.latex(kp)}$")], work="2.2cm"),
         Part("c", rf"Write an equation for the line tangent to the graph of $h$ at $x = {c2}$.", expr(str(line)),
-             rf"$h({c2}) = ({f2})({g2}) = {h2}$ and $h'({c2}) = {hp}$, so the tangent line is $y = {h2} + {hp}(x - {c2})$.",
+             rf"$h({c2}) = ({f2})({g2}) = {h2}$ and $h'({c2}) = {hp}$. Point $({c2}, {h2})$, slope $m = {hp}$, so the tangent line is ${pointslope(c2, h2, hp)}$.",
              [(1, f"$h({c2}) = {h2}$"), (1, "tangent line equation")], work="2cm"),
         Part("d", rf"Find $p'({c1})$. Show the work that leads to your answer.", num(pp),
              rf"$p'(x) = 2xf(x) + x^2f'(x)$, so $p'({c1}) = 2({c1})({f1}) + ({c1**2})({df1}) = {pp}$.",

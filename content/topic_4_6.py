@@ -34,7 +34,7 @@ NOTES = [
         r"You don't need to think of it as a new formula: write the equation of the tangent line, a skill you already have, and "
         r"evaluate it at the $x$ you care about. Start at a point and move along the slope a little.")),
     Text(r"\textbf{From point-slope form.} Start with point-slope form, \[ y - y_1 = m(x - x_1). \] Add $y_1$ to both sides: "
-         r"\[ y = \mblank{y_1 + m(x - x_1)}. \] For the tangent line at $a$, the point is $(x_1, y_1) = \left(a, \mblank{f(a)}\right)$ and the slope is "
+         r"\[ y = \mblank{y_1 + m(x - x_1)}. \] For the tangent line at $a$, the point is $(x_1, y_1) = (a, \mblank{f(a)})$ and the slope is "
          r"$m = \mblank{f'(a)}$. Substitute and call $y$ by its new name, $L(x)$: \[ L(x) = f(a) + f'(a)(x - a). \] Either way works: state the point and "
          r"the slope, then write point-slope form and solve for $y$, or write $L(x)$ directly."),
     Text(r"\textbf{Choosing $a$.} Pick an $a$ close to the $x$ you want, where $f(a)$ and $f'(a)$ are easy to find exactly. To estimate $\sqrt{26}$, "

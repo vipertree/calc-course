@@ -67,8 +67,8 @@ PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(sp.diff(e,
             for (tex, e), sol in zip(P, SOL)]
 PRACTICE += [
     Item(r"Find the equation for the line tangent to $y = \sin x$ at $x = \pi$.", expr("pi - x"),
-         r"Point $(\pi, 0)$, slope $\cos\pi = -1$: $y = -(x - \pi) = \pi - x$.", work="2cm"),
-    Item(r"Find the equation for the line tangent to $y = \ln x$ at $x = 1$.", expr("x - 1"), r"Point $(1, 0)$, slope $1$: $y = x - 1$.",
+         r"Point $(\pi, 0)$, slope $m = \cos\pi = -1$: $y - 0 = -1(x - \pi)$, so $y = \pi - x$.", work="2cm"),
+    Item(r"Find the equation for the line tangent to $y = \ln x$ at $x = 1$.", expr("x - 1"), r"Point $(1, 0)$, slope $m = \frac11 = 1$: $y - 0 = 1(x - 1)$, so $y = x - 1$.",
          work="1.8cm"),
     Item(r"$y = x + 2\cos x$ has two horizontal tangent lines for $x$ in $(0, \pi)$. Find the smaller $x$-value.", num(sp.pi / 6),
          r"$1 - 2\sin x = 0$, so $\sin x = \frac12$: $x = \frac\pi6$ or $\frac{5\pi}{6}$. The smaller is $\frac\pi6$.",
@@ -87,10 +87,10 @@ for tex, e, sol in P2:
     PRACTICE.append(Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(sp.diff(e, x))), sol, work="1.6cm"))
 PRACTICE += [
     Item(r"Find the equation for the line tangent to $y = \cos x$ at $x = \dfrac\pi2$.", expr("pi/2 - x"),
-         r"Point $\left(\frac\pi2, 0\right)$, slope $-\sin\frac\pi2 = -1$: $y = -\left(x - \frac\pi2\right) = \frac\pi2 - x$.",
+         r"Point $\left(\frac\pi2, 0\right)$, slope $m = -\sin\frac\pi2 = -1$: $y - 0 = -1\left(x - \frac\pi2\right)$, so $y = \frac\pi2 - x$.",
          work="2cm"),
     Item(r"Find the equation for the line tangent to $y = 2\ln x$ at $x = e$.", expr("2*x/E"),
-         r"Point $(e, 2)$, slope $\frac2e$: $y - 2 = \frac2e(x - e)$, so $y = \frac2e x$.", work="2cm"),
+         r"Point $(e, 2)$, slope $m = \frac2e$: $y - 2 = \frac2e(x - e)$, so $y = \frac2e x$.", work="2cm"),
     Item(r"Where does $y = 3\ln x$ have slope $\dfrac12$?", num(6), r"$\dfrac3x = \dfrac12$, so $x = 6$.", work="1.4cm"),
     Item(r"Find the smallest positive $x$ where $y = \sin x - x$ has a horizontal tangent.", num(2 * sp.pi),
          r"$\cos x - 1 = 0$ means $\cos x = 1$, so $x = 0, 2\pi, 4\pi, \ldots$ The smallest positive one is $2\pi$.",

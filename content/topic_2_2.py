@@ -81,9 +81,9 @@ PRACTICE = [Item(rf"Use the definition of the derivative to find $f'(x)$ for ${t
             for tex, e, sol in PR]
 PRACTICE += [
     Item(r"Find the equation for the line tangent to $f(x) = x^3$ at $x = 2$. Use your result from Problem 3.", expr("12*x-16"),
-         r"Point $(2, 8)$, slope $3(4) = 12$: $y - 8 = 12(x - 2)$, so $y = 12x - 16$.", work="2.2cm"),
+         r"Point $(2, 8)$, slope $m = 3(4) = 12$: $y - 8 = 12(x - 2)$, so $y = 12x - 16$.", work="2.2cm"),
     Item(r"Find the equation for the line tangent to $f(x) = \dfrac1x$ at $x = -1$.", expr("-x-2"),
-         r"Point $(-1, -1)$, slope $-\dfrac{1}{1} = -1$: $y + 1 = -(x + 1)$, so $y = -x - 2$.", work="2.2cm"),
+         r"Point $(-1, -1)$, slope $m = -\dfrac{1}{1} = -1$: $y + 1 = -1(x + 1)$, so $y = -x - 2$.", work="2.2cm"),
     Item(r"If $y = \sqrt x$, find $\left.\dfrac{dy}{dx}\right|_{x=9}$.", num(sp.Rational(1, 6)), r"$\dfrac{1}{2\sqrt9} = \dfrac16$.",
          work="1.4cm"),
     Item(r"$C(n)$ is the cost, in dollars, of producing $n$ bicycles. Explain the meaning of $C'(200) = 85$, with units.",
@@ -115,7 +115,7 @@ PRACTICE += [
     Item(r"Using your answer to the previous problem, find the slope of $y = \sqrt{x+2}$ at $x = 7$.", num(sp.Rational(1, 6)),
          r"$\dfrac{1}{2\sqrt{9}} = \dfrac16$.", work="1.4cm"),
     Item(r"Find the equation for the line tangent to $f(x) = 7 - 3x^2$ at $x = 1$. Use your result from above.", expr("10-6*x"),
-         r"Point $(1, 4)$, slope $f'(1) = -6$: $y - 4 = -6(x - 1)$, so $y = -6x + 10$.", work="2cm"),
+         r"Point $(1, 4)$, slope $m = f'(1) = -6$: $y - 4 = -6(x - 1)$, so $y = -6x + 10$.", work="2cm"),
     Item(r"For $f(x) = x^2 - 5x + 2$, at what $x$ is the tangent line horizontal?", num(sp.Rational(5, 2)),
          r"Horizontal means slope $0$: $f'(x) = 2x - 5 = 0$, so $x = \frac52$.", work="1.6cm"),
     Item(r"$\displaystyle\lim_{h\to0}\frac{\cos(x+h) - \cos x}{h}$ is the derivative of which function?", selfcheck(r"\cos x"),
@@ -145,11 +145,11 @@ QUIZ = [
     ),
     Variants(
         Item(r"$f(x) = 2x^2 + 1$ has $f'(x) = 4x$. Find the equation of the tangent line at $x = 1$.", expr("4*x-1"),
-             r"Point $(1, 3)$, slope $f'(1) = 4$: $y - 3 = 4(x - 1)$, so $y = 4x - 1$.", work="2cm"),
+             r"Point $(1, 3)$, slope $m = f'(1) = 4$: $y - 3 = 4(x - 1)$, so $y = 4x - 1$.", work="2cm"),
         Item(r"$f(x) = x^2 - 3x$ has $f'(x) = 2x - 3$. Find the equation of the tangent line at $x = 2$.", expr("x-4"),
-             r"Point $(2, -2)$, slope $f'(2) = 1$: $y + 2 = x - 2$, so $y = x - 4$.", work="2cm"),
+             r"Point $(2, -2)$, slope $m = f'(2) = 1$: $y + 2 = 1(x - 2)$, so $y = x - 4$.", work="2cm"),
         Item(r"$f(x) = 5 - x^2$ has $f'(x) = -2x$. Find the equation of the tangent line at $x = -1$.", expr("2*x+6"),
-             r"Point $(-1, 4)$, slope $f'(-1) = 2$: $y - 4 = 2(x + 1)$, so $y = 2x + 6$.", work="2cm"),
+             r"Point $(-1, 4)$, slope $m = f'(-1) = 2$: $y - 4 = 2(x + 1)$, so $y = 2x + 6$.", work="2cm"),
     ),
     Variants(
         MCQ(r"Which expression equals $f'(5)$?",

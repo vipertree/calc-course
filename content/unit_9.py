@@ -201,7 +201,7 @@ x4, y4 = t**2, sp.Rational(2, 3) * t**3
 same("F3B", [d1(x4, y4), d2(x4, y4).subs(t, 1), sp.integrate(2 * t * sp.sqrt(1 + t**2), (t, 0, sp.sqrt(3))), y4.subs(t, 2)], [t, sp.Rational(1, 2), sp.Rational(14, 3), sp.Rational(16, 3)])
 F3A = FRQ("A parametric curve", (r"A curve is defined by $x = t^2 - 1$ and $y = t^3 - 3t$ for all real $t$."), [
     Part("a", r"Find $\frac{dy}{dx}$ in terms of $t$, and write an equation of the line tangent to the curve at $t = 2$.", selfcheck(r"\frac{3t^2 - 3}{2t};\ y - 2 = \tfrac94(x - 3)"),
-         r"$\frac{dy}{dx} = \frac{3t^2 - 3}{2t}$. At $t = 2$: slope $\frac94$, point $(3, 2)$: $y - 2 = \frac94(x - 3)$.", [(1, "$\\frac{dy}{dx}$"), (1, "tangent line")], work="2.4cm"),
+         r"$\frac{dy}{dx} = \frac{3t^2 - 3}{2t}$. At $t = 2$: point $(3, 2)$, slope $m = \frac{12 - 3}{4} = \frac94$, so $y - 2 = \frac94(x - 3)$.", [(1, "$\\frac{dy}{dx}$"), (1, "tangent line")], work="2.4cm"),
     Part("b", r"Find the points on the curve where the tangent line is horizontal.", selfcheck(r"(0, 2) \text{ and } (0, -2)"), r"$\frac{dy}{dt} = 3t^2 - 3 = 0$ at $t = \pm1$, where $\frac{dx}{dt} = \pm2 \ne 0$: $(0, 2)$ at $t = -1$ and $(0, -2)$ at $t = 1$.",
          [(1, "values of $t$"), (1, "points")], work="2cm"),
     Part("c", r"Find $\frac{d^2y}{dx^2}$ at $t = 2$. Is the curve concave up or concave down there?", selfcheck(r"\tfrac{15}{32};\ \text{concave up}"),
@@ -209,7 +209,7 @@ F3A = FRQ("A parametric curve", (r"A curve is defined by $x = t^2 - 1$ and $y = 
     Part("d", r"Write, but do not evaluate, an integral expression for the length of the curve from $t = 0$ to $t = 2$.", selfcheck(r"\int_0^2 \sqrt{4t^2 + (3t^2 - 3)^2}\,dt"), r"$\int_0^2 \sqrt{(2t)^2 + (3t^2 - 3)^2}\,dt$.", [(1, "integral")], work="1.4cm"),
 ], frq_type="Parametric")
 F3B = FRQ("A parametric curve", (r"A curve is defined by $x = t^2$ and $y = \frac23 t^3$ for $t \ge 0$."), [
-    Part("a", r"Find $\frac{dy}{dx}$ in terms of $t$, and write an equation of the line tangent to the curve at $t = 1$.", selfcheck(r"t;\ y - \tfrac23 = x - 1"), r"$\frac{dy}{dx} = \frac{2t^2}{2t} = t$. At $t = 1$: slope $1$, point $\left(1, \frac23\right)$.", [(1, "$\\frac{dy}{dx}$"), (1, "tangent line")], work="2.2cm"),
+    Part("a", r"Find $\frac{dy}{dx}$ in terms of $t$, and write an equation of the line tangent to the curve at $t = 1$.", selfcheck(r"t;\ y - \tfrac23 = x - 1"), r"$\frac{dy}{dx} = \frac{2t^2}{2t} = t$. At $t = 1$: point $\left(1, \frac23\right)$, slope $m = 1$, so $y - \frac23 = 1(x - 1)$.", [(1, "$\\frac{dy}{dx}$"), (1, "tangent line")], work="2.2cm"),
     Part("b", r"Find $\frac{d^2y}{dx^2}$ at $t = 1$.", num(sp.Rational(1, 2)), r"$\frac{d}{dt}(t) = 1$; $\div 2t$: $\frac{1}{2t} = \frac12$.", [(1, "answer")], work="1.6cm"),
     Part("c", r"Find the length of the curve from $t = 0$ to $t = \sqrt3$.", num(sp.Rational(14, 3)),
          r"$\sqrt{(2t)^2 + (2t^2)^2} = 2t\sqrt{1 + t^2}$; $\int_0^{\sqrt3} 2t\sqrt{1 + t^2}\,dt = \frac23(8 - 1) = \frac{14}{3}$.", [(1, "integrand"), (1, "antiderivative"), (1, "answer")], work="3cm"),

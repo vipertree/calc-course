@@ -6,7 +6,7 @@ choices. Every keyed value is checked with sympy.
 """
 import sympy as sp
 
-from calclib import FRQ, MCQ, Part, UnitTest, Variants, check, close, expr, num, same, selfcheck
+from calclib import FRQ, MCQ, Part, pointslope, UnitTest, Variants, check, close, expr, num, same, selfcheck
 
 x, y, t = sp.symbols("x y t")
 pi = sp.pi
@@ -172,7 +172,7 @@ def table_chain(v, c1, c2, c3):
              rf"$h'({c1}) = f'\big(g({c1})\big)g'({c1}) = f'({g1})\cdot({v[c1][3]}) = ({v[g1][1]})({v[c1][3]}) = {hp}$.", [(1, "chain rule"), (1, f"answer ${hp}$")], work="2.2cm"),
         Part("b", rf"Let $k$ be the function defined by $k(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $k$ at $x = {c2}$.", expr(str(line)),
              rf"$k({c2}) = g\big(f({c2})\big) = g({f2}) = {k2}$, and $k'({c2}) = g'({f2})f'({c2}) = ({v[f2][3]})({v[c2][1]}) = {kp}$. "
-             rf"The tangent line is $y = {k2} + {kp}(x - {c2})$.", [(1, f"$k({c2}) = {k2}$"), (1, f"$k'({c2}) = {kp}$"), (1, "tangent line equation")], work="2.6cm"),
+             rf"Point $({c2}, {k2})$, slope $m = {kp}$, so the tangent line is ${pointslope(c2, k2, kp)}$.", [(1, f"$k({c2}) = {k2}$"), (1, f"$k'({c2}) = {kp}$"), (1, "tangent line equation")], work="2.6cm"),
         Part("c", rf"Let $m$ be the function defined by $m(x) = \big[g(x)\big]^2$. Find $m'({c3})$.", num(mp),
              rf"$m'({c3}) = 2g({c3})g'({c3}) = 2({v[c3][2]})({v[c3][3]}) = {mp}$.", [(1, "chain rule and value")], work="1.6cm"),
         Part("d", rf"Find $\left(f^{{-1}}\right)'({v[c3][0]})$. Show the work that leads to your answer.", num(finv),
@@ -204,7 +204,7 @@ def curve_frq(F, tex, dydx_tex, pt, sign):
              r"Differentiate implicitly, using the product rule on the $xy$ term and the chain rule on each $y$ term, then solve for $\frac{dy}{dx}$.",
              [(1, "implicit differentiation"), (1, "solves for $\\frac{dy}{dx}$")], work="2.6cm"),
         Part("b", rf"Write an equation for the line tangent to the curve at the point $({pt[0]}, {pt[1]})$.", expr(str(line)),
-             rf"The slope there is ${sp.latex(slope)}$, so the tangent line is $y = {pt[1]} + {sp.latex(slope)}(x - ({pt[0]}))$.", [(1, "slope"), (1, "tangent line equation")], work="2.2cm"),
+             rf"Point $({pt[0]}, {pt[1]})$, slope $m = \frac{{dy}}{{dx}} = {sp.latex(slope)}$ there, so the tangent line is ${pointslope(pt[0], pt[1], slope)}$.", [(1, "slope"), (1, "tangent line equation")], work="2.2cm"),
         Part("c", r"Find the coordinates of all points on the curve at which the line tangent to the curve is horizontal.",
              selfcheck(r"\text{ and }".join(f"({h[x]}, {h[y]})" for h in hz)),
              r"Set the numerator of $\frac{dy}{dx}$ to $0$, substitute into the curve, and solve: the points are "

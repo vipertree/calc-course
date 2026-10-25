@@ -104,7 +104,7 @@ PRACTICE += [
     Item(r"$f(2) = 5$, $f'(2) = -3$, $g(5) = 1$ and $g'(5) = 4$. Find the derivative of $g\big(f(x)\big)$ at $x = 2$.", num(-12),
          r"$g'\big(f(2)\big)\cdot f'(2) = g'(5)\cdot(-3) = 4(-3) = -12$.", work="1.6cm"),
     Item(r"Find the equation for the line tangent to $y = (2x - 3)^4$ at $x = 2$.", expr("8*x-15"),
-         r"Point $(2, 1)$. Slope $4(2x-3)^3\cdot 2 = 8$ at $x = 2$. $y - 1 = 8(x - 2)$, so $y = 8x - 15$.", work="2cm"),
+         r"Point $(2, 1)$. Slope $m = 4(2x-3)^3\cdot 2 = 8$ at $x = 2$. $y - 1 = 8(x - 2)$, so $y = 8x - 15$.", work="2cm"),
     Item(r"A student writes $\dfrac{d}{dx}\cos(x^2) = -\sin(2x)$. Explain the mistake and give the correct derivative.",
          selfcheck(r"-2x\sin(x^2)"),
          r"They put the inside's derivative inside the sine. The outside's derivative is evaluated at the inside, then multiplied by the "
@@ -187,7 +187,7 @@ FRQS = [
              r"$k'(3) = 3\big[g(3)\big]^2\cdot g'(3) = 3(2)^2(1) = 12$.", [(1, "chain rule on the power"), (1, "answer $12$")], work="2.2cm"),
         Part("c", r"Let $m$ be the function defined by $m(x) = g\big(f(x)\big)$. Write an equation for the line tangent to the graph of $m$ at $x = 3$.", expr("24*x-69"),
              r"$m(3) = g\big(f(3)\big) = g(0) = 3$, and $m'(3) = g'\big(f(3)\big)\cdot f'(3) = g'(0)\cdot 6 = 4\cdot 6 = 24$. "
-             r"So $y - 3 = 24(x - 3)$.", [(1, "$m(3) = 3$"), (1, "$m'(3) = 24$"), (1, "tangent line equation")], work="2.6cm"),
+             r"Point $(3, 3)$, slope $m = 24$, so $y - 3 = 24(x - 3)$.", [(1, "$m(3) = 3$"), (1, "$m'(3) = 24$"), (1, "tangent line equation")], work="2.6cm"),
     ], frq_type="Derivatives from a table"),
 ]
 same("frq", [(-1) * (-2), 3 * 2**2 * 1, 4 * 6], [2, 12, 24])

@@ -164,9 +164,9 @@ B = [
     ),
     Variants(
         pick(r"$y = f(x)$ solves $\frac{dy}{dx} = \sqrt{x + y^2}$ with $f(1) = 2$. The tangent line at $x = 1$ gives $f(1.2) \approx $", r"$2.447$", [r"$2.200$", r"$2.894$", r"$2.000$"], "D",
-             r"Slope $\sqrt{1 + 4} = \sqrt5$; $f(1.2) \approx 2 + 0.2\sqrt5 \approx 2.447$.", calc=True),
+             r"Point $(1, 2)$, slope $m = \sqrt{1 + 4} = \sqrt5$: $y - 2 = \sqrt5(x - 1)$, so $f(1.2) \approx 2 + 0.2\sqrt5 \approx 2.447$.", calc=True),
         pick(r"$y = f(x)$ solves $\frac{dy}{dx} = \ln(x + y)$ with $f(2) = 3$. The tangent line at $x = 2$ gives $f(2.1) \approx $", r"$3.161$", [r"$3.100$", r"$3.069$", r"$4.609$"], "B",
-             r"Slope $\ln 5$; $f(2.1) \approx 3 + 0.1\ln 5 \approx 3.161$.", calc=True),
+             r"Point $(2, 3)$, slope $m = \ln(2 + 3) = \ln 5$: $y - 3 = (\ln 5)(x - 2)$, so $f(2.1) \approx 3 + 0.1\ln 5 \approx 3.161$.", calc=True),
     ),
 ]
 
@@ -186,7 +186,7 @@ F1A = FRQ("A slope field", (r"Consider the differential equation $\dfrac{dy}{dx}
          r"The curve has a horizontal tangent at $(0, 1)$, rises to the left and to the right toward $y = 2$ without reaching it, and follows the segments.",
          [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm", key_figure=KEY1A),
     Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 1$, and use it to approximate $f(1.1)$.", selfcheck(r"y = 2(x - 1);\ f(1.1) \approx 0.2"),
-         r"Slope $1 \cdot (2 - 0) = 2$, so $y = 2(x - 1)$ and $f(1.1) \approx 0.2$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
+         r"Point $(1, 0)$, slope $m = 1 \cdot (2 - 0) = 2$: $y - 0 = 2(x - 1)$, so $y = 2(x - 1)$ and $f(1.1) \approx 0.2$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("c", r"Find $\dfrac{d^2y}{dx^2}$ in terms of $x$ and $y$. Is the solution curve through $(0, 1)$ concave up or concave down at that point? Give a reason.",
          selfcheck(r"\frac{d^2y}{dx^2} = (2 - y)(1 - x^2);\ \text{concave up}"),
          r"$\dfrac{d^2y}{dx^2} = (2 - y) + x\left(-\dfrac{dy}{dx}\right) = (2 - y) - x^2(2 - y) = (2 - y)(1 - x^2)$. At $(0, 1)$: $(1)(1) = 1 > 0$, so concave up.",
@@ -210,7 +210,7 @@ F1B = FRQ("A slope field", (r"Consider the differential equation $\dfrac{dy}{dx}
          r"The curve rises from $(0, 1)$, has a horizontal tangent at $x = 1$, then falls toward the $x$-axis, following the segments.",
          [(1, "solution curve through $(0, 1)$"), (1, "follows the slope field")], work="2.6cm", key_figure=KEY1B),
     Part("b", r"Write an equation for the line tangent to the graph of $f$ at $x = 2$, and use it to approximate $f(2.2)$.", selfcheck(r"y = 1 - (x - 2);\ f(2.2) \approx 0.8"),
-         r"Slope $1 \cdot (1 - 2) = -1$, so $y = 1 - (x - 2)$ and $f(2.2) \approx 0.8$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
+         r"Point $(2, 1)$, slope $m = 1 \cdot (1 - 2) = -1$: $y - 1 = -1(x - 2)$, so $y = 1 - (x - 2)$ and $f(2.2) \approx 0.8$.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("c", r"Find $\dfrac{d^2y}{dx^2}$ in terms of $x$ and $y$. Is the solution curve through $(1, 3)$ concave up or concave down at that point? Give a reason.",
          selfcheck(r"\frac{d^2y}{dx^2} = y\left[(1 - x)^2 - 1\right];\ \text{concave down}"),
          r"$\dfrac{d^2y}{dx^2} = \dfrac{dy}{dx}(1 - x) - y = y(1 - x)^2 - y$. At $(1, 3)$: $3(0) - 3 = -3 < 0$, so concave down.",
@@ -228,7 +228,7 @@ F2A = FRQ("Cooling tea", (
     r"At time $t = 0$ a cup of tea is $91^\circ$C, in a room that is $27^\circ$C. The temperature $H(t)$ of the tea, in degrees Celsius, satisfies "
     r"$\dfrac{dH}{dt} = -\dfrac14(H - 27)$, where $t$ is measured in minutes."), [
     Part("a", r"Write an equation for the line tangent to the graph of $H$ at $t = 0$. Use it to approximate the temperature of the tea at $t = 3$.", num(43),
-         r"$H'(0) = -\frac14(64) = -16$, so $y = 91 - 16t$ and $H(3) \approx 91 - 48 = 43^\circ$C.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
+         r"Point $(0, 91)$, slope $m = H'(0) = -\frac14(64) = -16$: $y - 91 = -16(t - 0)$, so $y = 91 - 16t$ and $H(3) \approx 91 - 48 = 43^\circ$C.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("b", r"Find $\dfrac{d^2H}{dt^2}$ in terms of $H$. Is the approximation in part (a) an underestimate or an overestimate? Give a reason.", selfcheck(r"\frac{d^2H}{dt^2} = \tfrac{1}{16}(H - 27);\ \text{underestimate}"),
          r"$\dfrac{d^2H}{dt^2} = -\dfrac14\dfrac{dH}{dt} = \dfrac{1}{16}(H - 27) > 0$ while $H > 27$. The graph is concave up, so it lies above its tangent line: underestimate.",
          [(1, "$\\frac{d^2H}{dt^2}$"), (1, "underestimate with reason")], work="2.4cm"),
@@ -244,7 +244,7 @@ same("F2B", [WB.subs(t, 0), 1400 + sp.Rational(1, 4) * 44, sp.solve(sp.Eq(WB, 25
 F2B = FRQ("A growing account", (
     r"The balance $W(t)$ of an account, in dollars, satisfies $\dfrac{dW}{dt} = \dfrac{1}{25}(W - 300)$, where $t$ is measured in years. At time $t = 0$ the balance is $W(0) = 1400$."), [
     Part("a", r"Write an equation for the line tangent to the graph of $W$ at $t = 0$. Use it to approximate $W\left(\frac14\right)$.", num(1411),
-         r"$W'(0) = \frac{1100}{25} = 44$, so $y = 1400 + 44t$ and $W\left(\frac14\right) \approx 1411$ dollars.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
+         r"Point $(0, 1400)$, slope $m = W'(0) = \frac{1100}{25} = 44$: $y - 1400 = 44(t - 0)$, so $y = 1400 + 44t$ and $W\left(\frac14\right) \approx 1411$ dollars.", [(1, "tangent line"), (1, "approximation")], work="2cm"),
     Part("b", r"Find $\dfrac{d^2W}{dt^2}$ in terms of $W$. Is the approximation in part (a) an underestimate or an overestimate? Give a reason.",
          selfcheck(r"\frac{d^2W}{dt^2} = \tfrac{1}{625}(W - 300);\ \text{underestimate}"),
          r"$\dfrac{d^2W}{dt^2} = \dfrac{1}{25}\dfrac{dW}{dt} = \dfrac{1}{625}(W - 300) > 0$ for $W > 300$. The graph is concave up, so the tangent line lies below it: underestimate.",

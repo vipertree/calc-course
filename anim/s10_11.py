@@ -1,4 +1,6 @@
 """Topic 10.11 (BC): Taylor polynomials. Narration comes from transcripts/10_11.md."""
+import math
+
 import numpy as np
 from manim import *
 
@@ -26,6 +28,57 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
+        with self.beat("Building a polynomial at a") as b:
+            # Adder (2026-10-14): slow down before "centered at a". A curve, a point a, and the polynomial built there one
+            # derivative at a time (value, slope, concavity, ...), each hugging the curve over a wider stretch
+            f = lambda s: 2 + np.sin(s - 2.2)
+            A = 2.9          # each degree hugs a wider stretch here (within 0.12: 0.3, 1.3, 2.0, 3.1 wide)
+            d = [f(A), np.cos(A - 2.2), -np.sin(A - 2.2), -np.cos(A - 2.2)]
+            polys = [lambda s, k=k: sum(d[j] / math.factorial(j) * (s - A)**j for j in range(k + 1)) for k in range(4)]
+            ax, al = plot_axes([0, 6.2, 1], [0, 4.4, 1], w=6.8, h=4.6, coords=False)
+            VGroup(ax, al).to_edge(LEFT, buff=0.5).shift(DOWN * 0.2)
+            curve = ax.plot(f, x_range=[0, 6.2], color=FUNC, stroke_width=5)
+            fl = M("y = f(x)", 30, FUNC).next_to(ax.c2p(0.7, f(0.7)), UP, buff=0.3)
+            pt = Dot(ax.c2p(A, f(A)), radius=0.09, color=INK)
+            drop = DashedLine(ax.c2p(A, 0), ax.c2p(A, f(A)), color=DIM, stroke_width=2, dash_length=0.1)
+            alab = M("a", 32).next_to(ax.c2p(A, 0), DOWN, buff=0.15)
+            self.play(FadeIn(ax), FadeIn(al), Create(curve), FadeIn(fl), run_time=1.2)
+            self.play(Create(drop), FadeIn(pt), FadeIn(alab), run_time=0.8)
+
+            def span(P):
+                """the stretch around a where P stays inside the window"""
+                xs = np.linspace(0, 6.2, 621)
+                ok = [(0.05 <= P(x) <= 4.35) for x in xs]
+                i = int(np.argmin(np.abs(xs - A)))
+                lo = hi = i
+                while lo > 0 and ok[lo - 1]:
+                    lo -= 1
+                while hi < len(xs) - 1 and ok[hi + 1]:
+                    hi += 1
+                return [xs[lo], xs[hi]]
+            cols = [TANGENT, SECANT, DERIV, ACCUM]
+            words = [r"$P_0$: matches $f(a)$", r"$P_1$: also matches $f'(a)$", r"$P_2$: also matches $f''(a)$", r"$P_3$: also matches $f'''(a)$"]
+            labs = VGroup(*[T(w, 32, c) for w, c in zip(words, cols)]).arrange(DOWN, aligned_edge=LEFT, buff=0.45).to_edge(RIGHT, buff=0.5).shift(UP * 0.6)
+            graphs = []
+            for k in range(4):
+                b.line(k + 1)
+                g = ax.plot(polys[k], x_range=span(polys[k]), color=cols[k], stroke_width=4)
+                graphs.append(g)
+                self.play(Create(g), FadeIn(labs[k], shift=LEFT * 0.2), *([graphs[k - 1].animate.set_stroke(opacity=0.35)] if k else []), run_time=1.4)
+            # the stretch where the cubic stays within 0.1 of the curve
+            xs = np.linspace(0, 6.2, 621)
+            near = [x for x in xs if abs(polys[3](x) - f(x)) < 0.12]
+            close_br = BraceBetweenPoints(ax.c2p(min(near), 0), ax.c2p(max(near), 0), DOWN, color=ACCUM).shift(DOWN * 0.45)
+            self.play(FadeIn(close_br), run_time=0.8)
+            b.line(5)
+            means = VGroup(T("value: where the curve is", 30, TANGENT), T("$f'$: which way it's heading", 30, SECANT), T("$f''$: how it bends", 30, DERIV),
+                           T("$f'''$: how the bending changes", 30, ACCUM)).arrange(DOWN, aligned_edge=LEFT, buff=0.45).move_to(labs, aligned_edge=LEFT)
+            self.play(FadeOut(labs), FadeIn(means), run_time=1)
+            b.line(6)
+            easy = T("polynomials: only adding and multiplying", 30, DIM).next_to(means, DOWN, buff=0.7).align_to(means, LEFT)
+            self.play(FadeIn(easy), run_time=0.8)
+        self.clear()
+
         with self.beat("The Taylor polynomial formula") as b:
             box = formula_box(M(r"P_n(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \cdots + \frac{f^{(n)}(a)}{n!}(x - a)^n", 36, ACCUM).set_max_width(12), ACCUM).to_edge(UP, buff=0.6)
             self.play(FadeIn(box), run_time=1.2)
@@ -38,6 +91,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("centered at $a = 0$: a Maclaurin polynomial", 32, DIM).next_to(r2, DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
+        # the formula stays boxed in the top right corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"P_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x - a)^k"
         tab = table(["k", r"f^{(k)}(x)", r"f^{(k)}(1)", r"\tfrac{f^{(k)}(1)}{k!}"], [["0", r"\ln x", "0", "0"], ["1", r"\tfrac1x", "1", "1"], ["2", r"-\tfrac{1}{x^2}", "-1", r"-\tfrac12"], ["3", r"\tfrac{2}{x^3}", "2", r"\tfrac13"]], size=30)
         self.example("ln x near 1", r"Find the third-degree Taylor polynomial for $f(x) = \ln x$ centered at $x = 1$, and use it to approximate $\ln 1.2$.",
                      [r"f(1) = \ln 1 = 0", r"f'(x) = \tfrac1x: \ 1; \quad f''(x) = -\tfrac{1}{x^2}: \ -1; \quad f'''(x) = \tfrac{2}{x^3}: \ 2", r"\text{coefficients: } 0, \ 1, \ -\tfrac12, \ \tfrac26 = \tfrac13",

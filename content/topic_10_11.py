@@ -26,6 +26,7 @@ NOTES = [
 
     Section("Matching derivatives"),
     Text(r"The tangent line matches $f$'s value and slope at $a$. A Taylor polynomial of degree $n$ also matches the second, third, ..., $n$th derivatives, so it stays close to $f$ over a wider range."),
+    Text(r"\textbf{Centered at $a$.} Pick a point $a$ on the curve and build the polynomial from what the curve does there: match the value $f(a)$ (a flat line), then the slope $f'(a)$ (the tangent line), then the concavity $f''(a)$ (a parabola), then $f'''(a)$ (a cubic). Each derivative says more about the curve at $a$, so each polynomial copies the curve over a wider stretch around $a$. Polynomials only need adding and multiplying, so they are easy to compute with."),
     Formula("Taylor polynomial", (r"\[ P_n(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \cdots + \frac{f^{(n)}(a)}{n!}(x - a)^n. \] "
                                   r"The coefficient of $(x - a)^k$ is \blank{$\frac{f^{(k)}(a)}{k!}$}. With $a = 0$ it is a \blank{Maclaurin} polynomial.")),
     VideoExample('ln x near 1', work="4.6cm"),

@@ -30,9 +30,9 @@ class Lesson(TranscriptScene):
             # morphs) and show where the error is and how the bound's formula comes from it
             P3 = lambda s: 1 + s + s * s / 2 + s**3 / 6
             X = 0.1
-            W, H = 6.4, 4.6
+            W, H = 6.6, 5.0
             cx, cy = X, (np.exp(X) + P3(X)) / 2
-            home = LEFT * 3.25 + UP * 0.05
+            home = LEFT * 3.4 + UP * 0.1
             readouts = {}
 
             def width_text(v):
@@ -65,13 +65,14 @@ class Lesson(TranscriptScene):
             self.play(zoom_to(z, 0.002), run_time=2.6, rate_func=smooth)
             b.line(1)
             self.play(zoom_to(z, 1.1e-5), run_time=3.4, rate_func=smooth)
-            rows = [(r"\text{error} = |f(0.1) - P_3(0.1)| \approx 0.00000425", TANGENT),
-                    (r"\text{first term left out: } \tfrac{(0.1)^4}{4!} \approx 0.00000417", INK),
+            rows = [(r"\text{error} \approx 0.00000425", TANGENT),
+                    (r"\text{left out: } \tfrac{(0.1)^4}{4!} \approx 0.00000417", INK),
                     (r"\text{error} = \tfrac{f^{(4)}(z)}{4!}(0.1)^4", INK),
-                    (r"\text{for some } z \text{ between } 0 \text{ and } 0.1", DIM),
-                    (r"|f^{(4)}(z)| \le M, \text{ so error} \le \tfrac{M}{4!}|0.1 - 0|^4", ACCUM)]
-            board = VGroup(*[M(r, 30, c) for r, c in rows]).arrange(DOWN, aligned_edge=LEFT, buff=0.42)
-            board.set_max_width(6.3).next_to(legend, DOWN, buff=0.6).to_edge(RIGHT, buff=0.35)
+                    (r"\text{some } z \text{ between } 0 \text{ and } 0.1", DIM),
+                    (r"|f^{(4)}(z)| \le M, \text{ so}", ACCUM),
+                    (r"\text{error} \le \tfrac{M}{4!}|0.1 - 0|^4", ACCUM)]
+            board = VGroup(*[M(r, 40, c) for r, c in rows]).arrange(DOWN, aligned_edge=LEFT, buff=0.36)
+            board.set_max_width(6.0).next_to(legend, DOWN, buff=0.45).to_edge(RIGHT, buff=0.4)
             self.play(Write(board[0]), run_time=1.2)
             b.line(2)
             self.play(Write(board[1]), run_time=1.2)
@@ -79,8 +80,9 @@ class Lesson(TranscriptScene):
             self.play(Write(board[2]), run_time=1)
             self.play(FadeIn(board[3]), run_time=0.6)
             b.line(4)
-            self.play(Write(board[4]), run_time=1.2)
-            self.play(Indicate(board[4], color=ACCUM, scale_factor=1.05), run_time=1)
+            self.play(Write(board[4]), run_time=1)
+            self.play(Write(board[5]), run_time=1)
+            self.play(Indicate(board[5], color=ACCUM, scale_factor=1.05), run_time=1)
         vw.clear_updaters()
         self.clear()
 
@@ -95,7 +97,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         # the bound stays boxed in the top right corner through the worked examples (Adder: formulas stay on screen)
-        self.example_ref = r"|f(x) - P_n(x)| \le \frac{M}{(n + 1)!}\,|x - a|^{n+1}"
+        self.example_ref = r"\begin{aligned}&|f(x) - P_n(x)|\\ &\quad\le \frac{M}{(n + 1)!}\,|x - a|^{n+1}\end{aligned}"
         self.example("Bounding the error for e to the 0.1", r"$P_3(x) = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$ approximates $e^x$. Use the Lagrange error bound to bound the error in approximating $e^{0.1}$.",
                      [r"n = 3, \ a = 0, \ x = 0.1", r"f^{(4)}(z) = e^z", r"0 \le z \le 0.1: \ e^z \le e^{0.1} < 1.2, \ \ M = 1.2", r"\text{error} \le \frac{1.2}{4!}(0.1)^4", r"= \frac{1.2 \cdot 0.0001}{24}", r"= 0.000005"],
                      at=[1, 1, 2, 3, 4, 4], follow=True)

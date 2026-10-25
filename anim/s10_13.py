@@ -24,9 +24,9 @@ class Lesson(TranscriptScene):
             # run off, and mark the result on a number line of x values; the marks fill in the interval and its radius
             head = M(r"1 + x + x^2 + x^3 + \cdots", 46).to_edge(UP, buff=0.4)
             self.play(Write(head), run_time=1)
-            ax, al = plot_axes([0, 12, 2], [-3, 5, 1], w=6.0, h=5.0, xlabel="n", ylabel="S_n", font=24)
-            VGroup(ax, al).to_edge(LEFT, buff=0.6).shift(DOWN * 0.6)
-            line = NumberLine(x_range=[-2, 2, 1], length=6.0, include_numbers=True, font_size=32, color=DIM).to_edge(RIGHT, buff=0.7).shift(UP * 0.2)
+            ax, al = plot_axes([0, 12, 2], [-3, 5, 1], w=5.6, h=5.0, xlabel="n", ylabel="S_n", font=24)
+            VGroup(ax, al).to_edge(LEFT, buff=0.5).shift(DOWN * 0.6)
+            line = NumberLine(x_range=[-2, 2, 1], length=5.3, include_numbers=True, font_size=32, color=DIM).to_edge(RIGHT, buff=0.8).shift(UP * 0.2)
             xlab = M("x", 34, DIM).next_to(line, RIGHT, buff=0.2)
             self.play(FadeIn(ax), FadeIn(al), Create(line), FadeIn(xlab), run_time=1)
             b.line(1)

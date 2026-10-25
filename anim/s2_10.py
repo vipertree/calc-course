@@ -146,8 +146,9 @@ class Lesson(TranscriptScene):
         fig = VGroup(ax, al, ax.plot(np.tan, x_range=[0, 1.32], color=FUNC, stroke_width=4), closed_dot(ax, PI / 4, 1, INK),
                      tangent_line(ax, np.tan, PI / 4, 2, [0.3, 1.3]))
         self.example("A tangent line", r"Find the equation for the line tangent to $y = \tan x$ at $x = \dfrac\pi4$.",
-                     [r"\text{point: } \left(\tfrac{\pi}{4}, 1\right)", r"\text{slope: } \sec^2\tfrac{\pi}{4} = (\sqrt2)^2 = 2", r"y - 1 = 2\left(x - \tfrac{\pi}{4}\right)"],
-                     figure=fig, at=[1, 2, 3])
+                     [r"\text{point: } \tan\tfrac{\pi}{4} = 1,\ \text{so}\ \left(\tfrac{\pi}{4}, 1\right)", r"\text{slope: } m = \sec^2\tfrac{\pi}{4} = (\sqrt2)^2 = 2",
+                      r"\boxed{\text{point } \left(\tfrac{\pi}{4}, 1\right), \ \ \text{slope } m = 2}", r"y - 1 = 2\left(x - \tfrac{\pi}{4}\right)"],
+                     figure=fig, at=[1, 2, 3, 4])
 
         with self.beat("Close") as b:
             tb = six_table(size=38).shift(UP * 0.5)

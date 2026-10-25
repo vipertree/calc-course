@@ -201,8 +201,9 @@ class Lesson(TranscriptScene):
         fig2 = VGroup(a2, a2.plot(f, x_range=[0, 4], color=FUNC, stroke_width=4), a2.plot(lambda t: 6 * t - 9, x_range=[1.6, 4], color=TANGENT, stroke_width=4),
                       closed_dot(a2, 3, 9, INK))
         self.example("A tangent line", r"Find the equation of the line tangent to $f(x) = x^2$ at $x = 3$. Write it in slope-intercept form.",
-                     [r"f(3) = 9,\ \text{so}\ (3, 9)", r"f'(3) = 2 \cdot 3 = 6", r"y - 9 = 6(x - 3)", r"y = 6x - 18 + 9 = 6x - 9",
-                      r"TEXT:Point-slope form is fine unless a form is asked for, or you are matching a simplified choice."], figure=fig2, at=[1, 2, 3, 4, 5], follow=True)
+                     [r"\text{point: } f(3) = 9,\ \text{so}\ (3, 9)", r"\text{slope: } m = f'(3) = 2 \cdot 3 = 6", r"\boxed{\text{point } (3, 9), \ \ \text{slope } m = 6}",
+                      r"y - 9 = 6(x - 3)", r"y = 6x - 18 + 9 = 6x - 9",
+                      r"TEXT:Point-slope form is fine unless a form is asked for, or you are matching a simplified choice."], figure=fig2, at=[1, 2, 3, 4, 5, 6], follow=True)
         self.example("Units", r"$V(t)$ is the volume of water in a tank, in liters, $t$ minutes after it starts draining. Interpret $V'(4) = -12$.",
                      [r"\text{units of } V' = \frac{\text{liters}}{\text{minute}}", r"-12 < 0:\ \text{decreasing}",
                       r"TEXT:At $t = 4$ minutes, the volume of water is decreasing at $12$ liters per minute.",
@@ -232,5 +233,6 @@ class Lesson(TranscriptScene):
         fig3 = VGroup(a3, a3.plot(lambda t: 3 * t * t - 5 * t, x_range=[0, 3], color=FUNC, stroke_width=4),
                       a3.plot(lambda t: 2 + 7 * (t - 2), x_range=[1.4, 3], color=TANGENT, stroke_width=4), closed_dot(a3, 2, 2, INK))
         self.example("Example 3: A tangent line", r"Find the equation for the line tangent to $f(x) = 3x^2 - 5x$ at $x = 2$.",
-                     [r"f(2) = 12 - 10 = 2,\ \text{so}\ (2, 2)", r"f'(2) = 6(2) - 5 = 7", r"y - 2 = 7(x - 2)"], figure=fig3, at=[1, 2, 3])
+                     [r"\text{point: } f(2) = 12 - 10 = 2,\ \text{so}\ (2, 2)", r"\text{slope: } m = f'(2) = 6(2) - 5 = 7",
+                      r"\boxed{\text{point } (2, 2), \ \ \text{slope } m = 7}", r"y - 2 = 7(x - 2)"], figure=fig3, at=[1, 2, 3, 4])
         self.finish()

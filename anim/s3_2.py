@@ -130,8 +130,10 @@ class Lesson(TranscriptScene):
                       closed_dot(a4, 3, 4, INK), closed_dot(a4, 3, -4, INK))
         self.example("All tangent lines at x = 3", r"Find the equations of all lines tangent to $x^2 + y^2 = 25$ at $x = 3$.",
                      [r"\frac{d}{dx}\left(x^2 + y^2\right) = \frac{d}{dx}(25)", r"2x + 2y\,\frac{dy}{dx} = 0", r"\frac{dy}{dx} = -\frac{x}{y}",
-                      r"9 + y^2 = 25,\ \text{so } y = 4 \text{ or } y = -4", r"(3, 4):\ \ y - 4 = -\tfrac34(x - 3)", r"(3, -4):\ \ y + 4 = \tfrac34(x - 3)"],
-                     figure=fig4, at=[1, 2, 2, 3, 4, 5], follow=True)
+                      r"9 + y^2 = 25,\ \text{so } y = 4 \text{ or } y = -4",
+                      r"\boxed{\text{point } (3, 4), \ \ \text{slope } m = -\tfrac34}", r"y - 4 = -\tfrac34(x - 3)",
+                      r"\boxed{\text{point } (3, -4), \ \ \text{slope } m = \tfrac34}", r"y + 4 = \tfrac34(x - 3)"],
+                     figure=fig4, at=[1, 2, 2, 3, 4, 5, 6, 7], follow=True)
 
         with self.beat("A product term") as b:
             eq = M(r"x^2 + ", r"xy", r" + y^2 = 7", 50).to_edge(UP, buff=0.5)
@@ -194,14 +196,16 @@ class Lesson(TranscriptScene):
         fig = VGroup(a2, cur, a2.plot(lambda x: 2 - 0.25 * (x - 1), x_range=[-1, 3], color=TANGENT, stroke_width=4), closed_dot(a2, 1, 2, INK))
         self.example("Example 2: A tangent line", r"Find the equation for the line tangent to $x^3 + y^3 = 9$ at $(1, 2)$.",
                      [r"1 + 8 = 9 \ \checkmark", r"\frac{d}{dx}\left(x^3 + y^3\right) = \frac{d}{dx}(9)", r"3x^2 + 3y^2\,\frac{dy}{dx} = 0", r"\frac{dy}{dx} = -\frac{x^2}{y^2}",
-                      r"(1, 2):\ -\frac14, \quad y - 2 = -\frac14(x - 1)"],
-                     figure=fig, at=[1, 2, 2, 3, 4])
+                      r"\text{slope: } m = -\frac{1^2}{2^2} = -\frac14", r"\boxed{\text{point } (1, 2), \ \ \text{slope } m = -\tfrac14}",
+                      r"y - 2 = -\frac14(x - 1)"],
+                     figure=fig, at=[1, 2, 2, 3, 4, 5, 6])
         self.example("Example 3: Trig and exponential", r"Find $\dfrac{dy}{dx}$ for $\sin y + e^x = y$.",
                      [r"\frac{d}{dx}\left(\sin y + e^x\right) = \frac{d}{dx}(y)", r"\cos y\,\frac{dy}{dx} + e^x = \frac{dy}{dx}", r"\frac{dy}{dx}\,(1 - \cos y) = e^x",
                       r"\frac{dy}{dx} = \frac{e^x}{1 - \cos y}"], at=[1, 2, 3, 4])
         self.example("Example 4: Every tangent line at one x", r"Find the equations of all lines tangent to $x^2 + 4y^2 = 20$ at $x = 2$.",
                      [r"\frac{d}{dx}\left(x^2 + 4y^2\right) = \frac{d}{dx}(20)", r"2x + 8y\,\frac{dy}{dx} = 0", r"\frac{dy}{dx} = -\frac{2x}{8y} = -\frac{x}{4y}",
                       r"4 + 4y^2 = 20, \quad y^2 = 4, \quad \text{so } y = 2 \text{ or } y = -2",
-                      r"(2, 2):\ \ \frac{dy}{dx} = -\frac14, \qquad y - 2 = -\frac14(x - 2)", r"(2, -2):\ \ \frac{dy}{dx} = \frac14, \qquad y + 2 = \frac14(x - 2)"],
-                     at=[1, 2, 2, 3, 4, 5])
+                      r"\boxed{\text{point } (2, 2), \ \ \text{slope } m = -\tfrac14}", r"y - 2 = -\frac14(x - 2)",
+                      r"\boxed{\text{point } (2, -2), \ \ \text{slope } m = \tfrac14}", r"y + 2 = \frac14(x - 2)"],
+                     at=[1, 2, 2, 3, 4, 5, 6, 7])
         self.finish()

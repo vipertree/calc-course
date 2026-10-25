@@ -61,7 +61,8 @@ class Lesson(TranscriptScene):
                      [r"\text{(a) } x(2) = 3 + \int_0^2 \cos(t^2)\,dt \approx 3.461", r"y(2) = 1 + \int_0^2 e^{t/2}\,dt \approx 4.437", r"\text{(b) } \sqrt{\cos^2 4 + e^2} \approx 2.796",
                       r"\text{(c) } \int_0^2 \sqrt{\cos^2(t^2) + e^t}\,dt \approx 3.828"], at=[1, 1, 2, 3])
         self.example("Example 2: Slope and tangent line", r"A particle has $x'(t) = t + 1$, $y'(t) = t^2 - 2$, and is at $(4, 5)$ at $t = 1$. Find the slope of its path and the tangent line there.",
-                     [r"\frac{dy}{dx} = \frac{y'}{x'} = \frac{1 - 2}{1 + 1} = -\tfrac12", r"y - 5 = -\tfrac12(x - 4)"], at=[1, 2])
+                     [r"\text{slope: } m = \frac{dy}{dx} = \frac{y'}{x'} = \frac{1 - 2}{1 + 1} = -\tfrac12", r"\boxed{\text{point } (4, 5), \ \ \text{slope } m = -\tfrac12}",
+                      r"y - 5 = -\tfrac12(x - 4)"], at=[1, 2, 3])
         self.example("Example 3: At rest?", r"A particle has $x'(t) = t^2 - 4$ and $y'(t) = t - 2$ for $t \ge 0$. When is it at rest? When is it moving straight up or down?",
                      [r"\text{at rest: } t^2 - 4 = 0 \text{ and } t - 2 = 0: \ t = 2", r"TEXT:Vertical motion needs $x' = 0$ with $y' \ne 0$; $x' = 0$ only at $t = 2$, where $y' = 0$ too: never."],
                      at=[1, 2])

@@ -219,7 +219,9 @@ class Lesson(TranscriptScene):
                      [r"PART:(a) the slope at x = -1", r"y' = 4x^3,\quad y'(-1) = 4(-1)^3 = -4", r"PART:(b) the rate when s = 5", r"\frac{dA}{ds} = 2s = 2(5) = 10 \ \text{cm}^2\text{ per cm}"],
                      at=[0, 1, 2, 3])
         self.example("Tangent line", r"Find the equation for the line tangent to $y = \sqrt{x}$ at $x = 4$.",
-                     [r"y = x^{1/2}", r"POWER:x|\tfrac12|-\tfrac12", r"y' = \frac{1}{2\sqrt x},\quad y'(4) = \frac14", r"(4, 2):\quad y - 2 = \frac14(x - 4)"], at=[1, 1, 2, 3])
+                     [r"y = x^{1/2}", r"POWER:x|\tfrac12|-\tfrac12", r"y' = \frac{1}{2\sqrt x}", r"\text{slope: } m = y'(4) = \frac14",
+                      r"\text{point: } \sqrt4 = 2,\ \text{so}\ (4, 2)", r"\boxed{\text{point } (4, 2), \ \ \text{slope } m = \tfrac14}",
+                      r"y - 2 = \frac14(x - 4)"], at=[1, 1, 2, 2, 3, 4, 5])
 
         with self.beat("Close") as b:
             # the takeaway is the rule itself, not the pictures (Adder)
@@ -239,6 +241,6 @@ class Lesson(TranscriptScene):
         fig = VGroup(a3, a3.plot(np.cbrt, x_range=[0, 12, 0.01], color=FUNC, stroke_width=4), a3.plot(lambda x: 2 + (x - 8) / 12, x_range=[2, 12], color=TANGENT, stroke_width=4),
                      closed_dot(a3, 8, 2, INK))
         self.example("Example 3: A tangent line to a cube root", r"Find the equation for the line tangent to $y = \sqrt[3]{x}$ at $x = 8$.",
-                     [r"\sqrt[3]{8} = 2,\ \text{so}\ (8, 2)", r"POWER:x|\tfrac13|-\tfrac23", r"8^{2/3} = 4,\ \text{so}\ \text{slope } \frac13 \cdot \frac14 = \frac{1}{12}",
-                      r"y - 2 = \frac{1}{12}(x - 8)"], figure=fig, at=[1, 2, 3, 4])
+                     [r"\text{point: } \sqrt[3]{8} = 2,\ \text{so}\ (8, 2)", r"POWER:x|\tfrac13|-\tfrac23", r"8^{2/3} = 4,\ \text{so}\ \text{slope } m = \frac13 \cdot \frac14 = \frac{1}{12}",
+                      r"\boxed{\text{point } (8, 2), \ \ \text{slope } m = \tfrac{1}{12}}", r"y - 2 = \frac{1}{12}(x - 8)"], figure=fig, at=[1, 2, 3, 4, 5])
         self.finish()

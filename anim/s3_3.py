@@ -173,6 +173,6 @@ class Lesson(TranscriptScene):
         fig = VGroup(a3, VMobject(color=DERIV, stroke_width=4).set_points_smoothly([a3.c2p(t ** 3 + t + 1, t) for t in gs if 0 <= t ** 3 + t + 1 <= 4]),
                      a3.plot(lambda x: 1 + (x - 3) / 4, x_range=[0.5, 4], color=TANGENT, stroke_width=4), closed_dot(a3, 3, 1, INK))
         self.example("Example 3: A tangent line to an inverse", r"$g$ is the inverse of $f(x) = x^3 + x + 1$. Find the equation for the line tangent to $g$ at $x = 3$.",
-                     [r"TEXT:Cue: it says $g$ is the inverse of $f$ outright.", r"f(1) = 3, \ \text{so } g(3) = 1", r"f'(1) = 4, \ \text{so } g'(3) = \frac14",
-                      r"y - 1 = \frac14(x - 3)"], figure=fig, at=[1, 2, 3, 4])
+                     [r"TEXT:Cue: it says $g$ is the inverse of $f$ outright.", r"\text{point: } f(1) = 3, \ \text{so } g(3) = 1,\ (3, 1)", r"\text{slope: } f'(1) = 4, \ \text{so } m = g'(3) = \frac14",
+                      r"\boxed{\text{point } (3, 1), \ \ \text{slope } m = \tfrac14}", r"y - 1 = \frac14(x - 3)"], figure=fig, at=[1, 2, 3, 4, 5])
         self.finish()

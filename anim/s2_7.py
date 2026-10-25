@@ -242,7 +242,8 @@ class Lesson(TranscriptScene):
         self.example("Combine with earlier rules", r"Find $f'(x)$ for $f(x) = 3\sin x - 4e^x + 2\ln x - \cos x$.",
                      [r"f'(x) = 3\cos x - 4e^x + 2\cdot\frac1x - (-\sin x)", r"f'(x) = 3\cos x - 4e^x + \frac{2}{x} + \sin x"], at=[1, 2])
         self.example("A tangent line", r"Find the equation for the line tangent to $y = e^x$ at $x = 0$.",
-                     [r"\text{point: } e^0 = 1,\ \text{so}\ (0, 1)", r"\text{slope: } y' = e^x,\ \ e^0 = 1", r"y - 1 = 1(x - 0),\ \text{ or } y = x + 1"], at=[1, 2, 3])
+                     [r"\text{point: } e^0 = 1,\ \text{so}\ (0, 1)", r"\text{slope: } y' = e^x,\ \ m = e^0 = 1", r"\boxed{\text{point } (0, 1), \ \ \text{slope } m = 1}",
+                      r"y - 1 = 1(x - 0),\ \text{ or } y = x + 1"], at=[1, 2, 3, 4])
 
         with self.beat("Close") as b:
             top, bot, g = trig_axes(("y", r"y'"))
@@ -260,7 +261,8 @@ class Lesson(TranscriptScene):
         fig2 = VGroup(a2, a2.plot(lambda x: 2 * np.sin(x), x_range=[0, PI], color=FUNC, stroke_width=4),
                       a2.plot(lambda x: np.sqrt(3) + (x - PI / 3), x_range=[0.2, 1.7], color=TANGENT, stroke_width=4), closed_dot(a2, PI / 3, np.sqrt(3), INK))
         self.example("Example 2: A tangent line to a sine curve", r"Find the equation for the line tangent to $y = 2\sin x$ at $x = \dfrac{\pi}{3}$.",
-                     [r"2\sin\frac{\pi}{3} = 2\cdot\frac{\sqrt3}{2} = \sqrt3", r"y' = 2\cos x, \quad 2\cos\frac{\pi}{3} = 1", r"y - \sqrt3 = x - \frac{\pi}{3}"], figure=fig2, at=[1, 2, 3])
+                     [r"\text{point: } 2\sin\frac{\pi}{3} = 2\cdot\frac{\sqrt3}{2} = \sqrt3,\ \text{so}\ \left(\tfrac{\pi}{3}, \sqrt3\right)", r"\text{slope: } y' = 2\cos x, \quad m = 2\cos\frac{\pi}{3} = 1",
+                      r"\boxed{\text{point } \left(\tfrac{\pi}{3}, \sqrt3\right), \ \ \text{slope } m = 1}", r"y - \sqrt3 = 1\left(x - \frac{\pi}{3}\right)"], figure=fig2, at=[1, 2, 3, 4])
         a3, _ = plot_axes([-1, 2, 1], [0, 3, 1], w=5.4, h=3.8)
         fig3 = VGroup(a3, a3.plot(lambda x: np.exp(x) - 2 * x, x_range=[-0.4, 1.6], color=FUNC, stroke_width=4),
                       Line(a3.c2p(np.log(2) - 0.5, 2 - 2 * np.log(2)), a3.c2p(np.log(2) + 0.5, 2 - 2 * np.log(2)), color=TANGENT, stroke_width=4),

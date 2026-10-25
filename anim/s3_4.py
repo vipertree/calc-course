@@ -328,6 +328,7 @@ class Lesson(TranscriptScene):
         fig = VGroup(a3, a3.plot(np.arctan, x_range=[-1, 3], color=FUNC, stroke_width=4),
                      a3.plot(lambda x: PI / 4 + (x - 1) / 2, x_range=[-0.5, 2.5], color=TANGENT, stroke_width=4), closed_dot(a3, 1, PI / 4, INK))
         self.example("Example 3: A tangent line", r"Find the equation for the line tangent to $y = \arctan x$ at $x = 1$.",
-                     [r"\arctan 1 = \frac{\pi}{4}, \ \text{so the point is} \ \left(1, \frac{\pi}{4}\right)", r"\frac{1}{1 + 1^2} = \frac12", r"y - \frac{\pi}{4} = \frac12(x - 1)"],
-                     figure=fig, at=[1, 2, 3])
+                     [r"\text{point: } \arctan 1 = \frac{\pi}{4}, \ \text{so} \ \left(1, \frac{\pi}{4}\right)", r"\text{slope: } m = \frac{1}{1 + 1^2} = \frac12",
+                      r"\boxed{\text{point } \left(1, \tfrac{\pi}{4}\right), \ \ \text{slope } m = \tfrac12}", r"y - \frac{\pi}{4} = \frac12(x - 1)"],
+                     figure=fig, at=[1, 2, 3, 4])
         self.finish()

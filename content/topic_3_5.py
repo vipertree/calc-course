@@ -26,7 +26,7 @@ NOTES = [
         r"\quad $\bullet$ A constant times something: keep the constant. \par "
         r"\quad $\bullet$ A product: the \blank{product rule}. \par "
         r"\quad $\bullet$ A quotient: the quotient rule, unless you can \blank{rewrite} it more simply first. \par "
-        r"\quad $\bullet$ A function with an inner function inside it, like $\sin(3x)$ or $(x^2 + 1)^5$: the \blank{chain rule}. \par "
+        r"\quad $\bullet$ A function with an inner function inside it, such as $\sin(3x)$ or $(x^2 + 1)^5$: the \blank{chain rule}. \par "
         r"\quad $\bullet$ An equation that doesn't solve easily for $y$: implicit differentiation. \par "
         r"Then repeat the question for each piece.")),
     VideoExample('Layers', work="2.2cm"),

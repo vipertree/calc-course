@@ -33,7 +33,7 @@ NOTES = [
     Text(r"\textbf{Three behaviors.} $\sum 1$: $S_n = n \to \infty$ (diverges). $\sum (-1)^{n+1}$: $S_n$ alternates $1, 0, 1, 0, \ldots$ (diverges). $\sum \left(\frac12\right)^n$: $S_n \to 1$ (converges to $1$)."),
     Text(r"\textbf{Sequence vs.\ series.} A sequence is a list of numbers; a series is the sum of that list. The sequence $a_n = \frac{n}{n + 1}$ ($\frac12, \frac23, \frac34, \ldots$) converges to $1$, but the series $\sum \frac{n}{n + 1}$ diverges: each term adds almost $1$ to the total."),
     VideoExample('A telescoping series', work="3.6cm"),
-    Text(r"\textbf{Telescoping.} When each term is a difference like $\frac1n - \frac{1}{n + 1}$, the partial sum collapses: only the first and last pieces survive."),
+    Text(r"\textbf{Telescoping.} When each term is a difference such as $\frac1n - \frac{1}{n + 1}$, the partial sum collapses: only the first and last pieces survive."),
     BigIdea(r"A series converges exactly when its partial sums approach a limit; that limit is the sum."),
     Check(r"$S_n = 5 - \frac1n$. Does the series converge? To what?", selfcheck(r"\text{converges to } 5"), r"$\lim S_n = 5$."),
 ]

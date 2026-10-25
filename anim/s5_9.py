@@ -98,7 +98,7 @@ class Lesson(TranscriptScene):
             m1 = mini("+-", "f'", "zero and changes sign: a max", DERIV)
             m2 = mini("++", "f'", "zero, no change: just a flat spot", DIM)
             m3 = mini("-+", "f''", "zero and changes sign: inflection", TANGENT)
-            m4 = mini("++", "f''", r"zero, no change: no inflection (like $x^4$)", DIM)
+            m4 = mini("++", "f''", r"zero, no change: no inflection (such as $x^4$)", DIM)
             grid = VGroup(VGroup(m1, m2).arrange(RIGHT, buff=1.4), VGroup(m3, m4).arrange(RIGHT, buff=1.4)).arrange(DOWN, buff=0.9)
             grid.set_max_width(12.5)
             b.line(1)

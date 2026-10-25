@@ -65,7 +65,7 @@ PRACTICE = [
     Item(r"$f'$ is a line through $(0, -2)$ with slope $1$. Describe $f$: where is it decreasing, where is its minimum, and what is its concavity?", num(2),
          r"$f'(x) = x - 2$: $f$ decreases for $x < 2$, increases after, so its minimum is at $x = 2$. $f'' = 1 > 0$: concave up everywhere (a parabola).", work="2cm"),
     Item(r"The graph of $f'$ is entirely above the $x$-axis and is decreasing. Describe the graph of $f$.", selfcheck(r"\text{increasing, concave down}"),
-         r"$f' > 0$: $f$ increasing. $f'$ decreasing: $f$ concave down. Like $\sqrt x$ or $\ln x$.", work="1.4cm"),
+         r"$f' > 0$: $f$ increasing. $f'$ decreasing: $f$ concave down. Functions such as $\sqrt x$ or $\ln x$.", work="1.4cm"),
     Item(r"A student says: ``The graph of $f'$ has a maximum at $x = 2$, so $f$ has a maximum at $x = 2$.'' Correct the statement.", selfcheck(r"\text{point of inflection}"),
          r"A maximum of $f'$ is where $f'$ stops increasing and starts decreasing: $f$ has a point of inflection there, not a maximum.", work="1.6cm"),
 ]

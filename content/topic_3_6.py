@@ -45,7 +45,7 @@ NOTES = [
 
     Section("What the second derivative measures"),
     Text(r"If $s(t)$ is position, then $s'(t) = v(t)$ is velocity, and $s''(t) = v'(t) = a(t)$ is \blank{acceleration}: how fast the velocity "
-         r"itself is changing. Its units are distance per time, per time, like meters per second per second."),
+         r"itself is changing. Its units are distance per time, per time, such as meters per second per second."),
     Example("A particle", r"A particle has position $s(t) = t^3 - 6t^2 + 9t$ meters at $t$ seconds. Find its velocity and acceleration at $t = 3$.",
             r"$v(t) = 3t^2 - 12t + 9$, so $v(3) = 0$. $a(t) = 6t - 12$, so $a(3) = 6$ m/s$^2$. The particle is momentarily stopped, but its "
             r"velocity is increasing.", work="2.6cm", beat="Reading t = 3"),

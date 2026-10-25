@@ -34,7 +34,7 @@ NOTES = [
           r"\textbf{Jump} & $x = \mblank{2}$ & the one-sided limits exist but are \blank{not equal} \\ "
           r"\textbf{Vertical asymptote} & $x = \mblank{4}$ & the function is \blank{unbounded} near $x = 4$",
           "lcl", header=r"type & where & what happens"),
-    Text(r"A fourth kind, \emph{oscillating}, appears in functions like $\sin\frac1x$ at $0$. It is less common on the exam."),
+    Text(r"A fourth kind, \emph{oscillating}, appears in functions such as $\sin\frac1x$ at $0$. It is less common on the exam."),
 
     Section("Predicting breaks from a rational function"),
     Text(r"\[ \frac{x^2-x-2}{x^2-4} = \frac{(x-2)(x+1)}{(x-2)(x+2)}. \] The factor $x - 2$ \blank{cancels}, which leaves a hole at "

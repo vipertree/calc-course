@@ -136,7 +136,7 @@ NOTES = [
          r"with the $h$ on the bottom. That's allowed because $h \neq 0$ inside the limit."),
     VideoExample("The h form", work="3cm"),
     VideoExample("The x to a form", work="3.2cm"),
-    Text(r"\textbf{Limits that are derivatives.} Soon we'll have rules that find derivatives in a line or two. Then a limit like "
+    Text(r"\textbf{Limits that are derivatives.} Soon we'll have rules that find derivatives in a line or two. Then a limit such as "
          r"\[ \lim_{h\to 0}\frac{(3+h)^3-27}{h} \] on a test is a derivative in disguise: recognize it as $f'(a)$ with $f(x) = \mblank{x^3}$ and "
          r"$a = \mblank{3}$, and use the rules instead of the algebra."),
     Check(r"For $f(x) = 5x - x^2$, use either form of the definition to find $f'(1)$.",

@@ -216,7 +216,7 @@ QUIZ = [
             r"$\displaystyle\lim_{x\to0} f(x)$?",
             [r"It equals $0$.", r"It equals $\pi$.", r"Nothing yet: the evidence is too thin, and in fact the limit does not exist.",
              r"It equals $1$."], "C",
-            r"Those three inputs happen to hit zeros of the sine wave. Other inputs, like $\frac2{21}$, give $1$.",
+            r"Those three inputs happen to hit zeros of the sine wave. Other inputs, such as $\frac2{21}$, give $1$.",
             why_not={"A": "three lucky inputs are not a pattern"}),
         MCQ(r"A calculator gives $\dfrac{1 - \cos x}{x^2} = 0$ at $x = 10^{-9}$, but about $0.5$ at $x = 0.001$. Which is the best "
             r"estimate of $\displaystyle\lim_{x\to0}\dfrac{1 - \cos x}{x^2}$?",

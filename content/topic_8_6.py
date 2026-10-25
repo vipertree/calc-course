@@ -35,7 +35,7 @@ NOTES = [
     Formula("Area with crossings", (r"\[ A = \int_a^b \blank{|f(x) - g(x)|}\,dx. \] Without a calculator: make a sign chart for $f - g$, split at its zeros, integrate top minus bottom on each piece, and add.")),
     Text(r"\textbf{Why one integral fails.} For $y = x^3 - x^2$ and $y = 2x$, $\int_{-1}^2 \big((x^3 - x^2) - 2x\big)\,dx = \frac{5}{12} - \frac83 = -\frac94$: the pieces cancel. The area is $\frac{5}{12} + \frac83 = \frac{37}{12}$."),
     VideoExample('Three crossings', work="5cm"),
-    Text(r"\textbf{Touching is not crossing.} A zero of $f - g$ where the sign doesn't change (like $x^2$ at $0$) doesn't swap top and bottom. The sign chart shows it."),
+    Text(r"\textbf{Touching is not crossing.} A zero of $f - g$ where the sign doesn't change (such as $x^2$ at $0$) doesn't swap top and bottom. The sign chart shows it."),
     Text(r"\textbf{Calculator (Desmos).} Enter $f(x)$ and $g(x)$ in ordinary function notation, click the graph's intersection points to get the outer crossings for the limits, then type $\int_a^b |f(x) - g(x)|\,dx$ with absolute value bars. Desmos handles the pieces."),
     BigIdea(r"Area is $\int |f - g|\,dx$: split where $f - g$ changes sign and add the pieces. Areas never cancel."),
     Check(r"Find the area between $y = x^3$ and $y = x$.", selfcheck(r"\tfrac12"), r"Crossings $-1, 0, 1$; each piece is $\frac14$."),

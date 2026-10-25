@@ -18,11 +18,12 @@ NOTES = [
     Video("s10_14.py::Lesson", "Taylor and Maclaurin series", 4),
 
     Section("Four series to know"),
+    Text(r"\textbf{From estimates to series.} In 10.11 a Taylor polynomial used a few terms to estimate: $P_3(0.1) = 1.105167$ is within $0.000005$ of $e^{0.1}$ (10.12). Take infinitely many terms instead and, where the series converges (10.13), the estimate becomes an exact formula: $e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots = \sum \frac{x^n}{n!}$ for every $x$."),
     Table(r"$e^x$ & $1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$ & $\sum \frac{x^n}{n!}$ & all $x$ \\ "
-          r"$\sin x$ & $x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots$ & $\mblank{\sum \frac{(-1)^n x^{2n+1}}{(2n + 1)!}}$ & all $x$ \\ "
-          r"$\cos x$ & $1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots$ & $\mblank{\sum \frac{(-1)^n x^{2n}}{(2n)!}}$ & all $x$ \\ "
-          r"$\frac{1}{1 - x}$ & $1 + x + x^2 + \cdots$ & $\sum x^n$ & $\mblank{-1 < x < 1}$ \\", "llll", header=r"function & series & general term & interval"),
-    Text(r"Memory tips: sine has the odd powers and starts with $x$; cosine has the even powers and starts with $1$; both alternate. $e^x$ has every power, all positive."),
+          r"$\sin x$ & $x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots$ & $\sum \frac{(-1)^n x^{2n+1}}{(2n + 1)!}$ & all $x$ \\ "
+          r"$\cos x$ & $1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots$ & $\sum \frac{(-1)^n x^{2n}}{(2n)!}$ & all $x$ \\ "
+          r"$\frac{1}{1 - x}$ & $1 + x + x^2 + \cdots$ & $\sum x^n$ & $-1 < x < 1$ \\", "llll", header=r"function & series & general term & interval"),
+    Text(r"Memory tips: sine has the \blank{odd} powers and starts with $x$; cosine has the \blank{even} powers and starts with $1$; both alternate. $e^x$ has every power, all positive."),
     Formula("Taylor series", (r"\[ f(x) = \sum_{n=0}^\infty \blank{\frac{f^{(n)}(a)}{n!}}(x - a)^n \] (Maclaurin when $a = 0$), wherever the series converges to $f$.")),
     VideoExample('New series from old', work="4cm"),
     Text(r"\textbf{Building new series.} Substitute ($u = -x^2$, $u = 3x$), multiply by powers of $x$, or differentiate and integrate term by term (10.15). Substitution keeps the interval in terms of $u$."),

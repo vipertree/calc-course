@@ -3,7 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
-from props import bar_counter, bartender, beer_glass, face, pint_fill
+from props import cola_fill, cola_glass, face, fountain_counter, soda_jerk
 from style import *
 
 
@@ -11,17 +11,18 @@ class Lesson(TranscriptScene):
     NUM = "10.1"
 
     def construct(self):
-        with self.beat("A bar joke") as b:
-            # Adder (2026-10-14): the chocolate bar read as subtraction; tell the bar joke and pour the orders together
+        with self.beat("A soda fountain joke") as b:
+            # Adder (2026-10-14): the chocolate bar read as subtraction; tell the joke and pour the orders together.
+            # Adder (2026-10-23): a soda fountain and cola, not a bar and beer
             top = -1.7
-            tender = face(bartender(4.6), -1).move_to([5.4, top - 1.55, 0], aligned_edge=DOWN)
-            counter = bar_counter(top).set_z_index(1)       # in front of the bartender
+            tender = face(soda_jerk(4.6), -1).move_to([5.4, top - 1.55, 0], aligned_edge=DOWN)
+            counter = fountain_counter(top).set_z_index(1)       # in front of the soda jerk
             self.play(FadeIn(counter), run_time=0.8)
             sizes = [r"\tfrac12", r"\tfrac14", r"\tfrac18", r"\tfrac1{16}", r"\tfrac1{32}"]
             xs = [-6.0, -4.7, -3.4, -2.1, -0.8]
             orders, labels = [], []
             for k, (x, lab) in enumerate(zip(xs, sizes)):
-                g = beer_glass(0.5 ** (k + 1), 1.9).move_to([x, top, 0], aligned_edge=DOWN)
+                g = cola_glass(0.5 ** (k + 1), 1.9).move_to([x, top, 0], aligned_edge=DOWN)
                 t = M(lab, 40).next_to(g, UP, buff=0.12)
                 orders.append(g)
                 labels.append(t)
@@ -32,18 +33,18 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(tender, shift=LEFT * 1.4), run_time=1.4)
             said = T("``Oh, brother.''", 36).next_to(tender, UP, buff=0.25)
             self.play(FadeIn(said), run_time=0.5)
-            pint = beer_glass(0.0, 3.0).move_to([3.4, top, 0], aligned_edge=DOWN)
-            self.add(pint)
+            served = cola_glass(0.0, 3.0, straw=True).move_to([3.4, top, 0], aligned_edge=DOWN)
+            self.add(served)
             self.bring_to_front(counter)
-            self.play(pint_fill(pint, 0.0, 1.0), run_time=1.6)
+            self.play(cola_fill(served, 0.0, 1.0), run_time=1.6)
             self.play(FadeOut(said), run_time=0.3)
             face(tender, 1)
             self.play(FadeOut(tender, shift=RIGHT * 2.0), run_time=1.6)
             self.remove(tender)
             b.line(3)
             question = M(r"\tfrac12 + \tfrac14 + \tfrac18 + \tfrac1{16} + \cdots = \ ?", 44).to_edge(UP, buff=0.25)
-            self.play(pint.animate.shift(RIGHT * 2.0), FadeIn(question), run_time=0.8)
-            glass = beer_glass(0.0, 3.0).move_to([2.2, top, 0], aligned_edge=DOWN)
+            self.play(served.animate.shift(RIGHT * 2.0), FadeIn(question), run_time=0.8)
+            glass = cola_glass(0.0, 3.0).move_to([2.2, top, 0], aligned_edge=DOWN)
             self.play(FadeIn(glass), run_time=0.5)
             total = None
             level = 0.0
@@ -51,15 +52,15 @@ class Lesson(TranscriptScene):
                 new = 0.5 ** (k + 1)
                 # tip the glass past level so its mouth faces down over the big glass, then pour straight down
                 tilt = -2.0
-                rim_y = glass.get_top()[1] - 0.13 * glass.height        # the image's top 13% is room for a head
+                rim_y = glass.get_top()[1] - 0.13 * glass.height        # the image's top 13% is the rim and the fizz
                 lip_at = np.array([glass.get_center()[0] - 0.25, rim_y + 0.95, 0])     # high enough to clear the glass
                 to_lip = rotate_vector(UP * 0.37 * 1.9, tilt)
                 rt = 1.0 if k < 3 else 0.6
                 self.play(g.animate.rotate(tilt).move_to(lip_at - to_lip), FadeOut(t), run_time=0.5 * rt + 0.2)
-                stream = Line(lip_at, [lip_at[0], rim_y - 0.35, 0], stroke_color="#F2A93B", stroke_width=6)
+                stream = Line(lip_at, [lip_at[0], rim_y - 0.35, 0], stroke_color="#7A3A1C", stroke_width=6)
                 tot_tex = [r"\tfrac12", r"\tfrac34", r"\tfrac78", r"\tfrac{15}{16}", r"\tfrac{31}{32}"][k]
                 tot = M(tot_tex, 48, SECANT).next_to(glass, RIGHT, buff=0.25).shift(UP * 0.6)
-                self.play(Create(stream), pint_fill(glass, level, level + new), pint_fill(g, 0.5 ** (k + 1), 0.0),
+                self.play(Create(stream), cola_fill(glass, level, level + new), cola_fill(g, 0.5 ** (k + 1), 0.0),
                           FadeIn(tot) if total is None else ReplacementTransform(total, tot), run_time=0.9 * rt + 0.2)
                 self.play(FadeOut(stream), FadeOut(g), run_time=0.3)
                 level += new
@@ -69,7 +70,7 @@ class Lesson(TranscriptScene):
             self.play(FadeOut(dots), run_time=0.3)
             b.line(5)
             done = M(r"\tfrac12 + \tfrac14 + \tfrac18 + \tfrac1{16} + \cdots = 1", 44).move_to(question)
-            self.play(pint_fill(glass, level, 1.0), ReplacementTransform(question, done), ReplacementTransform(total, M("1", 48, SECANT).move_to(total)), run_time=2.0)
+            self.play(cola_fill(glass, level, 1.0), ReplacementTransform(question, done), ReplacementTransform(total, M("1", 48, SECANT).move_to(total)), run_time=2.0)
         self.clear()
         self.title()
 

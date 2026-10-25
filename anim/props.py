@@ -107,112 +107,143 @@ def face(car, way):
     return car
 
 
-def bar_counter(top=-1.75, width=13.6):
-    """A wooden bar counter whose top surface is at y = top (10.1, 10.3): things set on it stand at top."""
-    wood, wood_dk = "#9A6B43", "#6E4A2C"
-    return VGroup(Rectangle(width=width, height=0.28, stroke_width=0, fill_color=wood, fill_opacity=1).move_to([0, top - 0.14, 0]),
-                  Rectangle(width=width - 0.4, height=1.5, stroke_width=0, fill_color=wood_dk, fill_opacity=1).move_to([0, top - 1.03, 0]),
-                  Line([-(width / 2 - 0.4), top - 0.5, 0], [width / 2 - 0.4, top - 0.5, 0], stroke_color=wood, stroke_width=3, stroke_opacity=0.5))
+def fountain_counter(top=-1.75, width=13.6):
+    """A soda fountain counter whose top surface is at y = top (10.1, 10.3): things set on it stand at top. A pale marble
+    top with a chrome edge over a red front with white panels, the 1950s look."""
+    marble, chrome, red, red_dk, cream = "#E9E4DA", "#B9C2C9", "#B8322E", "#8E2320", "#F3EBDD"
+    front_h = 1.5
+    front = Rectangle(width=width - 0.4, height=front_h, stroke_width=0, fill_color=red, fill_opacity=1).move_to([0, top - 0.3 - front_h / 2, 0])
+    n = 8
+    pw = (width - 0.4) / n
+    panels = VGroup(*[RoundedRectangle(corner_radius=0.08, width=pw - 0.36, height=front_h - 0.62, stroke_color=cream, stroke_width=3,
+                                       fill_color=red_dk, fill_opacity=1).move_to([-(width - 0.4) / 2 + pw * (k + 0.5), top - 0.3 - front_h / 2 + 0.02, 0])
+                      for k in range(n)])
+    return VGroup(front, panels,
+                  Rectangle(width=width - 0.4, height=0.07, stroke_width=0, fill_color=chrome, fill_opacity=1).move_to([0, top - 0.3, 0]),
+                  Rectangle(width=width, height=0.22, stroke_width=0, fill_color=marble, fill_opacity=1).move_to([0, top - 0.11, 0]),
+                  Rectangle(width=width, height=0.05, stroke_width=0, fill_color=chrome, fill_opacity=1).move_to([0, top - 0.245, 0]))
 
 
-def bartender(height=3.2):
-    """A bartender in a long black apron, walking to the right (10.1's joke). Mirror with face() to walk left."""
-    b = sprite("bartender", height, rim=True)
+def soda_jerk(height=3.2):
+    """A soda jerk in a white paper hat, bow tie and apron, walking to the right (10.1's joke). Mirror with face()."""
+    b = sprite("soda_jerk", height, rim=True)
     b.facing = 1
     return b
 
 
-# The pint (assets/beer_pint.png) is a full glass with a foam head. beer_glass(level) redraws it holding any amount:
-# rows of the original image, measured once: the rim under the foam, the beer's surface when full, the bottom of the beer.
-_PINT_RIM, _PINT_TOP, _PINT_BOT, _PINT_WALL = 112, 205, 806, 9
-_pint_cache = {}
+# The glass (assets/cola_glass.png) is a full tumbler of cola under a thin fizz. cola_glass(level) redraws it holding any
+# amount. Rows of the original image, measured once: the cola's surface when full (the middle of the fizz's top), the
+# bottom of the cola, and the thickness of the glass wall.
+_COLA_TOP, _COLA_BOT, _COLA_WALL = 95, 678, 12
+_STRAW_PAD = 150                                    # rows added above the glass for the straw to stick out
+_cola_cache = {}
 
 
-def _pint_arrays():
-    if "full" in _pint_cache:
-        return _pint_cache["full"]
-    full = np.array(Image.open(os.path.join(ASSETS, "beer_pint.png")).convert("RGBA")).astype(np.int16)
+def _cola_arrays():
+    if "full" in _cola_cache:
+        return _cola_cache["full"]
+    full = np.array(Image.open(os.path.join(ASSETS, "cola_glass.png")).convert("RGBA")).astype(np.int16)
     rgb, a = full[..., :3], full[..., 3]
-    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
-    beer = (a > 128) & ((mx - mn) / (mx + 1) > 0.42) & (rgb[..., 2] < 140)
+    cola = (a > 128) & (rgb[..., 0] - rgb[..., 2] > 25)        # cola and fizz are warm; the glass is cool
     H, W = a.shape
     span = np.zeros((H, 2), int)
     for y in range(H):
         xs = np.nonzero(a[y] > 128)[0]
         span[y] = (xs[0], xs[-1]) if len(xs) else (0, -1)
-    # the empty glass: no head, the wall colour copied down from a row where the wall shows, a faint tint inside,
-    # two highlight streaks, a rim line, and the base as painted
+    # the empty glass: the cola and the white inside of the glass made see-through, two highlight streaks
     empty = full.copy()
-    empty[:_PINT_RIM, :, 3] = 0
-    wall = full[160, span[160, 0]:span[160, 0] + _PINT_WALL].copy()
-    for y in range(_PINT_RIM, _PINT_BOT):
+    clear = (232, 240, 243, 60)
+    for y in range(_COLA_BOT + 1):
         l, r = span[y]
         if r <= l:
             continue
-        inner = slice(l + _PINT_WALL, r - _PINT_WALL + 1)
         row = empty[y]
-        if y < _PINT_BOT - 40:
-            row[inner] = (232, 240, 243, 60)
-            row[l:l + _PINT_WALL] = wall
-            row[r - _PINT_WALL + 1:r + 1] = wall[::-1]
-        else:                                    # the curved bottom of the beer, inside the painted base
-            m = beer[y]
-            row[m] = (232, 240, 243, 60)
-            continue
-        w = r - l
-        row[l + int(0.13 * w):l + int(0.17 * w)] = (255, 255, 255, 120)
-        row[l + int(0.21 * w):l + int(0.225 * w)] = (255, 255, 255, 90)
-    for y in range(_PINT_RIM, _PINT_RIM + 5):
-        l, r = span[y]
-        empty[y, l:r + 1] = (205, 222, 228, 230)
-    # how much the glass holds below each row: sum of (interior width)^2 over the rows of beer (a solid of revolution)
-    width = np.array([max(span[y, 1] - span[y, 0] - 2 * _PINT_WALL, 0) for y in range(H)], float)
+        inner = np.zeros(W, bool)
+        inner[l + _COLA_WALL:r - _COLA_WALL + 1] = True
+        row[cola[y] | (inner & (rgb[y].min(axis=1) > 200))] = clear
+        if y > 45:
+            w = r - l
+            row[l + int(0.14 * w):l + int(0.18 * w)] = (255, 255, 255, 120)
+            row[l + int(0.22 * w):l + int(0.235 * w)] = (255, 255, 255, 90)
+    # how much the glass holds below each row: sum of (interior width)^2 over the rows of cola (a solid of revolution)
+    width = np.array([max(span[y, 1] - span[y, 0] - 2 * _COLA_WALL, 0) for y in range(H)], float)
     vol = np.zeros(H)
     acc = 0.0
-    for y in range(_PINT_BOT, _PINT_TOP - 1, -1):
+    for y in range(_COLA_BOT, _COLA_TOP - 1, -1):
         acc += width[y] ** 2
         vol[y] = acc
     vol /= acc
-    _pint_cache["full"] = (full, empty, beer, span, vol)
-    return _pint_cache["full"]
+    _cola_cache["full"] = (full, empty, cola, span, vol)
+    return _cola_cache["full"]
 
 
-def pint_image(level):
-    """The pint holding `level` of a beer (0 to 1, by volume) as an RGBA array: beer below the surface, a thin head."""
-    level = round(float(np.clip(level, 0, 1)), 3)
-    if level in _pint_cache:
-        return _pint_cache[level]
-    full, empty, beer, span, vol = _pint_arrays()
-    if level >= 0.999:
-        out = full
-    else:
-        out = empty.copy()
-        if level > 0.002:
-            ys = _PINT_TOP + int(np.argmin(np.abs(vol[_PINT_TOP:_PINT_BOT + 1] - level)))
-            body = beer.copy()
-            body[:ys] = False
-            out[body] = full[body]
-            for y in range(max(ys - 9, _PINT_RIM + 5), ys + 2):          # the head: a thin band of foam
-                l, r = span[y]
-                out[y, l + _PINT_WALL:r - _PINT_WALL + 1] = (252, 245, 222, 255) if y < ys else (236, 214, 160, 255)
-    out = out.astype(np.uint8)
-    _pint_cache[level] = out
+def _straw(out, surface):
+    """A red-and-white striped straw standing in the glass, drawn above the cola (the cola hides the rest)."""
+    H, W = out.shape[:2]
+    p0, p1 = np.array([175.0, _STRAW_PAD + 560.0]), np.array([262.0, 8.0])     # (x, y): foot in the cola, tip above
+    d = p1 - p0
+    L = np.hypot(*d)
+    u, nrm = d / L, np.array([-d[1], d[0]]) / L
+    yy, xx = np.mgrid[0:H, 0:W]
+    rel_x, rel_y = xx - p0[0], yy - p0[1]
+    along = rel_x * u[0] + rel_y * u[1]
+    across = rel_x * nrm[0] + rel_y * nrm[1]
+    m = (np.abs(across) <= 10) & (along >= 0) & (along <= L) & (yy < surface)
+    red = ((along // 26) % 2 == 0)
+    shade = 1 - 0.25 * (across / 10) ** 2
+    col = np.where(red[..., None], np.array([212, 43, 43]), np.array([250, 248, 244]))
+    out[m, :3] = (col[m] * shade[m, None]).astype(np.int16)
+    out[m, 3] = 255
     return out
 
 
-def beer_glass(level=1.0, height=2.6):
-    """A painted pint glass holding `level` of a beer (by volume, so half a beer really is half). Redraw it with
-    pint_image() for a rising level, or use PintFill."""
-    g = ImageMobject(pint_image(level))
-    g.set_height(height)
+def cola_image(level, straw=False):
+    """The glass holding `level` of a cola (0 to 1, by volume) as an RGBA array: cola below the surface, a thin fizz.
+    straw=True adds a striped straw (and _STRAW_PAD rows of room above the glass for it)."""
+    level = round(float(np.clip(level, 0, 1)), 3)
+    key = (level, straw)
+    if key in _cola_cache:
+        return _cola_cache[key]
+    full, empty, cola, span, vol = _cola_arrays()
+    ys = _COLA_BOT + 1
+    out = empty.copy()
+    if level >= 0.999:
+        out[cola] = full[cola]                                           # the painted surface, under its fizz
+        ys = _COLA_TOP - 12
+    else:
+        if level > 0.002:
+            ys = _COLA_TOP + int(np.argmin(np.abs(vol[_COLA_TOP:_COLA_BOT + 1] - level)))
+            body = cola.copy()
+            body[:ys] = False
+            out[body] = full[body]
+            xs = np.arange(out.shape[1])
+            for y in range(max(ys - 12, 0), ys + 3):                     # the fizz: a pale band on top
+                band = cola[min(y + 14, _COLA_BOT)] & (xs >= span[y, 0] + _COLA_WALL - 2) & (xs <= span[y, 1] - _COLA_WALL + 2)
+                t = (y - (ys - 12)) / 14
+                out[y, band] = (int(252 - 30 * t), int(232 - 70 * t), int(204 - 90 * t), 255)
+    if straw:
+        pad = np.zeros((_STRAW_PAD, out.shape[1], 4), np.int16)
+        out = _straw(np.concatenate([pad, out]), ys - 12 + _STRAW_PAD)
+    out = out.astype(np.uint8)
+    _cola_cache[key] = out
+    return out
+
+
+def cola_glass(level=1.0, height=2.6, straw=False):
+    """A painted glass holding `level` of a cola (by volume, so half a cola really is half). The glass itself is
+    `height` tall (a straw sticks out above that). Animate a rising level with cola_fill."""
+    g = ImageMobject(cola_image(level, straw))
+    full_h = cola_image(0.0, straw).shape[0]
+    g.set_height(height * full_h / (full_h - (_STRAW_PAD if straw else 0)))
+    g.straw = straw
     return g
 
 
-def pint_fill(glass, level0, level1):
-    """An animation: `glass` (a beer_glass) fills from level0 to level1, keeping its place and size."""
+def cola_fill(glass, level0, level1):
+    """An animation: `glass` (a cola_glass) fills from level0 to level1, keeping its place and size."""
     def update(m, t):
         h, c = m.height, m.get_center()
-        m.pixel_array = pint_image(level0 + (level1 - level0) * t)
+        m.pixel_array = cola_image(level0 + (level1 - level0) * t, getattr(m, "straw", False))
         m.set_height(h).move_to(c)
     return UpdateFromAlphaFunc(glass, update)
 

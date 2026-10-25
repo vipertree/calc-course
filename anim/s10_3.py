@@ -3,7 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
-from props import bar_counter, beer_glass
+from props import cola_glass, fountain_counter
 from style import *
 
 
@@ -12,9 +12,10 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("Orders that stay big") as b:
-            # Adder (2026-10-14): the shrinking blocks didn't read. Back to 10.1's bar: orders that head to half a beer
+            # Adder (2026-10-14): the shrinking blocks didn't read. Back to 10.1's soda fountain (Adder 2026-10-23): orders
+            # that head to half a cola
             top = -1.75
-            counter = bar_counter(top)
+            counter = fountain_counter(top)
             self.play(FadeIn(counter), run_time=0.6)
             fr = [r"1", r"\tfrac23", r"\tfrac35", r"\tfrac47", r"\tfrac59", r"\tfrac6{11}"]
             tab_head = T("total so far", 30, DIM).move_to([4.6, 0.9, 0])
@@ -22,7 +23,7 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(tab_head), FadeIn(tab), run_time=0.5)
             total = 0.0
             for k in range(1, 7):
-                g = beer_glass(k / (2 * k - 1), 1.7).move_to([-6.0 + 1.3 * (k - 1), top, 0], aligned_edge=DOWN)
+                g = cola_glass(k / (2 * k - 1), 1.7).move_to([-6.0 + 1.3 * (k - 1), top, 0], aligned_edge=DOWN)
                 lab = M(fr[k - 1], 38).next_to(g, UP, buff=0.12)
                 total += k / (2 * k - 1)
                 new_tab = M(f"{total:.2f}" if k > 1 else "1", 52, TANGENT).move_to(tab)

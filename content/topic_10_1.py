@@ -27,7 +27,7 @@ NOTES = [
 
     Section("Partial sums"),
     Text(r"\textbf{Not an integral.} Units 6 to 8 added up a continuous function with integrals. A series adds up separate numbers $a_1, a_2, a_3, \ldots$, one at a time: no curve, no area."),
-    Text(r"\textbf{The bar joke.} Infinitely many mathematicians order $\frac12$, $\frac14$, $\frac18$, $\ldots$ of a beer. Poured into one glass, the totals are $\frac12, \frac34, \frac78, \ldots$, closer and closer to one full beer: $\frac12 + \frac14 + \frac18 + \cdots = 1$."),
+    Text(r"\textbf{The soda fountain joke.} Infinitely many mathematicians order $\frac12$, $\frac14$, $\frac18$, $\ldots$ of a cola. Poured into one glass, the totals are $\frac12, \frac34, \frac78, \ldots$, closer and closer to one full cola: $\frac12 + \frac14 + \frac18 + \cdots = 1$."),
     Text(r"An infinite series $\sum_{n=1}^\infty a_n = a_1 + a_2 + a_3 + \cdots$ can't be added term by term forever. Instead, add the first $n$ terms."),
     Formula("Convergence of a series", (r"The $n$th partial sum is $S_n = a_1 + a_2 + \cdots + a_n$. The series \blank{converges} to $S$ if $\lim_{n\to\infty} S_n = S$; otherwise it \blank{diverges}.")),
     Text(r"\textbf{Three behaviors.} $\sum 1$: $S_n = n \to \infty$ (diverges). $\sum (-1)^{n+1}$: $S_n$ alternates $1, 0, 1, 0, \ldots$ (diverges). $\sum \left(\frac12\right)^n$: $S_n \to 1$ (converges to $1$)."),

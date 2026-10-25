@@ -3,6 +3,7 @@ import numpy as np
 from manim import *
 
 from kit import *
+from kit import _ramp
 from style import *
 
 
@@ -24,6 +25,65 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
+        with self.beat("Zooming in on the error") as b:
+            # Adder (2026-10-14): after the title, zoom in on the graph (calculator-style: the window redraws, nothing
+            # morphs) and show where the error is and how the bound's formula comes from it
+            P3 = lambda s: 1 + s + s * s / 2 + s**3 / 6
+            X = 0.1
+            W, H = 6.4, 4.6
+            cx, cy = X, (np.exp(X) + P3(X)) / 2
+            home = LEFT * 3.25 + UP * 0.05
+            readouts = {}
+
+            def width_text(v):
+                d = max(0, -int(np.floor(np.log10(v))))
+                v = round(v, d)
+                key = f"{v:.{d}f}"
+                if key not in readouts:
+                    readouts[key] = T(f"window width: ${key}$", 26, DIM)
+                return readouts[key].copy()
+
+            def view(R):
+                g = tick_view(np.exp, R, w=W, h=H, labels=True, cx=cx, cy=cy, extras=[(P3, SECANT)],
+                              dots=[(X, np.exp(X), FUNC), (X, P3(X), SECANT)] if R < 2e-4 else [])
+                fr = g[0]
+                ry = R * H / W
+                to = lambda u, v: fr.get_center() + RIGHT * (u - cx) / R * W / 2 + UP * (v - cy) / ry * H / 2
+                p, q = to(X, P3(X)), to(X, np.exp(X))
+                a = _ramp(q[1] - p[1], 0.25, 0.6)
+                if a > 0:
+                    g.add(Line(p, q, color=TANGENT, stroke_width=7).set_stroke(opacity=a))
+                g.shift(home - fr.get_center())
+                # the window's width under it, rounded to one digit (a calculator's zoom keeps you oriented the same way)
+                g.add(width_text(2 * R).next_to(fr, DOWN, buff=0.18))
+                return g
+
+            legend = VGroup(M("y = e^x", 34, FUNC), M("y = P_3(x)", 34, SECANT)).arrange(RIGHT, buff=0.6).to_corner(UR, buff=0.5)
+            z, vw = zoom_tracker(1.5, view)
+            self.play(FadeIn(vw), FadeIn(legend), run_time=0.8)
+            self.play(zoom_to(z, 0.05), run_time=3, rate_func=smooth)
+            self.play(zoom_to(z, 0.002), run_time=2.6, rate_func=smooth)
+            b.line(1)
+            self.play(zoom_to(z, 1.1e-5), run_time=3.4, rate_func=smooth)
+            rows = [(r"\text{error} = |f(0.1) - P_3(0.1)| \approx 0.00000425", TANGENT),
+                    (r"\text{first term left out: } \tfrac{(0.1)^4}{4!} \approx 0.00000417", INK),
+                    (r"\text{error} = \tfrac{f^{(4)}(z)}{4!}(0.1)^4", INK),
+                    (r"\text{for some } z \text{ between } 0 \text{ and } 0.1", DIM),
+                    (r"|f^{(4)}(z)| \le M, \text{ so error} \le \tfrac{M}{4!}|0.1 - 0|^4", ACCUM)]
+            board = VGroup(*[M(r, 30, c) for r, c in rows]).arrange(DOWN, aligned_edge=LEFT, buff=0.42)
+            board.set_max_width(6.3).next_to(legend, DOWN, buff=0.6).to_edge(RIGHT, buff=0.35)
+            self.play(Write(board[0]), run_time=1.2)
+            b.line(2)
+            self.play(Write(board[1]), run_time=1.2)
+            b.line(3)
+            self.play(Write(board[2]), run_time=1)
+            self.play(FadeIn(board[3]), run_time=0.6)
+            b.line(4)
+            self.play(Write(board[4]), run_time=1.2)
+            self.play(Indicate(board[4], color=ACCUM, scale_factor=1.05), run_time=1)
+        vw.clear_updaters()
+        self.clear()
+
         with self.beat("The bound") as b:
             box = formula_box(M(r"|f(x) - P_n(x)| \le \frac{M}{(n + 1)!}\,|x - a|^{n+1}", 48, ACCUM), ACCUM).to_edge(UP, buff=0.7)
             self.play(FadeIn(box), run_time=1)
@@ -34,6 +94,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("the next Taylor term, with the next derivative at its worst case", 32, DIM).to_edge(DOWN, buff=0.6)), run_time=0.8)
         self.clear()
 
+        # the bound stays boxed in the top right corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"|f(x) - P_n(x)| \le \frac{M}{(n + 1)!}\,|x - a|^{n+1}"
         self.example("Bounding the error for e to the 0.1", r"$P_3(x) = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$ approximates $e^x$. Use the Lagrange error bound to bound the error in approximating $e^{0.1}$.",
                      [r"n = 3, \ a = 0, \ x = 0.1", r"f^{(4)}(z) = e^z", r"0 \le z \le 0.1: \ e^z \le e^{0.1} < 1.2, \ \ M = 1.2", r"\text{error} \le \frac{1.2}{4!}(0.1)^4", r"= \frac{1.2 \cdot 0.0001}{24}", r"= 0.000005"],
                      at=[1, 1, 2, 3, 4, 4], follow=True)

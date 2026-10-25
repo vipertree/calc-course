@@ -13,14 +13,17 @@ lag = lambda M, n_, d: sp.Rational(M) / sp.factorial(n_ + 1) * sp.Rational(d)**(
 
 same("lesson", [lag(sp.Rational(6, 5), 3, sp.Rational(1, 10))], [sp.Rational(1, 200000)])
 same("ex", [lag(1, 3, sp.Rational(1, 2)), lag(6, 3, sp.Rational(1, 5)), lag(12, 3, sp.Rational(1, 2))], [sp.Rational(1, 384), sp.Rational(1, 2500), sp.Rational(1, 32)])
+close("zoom gap", float(sp.exp(sp.Rational(1, 10)) - (1 + sp.Rational(1, 10) + sp.Rational(1, 200) + sp.Rational(1, 6000))), 0.00000425, 5e-9)
+close("first term left out", float(sp.Rational(1, 10)**4 / 24), 0.00000417, 5e-9)
 close("e0.1 actual", float(sp.exp(sp.Rational(1, 10)) - (1 + sp.Rational(1, 10) + sp.Rational(1, 200) + sp.Rational(1, 6000))), 4.25e-6, 1e-7)
 
 NOTES = [
     Video("s10_12.py::Lesson", "Lagrange error bound", 4),
 
     Section("The bound"),
-    Formula("Lagrange error bound", (r"If $P_n$ is the $n$th-degree Taylor polynomial for $f$ about $a$, then \[ |f(x) - P_n(x)| \le \blank{\frac{M}{(n + 1)!}\,|x - a|^{n+1}}, \] where $M \ge |f^{(n+1)}(z)|$ for every $z$ between $a$ and $x$.")),
-    Text(r"It looks like the next Taylor term, with the next derivative replaced by its largest possible size. Any $M$ you can justify works; on the exam $M$ is often given."),
+    Formula("Lagrange error bound", (r"If $P_n$ is the $n$th-degree Taylor polynomial for $f$ about $a$, then \[ |f(x) - P_n(x)| \le \frac{M}{(n + 1)!}\,|x - a|^{n+1}, \] where $M \ge |f^{(n+1)}(z)|$ for every $z$ between $a$ and $x$.")),
+    Text(r"It looks like the next Taylor term, with the next \blank{derivative} replaced by its largest possible size. Any $M$ you can justify works; on the exam $M$ is often given."),
+    Text(r"\textbf{Where the error is.} Zoom in on $e^x$ and $P_3(x) = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$ at $x = 0.1$ far enough and the graphs come apart: the error is the gap $|f(0.1) - P_3(0.1)| \approx 0.00000425$. It is close to the first term $P_3$ leaves out, $\frac{(0.1)^4}{4!} \approx 0.00000417$. Taylor's theorem says the error is exactly $\frac{f^{(4)}(z)}{4!}(0.1)^4$ for some $z$ between $0$ and $0.1$. We don't know $z$, so we replace $|f^{(4)}(z)|$ by a bound $M$: that is the Lagrange error bound."),
     VideoExample('Bounding the error for e to the 0.1', work="4cm"),
     Text(r"\textbf{Finding $M$.} For $f^{(4)}(x) = -\frac{6}{x^4}$ on $[1, 1.2]$, the size $\frac{6}{z^4}$ is largest at $z = 1$: $M = 6$."),
     BigIdea(r"Error $\le \frac{M}{(n + 1)!}|x - a|^{n+1}$: the worst-case next term."),

@@ -22,7 +22,7 @@ P3 = 3 - (x - 2) + 2 * (x - 2)**2 + (x - 2)**3
 same("ex3", [P3.subs(x, sp.Rational(21, 10))], [sp.Rational(2921, 1000)])
 
 NOTES = [
-    Video("s10_11.py::Lesson", "Taylor polynomials", 5),
+    Video("s10_11.py::Lesson", "Taylor polynomials", 6),
 
     Section("Matching derivatives"),
     Text(r"The tangent line matches $f$'s value and slope at $a$. A Taylor polynomial of degree $n$ also matches the second, third, ..., $n$th derivatives, so it stays close to $f$ over a wider range."),

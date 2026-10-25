@@ -21,7 +21,7 @@ same("lesson", [radius(1 / (n * 3**n))], [3])
 same("ex", [radius(1 / sp.factorial(n)), radius(sp.factorial(n)), radius(1 / n**2)], [sp.oo, 0, 1])
 
 NOTES = [
-    Video("s10_13.py::Lesson", "Radius and interval of convergence", 4),
+    Video("s10_13.py::Lesson", "Radius and interval of convergence", 5),
 
     Section("Radius and interval"),
     Text(r"\textbf{One series, many values of $x$.} Consider the power series $1 + x + x^2 + x^3 + \cdots$. Each value of $x$ makes it a series of numbers. At $x = \frac12$ the partial sums settle at $2$, and at $x = -\frac12$ they settle at $\frac23$. At $x = \pm\frac32$ and at $x = \pm 1$ they never settle. It converges exactly for $-1 < x < 1$: an interval centered at $0$, reaching $R = 1$ each way."),

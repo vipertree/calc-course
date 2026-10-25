@@ -15,10 +15,10 @@ same("lesson", [ser(sp.exp(-x**2), 8)], [1 - x**2 + x**4 / 2 - x**6 / 6])
 same("ex", [ser(x * sp.cos(x), 6), ser(sp.sin(3 * x), 6)], [x - x**3 / 2 + x**5 / 24, 3 * x - sp.Rational(9, 2) * x**3 + sp.Rational(81, 40) * x**5])
 
 NOTES = [
-    Video("s10_14.py::Lesson", "Taylor and Maclaurin series", 4),
+    Video("s10_14.py::Lesson", "Taylor and Maclaurin series", 5),
 
     Section("Four series to know"),
-    Text(r"\textbf{From estimates to series.} In 10.11 a Taylor polynomial used a few terms to estimate: $P_3(0.1) = 1.105167$ is within $0.000005$ of $e^{0.1}$ (10.12). Take infinitely many terms instead and, where the series converges (10.13), the estimate becomes an exact formula: $e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots = \sum \frac{x^n}{n!}$ for every $x$."),
+    Text(r"\textbf{From estimates to series.} In 10.11 a Taylor polynomial used a few terms to estimate: $P_3(0.1) = 1.105167$ is within $0.000005$ of $e^{0.1}$ (10.12). Take infinitely many terms instead and, where the series converges (10.13), the estimate becomes an exact formula, for every $x$: \[ e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots = \sum \frac{x^n}{n!}. \]"),
     Table(r"$e^x$ & $1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$ & $\sum \frac{x^n}{n!}$ & all $x$ \\ "
           r"$\sin x$ & $x - \frac{x^3}{3!} + \frac{x^5}{5!} - \cdots$ & $\sum \frac{(-1)^n x^{2n+1}}{(2n + 1)!}$ & all $x$ \\ "
           r"$\cos x$ & $1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \cdots$ & $\sum \frac{(-1)^n x^{2n}}{(2n)!}$ & all $x$ \\ "

@@ -20,18 +20,64 @@ class Lesson(TranscriptScene):
 
     def construct(self):
         with self.beat("A series with an x in it") as b:
-            title = M(r"1 + x + x^2 + x^3 + \cdots", 48).to_edge(UP, buff=0.6)
-            self.play(Write(title), run_time=1)
-            line = NumberLine(x_range=[-2, 2, 1], length=9, include_numbers=True, font_size=28, color=DIM).shift(DOWN * 0.5)
-            xt = ValueTracker(-1.6)
-            ptr = always_redraw(lambda: Triangle(color=SECANT, fill_opacity=1).scale(0.15).rotate(PI).next_to(line.n2p(xt.get_value()), UP, buff=0.05))
-            mark = always_redraw(lambda: (M(r"\checkmark", 40, DERIV) if abs(xt.get_value()) < 1 else M(r"\times", 40, TANGENT)).next_to(line.n2p(xt.get_value()), UP, buff=0.5))
-            self.play(Create(line), run_time=0.6)
-            self.add(ptr, mark)
-            self.play(xt.animate.set_value(1.6), run_time=3, rate_func=linear)
+            # Adder (2026-10-14): the old slider was unclear. Now: pick a value of x, watch the partial sums S_n settle or
+            # run off, and mark the result on a number line of x values; the marks fill in the interval and its radius
+            head = M(r"1 + x + x^2 + x^3 + \cdots", 46).to_edge(UP, buff=0.4)
+            self.play(Write(head), run_time=1)
+            ax, al = plot_axes([0, 12, 2], [-3, 5, 1], w=5.6, h=4.2, xlabel="n", ylabel="S_n", font=22)
+            VGroup(ax, al).to_edge(LEFT, buff=0.7).shift(DOWN * 0.55)
+            line = NumberLine(x_range=[-2, 2, 1], length=5.4, include_numbers=True, font_size=28, color=DIM).to_edge(RIGHT, buff=0.7).shift(UP * 0.5)
+            xlab = M("x", 34, DIM).next_to(line, RIGHT, buff=0.2)
+            self.play(FadeIn(ax), FadeIn(al), Create(line), FadeIn(xlab), run_time=1)
             b.line(1)
-            self.play(Create(Line(line.n2p(-1), line.n2p(1), color=DERIV, stroke_width=10)), run_time=0.8)
+            cur = VGroup()
+
+            def case(xv, xtex, result, good):
+                """the partial sums for this x on the graph, and a mark on the number line"""
+                sums, t = [], 0.0
+                for k in range(13):
+                    t += xv**k
+                    sums.append(t)
+                col = DERIV if good else TANGENT
+                dots = VGroup(*[Dot(ax.c2p(k, v), radius=0.07, color=col) for k, v in enumerate(sums) if -3 <= v <= 5])
+                tag = M("x = " + xtex, 34, col).next_to(ax, UP, buff=0.2).align_to(ax, LEFT).shift(RIGHT * 0.6)
+                extra = VGroup()
+                if good:
+                    lim = 1 / (1 - xv)
+                    extra.add(DashedLine(ax.c2p(0, lim), ax.c2p(12, lim), color=DIM, stroke_width=2, dash_length=0.1))
+                mark = (Dot(line.n2p(xv), radius=0.1, color=DERIV) if good else M(r"	imes", 40, TANGENT)).next_to(line.n2p(xv), UP, buff=0.18)
+                res = T(result, 30, col).next_to(line, DOWN, buff=0.75)
+                old = list(cur)
+                self.play(*[FadeOut(m) for m in old], FadeIn(tag), FadeIn(res), FadeIn(extra), run_time=0.6)
+                cur.remove(*old)
+                self.play(LaggedStart(*[FadeIn(d, scale=0.5) for d in dots], lag_ratio=0.25), run_time=2.2)
+                self.play(FadeIn(mark, scale=0.6), run_time=0.5)
+                cur.add(tag, res, extra, dots)
+                return mark
+
+            marks = VGroup()
+            marks.add(case(0.5, r"\tfrac12", r"$S_n \to 2$: converges", True))
             b.line(2)
+            marks.add(case(-0.5, r"-\tfrac12", r"$S_n \to \frac23$: converges", True))
+            b.line(3)
+            marks.add(case(1.5, r"\tfrac32", r"$S_n$ grows past any bound: diverges", False))
+            b.line(4)
+            marks.add(case(-1.5, r"-\tfrac32", r"$S_n$ swings wider and wider: diverges", False))
+            b.line(5)
+            marks.add(case(1, "1", r"$S_n = n + 1$: diverges", False))
+            marks.add(case(-1, "-1", r"$S_n = 1, 0, 1, 0, \ldots$: diverges", False))
+            b.line(6)
+            self.play(*[FadeOut(m) for m in cur], run_time=0.5)
+            seg = Line(line.n2p(-1), line.n2p(1), color=DERIV, stroke_width=10)
+            ends = VGroup(*[Circle(radius=0.11, color=DERIV, stroke_width=4, fill_color=BG, fill_opacity=1).move_to(line.n2p(v)) for v in (-1, 1)])
+            self.play(Create(seg), FadeIn(ends), run_time=1)
+            cen = T("center", 28, INK).next_to(line.n2p(0), DOWN, buff=0.7)
+            rad = DoubleArrow(line.n2p(0) + UP * 1.0, line.n2p(1) + UP * 1.0, buff=0, color=ACCUM, stroke_width=4, tip_length=0.2)
+            rlab = M("R = 1", 32, ACCUM).next_to(rad, UP, buff=0.12)
+            self.play(FadeIn(cen), GrowFromCenter(rad), FadeIn(rlab), run_time=1)
+            b.line(7)
+            geo = M(r"\text{converges when } |x| < 1", 34, DERIV).next_to(cen, DOWN, buff=0.45)
+            self.play(Write(geo), run_time=1)
         self.clear()
         self.title()
 
@@ -51,6 +97,8 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(T("$R = 0$: only $x = a$; \\ $R = \\infty$: all $x$", 30, DIM).to_edge(DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
+        # the ratio test stays boxed in the top right corner through the worked examples (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&L = \lim_{n\to\infty} \left|\tfrac{a_{n+1}}{a_n}\right|\\ &L < 1\text{: converges}\\ &L > 1\text{: diverges}\end{aligned}"
         fig = interval_line(-1, 5, True, False, [-2, 6, 1], [(-1, "-1"), (2, "2"), (5, "5")])
         self.example("Finding the interval", r"Find the interval of convergence of $\displaystyle\sum_{n=1}^{\infty} \frac{(x - 2)^n}{n \cdot 3^n}$.",
                      [r"\left|\frac{a_{n+1}}{a_n}\right| = \frac{|x - 2|^{n+1}}{(n + 1)3^{n+1}} \cdot \frac{n \cdot 3^n}{|x - 2|^n}", r"= \frac{|x - 2|}{3} \cdot \frac{n}{n + 1}", r"L = \frac{|x - 2|}{3}",

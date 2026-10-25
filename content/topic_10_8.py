@@ -23,10 +23,10 @@ NOTES = [
 
     Section("The test"),
     Formula("Ratio test", (r"Let $L = \lim_{n\to\infty} \left|\dfrac{a_{n+1}}{a_n}\right|$. If $L < 1$, $\sum a_n$ \blank{converges (absolutely)}. If $L > 1$ or $L = \infty$, it \blank{diverges}. If $L = 1$, the test is \blank{inconclusive}.")),
-    Text(r"Far out, such a series behaves like a geometric series with ratio $L$."),
+    Text(r"For large enough values of $n$, such a series behaves like a geometric series with ratio $L$."),
     VideoExample('Using the ratio test', work="4cm"),
     Formula("Factorials", (r"$n! = n(n - 1)\cdots 2 \cdot 1$, so $(n + 1)! = \blank{(n + 1)\cdot n!}$ and $\dfrac{n!}{(n + 1)!} = \dfrac{1}{n + 1}$.")),
-    Text(r"Use the ratio test for factorials and exponentials. For $p$-series and rational functions of $n$ it always gives $L = 1$."),
+    Text(r"The ratio test is especially useful for factorials and exponents. For $p$-series and rational functions of $n$ it always gives $L = 1$."),
     BigIdea(r"$L = \lim |a_{n+1}/a_n|$: below $1$ converges, above $1$ diverges, $1$ says nothing."),
     Check(r"Find $L$ for $\sum \frac{5^n}{n!}$.", selfcheck(r"0;\ \text{converges}"), r"$\frac{5}{n + 1} \to 0$."),
 ]

@@ -18,6 +18,8 @@ class Lesson(TranscriptScene):
             ratios = M(r"\text{ratios: } 0.67,\ 0.5,\ 0.44,\ 0.42,\ \ldots \to \tfrac13", 36, SECANT).next_to(bot, DOWN, buff=0.5)
             self.play(Write(bot), run_time=1)
             self.play(Write(ratios), run_time=1.2)
+            # Adder (2026-10-14): "for large enough values", never "far out"
+            self.play(FadeIn(T("for large enough $n$, the ratios settle near $\\tfrac13$", 30, DIM).next_to(ratios, DOWN, buff=0.35)), run_time=0.6)
             b.line(2)
             self.play(FadeIn(T("ratio settles below $1$: shrinks like a convergent geometric series", 30, ACCUM).to_edge(DOWN, buff=0.5)), run_time=0.8)
         self.clear()
@@ -34,13 +36,15 @@ class Lesson(TranscriptScene):
                       FadeIn(M("?", 40, DIM).next_to(line.n2p(1), UP, buff=0.3)), FadeIn(T("converges", 28, DERIV).next_to(line.n2p(0.5), UP, buff=0.3)), FadeIn(T("diverges", 28, TANGENT).next_to(line.n2p(1.5), UP, buff=0.3)), run_time=1.2)
         self.clear()
 
+        # the ratio test stays up in the corner through every worked example (Adder: formulas stay on screen)
+        self.example_ref = r"\begin{aligned}&L = \lim_{n\to\infty} \left|\tfrac{a_{n+1}}{a_n}\right|\\ &L < 1\text{: converges}\\ &L > 1\text{: diverges}\\ &L = 1\text{: inconclusive}\end{aligned}"
         self.example("Using the ratio test", r"Does $\displaystyle\sum_{n=1}^{\infty} \frac{n}{3^n}$ converge?",
                      [r"a_n = \frac{n}{3^n}, \quad a_{n+1} = \frac{n + 1}{3^{n+1}}", r"\frac{a_{n+1}}{a_n} = \frac{n + 1}{3^{n+1}} \cdot \frac{3^n}{n}", r"= \frac{n + 1}{n} \cdot \frac{3^n}{3^{n+1}}", r"= \frac{n + 1}{n} \cdot \frac13",
                       r"L = \lim \frac{n + 1}{3n} = \frac13", r"\tfrac13 < 1: \ \text{converges}"], at=[1, 2, 3, 3, 4, 5], follow=True)
 
         with self.beat("Factorials") as b:
             rows = VGroup(M(r"n! = n \cdot (n - 1) \cdots 2 \cdot 1", 44), M(r"(n + 1)! = (n + 1) \cdot n!", 44, SECANT), M(r"\frac{(n + 1)!}{n!} = n + 1, \qquad \frac{n!}{(n + 1)!} = \frac{1}{n + 1}", 42, ACCUM),
-                          T("the ratio test is the tool of choice for factorials and exponentials", 32, DIM)).arrange(DOWN, buff=0.45)
+                          T("the ratio test is especially useful for factorials and exponents", 32, DIM)).arrange(DOWN, buff=0.45)
             self.play(Write(rows[0]), run_time=1)
             b.line(1)
             self.play(Write(rows[1]), run_time=1)
@@ -50,7 +54,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("Close") as b:
-            card = VGroup(M(r"L = \lim \left|\tfrac{a_{n+1}}{a_n}\right|", 44, ACCUM), T("$L < 1$ converges; $L > 1$ diverges; $L = 1$ inconclusive", 36), M(r"(n + 1)! = (n + 1)\cdot n!", 40, SECANT), T("best for factorials and exponentials", 34, DIM)).arrange(DOWN, buff=0.45)
+            card = VGroup(M(r"L = \lim \left|\tfrac{a_{n+1}}{a_n}\right|", 44, ACCUM), T("$L < 1$ converges; $L > 1$ diverges; $L = 1$ inconclusive", 36), M(r"(n + 1)! = (n + 1)\cdot n!", 40, SECANT), T("especially useful for factorials and exponents", 34, DIM)).arrange(DOWN, buff=0.45)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 

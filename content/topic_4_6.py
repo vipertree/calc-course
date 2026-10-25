@@ -33,6 +33,10 @@ NOTES = [
         r"For $x$ near $a$, \[ f(x) \approx L(x). \] This is the point-slope form of the tangent line, with the point $\left(a, f(a)\right)$ and slope $f'(a)$. "
         r"You don't need to think of it as a new formula: write the equation of the tangent line, a skill you already have, and "
         r"evaluate it at the $x$ you care about. Start at a point and move along the slope a little.")),
+    Text(r"\textbf{From point-slope form.} Start with point-slope form, \[ y - y_1 = m(x - x_1). \] Add $y_1$ to both sides: "
+         r"\[ y = \mblank{y_1 + m(x - x_1)}. \] For the tangent line at $a$, the point is $(x_1, y_1) = \left(a, \mblank{f(a)}\right)$ and the slope is "
+         r"$m = \mblank{f'(a)}$. Substitute and call $y$ by its new name, $L(x)$: \[ L(x) = f(a) + f'(a)(x - a). \] Either way works: state the point and "
+         r"the slope, then write point-slope form and solve for $y$, or write $L(x)$ directly."),
     Text(r"\textbf{Choosing $a$.} Pick an $a$ close to the $x$ you want, where $f(a)$ and $f'(a)$ are easy to find exactly. To estimate $\sqrt{26}$, "
          r"use $a = \mblank{25}$."),
     VideoExample('Using given values', work="2cm"),
@@ -43,33 +47,33 @@ NOTES = [
     Text(r"In Unit 5 you will name these shapes: concave down and concave up. A negative second derivative means the curve bends down."),
     BigIdea(r"Up close, a curve is its tangent line. Use the tangent line to estimate nearby values, and look at which way the curve bends to "
             r"tell whether the estimate is too big or too small."),
-    Check(r"$g(1) = 3$ and $g'(1) = -2$. Estimate $g(1.1)$.", num(sp.Rational(28, 10)), r"\[ 3 + (-2)(0.1) = 2.8. \]"),
+    Check(r"$g(1) = 3$ and $g'(1) = -2$. Estimate $g(1.1)$.", num(sp.Rational(28, 10)), r"Point $(1, 3)$, slope $m = -2$: \[ L(x) = 3 + (-2)(x - 1), \] so $g(1.1) \approx 3 + (-2)(0.1) = 2.8$."),
 ]
 
 # ---------------------------------------------------------------- practice
 PRACTICE = [
-    Item(r"Find the linearization of $f(x) = x^3$ at $x = 2$.", expr(12 * x - 16, var="x"), r"$f(2) = 8$, $f'(2) = 12$: $L(x) = 8 + 12(x - 2) = 12x - 16$.", work="1.8cm"),
-    Item(r"Use a linearization to estimate $\sqrt{49.7}$.", num(sp.Rational(705, 100)), r"At $a = 49$: $7 + \frac{1}{14}(0.7) = 7.05$.", work="2cm"),
-    Item(r"Use a linearization to estimate $\sqrt{15.6}$.", num(sp.Rational(395, 100)), r"At $a = 16$: $4 + \frac18(-0.4) = 3.95$.", work="2cm"),
-    Item(r"Use a linearization to estimate $\sqrt[3]{27.27}$.", num(sp.Rational(301, 100)), r"At $a = 27$: $3 + \frac{1}{27}(0.27) = 3.01$.", work="2cm"),
+    Item(r"Find the linearization of $f(x) = x^3$ at $x = 2$.", expr(12 * x - 16, var="x"), r"Point $(2, 8)$, slope $m = f'(2) = 3(2)^2 = 12$. Point-slope form: $y - 8 = 12(x - 2)$, so $L(x) = 8 + 12(x - 2) = 12x - 16$.", work="1.8cm"),
+    Item(r"Use a linearization to estimate $\sqrt{49.7}$.", num(sp.Rational(705, 100)), r"At $a = 49$: point $(49, 7)$, slope $m = \frac{1}{2\sqrt{49}} = \frac{1}{14}$. $L(x) = 7 + \frac{1}{14}(x - 49)$, so $L(49.7) = 7 + \frac{1}{14}(0.7) = 7.05$.", work="2cm"),
+    Item(r"Use a linearization to estimate $\sqrt{15.6}$.", num(sp.Rational(395, 100)), r"At $a = 16$: point $(16, 4)$, slope $m = \frac{1}{2\sqrt{16}} = \frac18$. $y - 4 = \frac18(x - 16)$, so $y = 4 + \frac18(x - 16)$. At $x = 15.6$: $4 + \frac18(-0.4) = 3.95$.", work="2cm"),
+    Item(r"Use a linearization to estimate $\sqrt[3]{27.27}$.", num(sp.Rational(301, 100)), r"At $a = 27$: point $(27, 3)$, slope $m = \frac{1}{3 \cdot 27^{2/3}} = \frac{1}{27}$. $L(x) = 3 + \frac{1}{27}(x - 27)$, so $L(27.27) = 3 + \frac{1}{27}(0.27) = 3.01$.", work="2cm"),
     Item(r"Find the linearization of $f(x) = \ln x$ at $x = 1$, and use it to estimate $\ln 1.05$.", num(sp.Rational(5, 100)),
-         r"$L(x) = 0 + 1(x - 1) = x - 1$, so $\ln 1.05 \approx 0.05$.", work="2cm"),
+         r"Point $(1, 0)$, slope $m = \frac11 = 1$. $y - 0 = 1(x - 1)$, so $L(x) = x - 1$ and $\ln 1.05 \approx 0.05$.", work="2cm"),
     Item(r"Find the linearization of $f(x) = e^x$ at $x = 0$, and use it to estimate $e^{-0.02}$.", num(sp.Rational(98, 100)),
-         r"$L(x) = 1 + x$, so $e^{-0.02} \approx 0.98$.", work="2cm"),
+         r"Point $(0, 1)$, slope $m = e^0 = 1$. $L(x) = 1 + 1(x - 0) = 1 + x$, so $e^{-0.02} \approx 0.98$.", work="2cm"),
     Item(r"Find the linearization of $f(x) = \sin x$ at $x = 0$, and use it to estimate $\sin(0.03)$.", num(sp.Rational(3, 100)),
-         r"$L(x) = 0 + 1(x - 0) = x$, so $\sin(0.03) \approx 0.03$.", work="2cm"),
-    Item(r"$f(3) = -1$ and $f'(3) = 4$. Estimate $f(2.9)$.", num(sp.Rational(-14, 10)), r"$-1 + 4(-0.1) = -1.4$.", work="1.6cm"),
-    Item(r"$h(10) = 250$ and $h'(10) = -12$. Estimate $h(10.5)$.", num(244), r"$250 + (-12)(0.5) = 244$.", work="1.6cm"),
+         r"Point $(0, 0)$, slope $m = \cos 0 = 1$. $y - 0 = 1(x - 0)$, so $L(x) = x$ and $\sin(0.03) \approx 0.03$.", work="2cm"),
+    Item(r"$f(3) = -1$ and $f'(3) = 4$. Estimate $f(2.9)$.", num(sp.Rational(-14, 10)), r"Point $(3, -1)$, slope $m = 4$. $L(x) = -1 + 4(x - 3)$, so $L(2.9) = -1 + 4(-0.1) = -1.4$.", work="1.6cm"),
+    Item(r"$h(10) = 250$ and $h'(10) = -12$. Estimate $h(10.5)$.", num(244), r"Point $(10, 250)$, slope $m = -12$. $L(x) = 250 + (-12)(x - 10)$, so $L(10.5) = 250 + (-12)(0.5) = 244$.", work="1.6cm"),
     Item(r"Find the linearization of $f(x) = \dfrac{1}{x}$ at $x = 2$, and use it to estimate $\dfrac{1}{2.1}$.", num(sp.Rational(19, 40)),
-         r"$f(2) = \frac12$, $f'(2) = -\frac14$. $L(2.1) = \frac12 - \frac14(0.1) = 0.475$.", work="2.2cm"),
+         r"Point $\left(2, \frac12\right)$, slope $m = f'(2) = -\frac14$. $y - \frac12 = -\frac14(x - 2)$, so $y = \frac12 - \frac14(x - 2)$. At $x = 2.1$: $\frac12 - \frac14(0.1) = 0.475$.", work="2.2cm"),
     Item(r"Kenji's estimate of $\sqrt{26}$ from the tangent line at $x = 25$ is $5.1$. The graph of $y = \sqrt x$ bends down, below its tangent lines. "
          r"Is $5.1$ too big or too small?", selfcheck(r"\text{too big}"), r"The curve lies below the tangent line, so the line's value $5.1$ is an overestimate.", work="1.6cm"),
     Item(r"The graph of $f$ bends up, above its tangent lines, near $x = 1$. Is $L(1.2)$ an overestimate or an underestimate of $f(1.2)$?",
          selfcheck(r"\text{underestimate}"), r"The curve lies above the line, so the line's value is too small.", work="1.4cm"),
     Item(r"The temperature of a pie is $T(5) = 180$ degrees and is falling at $6$ degrees per minute at $t = 5$. Estimate $T(5.5)$.", num(177),
-         r"$T'(5) = -6$: $180 - 6(0.5) = 177$ degrees.", work="1.6cm"),
+         r"Point $(5, 180)$, slope $m = T'(5) = -6$. $L(t) = 180 - 6(t - 5)$, so $T(5.5) \approx 180 - 6(0.5) = 177$ degrees.", work="1.6cm"),
     Item(r"Find the equation for the line tangent to $y = \sqrt{x + 3}$ at $x = 1$, and use it to estimate $\sqrt{4.2}$.", num(sp.Rational(205, 100)),
-         r"At $x = 1$: $y = 2$, slope $\frac{1}{4}$. $L(x) = 2 + \frac14(x - 1)$; $\sqrt{4.2}$ is $x = 1.2$, so $2 + 0.05 = 2.05$.", work="2.4cm"),
+         r"Point $(1, 2)$, slope $m = \frac{1}{2\sqrt{1 + 3}} = \frac14$. $y - 2 = \frac14(x - 1)$, so $y = 2 + \frac14(x - 1)$. $\sqrt{4.2}$ is $x = 1.2$: $2 + \frac14(0.2) = 2.05$.", work="2.4cm"),
 ]
 same("p", [lin(x**3, 2, x), lin(sp.sqrt(x), 49, sp.Rational(497, 10)), lin(sp.sqrt(x), 16, sp.Rational(156, 10)), lin(sp.cbrt(x), 27, sp.Rational(2727, 100)),
            lin(sp.log(x), 1, sp.Rational(105, 100)), lin(sp.exp(x), 0, sp.Rational(-2, 100)), lin(sp.sin(x), 0, sp.Rational(3, 100)), lin(1 / x, 2, sp.Rational(21, 10)),
@@ -77,22 +81,30 @@ same("p", [lin(x**3, 2, x), lin(sp.sqrt(x), 49, sp.Rational(497, 10)), lin(sp.sq
      [12 * x - 16, sp.Rational(705, 100), sp.Rational(395, 100), sp.Rational(301, 100), sp.Rational(5, 100), sp.Rational(98, 100), sp.Rational(3, 100),
       sp.Rational(19, 40), sp.Rational(205, 100)])
 
+# the slopes m = f'(a) the solutions state before point-slope form
+d = lambda f, a: sp.diff(f, x).subs(x, a)
+same("slopes", [d(x**3, 2), d(sp.sqrt(x), 49), d(sp.sqrt(x), 16), d(sp.cbrt(x), 27), d(sp.log(x), 1), d(sp.exp(x), 0), d(sp.sin(x), 0), d(1 / x, 2),
+                d(sp.sqrt(x + 3), 1), d(sp.sqrt(x), 36), d(sp.sqrt(x), 64), d(sp.sqrt(x), 100), d(x**2 + 1, 3), d(x**3 - x, 1), d(4 * sp.sqrt(x), 4), d(sp.sqrt(x), 9),
+                d(sp.sqrt(x), 25), d(sp.cbrt(x), 8)],
+     [12, sp.Rational(1, 14), sp.Rational(1, 8), sp.Rational(1, 27), 1, 1, 1, sp.Rational(-1, 4), sp.Rational(1, 4), sp.Rational(1, 12), sp.Rational(1, 16),
+      sp.Rational(1, 20), 6, 2, 1, sp.Rational(1, 6), sp.Rational(1, 10), sp.Rational(1, 12)])
+
 # ---------------------------------------------------------------- quiz
 QUIZ = [
     Variants(
-        Item(r"Use a linearization to estimate $\sqrt{36.6}$.", num(sp.Rational(605, 100)), r"At $a = 36$: $6 + \frac{1}{12}(0.6) = 6.05$.", work="1.8cm"),
-        Item(r"Use a linearization to estimate $\sqrt{64.8}$.", num(sp.Rational(805, 100)), r"At $a = 64$: $8 + \frac{1}{16}(0.8) = 8.05$.", work="1.8cm"),
-        Item(r"Use a linearization to estimate $\sqrt{99}$.", num(sp.Rational(995, 100)), r"At $a = 100$: $10 + \frac{1}{20}(-1) = 9.95$.", work="1.8cm"),
+        Item(r"Use a linearization to estimate $\sqrt{36.6}$.", num(sp.Rational(605, 100)), r"At $a = 36$: point $(36, 6)$, slope $m = \frac{1}{2\sqrt{36}} = \frac{1}{12}$. $L(36.6) = 6 + \frac{1}{12}(0.6) = 6.05$.", work="1.8cm"),
+        Item(r"Use a linearization to estimate $\sqrt{64.8}$.", num(sp.Rational(805, 100)), r"At $a = 64$: point $(64, 8)$, slope $m = \frac{1}{2\sqrt{64}} = \frac{1}{16}$. $L(64.8) = 8 + \frac{1}{16}(0.8) = 8.05$.", work="1.8cm"),
+        Item(r"Use a linearization to estimate $\sqrt{99}$.", num(sp.Rational(995, 100)), r"At $a = 100$: point $(100, 10)$, slope $m = \frac{1}{2\sqrt{100}} = \frac{1}{20}$. $L(99) = 10 + \frac{1}{20}(-1) = 9.95$.", work="1.8cm"),
     ),
     Variants(
-        Item(r"$f(2) = 5$ and $f'(2) = -3$. Estimate $f(2.1)$.", num(sp.Rational(47, 10)), r"$5 - 3(0.1) = 4.7$.", work="1.4cm"),
-        Item(r"$f(6) = 1$ and $f'(6) = 8$. Estimate $f(5.9)$.", num(sp.Rational(2, 10)), r"$1 + 8(-0.1) = 0.2$.", work="1.4cm"),
-        Item(r"$f(0) = 4$ and $f'(0) = 0.5$. Estimate $f(0.4)$.", num(sp.Rational(42, 10)), r"$4 + 0.5(0.4) = 4.2$.", work="1.4cm"),
+        Item(r"$f(2) = 5$ and $f'(2) = -3$. Estimate $f(2.1)$.", num(sp.Rational(47, 10)), r"Point $(2, 5)$, slope $m = -3$: $L(2.1) = 5 - 3(0.1) = 4.7$.", work="1.4cm"),
+        Item(r"$f(6) = 1$ and $f'(6) = 8$. Estimate $f(5.9)$.", num(sp.Rational(2, 10)), r"Point $(6, 1)$, slope $m = 8$: $L(5.9) = 1 + 8(-0.1) = 0.2$.", work="1.4cm"),
+        Item(r"$f(0) = 4$ and $f'(0) = 0.5$. Estimate $f(0.4)$.", num(sp.Rational(42, 10)), r"Point $(0, 4)$, slope $m = 0.5$: $L(0.4) = 4 + 0.5(0.4) = 4.2$.", work="1.4cm"),
     ),
     Variants(
-        Item(r"Find the linearization of $f(x) = x^2 + 1$ at $x = 3$.", expr(6 * x - 8, var="x"), r"$10 + 6(x - 3) = 6x - 8$.", work="1.6cm"),
-        Item(r"Find the linearization of $f(x) = x^3 - x$ at $x = 1$.", expr(2 * x - 2, var="x"), r"$0 + 2(x - 1) = 2x - 2$.", work="1.6cm"),
-        Item(r"Find the linearization of $f(x) = 4\sqrt x$ at $x = 4$.", expr(x + 4, var="x"), r"$8 + 1(x - 4) = x + 4$.", work="1.6cm"),
+        Item(r"Find the linearization of $f(x) = x^2 + 1$ at $x = 3$.", expr(6 * x - 8, var="x"), r"Point $(3, 10)$, slope $m = f'(3) = 6$. $y - 10 = 6(x - 3)$, so $L(x) = 10 + 6(x - 3) = 6x - 8$.", work="1.6cm"),
+        Item(r"Find the linearization of $f(x) = x^3 - x$ at $x = 1$.", expr(2 * x - 2, var="x"), r"Point $(1, 0)$, slope $m = f'(1) = 3 - 1 = 2$. $y - 0 = 2(x - 1)$, so $L(x) = 2x - 2$.", work="1.6cm"),
+        Item(r"Find the linearization of $f(x) = 4\sqrt x$ at $x = 4$.", expr(x + 4, var="x"), r"Point $(4, 8)$, slope $m = f'(4) = \frac{2}{\sqrt4} = 1$. $L(x) = 8 + 1(x - 4) = x + 4$.", work="1.6cm"),
     ),
     Variants(
         MCQ(r"The graph of $f$ lies below its tangent line at $x = a$. The estimate $L(a + 0.1)$ is", [r"an overestimate", r"an underestimate", r"exact",
@@ -121,10 +133,10 @@ MCQS = [
         [r"$5$", r"$5.4$", r"$5.2$", r"$6.4$"], "B", r"$2(3.2) - 1 = 5.4$."),
     MCQ(r"Let $f(x) = \sqrt{x}$. The tangent line at $x = 9$ is used to estimate $f(9.6)$. The estimate is", [r"$3.1$, an overestimate", r"$3.1$, an underestimate",
         r"$3.2$, an overestimate", r"$3.2$, an underestimate"], "A",
-        r"$3 + \frac16(0.6) = 3.1$. The graph of $\sqrt x$ bends down, below its tangent lines, so $3.1$ is too big."),
+        r"Point $(9, 3)$, slope $m = \frac{1}{2\sqrt9} = \frac16$: $L(9.6) = 3 + \frac16(0.6) = 3.1$. The graph of $\sqrt x$ bends down, below its tangent lines, so $3.1$ is too big."),
     MCQ(r"$g(1) = 4$, $g(1.5) = 3$ and $g(2) = 1$. A student estimates $g'(1.5)$ with the difference quotient from $x = 1$ to $x = 2$ and uses it in "
         r"the tangent line at $x = 1.5$ to estimate $g(1.6)$. The estimate is", [r"$2.6$", r"$3.3$", r"$2.7$", r"$3.1$"], "C",
-        r"$g'(1.5) \approx \frac{1 - 4}{1} = -3$. $3 - 3(0.1) = 2.7$."),
+        r"$g'(1.5) \approx \frac{1 - 4}{1} = -3$. Point $(1.5, 3)$, slope $m = -3$: $L(1.6) = 3 - 3(0.1) = 2.7$."),
     MCQ(r"For which value of $x$ does the linearization of $f(x) = x^2$ at $x = 5$ give the worst estimate?", [r"$x = 5.1$", r"$x = 4.9$", r"$x = 5.5$", r"$x = 6$"], "D",
         r"The error is $(x - 5)^2$, largest for the $x$ farthest from $5$."),
 ]
@@ -140,7 +152,7 @@ FRQS = [
              [(1, "$D'(0) = -6$"), (1, "interpretation with units")], work="2.4cm"),
         Part("b", r"Write an equation for the line tangent to the graph of $D$ at $t = 0$. Use the tangent line to approximate $D(0.5)$.",
              num(27),
-             r"The tangent line is $y = 30 - 6t$, so $D(0.5) \approx 30 - 6(0.5) = 27$ inches.",
+             r"Point $(0, 30)$, slope $m = D'(0) = -6$ (part (a)). The tangent line is $y - 30 = -6(t - 0)$, so $y = 30 - 6t$ and $D(0.5) \approx 30 - 6(0.5) = 27$ inches.",
              [(1, "tangent line equation"), (1, "approximation $27$")], work="2.4cm"),
         Part("c", r"Find $D''(t)$. Use $D''(t)$ to determine whether the approximation in part (b) is an underestimate or an "
                   r"overestimate of $D(0.5)$. Give a reason for your answer.", selfcheck(r"\text{Underestimate}"),

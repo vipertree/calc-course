@@ -67,8 +67,28 @@ class Lesson(TranscriptScene):
             approx = M(r"f(x) \approx L(x)", 46, TANGENT).next_to(form, DOWN, buff=0.5)
             self.play(Write(approx), run_time=0.8)
         self.clear()
+
+        # Adder (2026-10-25): show that L(x) is point-slope form solved for y, one move per line
+        with self.beat("From point-slope form") as b:
+            bd = Board()
+            bd.anchor = UP * 3.2
+            note = lambda mob, s: self.play(FadeIn(T(s, 30, DIM).next_to(mob, RIGHT, buff=0.6)), run_time=0.5)
+            note(bd.write(self, r"y - y_1 = m(x - x_1)", size=44), "point-slope form")
+            b.line(1)
+            note(bd.write(self, r"y = y_1 + m(x - x_1)", size=44), r"add $y_1$ to both sides")
+            b.line(2)
+            bd.write(self, r"\text{point: } (x_1, y_1) = \left(a, f(a)\right)", size=44)
+            b.line(3)
+            bd.write(self, r"\text{slope: } m = f'(a)", size=44)
+            b.line(4)
+            note(bd.write(self, r"y = f(a) + f'(a)(x - a)", size=44), "substitute")
+            b.line(5)
+            last = bd.write(self, r"L(x) = f(a) + f'(a)(x - a)", color=TANGENT, size=44)
+            self.play(Create(SurroundingRectangle(last, color=TANGENT, buff=0.2)), FadeIn(T("the linearization", 30, TANGENT).next_to(last, RIGHT, buff=0.6)),
+                      run_time=0.8)
+        self.clear()
         self.example("Using given values", r"$f(4) = 10$ and $f'(4) = 2.5$. Estimate $f(4.2)$.",
-                     [r"L(x) = 10 + 2.5(x - 4)", r"f(4.2) \approx L(4.2) = 10 + 2.5(0.2) = 10.5"], at=[1, 2], follow=True)
+                     [r"\boxed{\text{point } (4, 10), \ \ \text{slope } m = 2.5}", r"L(x) = 10 + 2.5(x - 4)", r"f(4.2) \approx L(4.2) = 10 + 2.5(0.2) = 10.5"], at=[1, 2, 3], follow=True)
 
         with self.beat("Choosing a") as b:
             q = M(r"\text{Estimate } \sqrt{26}", 56).shift(UP * 2)
@@ -117,14 +137,16 @@ class Lesson(TranscriptScene):
         self.examples_card()
         self.example("Example 1: The square root of 26",
                      r"Use a linearization to estimate $\sqrt{26}$. Is the estimate too big or too small?",
-                     [r"f(x) = \sqrt x,\ \ a = 25:\ \ f(25) = 5", r"f'(x) = \frac{1}{2\sqrt x},\ \ f'(25) = \frac{1}{10}",
-                      r"L(x) = 5 + \frac{1}{10}(x - 25)", r"\sqrt{26} \approx L(26) = 5.1",
-                      r"TEXT:The graph of $\sqrt x$ bends down, below its tangent lines, so $5.1$ is an overestimate."], at=[1, 2, 3, 4, 5])
+                     [r"f(x) = \sqrt x,\ \ a = 25", r"\text{point: } f(25) = 5,\ \text{so}\ (x_1, y_1) = (25, 5)", r"f'(x) = \frac{1}{2\sqrt x}", r"\text{slope: } m = f'(25) = \frac{1}{10}",
+                      r"\boxed{\text{point } (25, 5), \ \ \text{slope } m = \tfrac{1}{10}}",
+                      r"y - 5 = \frac{1}{10}(x - 25)", r"y = 5 + \frac{1}{10}(x - 25)", r"\sqrt{26} \approx 5 + \frac{1}{10}(26 - 25) = 5.1",
+                      r"TEXT:The graph of $\sqrt x$ bends down, below its tangent lines, so $5.1$ is an overestimate."], at=[1, 1, 2, 2, 3, 4, 5, 6, 7])
         self.example("Example 2: From given values", r"$f(2) = 7$ and $f'(2) = -3$. Estimate $f(2.1)$.",
-                     [r"L(x) = 7 - 3(x - 2)", r"f(2.1) \approx 7 - 3(0.1) = 6.7"], at=[1, 2])
+                     [r"\boxed{\text{point } (2, 7), \ \ \text{slope } m = -3}", r"L(x) = 7 - 3(x - 2)", r"f(2.1) \approx L(2.1) = 7 - 3(0.1) = 6.7"], at=[1, 2, 3])
         self.example("Example 3: A cube root", r"Use a linearization to estimate $\sqrt[3]{8.12}$.",
-                     [r"f(x) = x^{1/3},\ \ a = 8:\ \ f(8) = 2", r"f'(x) = \frac13 x^{-2/3},\ \ f'(8) = \frac13\cdot\frac14 = \frac{1}{12}",
-                      r"L(8.12) = 2 + \frac{1}{12}(0.12) = 2.01"], at=[1, 2, 3])
+                     [r"f(x) = x^{1/3},\ \ a = 8", r"\text{point: } f(8) = 2,\ \text{so}\ (x_1, y_1) = (8, 2)", r"f'(x) = \frac13 x^{-2/3}", r"\text{slope: } m = f'(8) = \frac13\cdot\frac14 = \frac{1}{12}",
+                      r"\boxed{\text{point } (8, 2), \ \ \text{slope } m = \tfrac{1}{12}}", r"y - 2 = \frac{1}{12}(x - 8)", r"y = 2 + \frac{1}{12}(x - 8)",
+                      r"\sqrt[3]{8.12} \approx 2 + \frac{1}{12}(0.12) = 2.01"], at=[1, 1, 2, 2, 3, 4, 5, 6])
         self.finish()
 
     @staticmethod

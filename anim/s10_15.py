@@ -32,6 +32,10 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(VGroup(T("same radius $R$", 34, DERIV), T("endpoints can change: check them again", 34, TANGENT)).arrange(DOWN, buff=0.3).next_to(box, DOWN, buff=0.5)), run_time=0.8)
         self.clear()
 
+        # term by term, and the geometric series it starts from, stay boxed in the top right corner through the worked
+        # examples (Adder: formulas stay on screen)
+        self.example_ref = (r"\begin{aligned}&\tfrac{1}{1 - x} = \textstyle\sum x^n,\ |x| < 1\\ &f'(x) = \textstyle\sum n c_n (x - a)^{n-1}\\ "
+                            r"&\textstyle\int f\,dx = C + \sum \frac{c_n (x - a)^{n+1}}{n + 1}\end{aligned}")
         line = NumberLine(x_range=[-2, 2, 1], length=5, include_numbers=True, font_size=24, color=DIM)
         fig = VGroup(line, Line(line.n2p(-1), line.n2p(1), color=DERIV, stroke_width=8), Circle(radius=0.11, color=DERIV, stroke_width=4, fill_color=BG, fill_opacity=1).move_to(line.n2p(-1)), Dot(line.n2p(1), radius=0.11, color=DERIV))
         self.example("A series for ln(1 + x)", r"Find the Maclaurin series for $\ln(1 + x)$ and its interval of convergence.",

@@ -20,8 +20,9 @@ NOTES = [
     Video("s10_15.py::Lesson", "Functions as power series", 4),
 
     Section("Term by term"),
-    Formula("Calculus with power series", (r"If $f(x) = \sum c_n (x - a)^n$ for $|x - a| < R$, then \[ f'(x) = \blank{\sum n c_n (x - a)^{n-1}}, \qquad \int f(x)\,dx = C + \blank{\sum \frac{c_n (x - a)^{n+1}}{n + 1}}, \] "
-                                           r"both with the same radius $R$. The endpoints can change: check them again.")),
+    Formula("Calculus with power series", (r"If $f(x) = \sum c_n (x - a)^n$ for $|x - a| < R$, then \[ f'(x) = \sum n c_n (x - a)^{n-1}, \qquad \int f(x)\,dx = C + \sum \frac{c_n (x - a)^{n+1}}{n + 1}, \] "
+                                           r"both with the same \blank{radius} $R$. The \blank{endpoints} can change: check them again.")),
+    Text(r"In words: differentiate or integrate one term at a time, just as you would a polynomial."),
     VideoExample('A series for ln(1 + x)', work="4.6cm"),
     Text(r"\textbf{Useful results.} $\ln(1 + x) = \sum \frac{(-1)^n x^{n+1}}{n + 1}$ on $(-1, 1]$; $\arctan x = \sum \frac{(-1)^n x^{2n+1}}{2n + 1}$ on $[-1, 1]$; $\frac{1}{(1 - x)^2} = \sum n x^{n-1}$ on $(-1, 1)$."),
     BigIdea(r"Start from a known series, differentiate or integrate term by term, fix the constant with a known value, and recheck the endpoints."),

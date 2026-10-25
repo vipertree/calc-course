@@ -47,8 +47,16 @@ class Lesson(TranscriptScene):
             tags = VGroup(M(r"A(t)", 34, FUNC).next_to(eq[0], DOWN, buff=0.5), M(r"r(t)", 34, SECANT).next_to(eq[3], DOWN, buff=0.5))
             self.play(FadeIn(tags), run_time=0.8)
             b.line(1)
-            dd = M(r"\frac{d}{dt}", 60, DIM).next_to(eq, LEFT, buff=0.4)
-            self.play(FadeIn(dd), run_time=0.6)
+            # d/dt goes on BOTH sides, each side in its own brackets (Adder 2026-10-25: a lone d/dt in front of
+            # A = pi r^2 read as differentiating only the left side)
+            eq2 = M(r"\frac{d}{dt}\Big[", r"A", r"\Big]", r"=", r"\frac{d}{dt}\Big[", r"\pi", r"r", r"^2", r"\Big]", 80).move_to(eq)
+            for k in (0, 2, 4, 8):
+                eq2[k].set_color(DIM)
+            self.play(TransformMatchingTex(eq, eq2),
+                      # under the brackets, not on them
+                      tags[0].animate.move_to([eq2[1].get_center()[0], eq2.get_bottom()[1] - 0.35, 0]),
+                      tags[1].animate.move_to([eq2[6].get_center()[0], eq2.get_bottom()[1] - 0.35, 0]),
+                      run_time=1.2)
         self.clear()
 
         with self.beat("The chain rule on every variable") as b:

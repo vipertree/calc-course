@@ -48,7 +48,7 @@ ZENO = (r"``If everything when it occupies an equal space is at rest, and if tha
         r"\hfill{\small Aristotle, \emph{Physics} VI.9, describing Zeno's argument (trans. Hardie and Gaye)}")
 
 NOTES = [
-    Video("s1_1.py::Lesson", "Zeno's arrow", 5.5),
+    Video("s1_1.py::Lesson", "Zeno's arrow", 12.7),
 
     Section("Zeno's arrow"),
     Text(ZENO),

@@ -29,7 +29,7 @@ for tag, e, side, want in [("absx L", sp.Abs(x) / x, "-", -1), ("absx R", sp.Abs
     same(tag, sp.limit(e, x, 0, side), want)
 
 NOTES = [
-    Video("s1_3.py::Lesson", "Limits from graphs", 4),
+    Video("s1_3.py::Lesson", "Limits from graphs", 8.1),
 
     Section("One-sided limits"),
     FIG_JUMP,

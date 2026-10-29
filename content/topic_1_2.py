@@ -34,7 +34,7 @@ rows_x = " & ".join(f"${dec(v)}$" for v in XS)
 rows_y = " & ".join(f"${dec(v + 1)}$" for v in XS)
 
 NOTES = [
-    Video("s1_2.py::Lesson", "Defining limits", 4),
+    Video("s1_2.py::Lesson", "Defining limits", 11.5),
 
     Section("Approaching a value"),
     Text(r"Let \[ g(x) = \frac{x^2-1}{x-1}. \] At $x = 1$ the formula yields \mblank{\tfrac00}, so $g(1)$ is "

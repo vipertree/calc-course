@@ -32,11 +32,11 @@ MATCH_MIN = 0.45      # opening-word similarity needed to trust a match
 OPENING = 10          # words of each sentence compared
 XFADE = 0.02
 
-CUE = re.compile(r"\b(claude|scrap (this|that|it)|scratch (this|that|it)|start\b[^.]{0,40}\bover|let me redo|"
+CUE = re.compile(r"\b(claude|scrap (this|that|it)|scratch (this|that|it)|cut (this|that|it)|start\b[^.]{0,40}\bover|let me redo|"
                  r"redo (that|this)|redoing|take two|one more time)\b")
 META = re.compile(r"\b(claude|scrap|scratch|going back|go back|replace|redo|redoing|start\b.{0,40}\bover|from the top|"
                   r"again from|the beginning of|(last|past|that|this|the) sentence|this section|that section|take two|"
-                  r"cutting|cut out|restarting|let me redo|"
+                  r"cutting|cut out|cut (this|that|it)|restarting|let me redo|"
                   r"one more time)\b")
 
 

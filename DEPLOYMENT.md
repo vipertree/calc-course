@@ -1,5 +1,13 @@
 # Deploying the AP Calculus course
 
+**Live as a PREVIEW since 2026-10-30:** `https://adderoaks.com/calccoursepreview/`, the same layout as below
+but with `FORCE_SCRIPT_NAME=/calccoursepreview`, and every location behind HTTP basic auth
+(`deploy/nginx-calcpreview.conf`, password file `/etc/nginx/.htpasswd-calcpreview`, user `oaks`) with
+`X-Robots-Tag: noindex`. It is for Adder's first students; the real launch moves to its own server. Email is
+not configured (`EMAIL_HOST=localhost`, nothing listening): class-code students never need it, but self sign-up,
+teacher requests and password-reset emails will fail. `FRQ_ARCHIVE` is off. Smoke test: every path must 401
+without the password (`curl -s -o /dev/null -w "%{http_code}" https://adderoaks.com/calccoursepreview/video/1_1.mp4`).
+
 **Planned (not yet deployed):** `https://adderoaks.com/calc/`, a path-prefix mount on the adderoaks vhost,
 gunicorn on `127.0.0.1:8018`, Postgres database `calc`. Same shape as outrangeous / imitation / frogracer /
 mathfacts. Port 8018 follows the workspace convention (local dev port = prod port) and is free in prod

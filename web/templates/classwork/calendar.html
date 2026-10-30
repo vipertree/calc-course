@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Calendar · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<p class="muted cw-lead">The calendar holds what <a href="{% url 'cw_setup' c.pk %}">Setup</a> puts on a schedule. Click any item to change its dates or give one student different terms.</p>
+
+<div class="cw-cal-layout">
+  <section class="cw-cal-main">
+    <div class="cw-cal-bar">
+      <a class="btn small" href="?start={{ prev|date:'Y-m-d' }}">‹ Earlier</a>
+      <strong>{{ start|date:"M j" }} to {{ last|date:"M j, Y" }}</strong>
+      <a class="btn small" href="?start={{ next|date:'Y-m-d' }}">Later ›</a>
+      <a class="muted" href="?">This week</a>
+    </div>
+    <div class="table-wrap">
+    <div class="cw-cal" style="grid-template-columns: 70px repeat({{ cols|length }}, minmax(0, 1fr));">
+      <div class="hd"></div>{% for name in cols %}<div class="hd">{{ name }}</div>{% endfor %}
+      {% for w in grid %}
+        <div class="wk">{{ w.monday|date:"M j" }}</div>
+        {% for d in w.days %}<div class="day{% if d.today %} today{% endif %}{% if not d.meets or d.skip %} off{% endif %}">
+          <span class="num">{{ d.day|date:"j" }}{% if d.today %} · today{% endif %}</span>
+          {% if d.skip %}<span class="muted">No school{% if d.skip.note %}: {{ d.skip.note }}{% endif %}</span>{% endif %}
+          {% for e in d.events %}<a class="it {{ e.kind }}{% if e.what == 'due' %} due{% endif %}{% if edit and edit.d.pk == e.d.pk %} sel{% endif %}" href="?start={{ start|date:'Y-m-d' }}&amp;edit={{ e.kind }}:{{ e.ref }}">{{ e.text }}{% if e.exceptions %} <span class="exc" title="{{ e.exceptions }} student exception{{ e.exceptions|pluralize }}">+{{ e.exceptions }}</span>{% endif %}</a>{% endfor %}
+        </div>{% endfor %}
+      {% endfor %}
+    </div>
+    </div>
+    <p class="cw-legend"><span class="it notes">2.6 opens</span> a lesson opens <span class="it practice due">practice due</span> <span class="it quiz due">quiz due</span> <span class="it unittest">unit test</span> <span class="exc">+1</span> student exceptions</p>
+  </section>
+
+  <aside class="card cw-cal-side" aria-label="Edit one item">
+    {% if edit %}
+      <h2>{{ edit.label }}</h2>
+      <form method="post" class="stack">{% csrf_token %}
+        <input type="hidden" name="action" value="item"><input type="hidden" name="dated" value="{{ edit.d.pk }}">
+        <input type="hidden" name="back" value="?start={{ start|date:'Y-m-d' }}&amp;edit={{ edit.d.kind }}:{{ edit.d.ref }}">
+        <label>Opens<input type="datetime-local" name="opens" value="{{ edit.opens }}"></label>
+        <label>Due<input type="datetime-local" name="due" value="{{ edit.due }}"></label>
+        <label>Late work accepted until<input type="datetime-local" name="late_until" value="{{ edit.late_until }}"></label>
+        {% if edit.results %}<label>Students see results<select name="results">{% for o in edit.results %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select></label>{% endif %}
+        <p><button class="btn primary small">Save</button></p>
+      </form>
+      <h3>For particular students</h3>
+      {% if edit.exceptions %}<ul class="plain cw-exc">{% for x in edit.exceptions %}<li>
+        <span><strong>{{ x.name }}</strong>: {% if x.e.excused %}excused{% else %}{% if x.due %}due {{ x.due|date:"D M j, g:i a" }}{% endif %}{% if x.e.time_factor != 1.0 %} · {{ x.e.time_factor }}× time{% endif %}{% endif %}</span>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="exc_remove"><input type="hidden" name="dated" value="{{ edit.d.pk }}"><input type="hidden" name="exc" value="{{ x.e.pk }}">
+          <input type="hidden" name="back" value="?start={{ start|date:'Y-m-d' }}&amp;edit={{ edit.d.kind }}:{{ edit.d.ref }}"><button class="linkbtn">Remove</button></form>
+      </li>{% endfor %}</ul>{% else %}<p class="muted">None.</p>{% endif %}
+      {% if students %}<details class="pop"><summary class="btn small">Add a student exception</summary>
+        <form method="post" class="stack">{% csrf_token %}
+          <input type="hidden" name="action" value="exc_add"><input type="hidden" name="dated" value="{{ edit.d.pk }}">
+          <input type="hidden" name="back" value="?start={{ start|date:'Y-m-d' }}&amp;edit={{ edit.d.kind }}:{{ edit.d.ref }}">
+          <label>Student<select name="student">{% for s in students %}<option value="{{ s.pk }}">{{ s.profile.display_name }}</option>{% endfor %}</select></label>
+          <label>Their due date<input type="datetime-local" name="due"></label>
+          <label>Time on a timed test<select name="time_factor"><option value="1">Usual</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+          <label class="check"><input type="checkbox" name="excused"> Excused from it</label>
+          <p><button class="btn primary small">Add</button></p>
+        </form></details>{% endif %}
+      <details class="pop"><summary class="linkbtn">Take it off the calendar</summary>
+        <form method="post">{% csrf_token %}<input type="hidden" name="action" value="item_delete"><input type="hidden" name="dated" value="{{ edit.d.pk }}"><input type="hidden" name="start" value="{{ start|date:'Y-m-d' }}">
+          <p>Remove its dates and its student exceptions? It goes back to the class setup.</p><p><button class="btn small">Remove</button></p></form></details>
+      <p><a href="?start={{ start|date:'Y-m-d' }}">Close</a></p>
+    {% else %}
+      <h2>Add one date</h2>
+      <form method="post" class="stack">{% csrf_token %}
+        <input type="hidden" name="action" value="add"><input type="hidden" name="start" value="{{ start|date:'Y-m-d' }}">
+        <label>Kind<select name="kind">{% for k, n in kinds %}<option value="{{ k }}">{{ n }}</option>{% endfor %}</select></label>
+        <label>Which<select name="ref"><optgroup label="Lessons">{% for n, l in lessons %}<option value="{{ n }}">{{ l }}</option>{% endfor %}</optgroup>
+          <optgroup label="Unit tests">{% for n, l in tests %}<option value="{{ n }}">{{ l }}</option>{% endfor %}</optgroup></select></label>
+        <p class="help">Pick a unit test with "Unit tests", a lesson with the others.</p>
+        <p><button class="btn small">Add and set its dates</button></p>
+      </form>
+      <h2 class="cw-gap">The class meets</h2>
+      <form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="days">
+        <div class="cw-days-row">{% for w in weekdays %}<label class="check"><input type="checkbox" name="day" value="{{ w.i }}"{% if w.on %} checked{% endif %}> {{ w.name }}</label>{% endfor %}</div>
+        <label>Time zone<select name="tz">{% for z in tzs %}<option{% if z == tz %} selected{% endif %}>{{ z }}</option>{% endfor %}</select></label>
+        <p><button class="btn small">Save</button></p>
+      </form>
+    {% endif %}
+  </aside>
+</div>
+
+<div class="cw-cards">
+  <section class="card"><h3>Plan a unit</h3>
+    <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="plan">
+      <label>Unit<select name="unit">{% for u in units %}<option value="{{ u.n }}"{% if u.n == next_unit %} selected{% endif %}>{{ u.short }}: {{ u.title }}</option>{% endfor %}</select></label>
+      <label>First day<input type="date" name="start" value="{{ today|date:'Y-m-d' }}" required></label>
+      <label>Pace<select name="pace"><option value="1">One lesson a class day</option><option value="2">One lesson every two class days</option></select></label>
+      <label>Then<select name="then"><option value="review">A review day, then the unit test</option><option value="test">The unit test right after</option></select></label>
+      <button class="btn primary">Plan it</button>
+    </form>
+    <p class="muted">Uses your class days and skips no-school days. Each quiz is due the next class day and each practice two class days after its lesson, when Setup gives them due dates. Planning a unit again replaces its dates.</p>
+  </section>
+  <section class="card"><h3>Shift dates</h3>
+    <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="shift">
+      <label>Everything on or after<input type="date" name="since" value="{{ today|date:'Y-m-d' }}" required></label>
+      <label>Moves<select name="n"><option value="1">1 class day later</option><option value="2">2 class days later</option><option value="3">3 class days later</option><option value="5">5 class days later</option><option value="-1">1 class day earlier</option></select></label>
+      <button class="btn">Shift</button>
+    </form>
+    <h3 class="cw-gap">No school</h3>
+    <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="noschool">
+      <label>Day<input type="date" name="day" required></label><label>Note<input type="text" name="note" maxlength="60" placeholder="Thanksgiving"></label>
+      <button class="btn">Add</button></form>
+    {% if no_school %}<ul class="plain cw-exc">{% for n in no_school %}<li><span>{{ n.day|date:"D M j" }}{% if n.note %}: {{ n.note }}{% endif %}</span>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="noschool_remove"><input type="hidden" name="day" value="{{ n.day|date:'Y-m-d' }}"><button class="linkbtn">Remove</button></form></li>{% endfor %}</ul>{% endif %}
+  </section>
+  {% if others %}<section class="card"><h3>Copy from another class</h3>
+    <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="copy">
+      <label>Class<select name="source">{% for o in others %}<option value="{{ o.pk }}">{{ o.name }}</option>{% endfor %}</select></label>
+      <details class="pop inline"><summary class="btn">Copy</summary><div class="stack"><p>Copy that class's setup and every date onto {{ c.name }}? Dates already here for the same work are replaced.</p><p><button class="btn primary small">Copy</button></p></div></details>
+    </form>
+  </section>{% endif %}
+</div>
+{% endblock %}

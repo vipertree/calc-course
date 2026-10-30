@@ -28,6 +28,8 @@ class Setup(models.Model):
     show = models.JSONField(default=dict, help_text="what students see: grade, due_dates, unopened, behind")
     watch = models.JSONField(default=dict, help_text="what the dashboard flags: missing, hard_questions, sliding, inactive_days")
     template = models.CharField(max_length=30, blank=True)
+    days = models.JSONField(default=list, blank=True, help_text="weekdays the class meets, 0 = Monday; empty = Monday to Friday")
+    tz = models.CharField(max_length=40, default="America/New_York", help_text="the class's time zone: due 11:59 pm means there")
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):

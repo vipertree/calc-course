@@ -3,5 +3,6 @@
     <a class="muted" href="{% url 'teacher' %}">All classes</a></div>
 </div>
 <nav class="cw-tabs" aria-label="Class sections">
+  <a href="{% url 'cw_calendar' c.pk %}"{% if tab == "calendar" %} class="on" aria-current="page"{% endif %}>Calendar</a>
   <a href="{% url 'cw_setup' c.pk %}"{% if tab == "setup" %} class="on" aria-current="page"{% endif %}>Setup</a>
 </nav>

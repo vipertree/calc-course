@@ -54,7 +54,7 @@ P = [(r"y = x^3 e^{-2x}", x**3 * sp.exp(-2 * x), r"Product, with the chain rule 
      (r"y = \cos\left(\sqrt{x}\right)", sp.cos(sp.sqrt(x)), r"Chain: $-\sin\left(\sqrt x\right)\cdot\dfrac{1}{2\sqrt x}$."),
      (r"y = x^2\left(x^3 + 1\right)^5", x**2 * (x**3 + 1)**5, r"Product, then chain: $2x(x^3+1)^5 + x^2\cdot 5(x^3+1)^4\cdot 3x^2$."),
      (r"y = \dfrac{1}{\sqrt{1 - x^2}}", 1 / sp.sqrt(1 - x**2), r"Rewrite $(1 - x^2)^{-1/2}$, chain: $x(1 - x^2)^{-3/2}$.")]
-PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$. Name the first rule you used.", expr(str(D(e))), sol, work="2cm")
+PRACTICE = [Item(rf"Find $\dfrac{{dy}}{{dx}}$ for ${tex}$.", expr(str(D(e))), sol, work="2cm")
             for tex, e, sol in P]
 PRACTICE += [
     Item(r"Find $\dfrac{dy}{dx}$ for $x^2y + \sin y = 3x$.", expr("(3 - 2*x*y)/(x**2 + cos(y))"),

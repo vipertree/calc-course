@@ -44,6 +44,11 @@ def draw(request, num, pub):
     rows, frows = _rows(pub)
     cls = class_for(request.user)
     if cls is not None:
+        from accounts.models import unit_of
+        from classwork.setup import includes_unit
+        if not includes_unit(cls, unit_of(num)):
+            cls = None                     # a unit the class leaves out: taken on their own, like any free student
+    if cls is not None:
         k = class_form(cls, num, n_forms(pub))
         ids = [r[k % len(r)]["id"] for r in rows + frows]
         info = {"mode": "class", "form": LETTERS[k] if n_forms(pub) > 1 else "", "classroom": cls}
@@ -103,5 +108,5 @@ def state(request, num, info, priv):
 
 def withheld(request, num):
     """True when this user's results for num must stay hidden (class student, not yet released)."""
-    cls = class_for(request.user)
-    return cls is not None and not visible(request, num)
+    from classwork.access import gate
+    return gate(request.user, "unittest" if num.startswith("U") else "quiz", num)["classroom"] is not None and not visible(request, num)

@@ -6,7 +6,7 @@ teachers, always get an open gate: their use of the site is unchanged.
 """
 import datetime as dt
 
-from accounts.models import class_for
+from accounts.models import class_for, unit_of
 
 from . import setup as S
 from .models import Dated, StudentException
@@ -21,8 +21,8 @@ def _dated(classroom, kind, ref):
 
 def gate(user, kind, ref, now=None):
     c = class_for(user)
-    if c is None:
-        return dict(OPEN)
+    if c is None or not S.includes_unit(c, unit_of(ref)):
+        return dict(OPEN)                  # outside a class, or a unit the class leaves out (the Trig Review by default)
     now = now or dt.datetime.now(dt.timezone.utc)
     d = _dated(c, kind, ref)
     st = S.settings_for(c, kind, ref, d)

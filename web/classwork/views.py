@@ -36,7 +36,8 @@ def _row(kind, values):
 _FIXED_LABELS = [(("practice", "record"), "Done or not, never right or wrong"), (("testprep", "dates"), "None"),
                  (("testprep", "results"), "Right away"), (("notes", "results"), "–")]
 
-SHOW_LABELS = [("grade", "Their grade in the course, with your weights"), ("due_dates", "Due dates, on their course page"),
+SHOW_LABELS = [("trig", "Make the Trig Review part of this class"),
+               ("grade", "Their grade in the course, with your weights"), ("due_dates", "Due dates, on their course page"),
                ("unopened", "Lessons that haven't opened yet (titles only)"), ("behind", 'A "behind" note when they miss a due date')]
 WATCH_LABELS = [("missing", "Missing and late work"), ("hard_questions", "Quiz questions half the class or more missed"),
                 ("sliding", "Students whose last two quizzes are under 60%")]
@@ -112,10 +113,10 @@ def _students(c):
 def _refs(c):
     """Everything this class could put on its calendar, for the "add a date" menu."""
     out = []
-    for u in content.syllabus():
+    for u in S.class_units(c):
         for num in cal.unit_topics(u["n"], c.course):
             out.append((num, content.label(num)))
-    tests = [(t["num"], content.test_label(t["num"])) for n in sorted(content.unit_tests())
+    tests = [(t["num"], content.test_label(t["num"])) for n in sorted(content.unit_tests()) if S.includes_unit(c, n)
              for t in [content.pick_test(n, c.course)] if t]
     return out, tests
 
@@ -156,7 +157,7 @@ def calendar_page(request, pk):
                     "exceptions": [{"e": e, "name": e.student.profile.display_name, "due": e.due and e.due.astimezone(cal.zone(c))}
                                    for e in d.exceptions.select_related("student__profile")]}
     lessons, tests = _refs(c)
-    units = [u for u in content.syllabus() if cal.unit_topics(u["n"], c.course)]
+    units = S.class_units(c)
     others = Classroom.objects.filter(teacher=request.user).exclude(pk=c.pk)
     planned = {cal.unit_of(r) for r in Dated.objects.filter(classroom=c).values_list("ref", flat=True)} - {None}
     next_unit = next((u["n"] for u in units if u["n"] > max(planned, default=-1)), units[0]["n"] if units else None)
@@ -284,7 +285,7 @@ def _cell(cell, label, tip):
 def progress_page(request, pk):
     c = own_class(request, pk)
     data = ClassData(c)
-    units = [u for u in content.syllabus() if cal.unit_topics(u["n"], c.course)]
+    units = S.class_units(c)
     focus = request.GET.get("unit", "")
     focus = int(focus) if focus.isdigit() else data.current_unit()
     only_due = request.GET.get("due") == "1"
@@ -722,9 +723,7 @@ def student_page(request, pk, uid):
                             "key": (priv["items"].get(iid, {}).get("answer", {}) or {}).get("display", ""), "same": same})
         pick_label = cal.label("unittest" if pick.startswith("U") else "quiz", pick)
     units = []
-    for u in content.syllabus():
-        if not cal.unit_topics(u["n"], c.course):
-            continue
+    for u in S.class_units(c):
         summ = data.unit_summary(st.id, u["n"])
         units.append({"u": u, "pct": round(100 * summ["progress"]), "avg": summ["avg"], "on": u["n"] == unit})
     missing = []
@@ -865,10 +864,10 @@ def gradebook_page(request, pk):
 def _entry_choices(c, book):
     """What can be entered by hand: paper quizzes and tests, notes and practice marked done, the teacher's own items."""
     out = []
-    lessons = [n for u in content.syllabus() for n in cal.unit_topics(u["n"], c.course)]
+    lessons = [n for u in S.class_units(c) for n in cal.unit_topics(u["n"], c.course)]
     sets = book.data.sets
     if sets["unittest"]["where"] != "off":
-        out += [(f"unittest:{t['num']}", content.test_label(t["num"])) for n in sorted(content.unit_tests())
+        out += [(f"unittest:{t['num']}", content.test_label(t["num"])) for n in sorted(content.unit_tests()) if S.includes_unit(c, n)
                 for t in [content.pick_test(n, c.course)] if t]
     if sets["quiz"]["where"] != "off":
         out += [(f"quiz:{n}", f"Quiz {content.label(n)}") for n in lessons]

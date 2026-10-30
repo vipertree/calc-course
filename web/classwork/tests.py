@@ -499,3 +499,19 @@ class TimerTests(StudentGateTests):
         page = self.web.get("/topic/2.5/quiz/").content.decode()
         self.assertIn('"timer"', page)
         self.assertIn('"started": false', page)
+
+
+class TrigReviewTests(StudentGateTests):
+    def test_trig_review_is_left_out_by_default(self):
+        self.configure(quiz={"where": "off"})
+        self.assertEqual(gate(self.kid, "quiz", "0.3")["classroom"], None)        # their own, like a free student
+        self.assertEqual(gate(self.kid, "quiz", "2.5")["state"], "off")
+        units = [u["n"] for u in S.class_units(Classroom.objects.get(pk=self.c.pk))]
+        self.assertNotIn(0, units)
+        self.assertIn(1, units)
+
+    def test_the_teacher_can_add_it(self):
+        Setup.objects.update_or_create(classroom=self.c, defaults={"show": {"trig": True}})
+        c = Classroom.objects.get(pk=self.c.pk)
+        self.assertIn(0, [u["n"] for u in S.class_units(c)])
+        self.assertEqual(gate(self.kid, "quiz", "0.3")["classroom"], c)

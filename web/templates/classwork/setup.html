@@ -33,7 +33,11 @@
 
 <div class="cw-cards">
   <section class="card"><h3>What students see</h3>
-    {% for o in show %}<label class="cw-check"><input type="checkbox" name="show.{{ o.k }}"{% if o.on %} checked{% endif %}> {{ o.label }}</label>{% endfor %}
+    {% for o in show %}{% if o.k != "trig" %}<label class="cw-check"><input type="checkbox" name="show.{{ o.k }}"{% if o.on %} checked{% endif %}> {{ o.label }}</label>{% endif %}{% endfor %}
+  </section>
+  <section class="card"><h3>Trig Review</h3>
+    {% for o in show %}{% if o.k == "trig" %}<label class="cw-check"><input type="checkbox" name="show.trig"{% if o.on %} checked{% endif %}> Make the Trig Review part of this class</label>{% endif %}{% endfor %}
+    <p class="muted">Left out, it isn't on your calendar, progress map or gradebook, and students can still use it on their own like any free student.</p>
   </section>
   <section class="card"><h3>What your dashboard watches</h3>
     {% for o in watch %}<label class="cw-check"><input type="checkbox" name="watch.{{ o.k }}"{% if o.on %} checked{% endif %}> {{ o.label }}</label>{% endfor %}

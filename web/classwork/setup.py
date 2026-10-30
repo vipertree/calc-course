@@ -74,7 +74,7 @@ DETAIL = {"practice": ["done_when", "late", "solutions"], "quiz": ["timer", "att
 DETAIL_LABELS = {"done_when": "Counts as done when", "late": "Late work", "solutions": "Answers and solutions",
                  "attempts": "Attempts", "timer": "Time limit (extra time is per student)"}
 
-SHOW_DEFAULTS = {"grade": True, "due_dates": True, "unopened": False, "behind": True}
+SHOW_DEFAULTS = {"grade": True, "due_dates": True, "unopened": False, "behind": True, "trig": False}
 WATCH_DEFAULTS = {"missing": True, "hard_questions": True, "sliding": True, "inactive_days": 0}
 
 TEMPLATES = {
@@ -151,3 +151,15 @@ def watch(classroom):
 
 def used(classroom, kind):
     return settings_for(classroom, kind)["where"] != "off"
+
+
+def includes_unit(classroom, unit):
+    """Is this unit part of the class? Every calculus unit is; the Trig Review (unit 0) only when the teacher adds it."""
+    return unit != 0 or bool(show(classroom).get("trig"))
+
+
+def class_units(classroom):
+    """The units this class covers, in order, as syllabus entries."""
+    from classwork.calendar import unit_topics
+    from course import content
+    return [u for u in content.syllabus() if includes_unit(classroom, u["n"]) and unit_topics(u["n"], classroom.course)]

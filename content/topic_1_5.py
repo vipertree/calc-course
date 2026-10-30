@@ -37,7 +37,7 @@ ex1_rows = r" \qquad ".join(rf"({'abcde'[i]})\ \lim_{{x\to4}}\left[{e}\right]" f
     r" \qquad ".join(rf"({'abcde'[i + 3]})\ \lim_{{x\to4}}\left[{e}\right]" for i, (e, v) in enumerate(EX1[3:]))
 
 NOTES = [
-    Video("s1_5.py::Lesson", "The limit laws", 3.5),
+    Video("s1_5.py::Lesson", "The limit laws", 6.6),
 
     Section("The limit laws"),
     Formula("Limit laws", (

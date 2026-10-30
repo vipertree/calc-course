@@ -28,7 +28,7 @@ assert fdt(1 + 2 * sp.cos(x), 0, 2 * sp.pi) == {2 * sp.pi / 3: "max", 4 * sp.pi 
 assert fdt((x - 1) * (x + 2) * sp.exp(x)) == {-2: "max", 1: "min"}
 
 NOTES = [
-    Video("s5_4.py::Lesson", "The first derivative test", 4),
+    Video("s5_4.py::Lesson", "The first derivative test", 5.8),
 
     Section("Reading the sign change"),
     Formula("The First Derivative Test", (

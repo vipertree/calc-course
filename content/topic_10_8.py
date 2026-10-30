@@ -19,7 +19,7 @@ same("lesson", [ratio(n / 3**n)], [sp.Rational(1, 3)])
 same("ex", [ratio(2**n / sp.factorial(n)), ratio(sp.factorial(n) / 10**n), ratio(1 / n**2)], [0, sp.oo, 1])
 
 NOTES = [
-    Video("s10_8.py::Lesson", "The ratio test", 4),
+    Video("s10_8.py::Lesson", "The ratio test", 4.2),
 
     Section("The test"),
     Formula("Ratio test", (r"Let $L = \lim_{n\to\infty} \left|\dfrac{a_{n+1}}{a_n}\right|$. If $L < 1$, $\sum a_n$ \blank{converges (absolutely)}. If $L > 1$ or $L = \infty$, it \blank{diverges}. If $L = 1$, the test is \blank{inconclusive}.")),

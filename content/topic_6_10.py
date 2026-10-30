@@ -33,7 +33,7 @@ LONGDIV = (r"Divide $x^2 + 3x + 5$ by $x + 1$, with the powers in order from hig
 SYNTH = (r" \[ \begin{array}{r|rrr} -1 & 1 & 3 & 5 \\ & & -1 & -2 \\ \hline & 1 & 2 & 3 \end{array} \] ")
 
 NOTES = [
-    Video("s6_10.py::Lesson", "Long division and completing the square", 5),
+    Video("s6_10.py::Lesson", "Long division and completing the square", 10.2),
 
     Section("Divide first"),
     Text(r"If the degree of the numerator is at least the degree of the denominator, divide first. Like $\frac{17}{5} = 3 + \frac25$, the result is "

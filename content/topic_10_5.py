@@ -13,7 +13,7 @@ close("harmonic", sum(sp.Rational(1, k) for k in range(1, 41)), 4.28, 0.005)
 same("p-series", [p_int(sp.Rational(3, 2)), p_int(1), p_int(sp.Rational(1, 2)), p_int(4)], [2, sp.oo, sp.oo, sp.Rational(1, 3)])
 
 NOTES = [
-    Video("s10_5.py::Lesson", "Harmonic and p-series", 4),
+    Video("s10_5.py::Lesson", "Harmonic and p-series", 3.8),
 
     Section("The harmonic series"),
     Text(r"\textbf{Graph it.} Plot one dot per $n$: the sequence $\frac1n$ falls toward $0$, while the partial sums $S_n = 1 + \frac12 + \cdots + \frac1n$ keep climbing, more and more slowly ($S_{40} \approx 4.28$), and never level off."),

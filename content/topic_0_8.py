@@ -24,7 +24,7 @@ FIG_INV = graph("t0_8_inv", [("rad(asin(x))", -1, 1), ("rad(atan(x))", -4, 4, "d
                 hlines=(1.5708, -1.5708), caption=r"$y = \arcsin x$ (solid) and $y = \arctan x$ (dashed, with asymptotes $y = \pm\frac{\pi}{2}$).")
 
 NOTES = [
-    Video("s0_8.py::Lesson", "Inverse trigonometric functions", 7),
+    Video("s0_8.py::Lesson", "Inverse trigonometric functions", 7.5),
 
     Section("Restricting to one piece"),
     Text(r"To run a function backward, every output must come from one input. Sine repeats, so we keep one piece on which it takes each value once: "

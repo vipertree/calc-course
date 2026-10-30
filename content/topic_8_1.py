@@ -39,7 +39,7 @@ FIG_G = graph("t8_1_g", [("x", 0, 2), ("2+0*x", 2, 4), ("2-(x-4)", 4, 6)], (0, 6
 same("g", [sp.Rational(1, 2) * 2 * 2 + 2 * 2 + sp.Rational(1, 2) * 2 * (2 + 0)], [8])
 
 NOTES = [
-    Video("s8_1.py::Lesson", "Average value of a function", 6),
+    Video("s8_1.py::Lesson", "Average value of a function", 8.3),
 
     Section("Four meanings, plus one"),
     Text(r"A derivative is an instantaneous rate of change (analytically) and the slope at a point (graphically). An integral is an accumulation (analytically) "

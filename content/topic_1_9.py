@@ -28,7 +28,7 @@ FIG_HOLE = graph("t1_9_hole", [("x+2", -1, 4.5)], xr=(-1, 4.5), yr=(-0.5, 7), op
                  w="5.4cm", h="4.6cm", caption=r"The graph of $f$.")
 
 NOTES = [
-    Video("s1_9.py::Lesson", "Four views of a limit", 3),
+    Video("s1_9.py::Lesson", "Four views of a limit", 4.2),
 
     Section("Four views of one limit"),
     Text(r"Let $\displaystyle f(x) = \dfrac{x^2-4}{x-2}$ for $x \ne 2$, with $f(2) = 1$. \textbf{Formula:} for $x\ne2$, $f(x) = x + 2$, so "

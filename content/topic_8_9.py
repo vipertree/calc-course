@@ -25,7 +25,7 @@ FIG = region("t8_9_root", [("sqrt(x)", 0, 4.3)], (-0.3, 4.6), (-0.3, 2.4), [(lam
              caption=r"The region under $y = \sqrt x$, $0 \le x \le 4$. Revolved about the $x$-axis, the slice at $x$ is a disc of radius $\sqrt x$.")
 
 NOTES = [
-    Video("s8_9.py::Lesson", "The disc method", 5),
+    Video("s8_9.py::Lesson", "The disc method", 7.6),
 
     Section("Every slice is a disc"),
     Text(r"Revolving a region about a line sweeps out a solid of revolution. Slices perpendicular to the axis are discs; the radius is the distance from the axis to the curve."),

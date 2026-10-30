@@ -18,7 +18,7 @@ same("ex2", [S([sp.Rational((-1)**j, sp.factorial(j)) for j in range(0, 5)])], [
 close("ex3", 0.5 - 0.5**3 / 6, 0.479167, 1e-6)
 
 NOTES = [
-    Video("s10_10.py::Lesson", "Alternating series error bound", 4),
+    Video("s10_10.py::Lesson", "Alternating series error bound", 4.8),
 
     Section("The bound"),
     Text(r"\textbf{The frog again.} Picture 10.7's frog hopping $1$ right, $\frac12$ left, $\frac13$ right, and so on. Every hop overshoots the sum $S$, so $S$ always lies between where the frog sits ($S_n$) and where its next hop lands ($S_{n+1}$). The error is smaller than that next hop, $b_{n+1}$."),

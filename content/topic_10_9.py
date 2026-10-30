@@ -13,7 +13,7 @@ x = sp.symbols("x", positive=True)
 same("checks", [sp.integrate(1 / x**2, (x, 1, sp.oo)), sp.integrate(1 / sp.sqrt(x), (x, 1, sp.oo)), sp.integrate(1 / (x * sp.log(x)), (x, 2, sp.oo))], [1, sp.oo, sp.oo])
 
 NOTES = [
-    Video("s10_9.py::Lesson", "Absolute and conditional convergence", 3),
+    Video("s10_9.py::Lesson", "Absolute and conditional convergence", 4.1),
 
     Section("Definitions"),
     Formula("Absolute and conditional convergence", (r"$\sum a_n$ is \blank{absolutely convergent} if $\sum |a_n|$ converges. It is \blank{conditionally convergent} if $\sum a_n$ converges but $\sum |a_n|$ diverges. "

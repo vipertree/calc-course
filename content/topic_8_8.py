@@ -26,7 +26,7 @@ FIG_R = region("t8_8_r", [("sqrt(x)", 0, 4.4), ("x/2", 0, 4.4)], (-0.3, 4.6), (-
                labels=[(2.2, 1.3, "center", "$R$")], caption=r"Region $R$, between $y = \sqrt x$ and $y = \frac x2$.")
 
 NOTES = [
-    Video("s8_8.py::Lesson", "Cross sections: triangles and semicircles", 5),
+    Video("s8_8.py::Lesson", "Cross sections: triangles and semicircles", 8.5),
 
     Section("Areas in terms of the side on the base"),
     Text(r"The same kind of volume problem as in 8.7: a flat base, with cross sections of a known shape standing on it, perpendicular to an axis. The volume is the sum of infinitely many thin slices: $V = \int A(x)\,dx$, where $A(x)$ is the area of one cross section. Read its side $s$ off the base; only the area formula changes."),

@@ -17,7 +17,7 @@ def D(e):
 
 
 NOTES = [
-    Video("s3_5.py::Lesson", "Choosing the right rule", 4),
+    Video("s3_5.py::Lesson", "Choosing the right rule", 4.5),
 
     Section("Read the outermost operation first"),
     Formula("A decision guide", (

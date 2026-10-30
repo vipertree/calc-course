@@ -34,7 +34,7 @@ FIG_V = graph("t8_2_v", [("-2*x", 0, 1), ("-2+0*x", 1, 3), ("-2+2*(x-3)", 3, 6)]
 same("fig", [-1 - 4 - 1, sp.Rational(1, 2) * 2 * 4], [-6, 4])
 
 NOTES = [
-    Video("s8_2.py::Lesson", "Motion with integrals", 6),
+    Video("s8_2.py::Lesson", "Motion with integrals", 7.7),
 
     Section("Displacement and position"),
     Text(r"Integrating a rate of change yields net change: $\int_a^b f'(t)\,dt = f(b) - f(a)$. Velocity is the rate of change of position ($v = s'$), so integrating velocity yields the change in position."),

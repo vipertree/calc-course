@@ -46,7 +46,7 @@ FIG_C = Figure(name="t3_4_circles", caption=r"The piece of the unit circle each 
                      + r"\end{tikzpicture}"))
 
 NOTES = [
-    Video("s3_4.py::Lesson", "Derivatives of inverse trig functions", 10),
+    Video("s3_4.py::Lesson", "Derivatives of inverse trig functions", 9.8),
 
     Section("The inverse trig functions"),
     Text(r"An inverse trig function takes a number and gives back an angle: $\arcsin x$ is the angle whose sine is $x$. "

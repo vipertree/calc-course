@@ -31,7 +31,7 @@ def vec(v):
 
 
 NOTES = [
-    Video("s9_4.py::Lesson", "Vector-valued functions", 6),
+    Video("s9_4.py::Lesson", "Vector-valued functions", 6.3),
 
     Section("A quick review of vectors"),
     Text(r"A vector is an arrow with a length and a direction. Its components say how far it goes across and up: $\langle 3, 2\rangle$ goes 3 right and 2 up. Drawn from the origin or anywhere else, it is the same vector."),

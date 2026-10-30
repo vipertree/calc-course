@@ -23,7 +23,7 @@ same("seq vs series", [sp.limit(N / (N + 1), N, sp.oo), sp.summation(n / (n + 1)
 same("ex3 S_n", [sp.simplify(sp.summation(1 / n - 1 / (n + 2), (n, 1, N)) - (1 + sp.Rational(1, 2) - 1 / (N + 1) - 1 / (N + 2)))], [0])
 
 NOTES = [
-    Video("s10_1.py::Lesson", "Convergent and divergent series", 7),
+    Video("s10_1.py::Lesson", "Convergent and divergent series", 6.8),
 
     Section("Partial sums"),
     Text(r"\textbf{Not an integral.} Units 6 to 8 added up a continuous function with integrals. A series adds up separate numbers $a_1, a_2, a_3, \ldots$, one at a time: no curve, no area."),

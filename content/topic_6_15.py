@@ -33,7 +33,7 @@ TOOL = {"sub": "substitution", "basic": "basic rules", "rewrite": "rewrite first
         "parts": "integration by parts", "pf": "partial fractions"}
 
 NOTES = [
-    Video("s6_15.py::Lesson", "Choosing a technique", 7),
+    Video("s6_15.py::Lesson", "Choosing a technique", 6.8),
 
     Section("A toolkit, not a flowchart"),
     Table(r"a basic form (power, trig, $e^x$, $\frac1x$) & basic rules \\ "

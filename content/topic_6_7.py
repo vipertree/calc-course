@@ -32,7 +32,7 @@ FIG_C = graph("t6_7_plusc", [("x^3/3", 0, 2.8), ("x^3/3+2", 0, 2.8), ("x^3/3-1",
               caption=r"$F(x) = \frac{x^3}{3} + C$ for four values of $C$: the same curve shifted up or down, so every one has derivative $x^2$.")
 
 NOTES = [
-    Video("s6_7.py::Lesson", "Evaluating integrals", 11),
+    Video("s6_7.py::Lesson", "Evaluating integrals", 10.1),
 
     Section("How much F changes"),
     Text(r"In topic 6.4, big $F$ was the accumulation function $F(x) = \int_a^x f(t)\,dt$, and the Fundamental Theorem said $F'(x) = f(x)$: "

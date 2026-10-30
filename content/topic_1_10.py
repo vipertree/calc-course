@@ -23,7 +23,7 @@ FIG_RAT = graph("t1_10_rat", [("(x+1)/(x+2)", -6, -2.3), ("(x+1)/(x+2)", -1.7, 5
                 caption=r"$y = \dfrac{x^2-x-2}{x^2-4}$: a hole at $x = 2$ and an asymptote at $x = -2$.")
 
 NOTES = [
-    Video("s1_10.py::Lesson", "Three kinds of breaks", 2.5),
+    Video("s1_10.py::Lesson", "Three kinds of breaks", 4.7),
 
     Section("Three kinds of discontinuity"),
     Text(r"Informally, a function is \textbf{continuous} where you can draw its graph without lifting your pencil. "

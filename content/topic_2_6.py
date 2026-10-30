@@ -17,7 +17,7 @@ def D(e, v=x):
 
 
 NOTES = [
-    Video("s2_6.py::Lesson", "Four basic rules", 2.5),
+    Video("s2_6.py::Lesson", "Four basic rules", 7.2),
 
     Section("The rules"),
     Formula("Basic derivative rules", (

@@ -26,7 +26,7 @@ FIG_REF = unit_circle("t0_3_ref", [(5 * float(pi) / 6, r"$\left(-\frac{\sqrt3}{2
                       triangle=5 * float(pi) / 6, caption="$\\frac{5\\pi}{6}$ has reference angle $\\frac{\\pi}{6}$: same numbers, the quadrant sets the signs.")
 
 NOTES = [
-    Video("s0_3.py::Lesson", "The unit circle", 12),
+    Video("s0_3.py::Lesson", "The unit circle", 11.3),
 
     Section("Triangles on the coordinate plane"),
     Text(r"The \textbf{unit circle} is the circle of radius $1$ centered at the origin, $x^2 + y^2 = 1$. It crosses the axes at $(1, 0)$, $(0, 1)$, $(-1, 0)$ and $(0, -1)$, "

@@ -26,7 +26,7 @@ FIG_M = graph("t3_3_mirror", [("0.25*x^2+1", 0, 3.4), ("2*sqrt(x-1)", 1, 3.9, "d
               w="5.6cm", h="5.6cm", caption=r"A function (solid), its inverse (dashed), and the mirror line $y = x$.")
 
 NOTES = [
-    Video("s3_3.py::Lesson", "Derivatives of inverse functions", 5),
+    Video("s3_3.py::Lesson", "Derivatives of inverse functions", 7.3),
 
     Section("What an inverse is"),
     Text(r"We often think of an inverse as an algebraic reverse: undo each step, in the opposite order. That's useful, but the key "

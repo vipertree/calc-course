@@ -37,7 +37,7 @@ same("lesson", [sp.simplify(sp.diff(2 * x**sp.Rational(3, 2) + 4 / x + 2 * sp.si
                 sp.expand(anti((x**2 + 1)**2)), sp.simplify(anti((x**3 - 2 * x + 5) / x) - (x**3 / 3 - 2 * x + 5 * sp.log(x)))], [0, x**5 / 5 + 2 * x**3 / 3 + x, 0])
 
 NOTES = [
-    Video("s6_8.py::Lesson", "Indefinite integrals", 7),
+    Video("s6_8.py::Lesson", "Indefinite integrals", 6.2),
 
     Section("Indefinite integrals"),
     Text(r"In topic 6.7 we found a definite integral by evaluating an antiderivative at the two endpoints: $\int_a^b f(x)\,dx = F(b) - F(a)$, where $F'(x) = f(x)$."),

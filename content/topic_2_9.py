@@ -18,7 +18,7 @@ def D(e):
 
 
 NOTES = [
-    Video("s2_9.py::Lesson", "The quotient rule", 3),
+    Video("s2_9.py::Lesson", "The quotient rule", 8.1),
 
     Section("Deriving the rule"),
     Text(r"\textbf{Picture it.} A rectangle with area $f$ and width $g$ has height $Q = \dfrac{f}{g}$. Nudge $x$: "

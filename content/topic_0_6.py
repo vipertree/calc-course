@@ -29,7 +29,7 @@ ident("ex4", sp.sin(2 * x) / (1 + sp.cos(2 * x)), sp.tan(x))
 ident("power", sp.sin(x)**2, (1 - sp.cos(2 * x)) / 2)
 
 NOTES = [
-    Video("s0_6.py::Lesson", "Trigonometric identities", 8),
+    Video("s0_6.py::Lesson", "Trigonometric identities", 8.4),
 
     Text(r"An \textbf{identity} is an equation that is true for every input where both sides are defined. Calculus uses identities to rewrite expressions into easier forms."),
 

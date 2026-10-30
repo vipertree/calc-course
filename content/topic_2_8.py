@@ -28,7 +28,7 @@ def D(e):
 
 
 NOTES = [
-    Video("s2_8.py::Lesson", "The product rule", 3),
+    Video("s2_8.py::Lesson", "The product rule", 7.4),
 
     Section("Not the product of the derivatives"),
     Text(r"\[ \frac{d}{dx}[x\cdot x] = \frac{d}{dx}[x^2] = \mblank{2x} \], but the product of the derivatives is $1\cdot 1 = \mblank{1}$. "

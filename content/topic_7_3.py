@@ -20,7 +20,7 @@ FIG_Y = slope_field("t7_3_y", lambda a, c: c, G, G, (-2, 2), (-2, 2), caption="S
 FIG_XY = slope_field("t7_3_xy", lambda a, c: a * c, G, G, (-2, 2), (-2, 2), caption="Slope field C.")
 
 NOTES = [
-    Video("s7_3.py::Lesson", "Slope fields", 4),
+    Video("s7_3.py::Lesson", "Slope fields", 4.5),
 
     Section("Solutions come in families"),
     Text(r"The simplest differential equations have only $x$ on the right side. Integrating gives $F(x) + C$, so there are many solutions. "

@@ -25,7 +25,7 @@ same("closest", list(best((x - 3)**2 + x, x, 0, 10, "min")), [sp.Rational(5, 2),
 same("can", list(best(2 * sp.pi * r**2 + 32 * sp.pi / r, r, sp.Rational(1, 100), 100, "min")), [2, 24 * sp.pi])
 
 NOTES = [
-    Video("s5_11.py::Lesson", "Solving optimization problems", 5),
+    Video("s5_11.py::Lesson", "Solving optimization problems", 6.1),
 
     Section("The whole procedure"),
     Formula("Solving an optimization problem", (

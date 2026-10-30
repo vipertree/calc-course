@@ -16,7 +16,7 @@ same("ex", [L((1 + 1 / n)**n), L(1 / sp.sqrt(n))], [sp.E, 0])
 same("orders", [L(n / (2 * n - 1)), sum(sp.Rational(k, 2 * k - 1) for k in range(1, 4))], [sp.Rational(1, 2), sp.Rational(34, 15)])
 
 NOTES = [
-    Video("s10_3.py::Lesson", "The nth term test", 5),
+    Video("s10_3.py::Lesson", "The nth term test", 4.6),
 
     Section("The test"),
     Text(r"\textbf{Sequence vs.\ series.} A sequence is a list of numbers: $a_1, a_2, a_3, \ldots$ A series is the sum of that list: $a_1 + a_2 + a_3 + \cdots$. The sequence $\frac12, \frac14, \frac18, \ldots$ converges to $0$; the series $\frac12 + \frac14 + \frac18 + \cdots$ converges to $1$."),

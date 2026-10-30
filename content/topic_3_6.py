@@ -30,7 +30,7 @@ same("motion", [D(S, t), D(S, t, 2), D(S, t, 2).subs(t, 3)], [3 * t**2 - 12 * t 
 same("circle y''", sp.simplify(imp2(x**2 + y**2 - 25).subs(x**2, 25 - y**2)), -25 / y**3)
 
 NOTES = [
-    Video("s3_6.py::Lesson", "Higher-order derivatives", 4),
+    Video("s3_6.py::Lesson", "Higher-order derivatives", 4.3),
 
     Section("Derivatives of derivatives"),
     Text(r"The derivative $f'$ is a function, so it has its own derivative. That is the \blank{second derivative}, $f''$. Its derivative is "

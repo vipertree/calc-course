@@ -23,7 +23,7 @@ FIG_JUMP = graph("t2_4_jump", [("x+1", -2, 0), ("x-1", 0, 2)], xr=(-2, 2), yr=(-
                  w="4.4cm", h="3.6cm", caption="discontinuity")
 
 NOTES = [
-    Video("s2_4.py::Lesson", "When derivatives fail", 3),
+    Video("s2_4.py::Lesson", "When derivatives fail", 5.3),
 
     Section("Differentiable means locally linear"),
     Definition("Differentiable", (

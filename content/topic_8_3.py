@@ -28,7 +28,7 @@ same("ex2", [1200 + trap([0, 2, 5, 8], [30, 40, 25, 10])], [1420])
 same("ex3", [60 + I(4 - t, 0, 4), 60 + I(4 - t, 0, 6)], [68, 66])
 
 NOTES = [
-    Video("s8_3.py::Lesson", "Accumulation in context", 6),
+    Video("s8_3.py::Lesson", "Accumulation in context", 7.9),
 
     Section("Start plus net change"),
     Formula("Amount from rates", (

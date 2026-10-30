@@ -13,7 +13,7 @@ x, t = sp.symbols("x t")
 D = lambda e, v=t, n=1: sp.diff(e, v, n)
 
 NOTES = [
-    Video("s4_3.py::Lesson", "Rates everywhere", 4),
+    Video("s4_3.py::Lesson", "Rates everywhere", 3.6),
 
     Section("The same derivative, new contexts"),
     Text(r"Every derivative is a rate of change, whatever the quantity: bacteria per hour, dollars per item, degrees per minute. "

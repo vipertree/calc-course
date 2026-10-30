@@ -22,7 +22,7 @@ FIG_TAN = graph("t0_5_tan", [("tan(deg(x))", -4.6, -1.72), ("tan(deg(x))", -1.42
                 vlines=(-4.712, -1.5708, 1.5708, 4.712), w="9cm", h="5cm", caption=r"$y = \tan x$: period $\pi$, asymptotes at $x = \frac{\pi}{2} + k\pi$.")
 
 NOTES = [
-    Video("s0_5.py::Lesson", "Graphs of sine, cosine, and tangent", 9),
+    Video("s0_5.py::Lesson", "Graphs of sine, cosine, and tangent", 9.2),
 
     Section("Sine and cosine"),
     Text(r"Plot the height of the point on the unit circle against the angle and you get $y = \sin x$; plot how far across and you get $y = \cos x$. "

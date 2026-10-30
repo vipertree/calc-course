@@ -41,7 +41,7 @@ FIG_P2 = graph("t6_1_p2", [("2-x", 0, 4), ("-2+0*x", 4, 6)], xr=(0, 6), yr=(-3, 
 same("p figs", [area(P1), area(P2), total(P2)], [15, -4, 8])
 
 NOTES = [
-    Video("s6_1.py::Lesson", "Area under a rate", 5),
+    Video("s6_1.py::Lesson", "Area under a rate", 5.6),
 
     Section("Area means amount"),
     Text(r"Water flows into a tank at $3$ gallons per minute for $4$ minutes: $(3\ \text{gal/min})(4\ \text{min}) = 12$ gallons. On the graph of "

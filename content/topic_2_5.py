@@ -31,7 +31,7 @@ def D(e):
 
 
 NOTES = [
-    Video("s2_5.py::Lesson", "The power rule", 3.5),
+    Video("s2_5.py::Lesson", "The power rule", 7.9),
 
     Section("Why $x^2$ has derivative $2x$"),
     FIG_SQ,

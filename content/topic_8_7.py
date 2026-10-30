@@ -26,7 +26,7 @@ FIG_BASE = region("t8_7_base", [("sqrt(x)", 0, 4.4)], (-0.3, 4.6), (-0.3, 2.4), 
 FIG_Q = region("t8_7_q", [("2-x/2", -0.3, 4.3)], (-0.3, 4.5), (-0.3, 2.4), [(lambda v: 2 - v / 2, lambda v: 0, 0, 4)], caption=r"The triangle bounded by $y = 2 - \frac x2$ and the axes.")
 
 NOTES = [
-    Video("s8_7.py::Lesson", "Cross sections: squares and rectangles", 5),
+    Video("s8_7.py::Lesson", "Cross sections: squares and rectangles", 8.9),
 
     Section("Volume is the integral of area"),
     Text(r"This lesson and the next are about one kind of volume problem: a solid built on a flat region, the \emph{base}, whose cross sections perpendicular to an axis have a known shape, such as squares, rectangles, triangles or semicircles."),

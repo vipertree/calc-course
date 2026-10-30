@@ -36,7 +36,7 @@ row_x = " & ".join(f"${v:g}$" for v in XS)
 row_y = " & ".join(f"${FMT[abs(v)]}$" for v in XS)
 
 NOTES = [
-    Video("s1_4.py::Lesson", "Limits from tables", 3.5),
+    Video("s1_4.py::Lesson", "Limits from tables", 5.2),
 
     Section("Building a table"),
     Text(r"Substituting $x = 0$ into $\dfrac{\sin x}{x}$ yields $\dfrac00$. A calculator in \textbf{radian mode} "

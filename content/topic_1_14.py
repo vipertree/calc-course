@@ -23,7 +23,7 @@ FIG_LN = graph("t1_14_ln", [("ln(x)", 0.02, 4.5)], xr=(-0.5, 4.5), yr=(-4, 2), v
                ystep=2, caption=r"$\ln x$")
 
 NOTES = [
-    Video("s1_14.py::Lesson", "Infinite limits", 3),
+    Video("s1_14.py::Lesson", "Infinite limits", 5.1),
 
     Section("Infinite limits"),
     Definition("Infinite limit", (

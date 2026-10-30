@@ -35,7 +35,7 @@ FIG_PQ = graph("t5_3_pq", [("sqrt(abs(4-(x+1)^2))", -3, 1), ("-(x-1)", 1, 3), ("
 FIG_F = graph("t5_3_f", [("(x^3-6*x^2+9*x)/2+1", 0, 4)], xr=(0, 4), yr=(0, 4), ylabel="f(x)", caption="The graph of $f$ (not $f'$).")
 
 NOTES = [
-    Video("s5_3.py::Lesson", "Uphill and downhill", 4),
+    Video("s5_3.py::Lesson", "Uphill and downhill", 8.4),
 
     Section("The sign of the derivative"),
     Formula("Increasing and decreasing", (

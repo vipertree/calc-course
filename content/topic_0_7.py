@@ -55,7 +55,7 @@ FIG_HALF = unit_circle("t0_7_half", [(float(pi) / 6, r"$\frac{\pi}{6}$"), (5 * f
                        caption=r"$\sin x = \frac12$: two points at height $\frac12$ in one turn.", labels=False)
 
 NOTES = [
-    Video("s0_7.py::Lesson", "Solving trigonometric equations", 8),
+    Video("s0_7.py::Lesson", "Solving trigonometric equations", 7.6),
 
     Section("Two angles per value"),
     Text(r"In one turn, $\sin x = c$ (for $-1 < c < 1$) has two solutions: the points of the unit circle at height $c$. Likewise $\cos x = c$ has two, at the points with "

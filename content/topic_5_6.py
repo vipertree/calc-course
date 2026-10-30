@@ -29,7 +29,7 @@ same("ex2", inflections(x**4 - 4 * x**3), [0, 2])
 same("ex3", inflections(x * sp.exp(x)), [-2])
 
 NOTES = [
-    Video("s5_6.py::Lesson", "Which way the graph bends", 4),
+    Video("s5_6.py::Lesson", "Which way the graph bends", 6.3),
 
     Section("Concave up, concave down"),
     Text(r"A graph is \blank{concave up} where it bends upward like a bowl, and \blank{concave down} where it bends downward like a hill. "

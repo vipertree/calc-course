@@ -43,7 +43,7 @@ same("lesson", [sp.apart(1 / (x**2 - 1)), sp.apart((x + 7) / (x**2 - x - 6)), sp
 same("ex2", [sp.simplify(sp.integrate(1 / (x * (x - 1)), (x, 2, 3)) - sp.log(sp.Rational(4, 3)))], [0])
 
 NOTES = [
-    Video("s6_12.py::Lesson", "Partial fractions", 4),
+    Video("s6_12.py::Lesson", "Partial fractions", 5.3),
 
     Section("Splitting a fraction"),
     Formula("Linear partial fractions", (

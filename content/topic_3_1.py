@@ -27,7 +27,7 @@ same("dy/dx at 1", D((x**2 + 1)**3).subs(x, 1), 24)
 same("the mistake", sp.diff(u**3, u).subs(u, 1) * 2, 6)
 
 NOTES = [
-    Video("s3_1.py::Lesson", "The chain rule", 6),
+    Video("s3_1.py::Lesson", "The chain rule", 7.8),
 
     Section("Rates that multiply"),
     Text(r"A bakery sells cookies at a steady \blank{$24$ cookies per hour}, and each cookie earns 3 dollars. Its income grows at "

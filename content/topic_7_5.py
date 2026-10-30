@@ -23,7 +23,7 @@ def euler(f, x0, y0, h, n):
 same("lesson", [euler(lambda x, y: x + y, 0, 1, R(1, 2), 2), euler(lambda x, y: y - x, 0, 2, R(1, 4), 2), euler(lambda x, y: 2 * x, 1, 3, R(1, 2), 2)], [R(5, 2), R(49, 16), R(11, 2)])
 
 NOTES = [
-    Video("s7_5.py::Lesson", "Euler's method", 4),
+    Video("s7_5.py::Lesson", "Euler's method", 3.6),
 
     Section("Walking along tangent lines"),
     Formula("Euler's method", (

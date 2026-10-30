@@ -15,7 +15,7 @@ fp1 = (x - 1)**2 * (x - 4)
 same("ex1", [sp.factor(sp.diff(fp1, x)), sp.solve(sp.diff(fp1, x), x)], [3 * (x - 1) * (x - 3), [1, 3]])
 
 NOTES = [
-    Video("s5_9.py::Lesson", "Three graphs, one function", 4),
+    Video("s5_9.py::Lesson", "Three graphs, one function", 7.1),
 
     Section("Three levels"),
     Text(r"$f''$ tells you how $f'$ changes, and $f'$ tells you how $f$ changes. Every question about $f$ is answered one or two levels down."),

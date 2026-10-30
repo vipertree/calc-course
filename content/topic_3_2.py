@@ -24,7 +24,7 @@ FIG_C = graph("t3_2_circle", [("sqrt(25-x^2)", -5, 5), ("-sqrt(25-x^2)", -5, 5),
               w="6cm", h="5.6cm", caption=r"The circle $x^2 + y^2 = 25$ and its tangent line at $(3, 4)$.")
 
 NOTES = [
-    Video("s3_2.py::Lesson", "Implicit differentiation", 5),
+    Video("s3_2.py::Lesson", "Implicit differentiation", 9.4),
 
     Section("A curve that isn't a function"),
     FIG_C,

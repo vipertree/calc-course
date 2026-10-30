@@ -32,7 +32,7 @@ same("lesson", [sp.integrate(x * (x**2 + 1)**3, (x, 0, 2)), sp.Rational(1, 2) * 
                 sp.simplify(sp.integrate(2 * x * sp.cos(x**2), x) - sp.sin(x**2)), sp.simplify(sp.diff((x**2 + 4)**sp.Rational(3, 2) / 3, x) - x * sp.sqrt(x**2 + 4)), sp.integrate(sp.cos(x)**2 * sp.sin(x), (x, 0, sp.pi / 2))], [78, 78, 0, 0, sp.Rational(1, 3)])
 
 NOTES = [
-    Video("s6_9.py::Lesson", "Substitution", 5),
+    Video("s6_9.py::Lesson", "Substitution", 9.0),
 
     Section("The chain rule, backward"),
     Text(r"By the chain rule, \[ \frac{d}{dx}\sin\left(x^2\right) = \cos\left(x^2\right) \cdot 2x, \quad \text{so} \quad \int 2x\cos\left(x^2\right) dx = \sin\left(x^2\right) + C. \] "

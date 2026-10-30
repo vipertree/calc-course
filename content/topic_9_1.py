@@ -27,7 +27,7 @@ FIG = graph("t9_1_curve", [], (-1.6, 3.6), (-2.8, 2.8), extra=r"\addplot[fn, dom
             caption=r"$x = t^2 - 1$, $y = t^3 - 3t$ for $-2.1 \le t \le 2.1$. It passes through $x = 0$ twice.")
 
 NOTES = [
-    Video("s9_1.py::Lesson", "Parametric equations", 6),
+    Video("s9_1.py::Lesson", "Parametric equations", 7.2),
 
     Section("Parametric curves"),
     Text(r"Parametric equations give each coordinate in terms of a parameter $t$: $x = x(t)$, $y = y(t)$. Plot points in order of $t$; the direction of increasing $t$ is the \emph{orientation}. "

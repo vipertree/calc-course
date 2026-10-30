@@ -20,7 +20,7 @@ same("lesson", [sp.diff(5 * sp.exp(3 * x), x) - 3 * 5 * sp.exp(3 * x), sp.simpli
                 sp.diff(sp.sin(2 * x), x, 2) + 4 * sp.sin(2 * x)], [0, 3 * sp.exp(2 * x), x**2, 0])
 
 NOTES = [
-    Video("s7_2.py::Lesson", "Verifying solutions", 4),
+    Video("s7_2.py::Lesson", "Verifying solutions", 4.4),
 
     Section("A different kind of solution"),
     Text(r"In algebra, a solution is a \blank{value}: $2x + 1 = 7$ has the solution $x = 3$. A solution to a differential equation is a \blank{function} "

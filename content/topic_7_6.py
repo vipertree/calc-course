@@ -20,7 +20,7 @@ check("lesson", all([solves(A * sp.exp(x**2 / 2), lambda a, b: a * b), solves(sp
                 solves(sp.log(sp.exp(x) + K), lambda a, b: sp.exp(a - b))]))
 
 NOTES = [
-    Video("s7_6.py::Lesson", "Separation of variables", 4),
+    Video("s7_6.py::Lesson", "Separation of variables", 6.1),
 
     Section("Separate, integrate, solve"),
     Text(r"We can't integrate $\frac{dy}{dx} = xy$ with respect to $x$ as it stands: $xy$ is a function of $x$ \emph{and} $y$. "

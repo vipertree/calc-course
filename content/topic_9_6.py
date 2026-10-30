@@ -23,7 +23,7 @@ close("ex1", 3 + NI(sp.cos(t**2), 0, 2), 3.461, 5e-4)
 close("ex1c", NI(speed(sp.cos(t**2), sp.exp(t / 2)), 0, 2), 3.828, 5e-4)
 
 NOTES = [
-    Video("s9_6.py::Lesson", "Motion in the plane", 5),
+    Video("s9_6.py::Lesson", "Motion in the plane", 5.2),
 
     Section("The toolkit"),
     Table(r"position at $t = b$ & $x(b) = x(a) + \int_a^b x'(t)\,dt$, and the same for $y$ \\ velocity vector & $\langle x'(t),\ y'(t)\rangle$ \\ speed & $\sqrt{(x')^2 + (y')^2}$ \\ distance traveled & $\int_a^b \sqrt{(x')^2 + (y')^2}\,dt$ \\ slope of the path & $\frac{dy}{dx} = \frac{y'}{x'}$ \\ moving left / right & $x' < 0$ / $x' > 0$ \\ moving down / up & $y' < 0$ / $y' > 0$ \\ at rest & $x' = 0$ and $y' = 0$ ", "ll", header=r"want & tool"),

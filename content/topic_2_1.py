@@ -75,7 +75,7 @@ rows = " \\\\ ".join(
     f"${fmt(hv)}$ & ${fmt(1 + hv)}$ & ${fmt(want)}$" for hv, want in H_ROWS)
 
 NOTES = [
-    Video("s2_1.py::Lesson", "From average to instant", 3),
+    Video("s2_1.py::Lesson", "From average to instant", 10.9),
 
     Section("Average rate of change"),
     Text(r"Amara drives along a straight road. Her distance from home after $t$ hours is "

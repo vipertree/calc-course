@@ -31,7 +31,7 @@ same("abs R", lim(sp.Abs(x - 2) / (x - 2), 2, "+"), 1)
 same("sign L", lim((x + 1) / (x - 2)**2, 2, "-"), sp.oo)
 
 NOTES = [
-    Video("s1_7.py::Lesson", "Choosing a method", 3),
+    Video("s1_7.py::Lesson", "Choosing a method", 7.0),
 
     Section("A toolkit for limits"),
     Formula(r"A limit toolkit for $\displaystyle\lim_{x\to c} f(x)$", (

@@ -26,7 +26,7 @@ FIG = graph("t9_7_card", [], (-0.8, 2.4), (-1.6, 1.6), extra=r"\addplot[fn, doma
             caption=r"The cardioid $r = 1 + \cos\theta$.")
 
 NOTES = [
-    Video("s9_7.py::Lesson", "Polar coordinates", 6),
+    Video("s9_7.py::Lesson", "Polar coordinates", 6.2),
 
     Section("Polar coordinates"),
     Formula("Conversions", (r"\[ x = \blank{r\cos\theta}, \quad y = \blank{r\sin\theta}, \quad r^2 = x^2 + y^2, \quad \tan\theta = \frac yx. \]")),

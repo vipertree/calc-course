@@ -12,7 +12,7 @@ x, a = sp.symbols("x a")
 same("seam", [sp.limit(x**2, x, 1), sp.limit(2 - x, x, 1)], [1, 1])
 
 NOTES = [
-    Video("s1_12.py::Lesson", "Continuity on an interval", 2.5),
+    Video("s1_12.py::Lesson", "Continuity on an interval", 4.9),
 
     Section("Continuity on an interval"),
     Definition("Continuous on an interval", (

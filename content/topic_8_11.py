@@ -25,7 +25,7 @@ FIG = region("t8_11_w", [("x", 0, 1.15), ("x^2", 0, 1.1)], (-0.2, 1.3), (-0.2, 1
              caption=r"The region between $y = x$ and $y = x^2$. About the $x$-axis, $R = x$ and $r = x^2$.")
 
 NOTES = [
-    Video("s8_11.py::Lesson", "The washer method", 5),
+    Video("s8_11.py::Lesson", "The washer method", 10.0),
 
     Section("Outer and inner radius"),
     Text(r"If there is a gap between the region and the axis, each slice is a washer: a disc with a hole, the same shape as the flat metal ring that sits under the head of a screw."),

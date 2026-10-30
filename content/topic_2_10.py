@@ -22,7 +22,7 @@ same("cot", sp.simplify(D(sp.cot(x)) + 1 / sp.sin(x)**2), 0)
 same("csc", sp.simplify(D(1 / sp.sin(x)) + sp.cos(x) / sp.sin(x)**2), 0)
 
 NOTES = [
-    Video("s2_10.py::Lesson", "Four more trig derivatives", 4),
+    Video("s2_10.py::Lesson", "Four more trig derivatives", 6.4),
 
     Section("A quick review"),
     Text(r"On the unit circle, the point at angle $\theta$ is $(\cos\theta, \sin\theta)$. The other four trig functions are built from those two: "

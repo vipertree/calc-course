@@ -17,7 +17,7 @@ same("not the sum", [sp.pi**2 / 6 - Ii(1 / x**2, 1)], [sp.pi**2 / 6 - 1])
 same("ex", [Ii(1 / x**2, 1), sp.simplify(Ii(x * sp.exp(-x**2), 1)), Ii(1 / (x * sp.log(x)), 2)], [1, 1 / (2 * sp.E), sp.oo])
 
 NOTES = [
-    Video("s10_4.py::Lesson", "The integral test", 5),
+    Video("s10_4.py::Lesson", "The integral test", 5.3),
 
     Section("Rectangles and a curve"),
     Text(r"Rectangles of width $1$ and heights $f(1), f(2), \ldots$ have total area $\sum f(n)$. Shifted right they fit under $y = f(x)$; shifted left they cover it. So the series and the improper integral are both finite or both infinite."),

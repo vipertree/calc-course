@@ -30,7 +30,7 @@ def plus_c(f, F):
 TOOL = {"sub": "substitution", "basic": "basic rules", "rewrite": "rewrite first", "div": "long division", "square": "complete the square"}
 
 NOTES = [
-    Video("s6_14.py::Lesson", "Choosing a technique", 4),
+    Video("s6_14.py::Lesson", "Choosing a technique", 5.4),
 
     Section("A toolkit, not a flowchart"),
     Table(r"a basic form (power, trig, $e^x$, $\frac1x$) & basic rules \\ "

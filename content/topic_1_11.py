@@ -22,7 +22,7 @@ FIG_T = graph("t1_11_test", [("x+1", -3, -1), ("x+3", -1, 1), ("5-x", 1, 3), ("0
               w="7.6cm", h="5.2cm", caption=r"The graph of $f$.")
 
 NOTES = [
-    Video("s1_11.py::Lesson", "Continuity at a point", 2.5),
+    Video("s1_11.py::Lesson", "Continuity at a point", 5.2),
 
     Section("The definition"),
     Definition("Continuity at a point", (

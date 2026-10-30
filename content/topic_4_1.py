@@ -12,7 +12,7 @@ from calclib import (VideoExample, FRQ, MCQ, BigIdea, Check, Example, Formula, I
 x, t = sp.symbols("x t")
 
 NOTES = [
-    Video("s4_1.py::Lesson", "The derivative in context", 4),
+    Video("s4_1.py::Lesson", "The derivative in context", 4.6),
 
     Section("A rate with units"),
     Text(r"If $f(x)$ measures some quantity and $x$ is the input, then $f'(a)$ is the \blank{instantaneous rate of change} of that quantity "

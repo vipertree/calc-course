@@ -24,7 +24,7 @@ FIG = graph("t9_8_rose", [], (-1.2, 1.2), (-1.2, 1.2), extra=r"\addplot[fn, doma
             caption=r"The rose $r = \sin 2\theta$: one petal for each interval of length $\frac\pi2$.")
 
 NOTES = [
-    Video("s9_8.py::Lesson", "Polar area", 6),
+    Video("s9_8.py::Lesson", "Polar area", 5.6),
 
     Section("Wedges, not rectangles"),
     Text(r"A sector of a circle with angle $\Delta\theta$ is the fraction $\frac{\Delta\theta}{2\pi}$ of the whole circle, so its area is $\frac{\Delta\theta}{2\pi}\cdot\pi r^2 = \frac12 r^2\,\Delta\theta$."),

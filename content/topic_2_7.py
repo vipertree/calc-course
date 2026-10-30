@@ -19,7 +19,7 @@ FIG_EXP = graph("t2_7_exp", [("exp(x)", -3, 1.5), ("ln(x)", 0.05, 4.5, "dashed")
                 w="5.6cm", h="5.6cm", caption=r"$e^x$ (solid) and $\ln x$ (dashed): mirror images across $y = x$.")
 
 NOTES = [
-    Video("s2_7.py::Lesson", "Four special derivatives", 4),
+    Video("s2_7.py::Lesson", "Four special derivatives", 9.9),
 
     Section("Sine and cosine"),
     FIG_SIN,

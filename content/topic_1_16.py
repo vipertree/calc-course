@@ -27,7 +27,7 @@ FIG_JUMP = graph("t1_16_jump", [("0.5*x+1", 0, 2), ("0.5*x+4", 2, 4)], xr=(0, 4.
                  caption=r"With a jump, the graph can skip the height $k$.")
 
 NOTES = [
-    Video("s1_16.py::Lesson", "The Intermediate Value Theorem", 3),
+    Video("s1_16.py::Lesson", "The Intermediate Value Theorem", 6.9),
 
     Section("The theorem"),
     Formula("Intermediate Value Theorem (IVT)", (

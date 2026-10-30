@@ -24,7 +24,7 @@ def plus_c(f, F):
 same("lesson", [sp.integrate(sp.log(x), (x, 1, sp.E))], [1])
 
 NOTES = [
-    Video("s6_11.py::Lesson", "Integration by parts", 5),
+    Video("s6_11.py::Lesson", "Integration by parts", 5.8),
 
     Section("The product rule, backward"),
     Formula("Integration by parts", (

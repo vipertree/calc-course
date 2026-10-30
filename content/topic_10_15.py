@@ -17,7 +17,7 @@ same("lesson", [ser(sp.log(1 + x), 5)], [x - x**2 / 2 + x**3 / 3 - x**4 / 4])
 same("ex", [ser(sp.atan(x), 6), ser(1 / (1 - x)**2, 3), sp.summation(n / sp.Integer(2)**n, (n, 1, sp.oo))], [x - x**3 / 3 + x**5 / 5, 1 + 2 * x + 3 * x**2, 2])
 
 NOTES = [
-    Video("s10_15.py::Lesson", "Functions as power series", 4),
+    Video("s10_15.py::Lesson", "Functions as power series", 4.3),
 
     Section("Term by term"),
     Formula("Calculus with power series", (r"If $f(x) = \sum c_n (x - a)^n$ for $|x - a| < R$, then \[ f'(x) = \sum n c_n (x - a)^{n-1} \] and \[ \int f(x)\,dx = C + \sum \frac{c_n (x - a)^{n+1}}{n + 1}, \] "

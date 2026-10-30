@@ -54,7 +54,7 @@ STEPS = (r"\textbf{1. Draw and label} a picture. \par "
          r"\textbf{4. Differentiate} both sides with respect to $t$, with the chain rule on every variable.")
 
 NOTES = [
-    Video("s4_4.py::Lesson", "Rates that are related", 8),
+    Video("s4_4.py::Lesson", "Rates that are related", 7.2),
 
     Section("Everything depends on time"),
     Text(r"When several quantities change together, each one is a function of time $t$. If an equation links the quantities, then "

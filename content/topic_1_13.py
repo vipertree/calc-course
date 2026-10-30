@@ -16,7 +16,7 @@ sol = sp.solve([sp.Eq(-1 + a, b + 1), sp.Eq(4 * b + 1, 5)], [a, b])
 same("two seams", [sol[a], sol[b]], [3, 1])
 
 NOTES = [
-    Video("s1_13.py::Lesson", "Removing discontinuities", 2.5),
+    Video("s1_13.py::Lesson", "Removing discontinuities", 4.0),
 
     Section("Filling a hole"),
     Text(r"$\displaystyle f(x) = \dfrac{x^2-16}{x-4}$ is undefined at $x = 4$, but $\displaystyle \lim_{x\to4}f(x) = \mblank{8}$. Defining "

@@ -32,7 +32,7 @@ same("shadow", sp.solve(sp.Eq(15 * s, 5 * (x + s)), s), [x / 2])
 same("shadow rate", solve_rate(s, x / 2, s, {d(x): 4, x: 10}), 2)
 
 NOTES = [
-    Video("s4_5.py::Lesson", "Solving related rates", 6),
+    Video("s4_5.py::Lesson", "Solving related rates", 8.4),
 
     Section("A strategy"),
     Formula("Solving a related rates problem", (

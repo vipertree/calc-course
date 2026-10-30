@@ -40,7 +40,7 @@ same("ex2", [horiz(C2)], [[(-1, -sp.sqrt(5)), (-1, sp.sqrt(5)), (1, -1), (1, 1)]
 same("ex3", [d2(C2).subs({x: 1, y: 1})], [3])
 
 NOTES = [
-    Video("s5_12.py::Lesson", "Implicit curves", 4),
+    Video("s5_12.py::Lesson", "Implicit curves", 8.0),
 
     Section("Horizontal and vertical tangents"),
     Text(r"For a curve given by an equation in $x$ and $y$, implicit differentiation (Topic 3.2) often gives $\frac{dy}{dx}$ as a fraction in $x$ and $y$. "

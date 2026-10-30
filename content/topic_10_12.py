@@ -18,7 +18,7 @@ close("first term left out", float(sp.Rational(1, 10)**4 / 24), 0.00000417, 5e-9
 close("e0.1 actual", float(sp.exp(sp.Rational(1, 10)) - (1 + sp.Rational(1, 10) + sp.Rational(1, 200) + sp.Rational(1, 6000))), 4.25e-6, 1e-7)
 
 NOTES = [
-    Video("s10_12.py::Lesson", "Lagrange error bound", 5),
+    Video("s10_12.py::Lesson", "Lagrange error bound", 5.3),
 
     Section("The bound"),
     Formula("Lagrange error bound", (r"If $P_n$ is the $n$th-degree Taylor polynomial for $f$ about $a$, then \[ |f(x) - P_n(x)| \le \frac{M}{(n + 1)!}\,|x - a|^{n+1}, \] where $M \ge |f^{(n+1)}(z)|$ for every $z$ between $a$ and $x$.")),

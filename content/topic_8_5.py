@@ -25,7 +25,7 @@ FIG = region("t8_5_both", [("sqrt(x)", 0, 4.4), ("x-2", 2, 4.4)], (-0.3, 4.6), (
              caption=r"The region bounded by $y = \sqrt x$, $y = x - 2$ and $y = 0$. Horizontal slices run from $x = y^2$ to $x = y + 2$.")
 
 NOTES = [
-    Video("s8_5.py::Lesson", "Area with respect to y", 5),
+    Video("s8_5.py::Lesson", "Area with respect to y", 7.4),
 
     Section("Right minus left"),
     Text(r"Use horizontal slivers. The sliver at height $y$ runs from the left curve to the right curve: length $f(y) - g(y)$, thickness $dy$."),

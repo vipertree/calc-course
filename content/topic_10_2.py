@@ -19,7 +19,7 @@ same("lesson", [gsum(3 * sp.Rational(2, 5)**n, 0)], [5])
 same("ex", [gsum(sp.Rational(-1, 3)**n, 1), gsum(sp.Rational(7, 10) * sp.Rational(1, 10)**n, 0)], [-sp.Rational(1, 4), sp.Rational(7, 9)])
 
 NOTES = [
-    Video("s10_2.py::Lesson", "Geometric series", 5),
+    Video("s10_2.py::Lesson", "Geometric series", 4.7),
 
     Section("Partial sums"),
     Text(r"A geometric series has first term $a$ and ratio $r$: $a + ar + ar^2 + \cdots$. Subtracting $rS_n$ from $S_n$ cancels everything but $a - ar^n$: $S_n - rS_n = a - ar^n$. Factor out $S_n$ on the left and $a$ on the right: $S_n(1 - r) = a\left(1 - r^n\right)$. Divide by $1 - r$ (for $r \ne 1$)."),

@@ -41,7 +41,7 @@ FIG_SQ = graph("t6_4_sq", [("x^2", 0, 3.1)], xr=(0, 3.5), yr=(0, 10), ystep=2, x
                closed=[(0, 0), (1, 1), (2, 4), (3, 9)], caption=r"The graph of $F(x) = \int_0^x 2t\,dt = x^2$.")
 
 NOTES = [
-    Video("s6_4.py::Lesson", "The Fundamental Theorem of Calculus", 11),
+    Video("s6_4.py::Lesson", "The Fundamental Theorem of Calculus", 9.3),
 
     Section("Accumulation functions"),
     Formula("Accumulation function", (

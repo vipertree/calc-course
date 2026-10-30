@@ -26,7 +26,7 @@ same("ex2", list(best(x * (200 - 2 * x), 0, 100)), [50, 5000])
 same("ex3", list(best(x + 9 / x, sp.Rational(1, 100), 100, "min")), [3, 6])
 
 NOTES = [
-    Video("s5_10.py::Lesson", "Introduction to optimization", 4),
+    Video("s5_10.py::Lesson", "Introduction to optimization", 6.7),
 
     Section("What optimization is"),
     Text(r"Optimization means finding the \blank{largest} or \blank{smallest} value of a quantity: the most area, the least material, the lowest cost. "

@@ -22,7 +22,7 @@ close("lesson", lim_sum((1 + 2 * k / n)**2 * 2 / n), float(sp.integrate(x**2, (x
 same("ex", [sum((sp.Rational(2 * j, 4))**3 * sp.Rational(1, 2) for j in range(1, 5)), sp.integrate(sp.sqrt(4 - x**2), (x, -2, 2))], [sp.Rational(25, 4), 2 * sp.pi])
 
 NOTES = [
-    Video("s6_3.py::Lesson", "Sums and integrals", 5),
+    Video("s6_3.py::Lesson", "Sums and integrals", 6.0),
 
     Section("Sigma notation"),
     Text(r"$\Sigma$ is sigma, the capital Greek letter S: S for sum. It means add up."),

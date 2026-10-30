@@ -26,7 +26,7 @@ same("nonzero/0 L", L((x + 1) / (x - 3), 3, "-"), -sp.oo)
 same("nonzero/0 R", L((x + 1) / (x - 3), 3, "+"), sp.oo)
 
 NOTES = [
-    Video("s1_6.py::Lesson", "Algebra for 0/0 limits", 4),
+    Video("s1_6.py::Lesson", "Algebra for 0/0 limits", 9.1),
 
     Section("What 0/0 tells you"),
     Text(r"Substituting $x = 3$ into $\dfrac{x^2-9}{x-3}$ yields \mblank{\tfrac00}. This is called an "

@@ -13,7 +13,7 @@ P, y, x, T = sp.symbols("P y x T")
 same("lesson", [(sp.Rational(3, 10) * P * (1 - P / 500)).subs(P, 100), (sp.Rational(3, 10) * P * (1 - P / 500)).subs(P, 600), (-sp.Rational(1, 10) * (T - 70)).subs(T, 130)], [24, -36, -6])
 
 NOTES = [
-    Video("s7_1.py::Lesson", "Differential equations", 5),
+    Video("s7_1.py::Lesson", "Differential equations", 5.8),
 
     Section("Rules for rates"),
     Text(r"\textbf{Cooling coffee, one piece at a time.} The coffee starts at $90^\circ$F in a $70^\circ$F room. "

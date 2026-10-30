@@ -34,7 +34,7 @@ gp = lambda v: sp.integrate(FP, (t, 0, v))
 same("p", [gp(1), gp(3), gp(5), gp(6), gp(7)], [-sp.Rational(1, 2), sp.Rational(3, 2), sp.Rational(11, 2), sp.Rational(13, 2), sp.Rational(11, 2)])
 
 NOTES = [
-    Video("s6_5.py::Lesson", "Reading an accumulation function", 6),
+    Video("s6_5.py::Lesson", "Reading an accumulation function", 7.3),
 
     Section("$g' = f$"),
     Text(r"For $g(x) = \int_a^x f(t)\,dt$, the Fundamental Theorem gives $g' = f$ and $g'' = f'$. So reading $g$ from the graph of $f$ is reading a function from the graph of its derivative (Topic 5.9's chart, one level up)."),

@@ -24,7 +24,7 @@ FIG = region("t8_10_axis", [("x^2", -2.2, 2.2)], (-2.6, 2.6), (-0.4, 5), [(lambd
              labels=[(2.5, 4, "above left", r"axis $y = 4$"), (1.1, 2.6, "right", r"$R = 4 - x^2$")], caption=r"Revolving about $y = 4$: the radius runs from the curve up to the axis.")
 
 NOTES = [
-    Video("s8_10.py::Lesson", "Discs about other axes", 5),
+    Video("s8_10.py::Lesson", "Discs about other axes", 6.6),
 
     Section("The radius is a distance to the axis"),
     Text(r"When the axis is a line $y = k$ or $x = k$ that bounds the region, the slices are still solid discs. Only the radius changes: it is the distance from the axis to the curve."),

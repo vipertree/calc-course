@@ -28,7 +28,7 @@ same("lesson", [pos([2 * t, 3 * t**2], [1, -2], 2)], [[5, 6]])
 same("ex", [integ([sp.sin(t), sp.cos(t)], 0, sp.pi), sp.solve(30 * t - 16 * t**2, t), pos([sp.exp(t), 1 / (t + 1)], [2, 0], 1)], [[2, 0], [0, sp.Rational(15, 8)], [sp.E + 1, sp.log(2)]])
 
 NOTES = [
-    Video("s9_5.py::Lesson", "Integrating vector functions", 4),
+    Video("s9_5.py::Lesson", "Integrating vector functions", 4.2),
 
     Section("Componentwise"),
     Formula("Integrating a vector-valued function", (r"\[ \int \langle x(t), y(t)\rangle\,dt = \left\langle \int x(t)\,dt,\ \int y(t)\,dt\right\rangle + \blank{\langle C_1, C_2\rangle}. \]")),

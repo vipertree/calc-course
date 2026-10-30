@@ -21,7 +21,7 @@ check("lesson", all([ok(sp.sqrt(x**2 + 3), lambda a, b: a / b, 1, 2), ok(3 * sp.
                      ok(2 / (2 - x**2), lambda a, b: a * b**2, 0, 1)]))
 
 NOTES = [
-    Video("s7_7.py::Lesson", "Particular solutions", 4),
+    Video("s7_7.py::Lesson", "Particular solutions", 4.6),
 
     Section("Picking one solution"),
     Formula("Particular solution", (

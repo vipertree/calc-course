@@ -26,7 +26,7 @@ FIG_FP = graph("t2_2_fp", [("2*x", -2.2, 2.2)], xr=(-2.5, 2.5), yr=(-4.5, 4.5), 
                w="5.2cm", h="4.4cm", ystep=2, caption=r"$f'(x) = 2x$: the slopes, plotted")
 
 NOTES = [
-    Video("s2_2.py::Lesson", "The derivative function", 3.5),
+    Video("s2_2.py::Lesson", "The derivative function", 9.7),
 
     Section("From one slope to a slope function"),
     Text(r"In Topic 2.1 we found $f'(a)$ at one point. Letting the point vary gives a new function that reports the "

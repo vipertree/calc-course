@@ -22,7 +22,7 @@ H = sp.Piecewise((3, x < 1), (4 - x, True))
 same("h", [sp.integrate(H, (x, -2, 1)), sp.integrate(H, (x, 1, 4)), sp.integrate(H, (x, 4, 5)), sp.integrate(H, (x, -2, 5))], [9, sp.Rational(9, 2), -sp.Rational(1, 2), 13])
 
 NOTES = [
-    Video("s6_6.py::Lesson", "Properties of integrals", 5),
+    Video("s6_6.py::Lesson", "Properties of integrals", 4.6),
 
     Section("The properties"),
     Text(r"A definite integral is the area under the curve, with area above the $x$-axis counted as positive and area below it counted as negative. "

@@ -24,7 +24,7 @@ same("ex", [speed2(3 * sp.cos(t), 3 * sp.sin(t)), sp.simplify(speed2(t - sp.sin(
 close("ex3", length_n(sp.exp(t), t, 0, 1), 2.003, 5e-4)
 
 NOTES = [
-    Video("s9_3.py::Lesson", "Parametric arc length", 5),
+    Video("s9_3.py::Lesson", "Parametric arc length", 5.3),
 
     Section("Tiny hypotenuses in time"),
     Text(r"In a tiny time $dt$ the point moves $dx$ across and $dy$ up: $ds^2 = dx^2 + dy^2$, so $ds = \sqrt{\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2}\,dt$."),

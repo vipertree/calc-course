@@ -28,7 +28,7 @@ FIG_RS = region("t8_6_rs", [("x^3-6*x^2+8*x", -0.2, 4.2)], (-0.5, 4.5), (-4, 4),
                 labels=[(1, 1, "center", "$R$"), (3, -1, "center", "$S$")], caption=r"The graph of $f(x) = x^3 - 6x^2 + 8x$ with regions $R$ and $S$.")
 
 NOTES = [
-    Video("s8_6.py::Lesson", "Curves that cross more than twice", 6),
+    Video("s8_6.py::Lesson", "Curves that cross more than twice", 6.4),
 
     Section("Split at the crossings"),
     Text(r"When the curves cross inside the interval, top and bottom trade places. Where $f - g > 0$, $f$ is on top; where $f - g < 0$, $g$ is."),

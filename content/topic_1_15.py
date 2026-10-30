@@ -24,7 +24,7 @@ FIG_S = graph("t1_15_sinc", [("sin(deg(x))/x", 0.3, 30), ("1/x", 0.3, 30, "dashe
               caption=r"$\dfrac{\sin x}{x}$, squeezed by $\pm\dfrac1x$")
 
 NOTES = [
-    Video("s1_15.py::Lesson", "Limits at infinity", 3),
+    Video("s1_15.py::Lesson", "Limits at infinity", 5.5),
 
     Section("Limits at infinity"),
     Text(r"\textbf{Reminder.} A horizontal line has an equation of the form $y = c$: every point on the line $y = 3$ has height $3$, "

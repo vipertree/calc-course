@@ -23,7 +23,7 @@ FIG_LAND = unit_circle("t0_2_land", [(k * float(pi) / 6, l) for k, l in ((0, "$0
                        caption="Landmark angles. Count in sixths, fourths, or thirds of $\\pi$.", labels=False)
 
 NOTES = [
-    Video("s0_2.py::Lesson", "Angles and radian measure", 9),
+    Video("s0_2.py::Lesson", "Angles and radian measure", 8.1),
 
     Section("Angles in standard position"),
     Text(r"An angle in \textbf{standard position} starts on the positive $x$-axis (the \textbf{initial side}) and turns to the \textbf{terminal side}. "

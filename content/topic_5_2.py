@@ -25,7 +25,7 @@ same("ex1", crit(x**3 - 3 * x**2), [0, 2])
 same("ex2", crit(sp.cbrt(x)**2 * (x - 5)), [0, 2])
 
 NOTES = [
-    Video("s5_2.py::Lesson", "Highest and lowest points", 4),
+    Video("s5_2.py::Lesson", "Highest and lowest points", 6.5),
 
     Section("Absolute and relative extrema"),
     Text(r"An \blank{absolute} (global) maximum is the largest value $f$ takes on its whole domain or interval. A \blank{relative} (local) maximum "

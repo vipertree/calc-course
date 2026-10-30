@@ -28,7 +28,7 @@ same("ex2", list(extremes(x - 2 * sp.log(x), 1, sp.E**2)), [sp.E**2 - 4, 2 - 2 *
 same("ex3", list(extremes(sp.sin(x) + sp.cos(x), 0, sp.pi)), [sp.sqrt(2), -1])
 
 NOTES = [
-    Video("s5_5.py::Lesson", "The Candidates Test", 4),
+    Video("s5_5.py::Lesson", "The Candidates Test", 5.5),
 
     Section("Where an absolute extremum can be"),
     Text(r"On a closed interval $[a, b]$, a continuous function has an absolute max and min (the Extreme Value Theorem). Each one is either at a "

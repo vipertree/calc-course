@@ -24,7 +24,7 @@ def item(f, a, b, how, work="2.4cm"):
 
 
 NOTES = [
-    Video("s6_13.py::Lesson", "Improper integrals", 5),
+    Video("s6_13.py::Lesson", "Improper integrals", 7.0),
 
     Section("Improper integrals are limits"),
     Formula("Improper integrals", (

@@ -16,7 +16,7 @@ close("S4", float(sp.Rational(7, 12)), 0.58, 0.005)
 close("ln2", float(sum((-1)**(k + 1) / k for k in range(1, 200001))), float(sp.log(2)), 1e-5)
 
 NOTES = [
-    Video("s10_7.py::Lesson", "The alternating series test", 4),
+    Video("s10_7.py::Lesson", "The alternating series test", 4.2),
 
     Section("The test"),
     Formula("Alternating series test", (r"If $b_n > 0$, $b_n$ is \blank{decreasing}, and $\lim_{n\to\infty} b_n = \blank{0}$, then $\sum (-1)^{n+1} b_n$ (or $\sum (-1)^n b_n$) converges.")),

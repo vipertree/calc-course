@@ -18,7 +18,7 @@ FIG_TAN = graph("t2_3_tan", [("0.25*(x-1)^2+1", -0.5, 5.5), ("x-1", 0.6, 5.4, "d
 same("fig tangent slope", sp.diff(sp.Rational(1, 4) * (x - 1)**2 + 1, x).subs(x, 3), 1)
 
 NOTES = [
-    Video("s2_3.py::Lesson", "Estimating derivatives", 3),
+    Video("s2_3.py::Lesson", "Estimating derivatives", 4.9),
 
     Section("From a table"),
     Table(r"$t$ (hours) & 0 & 2 & 5 & 7 & 10 \\ $T(t)$ ($^\circ$F) & 48 & 55 & 63 & 66 & 64", "c|ccccc"),

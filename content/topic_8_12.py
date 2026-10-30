@@ -26,7 +26,7 @@ FIG_FRQ = region("t8_12_frq", [("4-x^2", -2.4, 2.1), ("x+2", -2.6, 1.6)], (-2.7,
                  caption=r"Region $R$, between $y = 4 - x^2$ and $y = x + 2$.")
 
 NOTES = [
-    Video("s8_12.py::Lesson", "Washers about other axes", 5),
+    Video("s8_12.py::Lesson", "Washers about other axes", 8.3),
 
     Section("Measure from the axis"),
     Text(r"Every radius starts at the axis of revolution. With the axis $y = -1$ below the region, the distance up to $y = x$ is $x - (-1) = x + 1$."),

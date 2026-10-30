@@ -24,7 +24,7 @@ FIG_C = graph("t5_8_c", [("2-2*x", 0, 2), ("x-4", 2, 4), ("sqrt(abs(4-(x-6)^2))"
               caption="The graph of $f'$ on $[0, 8]$: two segments and a semicircle.")
 
 NOTES = [
-    Video("s5_8.py::Lesson", "Graphs of f and its derivatives", 4),
+    Video("s5_8.py::Lesson", "Graphs of f and its derivatives", 7.9),
 
     Section("Reading a graph of f'"),
     Text(r"The graph of $f'$ is a graph of slopes. Every feature of $f$ shows up in it, one level down:"),

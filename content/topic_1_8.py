@@ -36,7 +36,7 @@ FIG_SINC = graph("t1_8_sinc", [("cos(deg(x))", -1.5, 1.5, "dashed"), ("1", -1.5,
                  caption=r"$\cos x \le \dfrac{\sin x}{x} \le 1$")
 
 NOTES = [
-    Video("s1_8.py::Lesson", "The squeeze theorem", 4.5),
+    Video("s1_8.py::Lesson", "The squeeze theorem", 6.8),
 
     Section("Trapping a function"),
     Text(r"Near $0$, $\sin\frac1x$ oscillates, and algebra can't simplify $x^2\sin\frac1x$. But $\displaystyle -1 \le \sin\dfrac1x \le 1$, and "

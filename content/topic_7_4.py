@@ -36,7 +36,7 @@ KEY = slope_field("t7_4_frq_key", lambda a, c: a * (c - 1), [-2, -1, 0, 1, 2], [
 FIG_L = slope_field("t7_4_l", lambda a, c: c * (2 - c), [0, 1, 2, 3, 4], [-0.5, 0, 0.5, 1, 1.5, 2, 2.5], (-0.5, 4.5), (-1, 3), caption=r"The slope field for $\frac{dy}{dx} = y(2 - y)$.")
 
 NOTES = [
-    Video("s7_4.py::Lesson", "Reasoning with slope fields", 4),
+    Video("s7_4.py::Lesson", "Reasoning with slope fields", 4.2),
 
     Section("Reading a slope field"),
     Text(r"To sketch the solution through a point, start at the point and move both ways, staying \blank{tangent} to the segments; the curve never cuts across them."),

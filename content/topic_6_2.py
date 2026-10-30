@@ -112,7 +112,7 @@ FIG_M = sums_fig("t6_2_mid", "mid", r"Midpoint Riemann sum: each height is $f$ a
 FIG_G = graph("t6_2_g", [("4-0.25*x^2", 0, 4)], xr=(0, 4), yr=(0, 5), ylabel="g(x)", caption="The graph of $g(x) = 4 - \\frac14x^2$.")
 
 NOTES = [
-    Video("s6_2.py::Lesson", "Riemann sums", 6),
+    Video("s6_2.py::Lesson", "Riemann sums", 10.5),
 
     Section("Left, right and midpoint Riemann sums"),
     Text(r"To approximate the area under a curve, split the interval into pieces, put a rectangle on each piece, and add up the rectangles' areas. "

@@ -31,7 +31,7 @@ FIG_Q = region("t8_4_q", [("4-x^2", -2.3, 2.3), ("x+2", -2.5, 1.5)], (-2.5, 2.5)
                caption=r"The region between $y = 4 - x^2$ and $y = x + 2$.")
 
 NOTES = [
-    Video("s8_4.py::Lesson", "Area between curves", 6),
+    Video("s8_4.py::Lesson", "Area between curves", 7.2),
 
     Section("Top minus bottom"),
     Text(r"Two ways to see it. Take the whole area under the top curve and cut out the smaller area under the bottom curve: $\int_a^b f(x)\,dx - \int_a^b g(x)\,dx$. "

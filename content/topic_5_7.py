@@ -27,7 +27,7 @@ assert sdt(x**4) == {0: "inconclusive"}
 assert sdt(x + 4 / x, 0) == {2: "min"}
 
 NOTES = [
-    Video("s5_7.py::Lesson", "The second derivative test", 4),
+    Video("s5_7.py::Lesson", "The second derivative test", 5.8),
 
     Section("The test"),
     Text(r"At a horizontal tangent, the bend of the graph tells the story. A hill with a flat top is a peak; a bowl with a flat bottom is a valley."),

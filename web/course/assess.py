@@ -81,13 +81,20 @@ def result_payload(attempt, priv):
     return {"score": attempt.score, "total": attempt.total, "detail": detail}
 
 
+def visible(request, num):
+    """May this taker see scores and solutions for num now? The class setup decides: right away, at the due date,
+    or when the teacher releases them (the default, and how class quizzes always worked)."""
+    from classwork.access import results_visible
+    return results_visible(request.user, "unittest" if num.startswith("U") else "quiz", num)
+
+
 def state(request, num, info, priv):
     """What the page needs to know about this taker's quiz or test."""
     if info["mode"] != "class":
         return {"mode": "individual"}
     cls = info["classroom"]
     a = QuizAttempt.objects.filter(user=request.user, topic=num, classroom=cls).order_by("-at").first()
-    rel = released(cls, num)
+    rel = visible(request, num)
     st = {"mode": "class", "form": info["form"], "class_name": cls.name, "submitted": a is not None, "released": rel}
     if a is not None and rel:
         st["result"] = result_payload(a, priv)
@@ -97,4 +104,4 @@ def state(request, num, info, priv):
 def withheld(request, num):
     """True when this user's results for num must stay hidden (class student, not yet released)."""
     cls = class_for(request.user)
-    return cls is not None and not released(cls, num)
+    return cls is not None and not visible(request, num)

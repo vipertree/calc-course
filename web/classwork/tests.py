@@ -172,3 +172,102 @@ class CalendarPageTests(TestCase):
     def test_the_return_address_stays_on_the_page(self):
         r = self.web.post(self.url, {"action": "noschool", "day": "2026-11-26", "back": "//evil.example/"})
         self.assertEqual(r["Location"], self.url)
+
+
+import json  # noqa: E402
+
+from django.utils import timezone  # noqa: E402
+
+from course.models import QuizAttempt  # noqa: E402
+
+from .access import gate  # noqa: E402
+
+
+class StudentGateTests(TestCase):
+    """What a class's setup and calendar do to one student's pages."""
+
+    def setUp(self):
+        self.t = teacher()
+        self.c = Classroom.objects.create(name="P3", teacher=self.t)
+        self.kid = User.objects.create_user("kid", password="pw12345678")
+        Profile.objects.create(user=self.kid, display_name="Kid")
+        self.c.enrollments.create(student=self.kid)
+        self.web = Client()
+        self.web.force_login(self.kid)
+        self.now = timezone.now()
+
+    def configure(self, **kinds):
+        Setup.objects.update_or_create(classroom=self.c, defaults={"kinds": kinds})
+
+    def date(self, kind, ref="2.5", opens=None, due=None, **kw):
+        return Dated.objects.create(classroom=self.c, kind=kind, ref=ref, opens=opens, due=due, **kw)
+
+    def quiz_post(self):
+        return self.web.post("/api/2.5/quiz/", json.dumps({"answers": {}}), content_type="application/json")
+
+    def test_nothing_changes_for_a_class_nobody_set_up(self):
+        self.assertEqual(gate(self.kid, "quiz", "2.5")["state"], "open")
+        self.assertEqual(self.web.get("/topic/2.5/quiz/").status_code, 200)
+
+    def test_a_scheduled_quiz_waits_for_its_open_date(self):
+        self.configure(quiz={"opens": "schedule", "dates": "dated"})
+        self.date("quiz", opens=self.now + dt.timedelta(days=2), due=self.now + dt.timedelta(days=3))
+        page = self.web.get("/topic/2.5/quiz/").content.decode()
+        self.assertIn("opens", page)
+        self.assertNotIn('id="app"', page)
+        self.assertEqual(self.quiz_post().status_code, 403)
+
+    def test_a_locked_quiz_closes_at_its_due_date_unless_reopened(self):
+        self.configure(quiz={"dates": "dated", "late": "lock"})
+        d = self.date("quiz", due=self.now - dt.timedelta(hours=1))
+        self.assertEqual(self.quiz_post().status_code, 409)
+        self.assertIn("closed", self.web.get("/topic/2.5/quiz/").content.decode())
+        StudentException.objects.create(dated=d, student=self.kid, due=self.now + dt.timedelta(days=2))
+        self.assertEqual(gate(self.kid, "quiz", "2.5")["state"], "open")
+        self.assertEqual(self.quiz_post().status_code, 200)
+
+    def test_late_work_is_accepted_and_marked(self):
+        self.configure(quiz={"dates": "dated", "late": "marked"})
+        self.date("quiz", due=self.now - dt.timedelta(hours=1))
+        g = gate(self.kid, "quiz", "2.5")
+        self.assertEqual((g["state"], g["late"]), ("open", True))
+
+    def test_results_follow_the_setup(self):
+        self.quiz_post()
+        self.assertFalse(json.loads(self.quiz_post().content).get("score") is not None)   # default: wait for release
+        self.configure(quiz={"results": "now"})
+        QuizAttempt.objects.all().delete()
+        r = json.loads(self.quiz_post().content)
+        self.assertTrue(r["released"])
+
+    def test_best_of_unlimited_allows_retakes(self):
+        self.configure(quiz={"attempts": "best"})
+        self.assertEqual(self.quiz_post().status_code, 200)
+        self.assertEqual(self.quiz_post().status_code, 200)
+        self.configure(quiz={"attempts": "one"})
+        self.assertEqual(self.quiz_post().status_code, 409)
+
+    def test_paper_and_unused_quizzes_say_so(self):
+        self.configure(quiz={"where": "paper"})
+        self.assertIn("on paper", self.web.get("/topic/2.5/quiz/").content.decode())
+        self.configure(quiz={"where": "off"})
+        self.assertIn("use this quiz on the site", self.web.get("/topic/2.5/quiz/").content.decode())
+
+    def test_closed_practice_stops_checking(self):
+        self.configure(practice={"dates": "dated", "late": "lock"})
+        self.date("practice", due=self.now - dt.timedelta(hours=1))
+        pub = __import__("course.content", fromlist=["public"]).public("2.5")
+        r = self.web.post("/api/2.5/check/", json.dumps({"item": pub["practice"][0]["id"], "given": "1", "area": "practice"}),
+                          content_type="application/json")
+        self.assertEqual(r.status_code, 403)
+
+    def test_due_date_shows_on_the_lesson(self):
+        self.configure(practice={"dates": "dated"})
+        self.date("practice", due=self.now + dt.timedelta(days=1))
+        self.assertIn("due-line", self.web.get("/topic/2.5/practice/").content.decode())
+
+    def test_people_outside_a_class_are_never_gated(self):
+        self.configure(quiz={"where": "off"})
+        solo = User.objects.create_user("solo", password="pw12345678")
+        Profile.objects.create(user=solo, display_name="Solo", full_access=True)
+        self.assertEqual(gate(solo, "quiz", "2.5")["state"], "open")

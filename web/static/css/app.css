@@ -903,3 +903,6 @@ details.pop > div.stack { margin-top: 10px; padding: 12px 14px; background: var(
 .cw-exc li { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 4px 0; font-size: .92rem; }
 .cw-gap { margin-top: 22px !important; }
 .cw-days-row { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.due-line { font: 600 .92rem var(--font-ui); margin: -6px 0 10px; color: var(--ink-2); }
+.late-tag { font: 700 .72rem var(--font-ui); background: var(--hi); color: var(--panel); border-radius: 99px; padding: 1px 8px; margin-left: 4px; }
+.gate-card { max-width: 40rem; margin-top: 10px; }

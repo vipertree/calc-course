@@ -4,6 +4,7 @@
 {% if DESMOS_API_KEY %}<script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey={{ DESMOS_API_KEY }}"></script>{% endif %}{% endblock %}
 {% block main %}
 <div class="lesson-head" data-unit="{{ L.unit }}"><span class="chip">U{{ L.unit }}{% if course %} {{ course }}{% endif %}</span><span class="unit">{{ test_label|capfirst }} · {{ L.minutes }}</span><h1>{{ L.title }}</h1></div>
+{% if gate.due_text %}<p class="due-line">{% if gate.excused %}You're excused from this.{% else %}Due {{ gate.due_text }}{% if gate.late %} <span class="late-tag">late</span>{% endif %}{% endif %}</p>{% endif %}
 {% if versions %}<nav class="card test-versions mathy" aria-label="Test versions">
   <p><strong>This unit's test comes in two versions.</strong>{% if class_course %} Your class takes the {{ class_course }} version.{% endif %}</p>
   <div class="row">{% for v in versions %}<a class="btn small{% if v.on %} primary{% endif %}" href="{{ v.url }}"{% if v.on %} aria-current="page"{% endif %}>{{ v.course }} version</a>{% endfor %}</div>

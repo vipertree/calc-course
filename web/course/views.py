@@ -23,6 +23,7 @@ from .site_pages import course_facts
 from .models import Draft, ExamAttempt, FRQScore, IssuedPacket, QuizAttempt, Release, Response, StepDone
 
 AREAS = ("notes", "practice", "quiz", "testprep")
+AREA_KIND = {"notes": "notes", "practice": "practice", "quiz": "quiz", "testprep": "testprep"}
 FREE_PRACTICE = 4          # practice problems anyone can try without an account
 
 
@@ -247,6 +248,30 @@ def _current_unit(user):
     return unit_of(topic) or 1
 
 
+def _gate(request, kind, num):
+    """The class gate for this student and this work (classwork.access), with times shown in the class's zone."""
+    from classwork import access, calendar as cal, setup as cs
+    g = access.gate(request.user, kind, num)
+    c = g["classroom"]
+    if c is not None:
+        show = cs.show(c)
+        fmt = lambda m: m.astimezone(cal.zone(c)).strftime("%a %b %-d, %-I:%M %p").replace(":00 ", " ") if m else ""
+        g.update(opens_text=fmt(g["opens"]), due_text=fmt(g["due"]) if show["due_dates"] else "")
+    return g
+
+
+GATE_WORDS = {"quiz": "quiz", "unittest": "unit test", "notes": "lesson", "practice": "practice set", "testprep": "test prep"}
+
+
+def _gate_page(request, g, kind, ctx):
+    what = GATE_WORDS.get(kind, "work")
+    msg = {"not_yet": f"This {what} opens {g.get('opens_text')}. Your teacher put it on the class schedule.",
+           "off": f"Your class doesn't use this {what} on the site.",
+           "paper": f"Your teacher gives this {what} on paper, in class.",
+           "closed": f"This {what} closed {g.get('due_text') or 'on its due date'}. If you need more time, ask your teacher."}[g["state"]]
+    return render(request, "course/gate.html", {**ctx, "gate": g, "gate_message": msg}, status=200)
+
+
 def unit_test(request, num):
     if not can_open(request.user, num):
         return render(request, "course/locked.html", {"what": "Unit tests"})
@@ -256,6 +281,10 @@ def unit_test(request, num):
     pub = content.public(num)
     if not pub:
         raise Http404("That unit test isn't written yet.")
+    g = _gate(request, "unittest", num)
+    if g["state"] in ("not_yet", "off", "paper") or (g["state"] == "closed" and not QuizAttempt.objects.filter(
+            user=request.user, topic=num, classroom=g["classroom"]).exists()):
+        return _gate_page(request, g, "unittest", {"L": {"title": content.test_label(num), "label": num}, "num": num, "test_page": True})
     pub, info = assess.draw(request, num, pub)
     state = {"correct": [], "steps_done": [], "drafts": _drafts(request.user, num),
              "frq": {s.part: s.earned for s in FRQScore.objects.filter(user=request.user, topic=num)},
@@ -272,7 +301,7 @@ def unit_test(request, num):
     course, mine = content.test_course(num), _class_course(request.user)
     versions = [{**v, "label": content.test_label(v["num"]), "on": v["num"] == num, "url": reverse("unit_test", args=[v["num"]])}
                 for v in content.test_versions(unit)] if course else []
-    return render(request, "course/unittest.html", {"L": pub, "num": num, "lesson_json": pub, "state_json": state,
+    return render(request, "course/unittest.html", {"L": pub, "num": num, "lesson_json": pub, "state_json": state, "gate": g,
                                                     "test_label": content.test_label(num), "course": course,
                                                     "versions": versions, "class_course": mine if course else None})
 
@@ -294,6 +323,14 @@ def lesson(request, num, area="notes"):
         return render(request, f"course/{area}.html", {
             "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
             "lesson_json": pub, "state_json": state, "packet": False, "OPEN": True, "twin": _twin(num)})
+    kind = AREA_KIND[area]
+    g = _gate(request, kind, num)
+    ctx = {"L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt, "OPEN": True, "twin": _twin(num)}
+    if g["state"] == "not_yet" or (kind == "quiz" and g["state"] in ("off", "paper")):
+        return _gate_page(request, g, kind, ctx)
+    if kind == "quiz" and g["state"] == "closed" and not QuizAttempt.objects.filter(
+            user=request.user, topic=num, classroom=g["classroom"]).exists():
+        return _gate_page(request, g, kind, ctx)
     info = None
     if area == "quiz":
         pub, info = assess.draw(request, num, _lesson(num)[0])
@@ -313,9 +350,11 @@ def lesson(request, num, area="notes"):
         state["assess"] = assess.state(request, num, info, content.private(num))
         if state["assess"]["mode"] == "class":
             state["quiz"] = []
+    if g["state"] == "closed":
+        state["closed"] = True
     return render(request, f"course/{area}.html", {
         "L": pub, "unit": unit, "num": num, "area": area, "prev": prev, "next": nxt,
-        "lesson_json": pub, "state_json": state, "packet": packets.available(num), "OPEN": True,
+        "lesson_json": pub, "state_json": state, "packet": packets.available(num), "OPEN": True, "gate": g,
         "slides": _is_teacher(request.user) and slides.manifest(num) is not None, "twin": _twin(num),
     })
 
@@ -375,6 +414,13 @@ def api_check(request, num):
         return JsonResponse(out)
     if area not in ("notes", "practice", "testprep", "frq"):
         return JsonResponse({"error": "bad area"}, status=400)
+    if not num.startswith("U"):
+        from classwork.access import gate
+        st = gate(request.user, "notes" if item in priv["blanks"] else AREA_KIND.get(area, "testprep"), num)["state"]
+        if st == "not_yet":
+            return JsonResponse({"error": "not open yet"}, status=403)
+        if st == "closed" and area == "practice":
+            return JsonResponse({"error": "closed"}, status=403)
     if item in priv["blanks"]:
         ok = grading.check_blank(given, priv["blanks"][item])
         if ok or not d.get("live"):         # live checks while typing only record a hit, never a miss
@@ -460,7 +506,13 @@ def api_quiz(request, num):
     served_pub, info = assess.draw(request, num, pub)
     served = [it["id"] for it in served_pub["quiz"]]          # grade only what this taker was given
     cls = info["classroom"]
-    if cls is not None and QuizAttempt.objects.filter(user=request.user, topic=num, classroom=cls).exists():
+    from classwork.access import gate
+    g = gate(request.user, "unittest" if num.startswith("U") else "quiz", num)
+    if g["state"] in ("not_yet", "off", "paper"):
+        return JsonResponse({"error": "not open"}, status=403)
+    if g["state"] == "closed":
+        return JsonResponse({"error": "closed"}, status=409)
+    if cls is not None and g["attempts"] != "best" and QuizAttempt.objects.filter(user=request.user, topic=num, classroom=cls).exists():
         return JsonResponse({"error": "already submitted", "submitted": True}, status=409)
     answers = d.get("answers")
     if not isinstance(answers, dict):
@@ -477,7 +529,7 @@ def api_quiz(request, num):
                                    classroom=cls, form=info["form"],
                                    detail={k: {"given": v["given"], "correct": v["correct"]} for k, v in detail.items()})
     if cls is not None:
-        if assess.released(cls, num):
+        if assess.visible(request, num):
             return JsonResponse({"submitted": True, "released": True, **assess.result_payload(a, priv)})
         return JsonResponse({"submitted": True, "released": False})
     assess.new_draw(request, num)                             # the next attempt gets a fresh draw

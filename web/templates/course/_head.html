@@ -3,6 +3,7 @@
   <span class="unit">{{ unit.line }}{% if L.bc_only %} · <span class="bc-tag">BC ONLY</span>{% elif twin %} · <span class="bc-tag">{{ twin.mine }}</span>{% endif %}{% if twin %} · <a href="{% url 'lesson' twin.n %}">{{ twin.course }} version</a>{% endif %}</span>
   <h1>{{ L.title }}</h1>
 </div>
+{% if gate.due_text and gate.state != "off" %}<p class="due-line">{% if gate.excused %}You're excused from this.{% elif gate.state == "closed" %}Closed {{ gate.due_text }}. Your work so far is kept.{% else %}Due {{ gate.due_text }}{% if gate.late %} <span class="late-tag">late</span>{% endif %}{% endif %}</p>{% endif %}
 {% if OPEN and not user.is_authenticated %}<p class="visitor-note">This lesson is free. <a href="{% url 'signup' %}?next={{ request.path|urlencode }}">Make a free account</a> to save your answers and progress, and to take the quiz.</p>{% endif %}
 <nav class="tabs">
   <a href="{% url 'lesson' num %}" class="{% if area == 'notes' %}on{% endif %}">Lesson</a>

@@ -242,7 +242,9 @@
       const go = async () => {
         const given = valueOf(mf).trim();
         if (!given) { fb(status, null, "Type an answer first."); return; }
-        const r = await post(app.dataset.check, { item: item.id, given, area: ar });
+        let r;
+        try { r = await post(app.dataset.check, { item: item.id, given, area: ar }); }
+        catch (e) { fb(status, null, S.closed ? "This set is closed: its due date has passed." : "That didn't go through. Check your connection and try again."); return; }
         tries += 1;
         if (r.saved) { fb(status, null, "Answer saved. Your teacher will release results."); return; }
         if (r.correct) { fb(status, true, "Correct"); showSolution(r); }

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ L.title }} · AP Calculus{% endblock %}
+{% block main %}
+{% if test_page %}<div class="lesson-head"><span class="chip">{{ L.label }}</span><h1>{{ L.title }}</h1></div>{% else %}{% include "course/_head.html" %}{% endif %}
+<div class="card gate-card" role="status">
+  <p>{{ gate_message }}</p>
+  <p><a href="{% url 'map' %}">Back to the course</a></p>
+</div>
+{% endblock %}

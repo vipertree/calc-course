@@ -103,16 +103,6 @@ class Lesson(TranscriptScene):
                 self.play(FadeIn(T(fails[k], 30, TANGENT).next_to(minis[k], UP, buff=0.1)), run_time=0.6)
         self.clear()
 
-        with self.beat("A justification, written out") as b:
-            pw = M(r"f(x) = \begin{cases} x^2 + 1, & x < 2 \\ 4x - 3, & x \ge 2 \end{cases}", 44).to_edge(UP, buff=0.5)
-            self.play(Write(pw), run_time=1.2)
-            bd = Board().next_to(pw, DOWN, buff=0.5)
-            bd.write(self, r"1.\ \ f(2) = 4(2) - 3 = 5")
-            b.line(1)
-            bd.write(self, r"2.\ \ \lim_{x\to2^-}(x^2 + 1) = 5,\ \ \lim_{x\to2^+}(4x - 3) = 5,\ \text{so } \lim_{x\to2} f(x) = 5")
-            b.line(2)
-            bd.write(self, r"3.\ \ \lim_{x\to2} f(x) = 5 = f(2),\ \text{so}\ f \text{ is continuous at } x = 2", SECANT)
-        self.clear()
         self.example("Justify continuity", r"Let $f(x) = \begin{cases} x^2 + 1, & x < 2 \\ 4x - 3, & x \ge 2 \end{cases}$. Is $f$ continuous at $x = 2$? Justify using the definition.",
                      [r"f(2) = 4(2) - 3 = 5", r"\lim_{x\to2^-}(x^2 + 1) = 5, \quad \lim_{x\to2^+}(4x - 3) = 5,\ \text{so}\ \lim_{x\to2} f(x) = 5", r"\lim_{x\to2} f(x) = f(2): \ f \text{ is continuous at } x = 2"], at=[1, 2, 3], follow=True)
         self.example("Justify discontinuity", r"Let $g(x) = \begin{cases} \dfrac{x^2 - 9}{x - 3}, & x \ne 3 \\ 5, & x = 3 \end{cases}$. Is $g$ continuous at $x = 3$?",

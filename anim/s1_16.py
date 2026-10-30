@@ -64,19 +64,10 @@ class Lesson(TranscriptScene):
         a4, al4 = plot_axes([-0.5, 1.5, 0.5], [-1.5, 2, 0.5], w=7, h=5)
         VGroup(a4, al4).to_edge(LEFT, buff=0.7).shift(DOWN * 0.3)
         p = lambda x: x ** 3 + x - 1
-        with self.beat("Finding a root") as b:
-            e = M(r"x^3 + x - 1 = 0", 50, FUNC).to_edge(RIGHT, buff=0.7).shift(UP * 2)
-            self.play(Write(e), run_time=1)
-            b.line(1)
-            self.play(FadeIn(a4), FadeIn(al4), Create(a4.plot(p, x_range=[-0.3, 1.3], color=FUNC, stroke_width=5)), run_time=1.4)
-            vals = VGroup(M(r"f(0) = -1", 42, TANGENT), M(r"f(1) = 1", 42, DERIV)).arrange(DOWN, aligned_edge=LEFT).next_to(e, DOWN, buff=0.5)
-            self.play(FadeIn(closed_dot(a4, 0, -1, TANGENT)), FadeIn(closed_dot(a4, 1, 1, DERIV)), Write(vals), run_time=1.2)
-            b.line(2)
-            root = 0.6823
-            self.play(Flash(a4.c2p(root, 0), color=SECANT), FadeIn(T(r"a root in $(0, 1)$", 40, SECANT).next_to(vals, DOWN, buff=0.4)), run_time=1)
-        self.clear()
+        rg = VGroup(a4, al4, a4.plot(p, x_range=[-0.3, 1.3], color=FUNC, stroke_width=5), closed_dot(a4, 0, -1, TANGENT), closed_dot(a4, 1, 1, DERIV)).scale(0.62)
         self.example("A root exists", r"Show that $x^3 + x - 1 = 0$ has a solution between $x = 0$ and $x = 1$.",
-                     [r"f(x) = x^3 + x - 1 \text{ is a polynomial: continuous on } [0, 1]", r"f(0) = -1 < 0 < 1 = f(1)", r"\text{IVT: } f(c) = 0 \text{ for some } c \text{ in } (0, 1)"], at=[1, 2, 3], follow=True)
+                     [r"f(x) = x^3 + x - 1 \text{ is a polynomial: continuous on } [0, 1]", r"f(0) = -1 < 0 < 1 = f(1)", r"\text{IVT: } f(c) = 0 \text{ for some } c \text{ in } (0, 1)"],
+                     at=[1, 2, 3], follow=True, figure=rg, figure_at=2)
         self.example("A given value", r"Show that $\cos x = x$ for some $x$ in $\left[0, \dfrac\pi2\right]$.",
                      [r"g(x) = \cos x - x \text{ is continuous on } \left[0, \tfrac\pi2\right]", r"g(0) = 1 > 0, \quad g\left(\tfrac\pi2\right) = -\tfrac\pi2 < 0", r"\text{IVT: } g(c) = 0, \text{ so } \cos c = c"], at=[1, 2, 3])
 

@@ -38,14 +38,16 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("The sentence") as b:
-            slots = [("At", None), ("$t = 5$ minutes,", SECANT), ("the amount of water in the tank", FUNC), ("is", None),
-                     ("decreasing", TANGENT), ("at a rate of", None), ("$3$ liters per minute.", DERIV)]
+            # the template only: Draining a tank fills it in, once (Adder 2026-10-30: don't solve an example twice)
+            slots = [("At", None), ("[when],", SECANT), ("[what]", FUNC), ("is", None),
+                     ("[which way]", TANGENT), ("at a rate of", None), ("[how fast].", DERIV)]
             words = VGroup(*[T(w, 42, c or INK) for w, c in slots])
             line1 = VGroup(*words[:3]).arrange(RIGHT, buff=0.25)
             line2 = VGroup(*words[3:]).arrange(RIGHT, buff=0.25)
             VGroup(line1, line2).arrange(DOWN, buff=0.5).shift(UP * 0.6)
             boxes = VGroup(*[SurroundingRectangle(words[i], color=words[i].get_color(), buff=0.1) for i in (1, 2, 4, 6)])
-            tags = VGroup(*[T(n, 28, DIM).next_to(bx, DOWN, buff=0.12) for n, bx in zip(["when", "what", "which way", "how fast"], boxes)])
+            tags = VGroup(*[T(n, 26, DIM).next_to(bx, DOWN, buff=0.12) for n, bx in zip(["the input, with units", "the quantity measured",
+                                                                                          "sign: up or down", "size, with units"], boxes)])
             self.play(FadeIn(words[0]), FadeIn(words[3]), FadeIn(words[5]), run_time=0.8)
             for k, i in enumerate((1, 2, 4, 6)):
                 b.line(k + 1)

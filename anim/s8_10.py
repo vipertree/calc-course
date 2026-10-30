@@ -62,56 +62,28 @@ class Lesson(TranscriptScene):
         self.title()
 
         # ---------------------------------------------------------------- the radius: from the curve to THIS axis
-        with self.beat("The radius is a distance to the axis") as b:
-            x0 = 1.1
-
-            def wrong(st, v, p):
-                if p["wrong"] < 0.01:
-                    return []
-                q0, q1 = v.P(-x0, 0, 0), v.P(-x0, 0, PAR(x0))
-                return [Line(q0, q0 + (q1 - q0) * min(1.0, p["wrong"]), color=DIM, stroke_width=6)]
-            st = about_four(at=x0, scale=0.95, extra=wrong, extra_params={"wrong": 0.0})
-            st.move_to(LEFT * 3.6 + DOWN * 0.1)
-            c = rev_cues(st)
-            self.play(FadeIn(st), run_time=0.6)
-            c["draw"](0, rt=1.2)(self)
-            c["axis"]()(self)
-            c["shade"]()(self)
-            b.line(1)
-            c["rad"](rt=1.0)(self)
-            good = M(r"R = 4 - x^2", 44, TANGENT)
-            how = T(r"the axis $y = 4$ is above the curve, \\ so the distance down to it is $4 - x^2$", 28, DIM)
-            bad = M(r"R = x^2", 40, DIM)
-            why = T("$x^2$ is the distance down to the $x$-axis", 28, DIM)
-            last = T(r"find $R$ on the picture: \\ from the curve to the axis", 32, INK)
-            board = VGroup(good, how, bad, why, last).arrange(DOWN, buff=0.4).move_to(RIGHT * 3.4 + DOWN * 0.1)
-            how.next_to(good, DOWN, buff=0.15)
-            why.next_to(bad, DOWN, buff=0.15)
-            self.play(Write(good), FadeIn(how), run_time=1)
-            b.line(2)
-            self.play(st.to("wrong", 1), FadeIn(bad), run_time=1.0)
-            strike = Line(bad.get_left() + LEFT * 0.1, bad.get_right() + RIGHT * 0.1, color=TANGENT, stroke_width=5)
-            self.play(Create(strike), FadeIn(why), run_time=0.8)
-            b.line(3)
-            self.play(st.to("wrong", 0), run_time=0.5)
-            c["spin"](rt=1.4, sweep=3.0, hold=0.8)(self)
-            c["slice"](rt=1.2)(self)
-            self.wait(1.0)
-            c["flat"](rt=1.4)(self)
-            b.line(4)
-            self.play(FadeIn(last), run_time=1)
-        self.clear()
 
         # ---------------------------------------------------------------- the lesson example
-        st = about_four(at=1.1)
+        # the wrong radius (down to the x-axis), shown and struck while the narration warns about it (from the old
+        # teaching beat, merged here so the region is worked once: Adder 2026-10-30)
+        x0 = 1.1
+
+        def wrong(st, v, p):
+            if p["wrong"] < 0.01:
+                return []
+            q0, q1 = v.P(-x0, 0, 0), v.P(-x0, 0, PAR(x0))
+            return [Line(q0, q0 + (q1 - q0) * min(1.0, p["wrong"]), color=DIM, stroke_width=6)]
+        st = about_four(at=x0, extra=wrong, extra_params={"wrong": 0.0})
         c = rev_cues(st)
         self.example("Spinning about y = 4", r"The region bounded by $y = x^2$ and $y = 4$ is revolved about the line $y = 4$. Find the volume.",
                      [r"TEXT:Sketch: the parabola, the line $y = 4$, the region between", r"x^2 = 4 \text{ at } x = \pm2", r"TEXT:One slice at $x$: a disc centered on $y = 4$",
-                      r"R(x) = 4 - x^2", r"R^2 = \left(4 - x^2\right)^2 = 16 - 8x^2 + x^4", r"V = \pi\int_{-2}^{2} \left(16 - 8x^2 + x^4\right) dx",
+                      r"R(x) = 4 - x^2", r"TEXT:Not $x^2$: that's the distance down to the $x$-axis",
+                      r"R^2 = \left(4 - x^2\right)^2 = 16 - 8x^2 + x^4", r"V = \pi\int_{-2}^{2} \left(16 - 8x^2 + x^4\right) dx",
                       r"= 2\pi\left[16x - \tfrac{8x^3}{3} + \tfrac{x^5}{5}\right]_0^2", r"= 2\pi\left(32 - \tfrac{64}{3} + \tfrac{32}{5}\right)", r"= \tfrac{512\pi}{15} \approx 107.23"],
-                     at=[1, 1, 2, 3, 4, 5, 5, 6, 6], figure=st, figure_at=1, follow=True, size=40, ref=REF_X,
+                     at=[1, 1, 2, 3, 4, 5, 6, 6, 7, 7], figure=st, figure_at=1, follow=True, size=40, ref=REF_X,
                      cues={0: c["both"](c["draw"](0), c["axis"](), c["shade"]()), 2: c["both"](c["spin"](rt=1.4, sweep=3.0, hold=1.0), c["slice"](rt=1.0)),
-                           3: c["both"](c["rad"](), lambda sc: sc.wait(0.8), c["flat"](rt=1.4))})
+                           3: c["both"](c["rad"](), lambda sc: sc.wait(0.8), c["flat"](rt=1.4)),
+                           4: lambda sc: (sc.play(st.to("wrong", 1), run_time=0.8), sc.wait(1.2), sc.play(st.to("wrong", 0), run_time=0.5))})
 
         # ---------------------------------------------------------------- vertical axes
         with self.beat("Vertical lines too") as b:

@@ -88,26 +88,76 @@ class Lesson(TranscriptScene):
         self.remove(mover, coord)
 
         # ---------------------------------------------------------------- epsilon game (no Greek letters on screen)
-        eps = ValueTracker(0.5)
-        band = always_redraw(lambda: Rectangle(width=ax.x_length, height=abs(ax.c2p(0, 2 + eps.get_value())[1] - ax.c2p(0, 2 - eps.get_value())[1]),
-                                                fill_color=SECANT, fill_opacity=0.18, stroke_width=0).move_to(ax.c2p(1, 2)))
-        win = always_redraw(lambda: Rectangle(height=ax.y_length, width=abs(ax.c2p(1 + eps.get_value(), 0)[0] - ax.c2p(1 - eps.get_value(), 0)[0]),
-                                               fill_color=TANGENT, fill_opacity=0.15, stroke_width=0).move_to(ax.c2p(1, 1.5)))
+        # Adder (2026-10-30): dashed lines, not shaded bands; one chosen x in the window, its point on the graph landing
+        # between the y-lines; zoom in on the hole as the lines tighten. Strokes and labels keep their screen size.
+        cam = self.camera.frame
+        w0 = cam.width
+        k = lambda: cam.width / w0                         # 1 at rest, smaller when zoomed in
+        eps, dlt, xp = ValueTracker(0.5), ValueTracker(0.5), ValueTracker(-0.8)
+
+        def hlines():
+            e, kk = eps.get_value(), k()
+            ls = VGroup(*[DashedLine(ax.c2p(-1, 2 + sg * e), ax.c2p(3, 2 + sg * e), color=SECANT, stroke_width=3 * kk,
+                                     dash_length=0.12 * kk) for sg in (1, -1)])
+            lab = T(f"within {e:g} of 2", 30, SECANT).scale(kk).next_to(ls[0], UP, buff=0.08 * kk)
+            lab.move_to([cam.get_center()[0] + cam.width * 0.18, lab.get_center()[1], 0])
+            return VGroup(ls, lab)
+
+        def vlines():
+            d, kk = dlt.get_value(), k()
+            ls = VGroup(*[DashedLine(ax.c2p(1 + sg * d, -1), ax.c2p(1 + sg * d, 4), color=TANGENT, stroke_width=3 * kk,
+                                     dash_length=0.12 * kk) for sg in (1, -1)])
+            lab = T(f"within {d:g} of 1", 30, TANGENT).scale(kk)
+            lab.move_to([ax.c2p(1, 0)[0], cam.get_center()[1] - cam.height * 0.36, 0])
+            return VGroup(ls, lab)
+
+        def chosen():
+            kk, x = k(), 1 + xp.get_value() * dlt.get_value()
+            pt = ax.c2p(x, x + 1)
+            return VGroup(DashedLine(ax.c2p(x, 0), pt, color=TANGENT, stroke_width=2.5 * kk, dash_length=0.08 * kk),
+                          DashedLine(pt, ax.c2p(-1, x + 1), color=SECANT, stroke_width=2.5 * kk, dash_length=0.08 * kk),
+                          Dot(ax.c2p(x, 0), radius=0.09 * kk, color=TANGENT), Dot(pt, radius=0.09 * kk, color=SECANT))
+
+        hl, vl, ch = always_redraw(hlines), always_redraw(vlines), always_redraw(chosen)
+        lw = line.get_stroke_width()
+        axis_parts = [m for m in ax.family_members_with_points() if m.get_stroke_width() > 0]
+        axis_w = [m.get_stroke_width() for m in axis_parts]
+
+        def thin(scale):
+            """Strokes and the hole, at the camera's zoom (else a 6x zoom turns the line into rope)."""
+            return [line.animate.set_stroke(width=lw * scale), *[m.animate.set_stroke(width=w * scale) for m, w in zip(axis_parts, axis_w)],
+                    hole.animate.scale(scale / (hole.width / hole0))]
+        hole0 = hole.width
+
+        def zoom_to(scale, run_time):
+            self.play(cam.animate.scale(scale * w0 / cam.width).move_to(ax.c2p(1, 2)), *thin(scale),
+                      al.animate.set_opacity(0 if scale < 0.9 else 1), g.animate.set_opacity(0 if scale < 0.9 else 1), run_time=run_time)
+
         with self.beat("The closeness game") as b:
-            self.add(band)
-            self.play(FadeIn(band), run_time=0.6)
+            self.add(hl)
+            self.play(FadeIn(hl), run_time=0.8)
             b.line(1)
-            self.add(win)
-            self.play(FadeIn(win), run_time=0.6)
+            self.add(vl)
+            self.play(FadeIn(vl), run_time=0.8)
+            self.add(ch)
+            self.play(FadeIn(ch), run_time=0.5)
+            self.play(xp.animate.set_value(0.8), run_time=2.4, rate_func=there_and_back_with_pause)
+            self.play(xp.animate.set_value(0.6), run_time=1.0)
             b.line(2)
-            self.play(eps.animate.set_value(0.1), run_time=1.6)
-            self.play(eps.animate.set_value(0.03), run_time=1.4)
+            zoom_to(0.4, 1.6)
+            self.play(eps.animate.set_value(0.1), dlt.animate.set_value(0.1), run_time=1.6)
+            self.play(xp.animate.set_value(-0.6), run_time=1.6)
+            zoom_to(0.1, 1.6)
+            self.play(eps.animate.set_value(0.03), dlt.animate.set_value(0.03), run_time=1.4)
+            self.play(xp.animate.set_value(0.6), run_time=1.6)
             b.line(3)
+            zoom_to(1.0, 1.6)
             lim = M(r"\lim_{x\to1} g(x) = 2", 48, SECANT).next_to(g, DOWN, buff=0.8)
             self.play(Write(lim), run_time=1.2)
             b.line(4)
             note = callout(r"the formal definition: \\ not tested on the AP exam", DIM, 30).next_to(lim, DOWN, buff=0.5)
             self.play(FadeIn(note), run_time=0.8)
+        self.remove(hl, vl, ch)
         self.clear()
 
         with self.beat("The definition in words") as b:

@@ -74,36 +74,6 @@ class Lesson(TranscriptScene):
         self.title()
 
         # ---------------------------------------------------------------- every radius starts at the axis
-        with self.beat("Measuring from the axis") as b:
-            st = below(scale=1.6, extra=gap, extra_params={"gap": 0.0})
-            st.move_to(LEFT * 3.4 + DOWN * 0.1)
-            c = rev_cues(st)
-            self.play(FadeIn(st), run_time=0.6)
-            c["draw"](0, 1, rt=1.2)(self)
-            c["shade"](rt=0.6)(self)
-            c["axis"]()(self)
-            b.line(1)
-            c["rad"](rt=1.0)(self)
-            R = M(r"R(x) = x + 1", 42, TANGENT)
-            Rw = T(r"the axis is $1$ below the $x$-axis, \\ and the line is $x$ above it", 26, DIM)
-            r_ = M(r"r(x) = x^2 + 1", 42, DERIV)
-            rw = T(r"$1$ up to the $x$-axis, \\ then $x^2$ up to the parabola", 26, DIM)
-            last = T(r"find each radius on the picture: \\ from the axis to the curve", 30, INK)
-            board = VGroup(VGroup(R, Rw).arrange(DOWN, buff=0.15), VGroup(r_, rw).arrange(DOWN, buff=0.15), last).arrange(DOWN, buff=0.55).move_to(RIGHT * 3.4 + DOWN * 0.1)
-            self.play(st.to("gap", 1), run_time=0.8)
-            self.play(Write(R), FadeIn(Rw), run_time=1)
-            b.line(2)
-            c["rin"](rt=1.0)(self)
-            self.play(Write(r_), FadeIn(rw), run_time=1)
-            b.line(3)
-            self.play(st.to("gap", 0), run_time=0.4)
-            c["spin"](rt=1.4, sweep=3.0, hold=0.4)(self)
-            c["slice"](rt=1.2)(self)
-            self.wait(0.4)
-            c["flat"](rt=1.4)(self)
-            b.line(4)
-            self.play(FadeIn(last), run_time=1)
-        self.clear()
 
         # ---------------------------------------------------------------- the lesson example
         st = below()
@@ -111,9 +81,9 @@ class Lesson(TranscriptScene):
         self.example("About y = −1", r"The region between $y = x$ and $y = x^2$ is revolved about the line $y = -1$. Find the volume.",
                      [r"TEXT:Sketch: the line, the parabola, the region between; the axis $y = -1$", r"x^2 = x \text{ at } x = 0 \text{ and } x = 1",
                       r"TEXT:One slice at $x$: a washer centered on $y = -1$", r"TEXT:Up to the line: $1$ to the $x$-axis, then $x$ more:", r"R(x) = x + 1",
-                      r"TEXT:Up to the parabola:", r"r(x) = x^2 + 1", r"R^2 = x^2 + 2x + 1", r"r^2 = x^4 + 2x^2 + 1", r"R^2 - r^2 = 2x - x^2 - x^4",
+                      r"TEXT:Up to the parabola:", r"r(x) = x^2 + 1", r"TEXT:The axis is $1$ lower: both radii are $1$ longer.", r"R^2 = x^2 + 2x + 1", r"r^2 = x^4 + 2x^2 + 1", r"R^2 - r^2 = 2x - x^2 - x^4",
                       r"V = \pi\int_0^1 \left(2x - x^2 - x^4\right) dx", r"= \pi\left(1 - \tfrac13 - \tfrac15\right)", r"= \tfrac{7\pi}{15} \approx 1.47"],
-                     at=[1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7, 7], figure=st, figure_at=1, follow=True, size=38, ref=REF_X,
+                     at=[1, 1, 2, 3, 3, 4, 4, 4, 5, 5, 6, 7, 7, 7], figure=st, figure_at=1, follow=True, size=38, ref=REF_X,
                      cues={0: c["both"](c["draw"](0, 1), c["shade"](), c["axis"]()), 2: c["both"](c["spin"](rt=1.4, sweep=3.0, hold=1.0), c["slice"](rt=1.2)),
                            3: c["rad"](), 5: c["both"](c["rin"](), lambda sc: sc.wait(1.0), c["flat"](rt=1.4))})
 

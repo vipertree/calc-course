@@ -66,23 +66,12 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(q), run_time=0.8)
         self.clear()
 
-        with self.beat("Reading a domain") as b:
-            e = M(r"\frac{\sqrt{x - 1}}{x - 4}", 72, FUNC).to_edge(UP, buff=0.6)
-            self.play(Write(e), run_time=1)
-            c1 = M(r"x - 1 \ge 0,\ \text{so}\ x \ge 1", 44, SECANT).next_to(e, DOWN, buff=0.5).shift(LEFT * 3)
-            c2 = M(r"x - 4 \ne 0,\ \text{so}\ x \ne 4", 44, TANGENT).next_to(e, DOWN, buff=0.5).shift(RIGHT * 3)
-            self.play(Write(c1), Write(c2), run_time=1.4)
-            nl = NumberLine(x_range=[-1, 8, 1], length=11, color=DIM, include_numbers=True, font_size=28).shift(DOWN * 1.2)
-            shade = Line(nl.n2p(1), nl.n2p(8), color=FUNC, stroke_width=10)
-            self.play(Create(nl), run_time=0.6)
-            b.line(1)
-            self.play(Create(shade), FadeIn(Dot(nl.n2p(1), color=FUNC, radius=0.12)),
-                      FadeIn(Circle(radius=0.12, color=TANGENT, stroke_width=4, fill_color=BG, fill_opacity=1).move_to(nl.n2p(4))), run_time=1.2)
-            ans = M(r"[1, 4) \cup (4, \infty)", 50, FUNC).to_edge(DOWN, buff=0.5)
-            self.play(Write(ans), run_time=1)
-        self.clear()
+        nl = NumberLine(x_range=[0, 7, 1], length=5.6, color=DIM, include_numbers=True, font_size=26)
+        dom = VGroup(nl, Line(nl.n2p(1), nl.n2p(7), color=FUNC, stroke_width=10), Dot(nl.n2p(1), color=FUNC, radius=0.11),
+                     Circle(radius=0.11, color=TANGENT, stroke_width=4, fill_color=BG, fill_opacity=1).move_to(nl.n2p(4)))
         self.example("Read the domain", r"Where is $f(x) = \dfrac{\sqrt{x - 1}}{x - 4}$ continuous?",
-                     [r"\sqrt{x - 1}: \ x \ge 1", r"x - 4 \ne 0: \ x \ne 4", r"\text{continuous on } [1, 4) \cup (4, \infty)"], at=[1, 2, 3])
+                     [r"\sqrt{x - 1}: \ x - 1 \ge 0,\ \text{so}\ x \ge 1", r"x - 4 \ne 0: \ x \ne 4", r"\text{continuous on } [1, 4) \cup (4, \infty)"],
+                     at=[1, 2, 3], follow=True, figure=dom, figure_at=3)
         self.example("Logs and trig", r"Where are (a) $g(x) = \ln(9 - x^2)$ and (b) $h(x) = \tan x$ continuous?",
                      [r"\text{(a) } 9 - x^2 > 0,\ \text{so}\ -3 < x < 3", r"\text{(b) } \tan x = \frac{\sin x}{\cos x}: \ \cos x \ne 0", r"x \ne \frac{\pi}{2} + k\pi"], at=[1, 2, 3])
 

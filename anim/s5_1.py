@@ -6,6 +6,13 @@ from kit import *
 from style import *
 
 
+def speed_sign():
+    """A white speed-limit sign: SPEED LIMIT over a big 65."""
+    words = VGroup(T("SPEED", 22, INK), T("LIMIT", 22, INK), T("65", 44, INK)).arrange(DOWN, buff=0.06)
+    board = RoundedRectangle(width=0.95, height=1.25, corner_radius=0.08, color=INK, fill_color=PANEL, fill_opacity=1).move_to(words)
+    return VGroup(board, words)
+
+
 class Lesson(TranscriptScene):
     NUM = "5.1"
 
@@ -16,16 +23,17 @@ class Lesson(TranscriptScene):
                               .move_to(road.point_from_proportion(p) + UP * 0.45) for p, lab in ((0.05, "1:00"), (0.95, "3:00"))])
             car = VGroup(RoundedRectangle(width=0.9, height=0.4, corner_radius=0.1, color=SECANT, fill_color=SECANT, fill_opacity=1),
                          Dot(LEFT * 0.25 + DOWN * 0.22, radius=0.08, color=INK), Dot(RIGHT * 0.25 + DOWN * 0.22, radius=0.08, color=INK)).move_to(road.point_from_proportion(0.05) + UP * 0.3)
-            miles = M(r"120 \text{ miles}", 40).next_to(road, DOWN, buff=0.4)
-            self.play(Create(road), FadeIn(booths), FadeIn(car), run_time=1)
+            miles = M(r"150 \text{ miles}", 40).next_to(road, DOWN, buff=0.4)
+            sign = speed_sign().move_to(UP * 0.75)
+            self.play(Create(road), FadeIn(booths), FadeIn(car), FadeIn(sign), run_time=1)
             self.play(car.animate.move_to(road.point_from_proportion(0.95) + UP * 0.3), FadeIn(miles), run_time=3, rate_func=rate_functions.ease_in_out_sine)
             b.line(1)
-            ticket = VGroup(RoundedRectangle(width=5.6, height=1.2, corner_radius=0.1, color=TANGENT), M(r"\text{average speed} = \frac{120}{2} = 60 \text{ mph}", 40, TANGENT))
-            ticket[1].move_to(ticket[0])
+            words = M(r"\text{average speed} = \frac{150}{2} = 75 \text{ mph}", 40, TANGENT)
+            ticket = VGroup(SurroundingRectangle(words, color=TANGENT, buff=0.3, corner_radius=0.1), words)
             ticket.shift(UP * 2.3)
             self.play(FadeIn(ticket), run_time=0.8)
-            b.line(2)
-            gauge = M(r"\text{speedometer: } 60", 40, DERIV).next_to(miles, DOWN, buff=0.5)
+            b.line(3)
+            gauge = M(r"\text{speedometer: exactly } 75 \text{ at some instant?}", 40, DERIV).next_to(miles, DOWN, buff=0.5)
             self.play(FadeIn(gauge), run_time=0.6)
         self.clear()
         self.title()
@@ -119,7 +127,7 @@ class Lesson(TranscriptScene):
         ax, al = plot_axes([-1, 2, 1], [0, 2, 1], w=6.6, h=4.6, coords=False)
         VGroup(ax, al).to_edge(LEFT, buff=0.8).shift(DOWN * 0.3)
         with self.beat("When it fails") as b:
-            g = ax.plot(lambda s: abs(s), x_range=[-1, 2, 0.5], color=FUNC, stroke_width=5)
+            g = VMobject(color=FUNC, stroke_width=5).set_points_as_corners([ax.c2p(-1, 1), ax.c2p(0, 0), ax.c2p(2, 2)])
             sec = Line(ax.c2p(-1, 1), ax.c2p(2, 2), color=SECANT, stroke_width=4)
             self.play(FadeIn(ax), FadeIn(al), Create(g), run_time=1)
             b.line(1)
@@ -133,6 +141,24 @@ class Lesson(TranscriptScene):
         self.clear()
         self.example("From given values", r"$f$ is differentiable, $f(1) = 4$ and $f(5) = 12$. Must $f'(c) = 2$ for some $c$ in $(1, 5)$?",
                      [r"\text{differentiable},\ \text{so}\ \text{continuous on } [1, 5], \text{ differentiable on } (1, 5)", r"\frac{f(5) - f(1)}{5 - 1} = \frac{12 - 4}{4} = 2", r"\text{MVT: } f'(c) = 2 \text{ for some } c \text{ in } (1, 5)"], at=[1, 2, 3], follow=True)
+
+        with self.beat("Back to the ticket") as b:
+            road = Line(LEFT * 5.5, RIGHT * 5.5, color=DIM, stroke_width=8).shift(UP * 1.6)
+            booths = VGroup(*[VGroup(Rectangle(width=0.5, height=0.9, color=INK, fill_color=PANEL, fill_opacity=1), T(lab, 30, DIM).shift(UP * 0.8))
+                              .move_to(road.point_from_proportion(p) + UP * 0.45) for p, lab in ((0.05, "1:00"), (0.95, "3:00"))])
+            car = VGroup(RoundedRectangle(width=0.9, height=0.4, corner_radius=0.1, color=SECANT, fill_color=SECANT, fill_opacity=1),
+                         Dot(LEFT * 0.25 + DOWN * 0.22, radius=0.08, color=INK), Dot(RIGHT * 0.25 + DOWN * 0.22, radius=0.08, color=INK)).move_to(road.point_from_proportion(0.95) + UP * 0.3)
+            sign = speed_sign().move_to(road.get_center() + UP * 1.15)
+            self.play(FadeIn(road), FadeIn(booths), FadeIn(car), FadeIn(sign), run_time=0.8)
+            work = VGroup(M(r"s(t) = \text{miles from the 1:00 booth, differentiable}", 38),
+                          M(r"s'(c) = \frac{s(3) - s(1)}{3 - 1} = \frac{150 - 0}{2} = 75 \text{ for some } c \text{ in } (1, 3)", 38, DERIV),
+                          M(r"75 > 65: \text{ the ticket stands.}", 40, TANGENT)).arrange(DOWN, buff=0.45).next_to(road, DOWN, buff=0.8)
+            self.play(FadeIn(work[0]), run_time=0.8)
+            b.line(1)
+            self.play(FadeIn(work[1]), run_time=1)
+            b.line(2)
+            self.play(FadeIn(work[2]), run_time=0.8)
+        self.clear()
 
         with self.beat("Close") as b:
             thm2 = thm.copy()
@@ -151,9 +177,10 @@ class Lesson(TranscriptScene):
         self.example("Example 2: Does it apply?", r"Does the Mean Value Theorem apply to $f(x) = \dfrac{1}{x - 3}$ on $[1, 5]$?",
                      [r"TEXT:$f$ is undefined at $x = 3$, so it is not continuous there.", r"TEXT:$3$ is in $[1, 5]$: the theorem does not apply."], at=[1, 2])
         self.example("Example 3: The speedometer",
-                     r"A car's position $s(t)$ is differentiable. It travels $120$ miles from $t = 1$ to $t = 3$ hours. Show that its velocity was exactly $60$ mph at some time.",
-                     [r"TEXT:$s$ is differentiable, so it is continuous on $[1, 3]$ and differentiable on $(1, 3)$.",
-                      r"\text{MVT: } s'(c) = \frac{s(3) - s(1)}{3 - 1} = \frac{120}{2}", r"= 60 \text{ mph for some } c \text{ in } (1, 3)"], at=[1, 2, 3])
+                     r"A truck's position $s(t)$, in miles, is differentiable. It travels $210$ miles from $t = 1$ to $t = 4$ hours on a road with a $65$ mph limit. Show that it was speeding at some time.",
+                     [r"TEXT:$s$ is differentiable, so it is continuous on $[1, 4]$ and differentiable on $(1, 4)$.",
+                      r"\text{MVT: } s'(c) = \frac{s(4) - s(1)}{4 - 1} = \frac{210}{3}", r"= 70 \text{ mph for some } c \text{ in } (1, 4)",
+                      r"70 > 65: \text{ speeding at time } c"], at=[1, 2, 3, 3])
         gt = table(["t", "0", "2", "5", "9", "10"], [["g(t)", "4", "10", "1", "13", "7"]], size=38)
 
         def pick(scene):

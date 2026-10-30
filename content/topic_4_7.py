@@ -68,6 +68,32 @@ PRACTICE += [
     Item(r"$f(3) = g(3) = 0$, $f'(3) = 4$ and $g'(3) = -2$, with $f'$ and $g'$ continuous. Find \[ \lim_{x \to 3} \frac{f(x)}{g(x)}. \]", num(-2),
          r"Since $f$ and $g$ are continuous with $f(3) = g(3) = 0$, the numerator and the denominator both have limit $0$, so by L'Hospital's Rule the limit is $\frac{f'(3)}{g'(3)} = \frac{4}{-2} = -2$.", work="1.8cm"),
 ]
+# Derivative or limit? Quotients to differentiate, mixed in with limits, so students choose the quotient rule or
+# L'Hospital's Rule from what the question asks, not from the fraction's look.
+DL = [  # ("d", h tex, h, quotient-rule work tex, h' tex, h'): a derivative; ("l", h tex, h, a, a tex, L'Hospital work tex): a limit
+    ("d", r"\frac{\ln x}{x}", sp.log(x) / x, r"\frac{(1/x)(x) - (\ln x)(1)}{x^2}", r"\frac{1 - \ln x}{x^2}", (1 - sp.log(x)) / x**2),
+    ("l", r"\frac{\ln x}{x^2 - 1}", sp.log(x) / (x**2 - 1), 1, "1", r"\lim_{x \to 1} \frac{1/x}{2x} = \frac12"),
+    ("d", r"\frac{\sin x}{x}", sp.sin(x) / x, r"\frac{(\cos x)(x) - (\sin x)(1)}{x^2}", r"\frac{x\cos x - \sin x}{x^2}", (x * sp.cos(x) - sp.sin(x)) / x**2),
+    ("l", r"\frac{\sin(2x)}{\sin x}", sp.sin(2 * x) / sp.sin(x), 0, "0", r"\lim_{x \to 0} \frac{2\cos(2x)}{\cos x} = \frac21 = 2"),
+    ("d", r"\frac{e^x}{x + 1}", sp.exp(x) / (x + 1), r"\frac{(e^x)(x + 1) - (e^x)(1)}{(x + 1)^2}", r"\frac{xe^x}{(x + 1)^2}", x * sp.exp(x) / (x + 1)**2),
+    ("l", r"\frac{e^x - 1}{x^2 + x}", (sp.exp(x) - 1) / (x**2 + x), 0, "0", r"\lim_{x \to 0} \frac{e^x}{2x + 1} = 1"),
+]
+for kind, htex, h, *rest in DL:
+    if kind == "d":
+        work, dtex, d = rest
+        assert sp.simplify(sp.diff(h, x) - d) == 0, htex
+        PRACTICE.append(Item(rf"Let \[ h(x) = {htex}. \] Find $h'(x)$.", expr(d),
+                             rf"This asks for a derivative, so use the quotient rule (not L'Hospital's Rule): \[ h'(x) = {work} = {dtex}. \]", work="2.2cm"))
+    else:
+        a, atex, work = rest
+        PRACTICE.append(Item(rf"Find \[ \lim_{{x \to {atex}}} {htex}. \]", num(sp.limit(h, x, a)),
+                             rf"This asks for a limit, and plugging in gives $\frac00$. The numerator and the denominator both have limit $0$, so by L'Hospital's Rule \[ {work}. \]", work="2.2cm"))
+kq = x * (x + 2) / (x + 1)**2
+assert sp.simplify(sp.diff(x**2 / (x + 1), x) - kq) == 0
+PRACTICE.append(Item(r"Kwame finds the derivative of \[ h(x) = \frac{x^2}{x + 1} \] by differentiating the top and the bottom: $\frac{2x}{1} = 2x$. What went wrong? Find $h'(x)$.",
+                     expr(kq), r"Differentiating the top and the bottom separately is L'Hospital's Rule, which finds certain limits. It is not a way to find a derivative. "
+                               r"Use the quotient rule: \[ h'(x) = \frac{(2x)(x + 1) - (x^2)(1)}{(x + 1)^2} = \frac{x^2 + 2x}{(x + 1)^2}. \]", work="2.2cm"))
+same("dl", [sp.limit(r[0], x, r[1]) for k, _, *r in DL if k == "l"], [sp.Rational(1, 2), 2, 1])
 same("p", [sp.limit(f, x, a) for _, f, a, _, _ in P], [5, 12, 2, 1, sp.Rational(1, 2), 0, sp.Rational(5, 2), 0, 1, -1, 0])
 
 # ---------------------------------------------------------------- quiz

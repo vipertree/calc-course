@@ -26,8 +26,8 @@ NOTES = [
     Video("s5_1.py::Lesson", "The Mean Value Theorem", 4),
 
     Section("The theorem"),
-    Text(r"If you drive $120$ miles in $2$ hours, your average speed is $60$ mph. At some moment, your speedometer must have read exactly "
-         r"\blank{60} mph. The Mean Value Theorem says the same thing about any smooth function."),
+    Text(r"If you drive $150$ miles in $2$ hours, your average speed is $75$ mph. At some moment, your speedometer must have read exactly "
+         r"\blank{75} mph. The Mean Value Theorem says the same thing about any smooth function."),
     Formula("The Mean Value Theorem (MVT)", (
         r"If $f$ is \blank{continuous} on $[a, b]$ and \blank{differentiable} on $(a, b)$, then there is at least one $c$ in $(a, b)$ with "
         r"\[ f'(c) = \frac{f(b) - f(a)}{b - a}. \]")),
@@ -69,8 +69,8 @@ PRACTICE += [
          r"No: $f$ is not continuous at $x = 2$, which is in $[0, 4]$.", work="1.6cm"),
     Item(r"Does the Mean Value Theorem apply to $f(x) = x^{2/3}$ on $[-1, 8]$? Explain.", selfcheck(r"\text{no}"),
          r"No: $f'(x) = \frac{2}{3x^{1/3}}$ is undefined at $x = 0$, so $f$ is not differentiable on $(-1, 8)$ (it has a cusp).", work="1.6cm"),
-    Item(r"Ana drives a toll road. She enters at 1:00 p.m. and exits $150$ miles later at 3:00 p.m. The speed limit is $65$ mph. Use the MVT to show she was speeding at some moment.",
-         num(75), r"Her position is differentiable, so by the MVT her speed at some moment equals her average speed, $\frac{150}{2} = 75$ mph $> 65$.", work="2cm"),
+    Item(r"Ana drives a toll road. She enters at 2:00 p.m. and exits $108$ miles later at 3:30 p.m. The speed limit is $65$ mph. Use the MVT to show she was speeding at some moment.",
+         num(72), r"Her position is differentiable, so by the MVT her speed at some moment equals her average speed, $\frac{108}{1.5} = 72$ mph $> 65$.", work="2cm"),
     Item(r"$g$ is differentiable with $g(2) = 7$ and $g(6) = -1$. What value must $g'$ take somewhere in $(2, 6)$?", num(-2),
          r"By the MVT, $g'(c) = \frac{-1 - 7}{6 - 2} = -2$ for some $c$ in $(2, 6)$.", work="1.6cm"),
     Item(r"$h$ is differentiable, $h(0) = 3$, and $h'(x) \le 2$ for all $x$. What is the largest possible value of $h(5)$?", num(13),
@@ -155,6 +155,7 @@ FRQS = [
     ], frq_type="Table"),
 ]
 same("frq", [sp.Rational(140, 20), sp.Rational(380 - 140, 30), sp.Rational(5 - 5, 60)], [7, 8, 0])
+same("speed", [sp.Rational(150, 2), sp.Rational(108) / sp.Rational(3, 2), sp.Rational(210, 3)], [75, 72, 70])
 
 TOPIC = Topic(
     number="5.1", title="Using the Mean Value Theorem",

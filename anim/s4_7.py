@@ -36,6 +36,26 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
+        with self.beat("Why we need it") as b:
+            tools = VGroup(T("Limit tools so far", 38, INK), T("plug in", 34, DIM), T("factor and cancel", 34, DIM), T("rationalize", 34, DIM)).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
+            tools.to_edge(LEFT, buff=1.0).shift(UP * 1.0)
+            self.play(FadeIn(tools), run_time=1)
+            b.line(1)
+            hard = VGroup(*[VGroup(M(e, 40, FUNC), M(form, 40, SECANT)).arrange(RIGHT, buff=0.5) for e, form in (
+                (r"\lim_{x \to 0} \frac{\sin(3x)}{x}", r"\frac{0}{0}"), (r"\lim_{x \to \infty} \frac{\ln x}{x}", r"\frac{\infty}{\infty}"),
+                (r"\lim_{x \to 0} \frac{e^x - 1}{x}", r"\frac{0}{0}"))]).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
+            hard.to_edge(RIGHT, buff=1.2).shift(UP * 0.7)
+            for h in hard:
+                self.play(FadeIn(h[0]), run_time=0.6)
+            b.line(2)
+            self.play(*[FadeIn(h[1]) for h in hard], run_time=0.8)
+            q = M("?", 72, SECANT).next_to(tools, RIGHT, buff=0.6)
+            self.play(FadeIn(q), run_time=0.5)
+            b.line(3)
+            why = T("L'Hospital's Rule: limits that are otherwise hard to evaluate", 36, TANGENT).to_edge(DOWN, buff=1.0)
+            self.play(FadeIn(why), run_time=0.8)
+        self.clear()
+
         W = ValueTracker(1.5)
         frame = Square(side_length=5.6, color=DIM, stroke_width=3).to_edge(LEFT, buff=0.9).shift(DOWN * 0.2)
         box = Axes(x_range=[-1, 1], y_range=[-1, 1], x_length=5.6, y_length=5.6, tips=False, axis_config={"stroke_opacity": 0}).move_to(frame)

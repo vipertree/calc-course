@@ -47,20 +47,43 @@ class Lesson(TranscriptScene):
         ax, al = plot_axes([0, 6, 1], [0, 5, 1], w=7, h=5, coords=False)
         VGroup(ax, al).to_edge(LEFT, buff=0.8).shift(DOWN * 0.3)
         f = lambda s: 0.12 * (s - 1) ** 2 + 1
-        a, xb = 2.0, 4.6
+        a, xb = 2.0, 2.5
         fa, sl = f(a), 0.24 * (a - 1)
         with self.beat("The tangent line as an estimate") as b:
-            self.play(FadeIn(ax), FadeIn(al), Create(ax.plot(f, x_range=[0, 6], color=FUNC, stroke_width=5)), run_time=1.2)
+            curve = ax.plot(f, x_range=[0, 6], color=FUNC, stroke_width=5)
+            self.play(FadeIn(ax), FadeIn(al), Create(curve), run_time=1.2)
             P = Dot(ax.c2p(a, fa), color=INK)
             hgt = DashedLine(ax.c2p(a, 0), ax.c2p(a, fa), color=DIM)
-            self.play(FadeIn(P), Create(hgt), FadeIn(M("f(a)", 32).next_to(hgt, LEFT, buff=0.1)), run_time=0.8)
-            self.play(Create(tangent_line(ax, f, a, sl, [0.3, 5.6])), run_time=0.8)
+            fal = M("f(a)", 32).next_to(hgt, LEFT, buff=0.1)
+            self.play(FadeIn(P), Create(hgt), FadeIn(fal), run_time=0.8)
+            tl = tangent_line(ax, f, a, sl, [0.3, 5.6])
+            self.play(Create(tl), run_time=0.8)
+            # Adder (2026-10-30): "local" means local. Zoom in on the point so the step really is small, and walk a dot
+            # from the known value f(a) a little way along the tangent to the estimate.
+            Z = 0.26
+            cam = self.camera.frame
+            saved = cam.copy()
+            # strokes are drawn in frame units, so thin them as the camera closes in or they swell to rope
+            lines = [m for m in (curve, tl, hgt, ax, al) for m in m.family_members_with_points() if m.get_stroke_width() > 0]
+            widths = [m.get_stroke_width() for m in lines]
+            self.play(cam.animate.scale(Z).move_to(ax.c2p((a + xb) / 2, fa + 0.1)), P.animate.scale(Z * 1.6), FadeOut(fal),
+                      *[m.animate.set_stroke(width=w * Z) for m, w in zip(lines, widths)], run_time=1.6)
             b.line(1)
-            run = Line(ax.c2p(a, fa), ax.c2p(xb, fa), color=SECANT, stroke_width=4)
-            rise = Line(ax.c2p(xb, fa), ax.c2p(xb, fa + sl * (xb - a)), color=DERIV, stroke_width=5)
-            self.play(Create(run), FadeIn(M("x - a", 30, SECANT).next_to(run, DOWN, buff=0.1)), run_time=0.8)
-            self.play(Create(rise), FadeIn(M(r"f'(a)(x - a)", 30, DERIV).next_to(rise, RIGHT, buff=0.1)), run_time=0.8)
+            new = ax.c2p(xb, fa + sl * (xb - a))
+            walker = Dot(ax.c2p(a, fa), color=DERIV, radius=0.09 * Z * 1.6)
+            self.add(walker)
+            self.play(walker.animate.move_to(new), run_time=1.6, rate_func=rate_functions.ease_in_out_sine)
+            run = Line(ax.c2p(a, fa), ax.c2p(xb, fa), color=SECANT, stroke_width=4 * Z)
+            rise = Line(ax.c2p(xb, fa), new, color=DERIV, stroke_width=5 * Z)
+            steps = VGroup(M("x - a", 30, SECANT).scale(Z * 1.4).next_to(run, DOWN, buff=0.04),
+                           M(r"f'(a)(x - a)", 30, DERIV).scale(Z * 1.4).next_to(rise, RIGHT, buff=0.04))
+            self.play(Create(run), FadeIn(steps[0]), run_time=0.8)
+            self.play(Create(rise), FadeIn(steps[1]), run_time=0.8)
+            true = Dot(ax.c2p(xb, f(xb)), color=FUNC, radius=0.07 * Z * 1.6)
+            self.play(FadeIn(true), run_time=0.5)
             b.line(2)
+            self.play(cam.animate.become(saved), FadeOut(steps), FadeIn(fal), run.animate.set_stroke(width=4), rise.animate.set_stroke(width=5),
+                      *[m.animate.set_stroke(width=w) for m, w in zip(lines, widths)], run_time=1.4)
             form = M(r"L(x) = f(a) + f'(a)(x - a)", 46).to_edge(RIGHT, buff=0.4).shift(UP * 2.6)
             self.play(Write(form), run_time=1.2)
             b.line(3)

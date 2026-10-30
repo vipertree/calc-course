@@ -1007,3 +1007,5 @@ details.pop > div.stack { margin-top: 10px; padding: 12px 14px; background: var(
 .cw-own { border-top: 1px solid var(--soft); margin-top: 12px; padding-top: 6px; }
 .cw-own h3 { margin: 4px 0; font-size: 1rem; }
 .cw-enter select { width: auto; }
+.me-grade, .me-due { margin: 12px 0; } .me-due li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--soft); } .me-grade h2, .me-due h2 { margin: 0 0 6px; font-size: 1.2rem; }
+.me-late { color: var(--hi); font: 700 .88rem var(--font-ui); }

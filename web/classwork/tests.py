@@ -421,3 +421,23 @@ class GradebookTests(DashboardTests):
         other.force_login(teacher("t3"))
         self.assertEqual(other.get(self.base + "gradebook/totals.csv").status_code, 404)
         self.assertEqual(other.get(self.base + "gradebook/").status_code, 404)
+
+
+class StudentPageTests(DashboardTests):
+    def test_unreleased_scores_stay_hidden_on_me(self):
+        web = Client()
+        web.force_login(self.kids[0])
+        page = web.get("/me/").content.decode()
+        self.assertIn("waiting for your teacher", page)
+        self.assertNotIn("Your grade", page)                 # the only scores aren't released: no grade from them
+        from course.models import Release
+        Release.objects.create(classroom=self.c, topic="2.5")
+        self.assertIn("Your grade", web.get("/me/").content.decode())
+
+    def test_grade_hidden_when_setup_says_so(self):
+        from course.models import Release
+        Release.objects.create(classroom=self.c, topic="2.5")
+        Setup.objects.create(classroom=self.c, show={"grade": False})
+        web = Client()
+        web.force_login(self.kids[0])
+        self.assertNotIn("Your grade", web.get("/me/").content.decode())

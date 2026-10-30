@@ -194,9 +194,16 @@ def student_dashboard(request):
                 "score": a.score, "total": a.total, "at": a.at}
                for a in QuizAttempt.objects.filter(user=request.user).order_by("-at")[:8]]
     tries = ExamAttempt.objects.filter(user=request.user).order_by("-id")[:5]
+    klass = class_for(request.user)
+    extra = {}
+    if klass is not None:
+        from classwork.student import extras
+        extra = extras(request.user, klass)
+        quizzes = [{"n": x["a"].topic, "label": content.label(x["a"].topic) if not x["a"].topic.startswith("U") else content.test_label(x["a"].topic),
+                    "score": x["score"], "total": x["total"], "at": x["a"].at, "waiting": x["waiting"]} for x in extra.pop("quizzes")]
     return render(request, "course/student_dashboard.html", {
         "units": units, "resume": resume, "quizzes": quizzes, "exam_attempts": tries,
-        "klass": class_for(request.user), "full": has_full_access(request.user)})
+        "klass": klass, "full": has_full_access(request.user), **extra})
 
 
 def trig_formulas(request):

@@ -4,6 +4,10 @@
 <div class="narrow mathy dash">
   <h1>Student Dashboard</h1>
   {% if klass %}<p class="muted">Class: {{ klass.name }}</p>{% endif %}
+  {% if grade %}<section class="card me-grade"><h2>Your grade in {{ klass.name }}: {{ grade.pct|floatformat:"-1" }}% {{ grade.letter }}</h2>
+    <p class="muted">{% for g in grade.cats %}{{ g.name }} ({{ g.weight|floatformat:"-1" }}%): {% if g.pct is None %}nothing yet{% else %}{{ g.pct|floatformat:"-1" }}%{% endif %}{% if not forloop.last %} · {% endif %}{% endfor %}</p></section>{% endif %}
+  {% if show_due and due %}<section class="card me-due"><h2>Due</h2><ul class="plain">{% for d in due %}<li><a href="{% if d.kind == 'unittest' %}{% url 'unit_test' d.ref %}{% elif d.kind == 'quiz' %}{% url 'lesson_area' d.ref 'quiz' %}{% elif d.kind == 'practice' %}{% url 'lesson_area' d.ref 'practice' %}{% else %}{% url 'lesson' d.ref %}{% endif %}" class="mathy">{{ d.label }}</a>
+      <span class="{% if d.late %}me-late{% else %}muted{% endif %}">{% if d.late %}Late: was due {% endif %}{{ d.when|date:"D M j, g:i a" }}</span></li>{% endfor %}</ul></section>{% endif %}
 
   {% if resume %}
   <a class="card dash-resume" href="{% url 'lesson' resume.n %}">
@@ -28,7 +32,7 @@
   <h2>Recent quizzes</h2>
   {% if quizzes %}
   <table class="data dash-table"><thead><tr><th>Lesson</th><th>Score</th><th>When</th></tr></thead><tbody>
-    {% for q in quizzes %}<tr><td><a href="{% if q.n|slice:':1' == 'U' %}{% url 'unit_test' q.n %}{% else %}{% url 'lesson_area' q.n 'quiz' %}{% endif %}">{{ q.label }}</a></td><td>{{ q.score }}/{{ q.total }}</td><td>{{ q.at|date:"M j" }}</td></tr>{% endfor %}
+    {% for q in quizzes %}<tr><td><a href="{% if q.n|slice:':1' == 'U' %}{% url 'unit_test' q.n %}{% else %}{% url 'lesson_area' q.n 'quiz' %}{% endif %}">{{ q.label }}</a></td><td>{% if q.waiting %}<span class="muted">waiting for your teacher</span>{% else %}{{ q.score }}/{{ q.total }}{% endif %}</td><td>{{ q.at|date:"M j" }}</td></tr>{% endfor %}
   </tbody></table>
   {% else %}<p class="muted">No quizzes yet. Each lesson ends with a short one.</p>{% endif %}
 

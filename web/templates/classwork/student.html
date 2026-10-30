@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<div class="cw-intro">
+  <div>
+    <p class="muted"><a href="{% url 'cw_students' c.pk %}">Students</a> ›</p>
+    <h2 class="cw-big">{{ name }}</h2>
+    <p class="cw-chips">{% if pace %}<span class="tag{% if 'behind' in pace %} warn{% endif %}">{{ pace|capfirst }}{% if at %}: at {{ at }}{% endif %}</span>{% endif %}
+      {% if avg is not None %}<span class="tag{% if avg < 70 %} warn{% endif %}">Quiz average {{ avg }}%</span>{% endif %}
+      <span class="muted">Last active {% if last %}{{ last|timesince }} ago{% else %}never{% endif %} · joined {{ joined|date:"M j" }}{% if acc and acc.time_factor != 1.0 %} · {{ acc.time_factor }}× time on tests{% endif %}</span></p>
+  </div>
+  <div class="cw-chips">{% if prev %}<a class="btn small" href="{% url 'cw_student' c.pk prev %}">‹ Previous student</a>{% endif %}{% if next %}<a class="btn small" href="{% url 'cw_student' c.pk next %}">Next student ›</a>{% endif %}</div>
+</div>
+
+<div class="cw-home">
+  <div class="cw-col-main">
+    <section class="card">
+      <h2>Unit {{ unit }}, lesson by lesson</h2>
+      <div class="table-wrap"><table class="cw-table">
+        <thead><tr><th>Lesson</th><th>Notes</th><th>Practice tried</th><th>Quiz</th><th>Due</th></tr></thead>
+        <tbody>{% for l in lessons %}<tr>
+          <td class="mathy"><strong>{{ l.title }}</strong></td>
+          <td>{% if l.notes_mark %}{% if l.notes_mark.done %}marked done{% elif l.notes_mark.excused %}excused{% endif %}{% else %}{{ l.steps }}/{{ l.steps_total }}{% endif %}</td>
+          <td>{% if l.practice_mark %}{% if l.practice_mark.done %}marked done{% elif l.practice_mark.excused %}excused{% endif %}{% else %}{{ l.tried }}/{{ l.practice_total }}{% endif %}</td>
+          <td>{% if l.quiz %}<a class="{% if l.low %}lowp{% endif %}" href="?quiz={{ l.num }}&amp;unit={{ unit }}">{{ l.quiz.0|floatformat:"-1" }}/{{ l.quiz.1 }}</a>{% else %}<span class="muted">–</span>{% endif %}</td>
+          <td class="muted nowrap">{% if l.due %}{{ l.due|date:"M j" }}{% endif %}{% if l.late %} <span class="late-tag">late</span>{% endif %}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+      <p class="muted">Practice counts items tried, never right or wrong.</p>
+    </section>
+
+    {% if answers %}<section class="card" id="answers">
+      <div class="cw-cardhead"><h2>{{ pick_label }}, answer by answer</h2>
+        {% if taken|length > 1 %}<form method="get" class="cw-autosubmit"><input type="hidden" name="unit" value="{{ unit }}"><label class="sr-only" for="qpick">Quiz</label><select id="qpick" name="quiz">{% for t in taken %}<option value="{{ t.ref }}"{% if t.ref == pick %} selected{% endif %}>{{ t.label }}</option>{% endfor %}</select><noscript><button class="btn small">Show</button></noscript></form>{% endif %}</div>
+      <p class="muted">What {{ name }} typed, exactly as typed. If the grader got one wrong, mark it right: the score and the gradebook update.</p>
+      {% for a in answers %}<div class="cw-answer">
+        <div class="mathy"><strong>Q{{ a.i }}</strong> {{ a.text }}</div>
+        <div class="cw-answer-row">
+          {% if a.dropped %}<span class="muted">Dropped for everyone.</span>
+          {% elif a.correct %}<span class="fb good">Right</span> <span class="mathy cw-given" title="As typed: {{ a.given }}">${{ a.given }}$</span>
+          {% elif a.fix %}<span class="fb good">{% if a.fix >= 1 %}Marked right by you{% else %}Half credit from you{% endif %}</span> {% if a.given %}<span class="mathy cw-given" title="As typed: {{ a.given }}">${{ a.given }}$</span>{% else %}(blank){% endif %}
+            <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="unfix"><input type="hidden" name="ref" value="{{ pick }}"><input type="hidden" name="item" value="{{ a.id }}"><button class="linkbtn">Undo</button></form>
+          {% else %}<span class="fb bad">{% if a.given %}Wrong{% else %}Blank{% endif %}</span>{% if a.given %} <span class="mathy cw-given" title="As typed: {{ a.given }}">${{ a.given }}$</span>{% endif %}
+            {% if a.key %}<span class="muted mathy">key: ${{ a.key }}$</span>{% endif %}
+            {% if a.given %}<form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="fix"><input type="hidden" name="ref" value="{{ pick }}"><input type="hidden" name="item" value="{{ a.id }}"><button class="btn small">Mark right</button></form>
+            <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="half"><input type="hidden" name="ref" value="{{ pick }}"><input type="hidden" name="item" value="{{ a.id }}"><button class="btn small">Half credit</button></form>{% endif %}
+          {% endif %}
+        </div>
+        {% if a.same and not a.correct %}<form method="post" class="cw-same">{% csrf_token %}<input type="hidden" name="action" value="accept_all"><input type="hidden" name="ref" value="{{ pick }}"><input type="hidden" name="item" value="{{ a.id }}"><input type="hidden" name="given" value="{{ a.given }}">
+          {{ a.same }} other student{{ a.same|pluralize }} typed the same answer. <button class="linkbtn">Mark {{ name }}'s and theirs right</button></form>{% endif %}
+      </div>{% endfor %}
+      <p class="muted">Marking an answer right also reports it to Mr Oaks Math, so the grader gets fixed for everyone.</p>
+    </section>{% endif %}
+  </div>
+
+  <div class="cw-home-side">
+    <section class="card"><h2>The whole course</h2>
+      {% for u in units %}<a class="cw-unitbar{% if u.on %} on{% endif %}" href="?unit={{ u.u.n }}"><span>{{ u.u.short }}</span><span class="bar"><i style="width: {{ u.pct }}%"></i></span><span class="{% if u.avg is not None and u.avg < 70 %}lowp{% endif %}">{% if u.avg is not None %}{{ u.avg }}%{% else %}–{% endif %}</span></a>{% endfor %}
+      <p class="muted">Bar: lessons finished. Number: quiz average.</p>
+    </section>
+    <section class="card"><h2>Missing or late</h2>
+      {% for m in missing %}<div class="cw-miss"><span><strong>{{ m.label }}</strong>, due {{ m.due|date:"M j" }}</span>
+        <span class="nowrap"><a class="btn small" href="{% url 'cw_calendar' c.pk %}?edit={{ m.d.kind }}:{{ m.d.ref }}">Extend</a>
+        <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="excuse"><input type="hidden" name="dated" value="{{ m.d.pk }}"><button class="linkbtn">Excuse</button></form></span></div>
+      {% empty %}<p class="muted">Nothing missing.</p>{% endfor %}
+    </section>
+    <section class="card"><h2>Last three weeks</h2>
+      <div class="cw-days" aria-label="Work by day">{% for d in days %}<span class="d{{ d.lv }}" title="{{ d.day|date:'D M j' }}: {{ d.n }} answer{{ d.n|pluralize }} or steps"></span>{% endfor %}</div>
+      <p class="muted">Darker: more work that day.</p>
+    </section>
+    <section class="card"><h2>Your notes</h2>
+      <form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="note">
+        <label class="muted" for="tnote">Only you see these.</label><textarea id="tnote" name="text" rows="4">{{ note }}</textarea>
+        <p><button class="btn small">Save note</button></p></form>
+    </section>
+    <section class="card"><h2>Accommodations</h2>
+      <form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="accommodation">
+        <label>Time on timed tests<select name="time_factor">
+          <option value="1"{% if not acc or acc.time_factor == 1.0 %} selected{% endif %}>Usual</option><option value="1.25"{% if acc.time_factor == 1.25 %} selected{% endif %}>1.25×</option>
+          <option value="1.5"{% if acc.time_factor == 1.5 %} selected{% endif %}>1.5×</option><option value="2"{% if acc.time_factor == 2.0 %} selected{% endif %}>2×</option></select></label>
+        <label>Note<input type="text" name="note" maxlength="120" value="{{ acc.note }}"></label>
+        <p><button class="btn small">Save</button></p></form>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">document.querySelectorAll(".cw-autosubmit select").forEach((el) => el.addEventListener("change", () => el.form.submit()));</script>{% endblock %}

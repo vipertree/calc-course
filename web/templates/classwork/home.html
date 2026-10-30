@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ c.name }} · Teacher dashboard{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<p class="muted cw-lead">{{ setup_line }} · <a href="{% url 'cw_setup' c.pk %}">Setup</a></p>
+<div class="cw-home">
+  <section class="card cw-needs">
+    <div class="cw-cardhead"><h2>Needs you</h2></div>
+    {% for g in needs %}<div class="cw-need">
+      <span class="tag{% if g.warn %} warn{% endif %}">{{ g.tag }}</span>
+      {% if g.summary %}<details class="cw-need-group"><summary>{{ g.summary }}</summary>
+        <ul class="plain">{% for n in g.items %}<li><a href="{{ n.href }}">{{ n.text }}</a></li>{% endfor %}</ul></details>
+        <a class="btn small{% if g.tag == 'Release' %} primary{% endif %}" href="{{ g.href }}">{{ g.action }}</a>
+      {% else %}{% with n=g.items.0 %}<p>{{ n.text }}</p><a class="btn small{% if n.tag == 'Release' %} primary{% endif %}" href="{{ n.href }}">{{ n.action }}</a>{% endwith %}{% endif %}
+    </div>{% empty %}<p class="muted">Nothing right now. Missing work, questions most of the class missed, sliding scores and results to release show up here.</p>{% endfor %}
+  </section>
+  <div class="cw-home-side">
+    <section class="card">
+      <div class="cw-cardhead"><h2>Due this week</h2><a href="{% url 'cw_calendar' c.pk %}">Calendar</a></div>
+      {% for d in due_week %}<div class="cw-due">
+        <div class="cw-due-top"><span><strong>{{ d.label }}</strong> · {{ d.day }}</span><span>{{ d.done }} / {{ d.of }}</span></div>
+        <div class="bar"><i style="width: {{ d.pct }}%"></i></div>
+      </div>{% empty %}<p class="muted">Nothing is due this week{% if not due_week %}; dates come from the <a href="{% url 'cw_calendar' c.pk %}">calendar</a>{% endif %}.</p>{% endfor %}
+      {% if next_test %}<p class="muted cw-next">Next: <strong>{{ next_label }}</strong> {{ next_when|date:"D M j" }}.</p>{% endif %}
+    </section>
+    {% if unit and topics %}<section class="card">
+      <h2>Where the class is in {{ unit.short }}</h2>
+      <p class="muted">Each dot is a student, at the last lesson they finished.{% if sched_left is not None %} The orange line is where your calendar says the class should be today.{% endif %}</p>
+      <div class="cw-pace" style="height: {{ stack_h }}px">
+        {% if sched_left is not None %}<span class="line{% if sched_right %} r{% endif %}" style="left: {{ sched_left }}%"><span>today: {{ sched_label }}</span></span>{% endif %}
+        {% for d in dots %}<a class="dot{% if d.none %} none{% endif %}" style="left: {{ d.left }}%; bottom: {{ d.bottom }}px" href="{{ d.href }}" title="{{ d.name }}"><span class="sr-only">{{ d.name }}</span></a>{% endfor %}
+      </div>
+      <div class="cw-pace-axis">{% for t in topics %}<span>{{ t }}</span>{% endfor %}</div>
+      {% if sched_left is not None %}<p class="muted">{{ ahead }} ahead, {{ on_pace }} on pace, {{ behind }} behind.</p>{% endif %}
+    </section>{% endif %}
+  </div>
+</div>
+{% endblock %}

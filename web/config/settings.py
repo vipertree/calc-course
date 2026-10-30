@@ -86,6 +86,7 @@ TEMPLATES = [{
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
         "course.context.site",
+        "classwork.context.tabs",
     ]},
 }]
 WSGI_APPLICATION = "config.wsgi.application"

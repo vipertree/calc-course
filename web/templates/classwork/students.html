@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Students · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+{% if temp_password %}<div class="card temp-pw" role="status">
+  <h2>New password for {{ temp_password.name }}</h2>
+  <p>Username <strong>{{ temp_password.username }}</strong>, password <span class="code">{{ temp_password.password }}</span></p>
+  <p class="muted">This is shown only once. {{ temp_password.name }} can change it in Account settings after signing in.</p>
+</div>{% endif %}
+<section class="card">
+  {% if rows %}<div class="table-wrap"><table class="cw-table">
+    <thead><tr><th>Student</th><th>Username</th><th>Due work done</th><th>Quiz average</th><th>Last active</th><th></th></tr></thead>
+    <tbody>{% for r in rows %}<tr>
+      <td><a href="{% url 'cw_student' c.pk r.s.id %}"><strong>{{ r.name }}</strong></a></td>
+      <td class="muted">{{ r.s.username }}</td>
+      <td>{% if r.total %}{{ r.done }} of {{ r.total }}{% else %}–{% endif %}</td>
+      <td class="{% if r.avg is not None and r.avg < 70 %}lowp{% endif %}">{% if r.avg is not None %}{{ r.avg }}%{% else %}–{% endif %}</td>
+      <td class="muted">{% if r.last %}{{ r.last|timesince }} ago{% else %}never{% endif %}</td>
+      <td class="nowrap">
+        <details class="pop inline"><summary class="btn small">Reset password</summary>
+          <form method="post" action="{% url 'reset_student_password' c.pk r.s.id %}" class="stack">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+            <p>Give {{ r.name }} a new temporary password? Their old one stops working. You'll see the new one once, to pass on.</p>
+            <p><button class="btn primary small">Reset password</button></p></form></details>
+        <details class="pop inline"><summary class="btn small">Remove</summary>
+          <form method="post" action="{% url 'remove_student' c.pk r.s.id %}" class="stack">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+            <p>Remove {{ r.name }} from {{ c.name }}? Their account and their own work stay with them. They can rejoin with the code while joining is open.</p>
+            <p><button class="btn primary small">Remove from class</button></p></form></details>
+      </td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}<p class="muted">No students yet. They join at <strong>{{ request.scheme }}://{{ request.get_host }}{% url 'join' %}</strong> with code <strong>{{ c.code }}</strong>.</p>{% endif %}
+</section>
+{% endblock %}

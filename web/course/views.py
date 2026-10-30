@@ -676,6 +676,12 @@ def release(request, pk, num):
     return redirect("teacher")
 
 
+def _back_to_class(request, pk):
+    """After a roster action: back to the class page it came from (classwork's Students tab), else the dashboard."""
+    nxt = request.POST.get("next", "")
+    return nxt if nxt.startswith(f"/teacher/class/{pk}/") or nxt.startswith(f"{request.META.get('SCRIPT_NAME', '')}/teacher/class/{pk}/") else "teacher"
+
+
 def _class_student(request, pk, uid):
     """A student enrolled in one of this teacher's classes, or 404. Never another teacher or an admin."""
     c = get_object_or_404(Classroom, pk=pk, teacher=request.user)
@@ -701,7 +707,7 @@ def reset_student_password(request, pk, uid):
     s.set_password(pw)
     s.save(update_fields=["password"])
     request.session["temp_password"] = {"name": s.profile.display_name, "username": s.username, "password": pw}
-    return redirect("teacher")
+    return redirect(_back_to_class(request, pk))
 
 
 @teacher_required
@@ -711,7 +717,7 @@ def remove_student(request, pk, uid):
     c, e, s = _class_student(request, pk, uid)
     e.delete()
     messages.success(request, f"{s.profile.display_name} is no longer in {c.name}.")
-    return redirect("teacher")
+    return redirect(_back_to_class(request, pk))
 
 
 # ------------------------------------------------------------------ video with HTTP Range (seeking)

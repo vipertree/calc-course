@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Progress · {{ c.name }}{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">document.querySelectorAll(".cw-autosubmit select, .cw-autosubmit input").forEach((el) => el.addEventListener("change", () => el.form.submit()));</script>{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<form method="get" class="cw-inline cw-pm-bar cw-autosubmit">
+  <label>Open unit<select name="unit">{% for u in units %}<option value="{{ u.n }}"{% if u.n == focus %} selected{% endif %}>{{ u.short }}</option>{% endfor %}</select></label>
+  <label>Sort<select name="sort">{% for k, l in sorts %}<option value="{{ k }}"{% if k == sort %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  <label class="check cw-row-check"><input type="checkbox" name="due" value="1"{% if only_due %} checked{% endif %}> Only work that's due</label>
+  <noscript><button class="btn small">Show</button></noscript>
+</form>
+
+{% if not rows %}<p class="card muted">No students yet. They join with code <strong>{{ c.code }}</strong>.</p>{% else %}
+<section class="card cw-pm">
+  <div class="table-wrap"><table>
+    <caption class="sr-only">Each student's progress, lesson by lesson</caption>
+    <thead><tr><th scope="col" class="who">Student <span class="muted">· due work done · quiz average</span></th>
+      {% for col in columns %}<th scope="col" class="{% if col.focus %}focus{% endif %}" title="{{ col.title }}">{% if col.kind == "unit" %}<a href="{{ col.href }}{% if sort != 'behind' %}&amp;sort={{ sort }}{% endif %}">{{ col.label }}</a>{% else %}{{ col.label }}{% endif %}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in rows %}<tr>
+      <th scope="row" class="who"><span class="nm">{{ r.name }}</span><span class="muted">{% if r.total %}{{ r.done }}/{{ r.total }}{% else %}–{% endif %} · <span class="{% if r.avg is not None and r.avg < 70 %}lowp{% endif %}">{% if r.avg is not None %}{{ r.avg }}%{% else %}–{% endif %}</span></span></th>
+      {% for x in r.cells %}<td><span class="cell {{ x.cls }}" title="{{ x.tip }}">{% if x.fill %}<span class="fill" style="height: {{ x.fill }}%"></span>{% endif %}<span class="n{% if x.low %}{% if x.cls == 'full' %} low{% else %} lowp{% endif %}{% endif %}">{{ x.txt }}</span>{% if x.late %}<span class="late" aria-label="past due"></span>{% endif %}</span></td>{% endfor %}
+    </tr>{% endfor %}</tbody>
+    <tfoot><tr><th scope="row" class="who">Class · done</th>{% for v in class_row %}<td class="classv">{{ v }}</td>{% endfor %}</tr></tfoot>
+  </table></div>
+  {% if more %}<p class="muted">Showing 30 of {{ n }} · <a href="?unit={{ focus }}&amp;sort={{ sort }}&amp;all=1">show all</a></p>{% endif %}
+</section>
+{% endif %}
+
+<div class="cw-legend cw-pm-legend">
+  <strong>Reading a square:</strong>
+  <span><span class="cell"></span> not started</span>
+  <span><span class="cell"><span class="fill" style="height: 55%"></span></span> notes and practice partway</span>
+  <span><span class="cell full"><span class="n">4</span></span> done; the number is the quiz score</span>
+  <span><span class="cell full"><span class="n low">1</span></span> low quiz score</span>
+  <span><span class="cell"><span class="fill" style="height: 30%"></span><span class="late"></span></span> past due, not done</span>
+  <span><span class="cell locked">11/10</span> opens later</span>
+  <span><span class="cell untracked"></span> not tracked in this class</span>
+  <span><span class="cell full"><span class="n">86</span></span> a folded unit: lessons done, quiz average %</span>
+</div>
+{% endblock %}

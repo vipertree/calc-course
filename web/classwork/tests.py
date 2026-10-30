@@ -271,3 +271,74 @@ class StudentGateTests(TestCase):
         solo = User.objects.create_user("solo", password="pw12345678")
         Profile.objects.create(user=solo, display_name="Solo", full_access=True)
         self.assertEqual(gate(solo, "quiz", "2.5")["state"], "open")
+
+
+from .models import AnswerFix, GraderMiss  # noqa: E402
+from .progress import ClassData  # noqa: E402
+
+
+class DashboardTests(TestCase):
+    def setUp(self):
+        self.t = teacher()
+        self.c = Classroom.objects.create(name="P3", teacher=self.t)
+        self.web = Client()
+        self.web.force_login(self.t)
+        self.kids = []
+        for i in range(4):
+            k = User.objects.create_user(f"kid{i}", password="pw12345678")
+            Profile.objects.create(user=k, display_name=f"Kid {i}")
+            self.c.enrollments.create(student=k)
+            self.kids.append(k)
+        pub = __import__("course.content", fromlist=["public"]).public("2.5")
+        rows = pub.get("quiz_variants") or [[q] for q in pub["quiz"]]
+        self.served = [r[0]["id"] for r in rows]
+        for i, k in enumerate(self.kids):          # everyone gets question 1 wrong with the same answer
+            det = {sid: {"given": "2x" if j == 0 else "ok", "correct": j != 0 and i % 2 == 0} for j, sid in enumerate(self.served)}
+            QuizAttempt.objects.create(user=k, topic="2.5", score=sum(d["correct"] for d in det.values()), total=len(self.served),
+                                       served=self.served, detail=det, classroom=self.c, form="A")
+        self.base = f"/teacher/class/{self.c.pk}/"
+
+    def score(self, k):
+        return ClassData(Classroom.objects.get(pk=self.c.pk)).quiz(k.id, "2.5")
+
+    def test_every_page_loads(self):
+        for path in ("", "progress/", "quizzes/", "quizzes/2.5/", "students/", f"students/{self.kids[0].pk}/", "calendar/", "setup/"):
+            self.assertEqual(self.web.get(self.base + path).status_code, 200, path)
+
+    def test_home_flags_results_to_release_and_a_hard_question(self):
+        page = self.web.get(self.base).content.decode()
+        self.assertIn("Results are waiting", page)
+        self.assertIn("question 1", page)
+
+    def test_accepting_an_answer_fixes_everyone_who_gave_it(self):
+        before = self.score(self.kids[0])
+        self.web.post(self.base + "quizzes/2.5/", {"action": "accept", "item": self.served[0], "given": "2x"})
+        self.assertEqual(AnswerFix.objects.count(), 4)
+        self.assertEqual(self.score(self.kids[0])[0], before[0] + 1)
+        self.assertTrue(GraderMiss.objects.filter(topic="2.5", given="2x").exists())
+
+    def test_marking_one_answer_and_half_credit(self):
+        k = self.kids[1]
+        url = self.base + f"students/{k.pk}/"
+        before = self.score(k)[0]
+        self.web.post(url, {"action": "half", "ref": "2.5", "item": self.served[1]})
+        self.assertEqual(self.score(k)[0], before + 0.5)
+        self.web.post(url, {"action": "unfix", "ref": "2.5", "item": self.served[1]})
+        self.assertEqual(self.score(k)[0], before)
+
+    def test_dropping_a_question_shrinks_the_total(self):
+        self.web.post(self.base + "quizzes/2.5/", {"action": "drop", "item": self.served[0]})
+        self.assertEqual(self.score(self.kids[0])[1], len(self.served) - 1)
+
+    def test_release_toggles(self):
+        from course.models import Release
+        self.web.post(self.base + "quizzes/2.5/", {"action": "release"})
+        self.assertTrue(Release.objects.filter(classroom=self.c, topic="2.5").exists())
+
+    def test_another_teacher_sees_nothing(self):
+        other = Client()
+        other.force_login(teacher("t2"))
+        for path in ("", "progress/", "quizzes/2.5/", f"students/{self.kids[0].pk}/"):
+            self.assertEqual(other.get(self.base + path).status_code, 404, path)
+        other.post(self.base + "quizzes/2.5/", {"action": "accept", "item": self.served[0], "given": "2x"})
+        self.assertFalse(AnswerFix.objects.exists())

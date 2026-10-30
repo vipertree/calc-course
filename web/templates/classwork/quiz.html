@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<div class="cw-intro">
+  <div>
+    <p class="muted"><a href="{% url 'cw_quizzes' c.pk %}">Quizzes and tests</a> ›</p>
+    <h2 class="cw-big">{{ label }}</h2>
+    <p class="cw-chips">{% if due_text %}<span class="tag">{% if closed %}Closed{% else %}Due{% endif %} {{ due_text }}</span>{% endif %}{% if form %}<span class="tag">Class form {{ form }}</span>{% endif %}
+      {% if results == "release" %}<span class="tag{% if not released %} warn{% endif %}">{% if released %}Results released{% else %}Results not released{% endif %}</span>{% elif results == "due" %}<span class="tag">Results at the due date</span>{% else %}<span class="tag">Results shown right away</span>{% endif %}
+      <span class="muted">{{ took }} of {{ n }} took it</span></p>
+  </div>
+  {% if results == "release" %}<form method="post">{% csrf_token %}<input type="hidden" name="action" value="release">
+    <button class="btn{% if not released %} primary{% endif %}">{% if released %}Hide results again{% else %}Release results to the class{% endif %}</button></form>{% endif %}
+</div>
+
+<div class="cw-home">
+  <div class="cw-col-main">
+    <section class="card">
+      <h2>Question by question</h2>
+      <div class="table-wrap"><table class="cw-table">
+        <thead><tr><th>#</th><th>Question</th><th>Right</th><th></th><th>Most common wrong answer</th><th></th></tr></thead>
+        <tbody>{% for q in questions %}<tr id="q{{ q.i }}"{% if q.low %} class="hot"{% endif %}{% if q.dropped %} class="dropped"{% endif %}>
+          <td><strong>{{ q.i }}</strong></td>
+          <td class="mathy cw-qtext">{{ q.text }}{% if q.key %}<span class="muted cw-key">Key: ${{ q.key }}$</span>{% endif %}</td>
+          <td><span class="bar small{% if q.low %} lowb{% endif %}"><i style="width: {{ q.pct }}%"></i></span></td>
+          <td class="nowrap{% if q.low %} lowp{% endif %}">{{ q.right }}/{{ q.seen }}</td>
+          <td>{% if q.wrong %}<span class="mathy cw-given" title="As typed: {{ q.wrong }}">${{ q.wrong }}$</span> <span class="muted">({{ q.wrong_n }})</span>
+            <details class="pop inline"><summary class="linkbtn">Accept it</summary><form method="post" class="stack">{% csrf_token %}
+              <input type="hidden" name="action" value="accept"><input type="hidden" name="item" value="{{ q.id }}"><input type="hidden" name="given" value="{{ q.wrong }}">
+              <p>Mark <code>{{ q.wrong }}</code> right for every student who gave it? The grader's miss goes to Mr Oaks Math to fix.</p><p><button class="btn primary small">Mark them right</button></p></form></details>
+            {% else %}<span class="muted">–</span>{% endif %}</td>
+          <td><form method="post">{% csrf_token %}<input type="hidden" name="action" value="drop"><input type="hidden" name="item" value="{{ q.id }}">
+            <button class="linkbtn">{% if q.dropped %}Count it again{% else %}Drop for everyone{% endif %}</button></form></td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+    </section>
+    <section class="card">
+      <h2>Students</h2>
+      <div class="table-wrap"><table class="cw-table">
+        <thead><tr><th>Student</th><th>Score</th><th>By question</th><th>Submitted</th><th></th></tr></thead>
+        <tbody>{% for r in rows %}<tr>
+          <td><a href="{% url 'cw_student' c.pk r.s.id %}?quiz={{ ref }}"><strong>{{ r.name }}</strong></a></td>
+          {% if r.score %}<td class="{% if r.pct <= 0.4 %}lowp{% endif %}">{{ r.score.0|floatformat:"-1" }}/{{ r.score.1 }}</td><td class="cw-marks">{{ r.marks }}</td>
+            <td class="muted">{{ r.at|date:"M j, g:i a" }}{% if r.late %} <span class="late-tag">late</span>{% endif %}{% if r.tries > 1 %} · {{ r.tries }} tries{% endif %}</td><td></td>
+          {% else %}<td class="muted">{% if r.exc.excused %}excused{% elif r.exc.reopened %}reopened{% elif r.missing %}missing{% else %}not yet{% endif %}</td><td></td><td></td>
+            <td class="nowrap">{% if r.missing %}<form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="reopen"><input type="hidden" name="student" value="{{ r.s.id }}"><button class="btn small">Reopen 2 days</button></form>{% endif %}
+              <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="excuse"><input type="hidden" name="student" value="{{ r.s.id }}"><button class="linkbtn">{% if r.exc.excused %}Unexcuse{% else %}Excuse{% endif %}</button></form></td>
+          {% endif %}
+        </tr>{% endfor %}</tbody>
+      </table></div>
+      <p class="muted">Lowest scores first. Click a student to see each answer as typed and mark any of them right.</p>
+    </section>
+  </div>
+  <div class="cw-home-side">
+    <section class="card">
+      <h2>Scores</h2>
+      <div class="cw-hist" role="img" aria-label="How many students got each score">{% for h in hist %}<div><span>{{ h.n }}</span><i style="height: {{ h.h }}px"></i><b>{{ h.score }}</b></div>{% endfor %}</div>
+      {% if avg is not None %}<p>Average <strong>{{ avg|floatformat:1 }} / {{ total }}</strong></p>{% endif %}
+    </section>
+    <section class="card"><h2>Dropping a question</h2><p class="muted">A dropped question stops counting for everyone, on this quiz's score and in the gradebook. You can count it again later.</p></section>
+  </div>
+</div>
+{% endblock %}

@@ -10,7 +10,7 @@
   <p class="muted small">{% if course == "AB" %}The AB version leaves out the BC-only topics. BC students take the BC version, which covers the whole unit.{% else %}The BC version covers the whole unit, BC-only topics included. AB students take the AB version.{% endif %}</p>
 </nav>{% endif %}
 <div id="app" data-area="unittest" data-num="{{ num }}"
-     data-static="{% static '' %}" data-check="{% url 'api_check' num %}" data-draft="{% url 'api_draft' num %}" data-step=""
+     data-static="{% get_static_prefix %}" data-check="{% url 'api_check' num %}" data-draft="{% url 'api_draft' num %}" data-step=""
      data-quiz="{% url 'api_quiz' num %}" data-frq="{% url 'api_frq' num %}"></div>
 {{ lesson_json|json_script:"lesson" }}{{ state_json|json_script:"state" }}
 {% endblock %}

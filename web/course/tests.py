@@ -744,3 +744,13 @@ class UnitEndNext(TestCase):
         page = self.client.get(f"/topic/{last}/").content.decode().split("</header>", 1)[1]   # not the top-bar flyouts
         self.assertIn('href="/unit/U1/test/"', page)
         self.assertNotIn('href="/topic/2.1/"', page)
+
+
+class StaticTagTests(TestCase):
+    def test_no_empty_static_tag(self):
+        # {% static '' %} works in development but raises under the production manifest storage (every lesson 500'd on
+        # the first deploy); use {% get_static_prefix %} for the base URL
+        from pathlib import Path
+        from django.conf import settings
+        bad = [str(p) for p in Path(settings.BASE_DIR, "templates").rglob("*.html") if re.search(r"{%\s*static\s+(''|\"\")\s*%}", p.read_text())]
+        self.assertEqual(bad, [])

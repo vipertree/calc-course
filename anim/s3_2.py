@@ -170,7 +170,7 @@ class Lesson(TranscriptScene):
             self.play(*[Create(Line(ax.c2p(-1.6, s * 5), ax.c2p(1.6, s * 5), color=TANGENT, stroke_width=5)) for s in (1, -1)],
                       *[FadeIn(closed_dot(ax, 0, s * 5, TANGENT)) for s in (1, -1)], run_time=1)
             b.line(4)
-            v1 = T(r"vertical: $\frac{dy}{dx}$ blows up \\ (dividing by $0$)", 32, SECANT).next_to(h2, DOWN, buff=0.5).align_to(h1, LEFT)
+            v1 = T(r"vertical: $\frac{dy}{dx}$ heads off \\ toward infinity (dividing by $0$)", 32, SECANT).next_to(h2, DOWN, buff=0.5).align_to(h1, LEFT)
             self.play(FadeIn(v1), run_time=0.8)
             b.line(5)
             v2 = T(r"denominator $= 0$: $\ y = 0$", 32, SECANT).next_to(v1, DOWN, buff=0.25).align_to(h1, LEFT)

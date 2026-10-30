@@ -52,10 +52,11 @@ class Lesson(TranscriptScene):
             self.play(Write(ch), run_time=1.6)
         self.clear()
 
-        self.example("Tool one: factor and cancel", r"Factor and cancel",
-                     [r"\lim_{x\to2}\frac{x^3 - 8}{x - 2} = \lim_{x\to2}\frac{(x - 2)(x^2 + 2x + 4)}{x - 2}", r"= \lim_{x\to2}(x^2 + 2x + 4) = 4 + 4 + 4 = 12"], at=[0, 1])
-        self.example("Factor", r"Find $\displaystyle\lim_{x\to2}\frac{x^3 - 8}{x - 2}$.",
-                     [r"\text{plug in: } \frac{0}{0}", r"\lim_{x\to2}\frac{x^3 - 8}{x - 2} = \lim_{x\to2}\frac{\cancel{(x - 2)}(x^2 + 2x + 4)}{\cancel{x - 2}}", r"= \lim_{x\to2}(x^2 + 2x + 4) = 4 + 4 + 4 = 12"], at=[1, 2, 3])
+        # Adder (2026-10-30): one beat per tool, the example worked once (the old lesson solved each one twice)
+        self.example("Tool one: factor and cancel", r"Find $\displaystyle\lim_{x\to2}\frac{x^3 - 8}{x - 2}$.",
+                     [r"\text{plug in: } \frac{0}{0}", r"\lim_{x\to2}\frac{x^3 - 8}{x - 2} = \lim_{x\to2}\frac{\cancel{(x - 2)}(x^2 + 2x + 4)}{\cancel{x - 2}}",
+                      r"= \lim_{x\to2}(x^2 + 2x + 4) = 4 + 4 + 4 = 12",
+                      r"TEXT:No difference of cubes? Look for the factor $x - 2$: factor by hand or by long division."], at=[0, 0, 1, 2])
         with self.beat("Conjugates, a quick review") as b:
             head = T("From algebra: the conjugate", 40, DIM).to_edge(UP, buff=0.5)
             self.play(FadeIn(head), run_time=0.6)
@@ -72,15 +73,12 @@ class Lesson(TranscriptScene):
             board.write(self, r"= \sqrt5 + 2", color=DERIV)
         self.clear()
 
-        self.example("Tool two: the conjugate", r"Multiply by the conjugate",
-                     [r"\lim_{x\to0}\frac{\sqrt{x + 4} - 2}{x}\cdot\frac{\sqrt{x + 4} + 2}{\sqrt{x + 4} + 2}", r"= \lim_{x\to0}\frac{x}{x(\sqrt{x + 4} + 2)}",
-                      r"= \lim_{x\to0}\frac{1}{\sqrt{x + 4} + 2} = \frac14"], at=[0, 1, 1])
-        self.example("Conjugate", r"Find $\displaystyle\lim_{x\to0}\frac{\sqrt{x + 4} - 2}{x}$.",
-                     [r"\lim_{x\to0}\frac{\sqrt{x + 4} - 2}{x}\cdot\frac{\sqrt{x + 4} + 2}{\sqrt{x + 4} + 2}", r"= \lim_{x\to0}\frac{(x + 4) - 4}{x\left(\sqrt{x + 4} + 2\right)}", r"= \lim_{x\to0}\frac{\cancel{x}}{\cancel{x}\left(\sqrt{x + 4} + 2\right)}", r"= \lim_{x\to0}\frac{1}{\sqrt{x + 4} + 2} = \frac14"], at=[1, 2, 3, 4])
-        self.example("Tool three: clear the fractions", r"Combine the fractions",
-                     [r"\lim_{x\to3}\frac{\frac1x - \frac13}{x - 3} = \lim_{x\to3}\frac{\frac{3 - x}{3x}}{x - 3}", r"= \lim_{x\to3}\frac{-1}{3x} = -\frac19"], at=[0, 1])
-        self.example("Combine fractions", r"Find $\displaystyle\lim_{x\to3}\frac{\frac1x - \frac13}{x - 3}$.",
-                     [r"\lim_{x\to3}\frac{\frac1x - \frac13}{x - 3} = \lim_{x\to3}\frac{\frac{3 - x}{3x}}{x - 3}", r"= \lim_{x\to3}\frac{-\cancel{(x - 3)}}{3x\cancel{(x - 3)}}", r"= \lim_{x\to3}\left(-\frac{1}{3x}\right) = -\frac19"], at=[1, 2, 3])
+        self.example("Tool two: the conjugate", r"Find $\displaystyle\lim_{x\to0}\frac{\sqrt{x + 4} - 2}{x}$.",
+                     [r"\lim_{x\to0}\frac{\sqrt{x + 4} - 2}{x}\cdot\frac{\sqrt{x + 4} + 2}{\sqrt{x + 4} + 2}", r"= \lim_{x\to0}\frac{(x + 4) - 4}{x\left(\sqrt{x + 4} + 2\right)}",
+                      r"= \lim_{x\to0}\frac{\cancel{x}}{\cancel{x}\left(\sqrt{x + 4} + 2\right)}", r"= \lim_{x\to0}\frac{1}{\sqrt{x + 4} + 2} = \frac14"], at=[0, 1, 2, 2])
+        self.example("Tool three: clear the fractions", r"Find $\displaystyle\lim_{x\to3}\frac{\frac1x - \frac13}{x - 3}$.",
+                     [r"\lim_{x\to3}\frac{\frac1x - \frac13}{x - 3} = \lim_{x\to3}\frac{\frac{3 - x}{3x}}{x - 3}", r"= \lim_{x\to3}\frac{-\cancel{(x - 3)}}{3x\cancel{(x - 3)}}",
+                      r"= \lim_{x\to3}\left(-\frac{1}{3x}\right) = -\frac19"], at=[1, 2, 3])
         with self.beat("Tool four: trig identities") as b:
             R, O, th = 2.2, LEFT * 3.8 + DOWN * 0.8, 0.85
             P = O + R * np.array([np.cos(th), np.sin(th), 0])
@@ -103,11 +101,10 @@ class Lesson(TranscriptScene):
             star = T(r"the one identity AP Calculus expects you to know", 30, DERIV).next_to(forms, DOWN, buff=0.4)
             self.play(FadeIn(star), run_time=0.8)
         self.clear()
-        self.example("Tool four, in a limit", r"Use the Pythagorean identity",
-                     [r"\lim_{x\to0}\frac{\sin^2 x}{1 - \cos x} = \lim_{x\to0}\frac{1 - \cos^2 x}{1 - \cos x} = \lim_{x\to0}\frac{(1 - \cos x)(1 + \cos x)}{1 - \cos x}",
-                      r"= \lim_{x\to0}(1 + \cos x) = 2"], at=[0, 1])
-        self.example("Identity", r"Find $\displaystyle\lim_{x\to0}\frac{\sin^2 x}{1 - \cos x}$.",
-                     [r"\sin^2 x = 1 - \cos^2 x", r"\lim_{x\to0}\frac{1 - \cos^2 x}{1 - \cos x} = \lim_{x\to0}\frac{\cancel{(1 - \cos x)}(1 + \cos x)}{\cancel{1 - \cos x}}", r"= \lim_{x\to0}(1 + \cos x) = 2"], at=[1, 2, 3])
+        self.example("Tool four, in a limit", r"Find $\displaystyle\lim_{x\to0}\frac{\sin^2 x}{1 - \cos x}$.",
+                     [r"\text{plug in: } \frac{0}{1 - 1} = \frac{0}{0}", r"\sin^2 x = 1 - \cos^2 x",
+                      r"\lim_{x\to0}\frac{1 - \cos^2 x}{1 - \cos x} = \lim_{x\to0}\frac{\cancel{(1 - \cos x)}(1 + \cos x)}{\cancel{1 - \cos x}}",
+                      r"= \lim_{x\to0}(1 + \cos x) = 2"], at=[0, 1, 2, 2])
 
         a2, al2 = plot_axes([0, 6, 1], [-6, 6, 2], w=6.4, h=4.8)
         VGroup(a2, al2).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.3)

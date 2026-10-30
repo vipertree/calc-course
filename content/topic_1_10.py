@@ -153,7 +153,7 @@ QUIZ = [
             why_not={"A": "removable", "C": "vertical asymptote", "D": "removable"}),
         MCQ(r"Which function has a vertical asymptote at $x = -1$?",
             [r"$\dfrac{x+1}{x^2-1}$", r"$\dfrac{x^2-1}{x+1}$", r"$\dfrac{x-1}{x+1}$", r"$|x+1|$"], "C",
-            r"At $x = -1$ the top is $-2$ and the bottom is $0$: the function blows up.",
+            r"At $x = -1$ the top is $-2$ and the bottom is $0$: the function heads off toward infinity.",
             why_not={"A": "the factor $x+1$ cancels: removable at $-1$", "B": "removable", "D": "continuous"}),
     ),
 ]

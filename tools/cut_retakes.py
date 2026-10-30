@@ -169,9 +169,12 @@ def word_end(audio, sr, e, limit=0.8, floor_db=-40):
     return t
 
 
-def long_pauses(words, audio, sr, cuts):
-    """Cuts that shorten every long silence between words to about PAUSE_LEFT."""
+def long_pauses(words, audio, sr, cuts, floor_db=-40):
+    """Cuts that shorten every long silence to about PAUSE_LEFT: the gap after each word's end, and, inside a word
+    Whisper stretched past a second, any long quiet run (Whisper sometimes spreads a word across a pause: "so the
+    limit is ......... 7" hid a 9-second silence in 1.4)."""
     out = []
+    win = int(0.05 * sr)
     for a, b in zip(words, words[1:]):
         if any(s0 <= a["s"] < s1 or s0 <= b["s"] < s1 for s0, s1, _ in cuts):
             continue
@@ -179,6 +182,20 @@ def long_pauses(words, audio, sr, cuts):
         c0, c1 = end + PAUSE_LEFT[0], b["s"] - PAUSE_LEFT[1]
         if b["s"] - end > PAUSE_MAX and c1 - c0 > 0.2:
             out.append((round(c0, 3), round(c1, 3), "long pause"))
+        if a["e"] - a["s"] > 1.0:                       # a stretched word: look for a silence inside it
+            t, run0 = a["s"] + 0.15, None
+            stop = min(a["e"], c0 if b["s"] - end > PAUSE_MAX else a["e"])
+            while t < stop:
+                seg = audio[int(t * sr):int(t * sr) + win]
+                quiet = len(seg) > 0 and 20 * np.log10(np.sqrt(np.mean(seg ** 2)) + 1e-9) < floor_db
+                if quiet and run0 is None:
+                    run0 = t
+                if run0 is not None and (not quiet or t + 0.05 >= stop):
+                    run1 = t if not quiet else stop
+                    if run1 - run0 > PAUSE_MAX:
+                        out.append((round(run0 + PAUSE_LEFT[0], 3), round(run1 - PAUSE_LEFT[1], 3), "long pause"))
+                    run0 = None
+                t += 0.05
     return out
 
 

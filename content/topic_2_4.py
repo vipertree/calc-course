@@ -39,7 +39,7 @@ NOTES = [
           r"vertical tangent & $x^{1/3}$ at $0$ & slope is \blank{infinite} \\ "
           r"discontinuity & a jump or hole & no tangent line at all", "lll", header=r"feature & example & why $f'(c)$ fails"),
     Text(r"\textbf{What the pictures are really asking:} does the limit in the definition of the derivative \blank{exist}? For $|x|$ at $0$ it is "
-         r"\[ \lim_{h\to 0}\frac{|h|}{h}, \] which is $-1$ from the left and $1$ from the right, so it doesn't exist. At a cusp or a vertical tangent, the quotients blow up."),
+         r"\[ \lim_{h\to 0}\frac{|h|}{h}, \] which is $-1$ from the left and $1$ from the right, so it doesn't exist. At a cusp or a vertical tangent, the quotients head off toward infinity."),
 
     Section("Differentiability and continuity"),
     Formula("A one-way relationship", (

@@ -49,20 +49,20 @@ NOTES = [
         r"\textbf{3. Combine fractions} over a common denominator. \par "
         r"\textbf{4. Use an identity}, such as $\sin^2 x = 1 - \cos^2 x$. \par "
         r"\textbf{5. Expand} a power, then simplify.")),
-    VideoExample('Factor', work="2.6cm"),
+    VideoExample('Tool one: factor and cancel', work="2.6cm"),
     Formula("Review: conjugates", (
         r"The conjugate of $a + b$ is $a - b$, and \[ (a + b)(a - b) = a^2 - b^2. \] "
         r"Multiplying by a conjugate clears a square root. From algebra: "
         r"\[ \frac{1}{\sqrt5 - 2} = \frac{1}{\sqrt5 - 2}\cdot\frac{\sqrt5 + 2}{\sqrt5 + 2} = \frac{\sqrt5 + 2}{5 - 4} = \sqrt5 + 2. \] "
         r"The same move works inside a limit.")),
-    VideoExample('Conjugate', work="2.8cm"),
-    VideoExample('Combine fractions', work="2.8cm"),
+    VideoExample('Tool two: the conjugate', work="2.8cm"),
+    VideoExample('Tool three: clear the fractions', work="2.8cm"),
     Formula("The Pythagorean identity", (
         r"\[ \sin^2 x + \cos^2 x = 1 \] "
         r"It is the Pythagorean theorem on the unit circle: the point at angle $x$ has legs $\cos x$ and $\sin x$ and hypotenuse $1$. "
         r"This is the one trig identity AP Calculus expects you to know. Know its other forms too: "
         r"$1 - \cos^2 x = \mblank{\sin^2 x}$ and $1 - \sin^2 x = \mblank{\cos^2 x}$.")),
-    VideoExample('Identity', work="2.6cm"),
+    VideoExample('Tool four, in a limit', work="2.6cm"),
 
     Section("When substitution yields nonzero over zero"),
     Text(r"At $x = 3$, $\dfrac{x+1}{x-3}$ yields $\dfrac40$. No rewriting helps: the numerator stays near $4$ while the "

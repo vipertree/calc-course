@@ -59,7 +59,7 @@ NOTES = [
             r"\[ \frac{dy}{dx} = -\frac{2x + y}{x + 2y}. \] At $(1, 2)$: $-\dfrac45$.", work="3cm", beat="A product term"),
     Example("Horizontal and vertical tangents", r"Where does $x^2 + y^2 = 25$ have horizontal tangent lines? Vertical ones?",
             r"\[ \frac{dy}{dx} = -\frac{x}{y}. \] A horizontal tangent has slope $0$, so we want $\dfrac{dy}{dx} = 0$. A fraction is $0$ when its "
-            r"numerator is $0$: $x = 0$, which gives $(0, 5)$ and $(0, -5)$. A vertical tangent is like an infinite slope: the derivative blows up "
+            r"numerator is $0$: $x = 0$, which gives $(0, 5)$ and $(0, -5)$. A vertical tangent is like an infinite slope: the derivative heads off toward infinity "
             r"because we'd be dividing by zero. So set the denominator equal to $0$: $y = 0$, which gives $(5, 0)$ and $(-5, 0)$.",
             work="2.8cm", beat="Horizontal and vertical tangents"),
     BigIdea(r"Take $\frac{d}{dx}$ of both sides. Every time you take the derivative of $y$ (or of something in $y$) with respect to $x$, "

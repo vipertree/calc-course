@@ -35,6 +35,9 @@ CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS") or [f"https://{h}" for h
 FORCE_SCRIPT_NAME = (os.environ.get("FORCE_SCRIPT_NAME", "/calc") or "").rstrip("/") or None
 COOKIE_PATH = (FORCE_SCRIPT_NAME or "") + "/"
 SESSION_COOKIE_PATH = CSRF_COOKIE_PATH = LANGUAGE_COOKIE_PATH = COOKIE_PATH
+# Spelled out with the prefix: Django adds the script prefix to a relative STATIC_URL lazily and caches the first
+# answer, which whitenoise asks for at startup, before any request has set the prefix (pages linked /static/...).
+STATIC_URL = COOKIE_PATH + "static/"
 
 if not os.environ.get("DB_NAME"):
     raise ImproperlyConfigured("DB_NAME (and DB_USER, DB_PASSWORD) must be set: production runs on Postgres")

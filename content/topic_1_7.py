@@ -2,7 +2,7 @@
 
 CED: LIM-1.D, LIM-1.E (synthesis topic). The lesson is a toolkit (Adder, 2026-10-02: a toolkit, not a
 decision tree): direct substitution, rewrite and cancel, special identities, split into sides (with
-sign analysis for nonzero/0), and a nod to L'Hospital's Rule later in the year. Every practice answer is computed by sympy, and
+a pointer to Topic 1.14 for nonzero/0), and a nod to L'Hospital's Rule later in the year. Every practice answer is computed by sympy, and
 every solution keeps limit notation on each line.
 """
 import sympy as sp
@@ -28,7 +28,6 @@ def answer(e, c):
 same("worked", lim((x**2 + 2 * x - 8) / (sp.sqrt(x + 5) - 1), -4), -12)
 same("abs L", lim(sp.Abs(x - 2) / (x - 2), 2, "-"), -1)
 same("abs R", lim(sp.Abs(x - 2) / (x - 2), 2, "+"), 1)
-same("sign L", lim((x + 1) / (x - 2)**2, 2, "-"), sp.oo)
 
 NOTES = [
     Video("s1_7.py::Lesson", "Choosing a method", 7.0),
@@ -38,17 +37,17 @@ NOTES = [
         r"\textbf{Direct substitution.} Plug in $x = c$. If $f$ is a single nice formula near $c$ and you get a number, "
         r"that number is the limit. If not, the result tells you which tool to reach for: $\frac00$ is "
         r"\emph{indeterminate} (so is $\frac{\infty}{\infty}$, which shows up when $x \to \infty$; see Topic 1.15), and "
-        r"$\dfrac{\text{nonzero}}{0}$ means the function is unbounded near $c$. \par "
+        r"$\dfrac{\text{nonzero}}{0}$ means no algebra will fix it: the function heads off toward infinity near $c$ (Topic 1.14 "
+        r"shows which way each side goes). \par "
         r"\textbf{Rewrite and cancel.} Factor, multiply by a conjugate, or clear the fractions inside a fraction. Cancel the "
         r"factor that made $\frac00$, then substitute again. \par "
         r"\textbf{Special identities.} Trig identities such as $\sin^2 x + \cos^2 x = 1$ can turn a $\frac00$ form into one "
         r"that cancels. \par "
-        r"\textbf{Split into sides.} When the formula changes at $c$ (piecewise functions, absolute values), or substitution "
-        r"yields $\dfrac{\text{nonzero}}{0}$, find each one-sided limit. For $\dfrac{\text{nonzero}}{0}$, the sign on each side "
-        r"decides: the same sign gives $\infty$ or $-\infty$, and opposite signs mean the limit does not exist. \par "
+        r"\textbf{Split into sides.} When the formula changes at $c$ (piecewise functions, absolute values), find each one-sided "
+        r"limit with the formula that applies on that side. If the sides agree, that's the limit; if they disagree, the limit "
+        r"does not exist. \par "
         r"\textbf{Coming later:} there's another handy tool, \emph{L'Hospital's Rule}, that we'll learn later in the year "
         r"(Topic 4.7). It uses derivatives to handle $\frac00$ and $\frac{\infty}{\infty}$.")),
-    VideoExample('Signs near a zero denominator', work="3cm"),
     VideoExample('Absolute value', work="2.4cm"),
     VideoExample('Two tools in one', work="3.4cm"),
     BigIdea(r"Let the form choose the tool: roots suggest conjugates, polynomials suggest factoring, nested fractions "
@@ -74,9 +73,10 @@ MIX = [
      limchain(1, [r"\frac{(x+3)-4}{(x-1)\left(\sqrt{x+3}+2\right)}", r"\frac{1}{\sqrt{x+3}+2}"], r"\frac14")),
     (r"\frac{|x+3|}{x+3}", sp.Abs(x + 3) / (x + 3), "-3", -3,
      r"$\displaystyle\lim_{x\to-3^-}\frac{-(x+3)}{x+3} = -1$ and $\displaystyle\lim_{x\to-3^+}\frac{x+3}{x+3} = 1$: the limit does not exist."),
-    (r"\frac{x}{(x-4)^2}", x / (x - 4)**2, "4", 4, r"$\frac40$ with a positive denominator on both sides: $\infty$."),
-    (r"\frac{x^2+1}{x-1}", (x**2 + 1) / (x - 1), "1", 1,
-     r"$\frac20$; the denominator changes sign at $1$, so the one-sided limits are $-\infty$ and $\infty$. The limit does not exist."),
+    (r"\frac{|x-1|}{x^2-1}", sp.Abs(x - 1) / (x**2 - 1), "1", 1,
+     r"$\displaystyle\lim_{x\to1^-}\frac{-(x-1)}{(x-1)(x+1)} = -\frac12$ and $\displaystyle\lim_{x\to1^+}\frac{x-1}{(x-1)(x+1)} = \frac12$: "
+     r"the limit does not exist."),
+    (r"\frac{x^3+8}{x+2}", (x**3 + 8) / (x + 2), "-2", -2, limchain(-2, [r"\frac{(x+2)(x^2-2x+4)}{x+2}", r"(x^2-2x+4)"], 12)),
     (r"\frac{(x+1)^2-1}{x}", ((x + 1)**2 - 1) / x, "0", 0, limchain(0, [r"\frac{x^2+2x}{x}", r"(x+2)"], 2)),
     (r"\frac{\sin^2 x}{1+\cos x}", sp.sin(x)**2 / (1 + sp.cos(x)), r"\pi", sp.pi,
      limchain(r"\pi", [r"\frac{(1-\cos x)(1+\cos x)}{1+\cos x}", r"(1-\cos x)"], 2)),
@@ -86,10 +86,9 @@ MIX = [
      limchain(2, [r"\frac{x^2(x-2)}{(x-2)(x+2)}", r"\frac{x^2}{x+2}"], 1)),
     (r"\frac{x^2-7x+12}{x-3}", (x**2 - 7 * x + 12) / (x - 3), "3", 3, limchain(3, [r"\frac{(x-3)(x-4)}{x-3}", r"(x-4)"], -1)),
     (r"\frac{4-x}{2-\sqrt x}", (4 - x) / (2 - sp.sqrt(x)), "4", 4, limchain(4, [r"\frac{(2-\sqrt x)(2+\sqrt x)}{2-\sqrt x}", r"(2+\sqrt x)"], 4)),
-    (r"\frac{x-3}{x^2-6x+9}", (x - 3) / (x**2 - 6 * x + 9), "3", 3,
-     r"$\dfrac{x-3}{(x-3)^2}$ simplifies to $\dfrac{1}{x-3}$ for $x \ne 3$, whose one-sided limits are $-\infty$ and $\infty$. "
-     r"The limit does not exist."),
-    (r"\frac{2x-1}{(x+2)^2}", (2 * x - 1) / (x + 2)**2, "-2", -2, r"$\frac{-5}{0}$ with a positive denominator on both sides: $-\infty$."),
+    (r"\frac{\sqrt{x}-3}{x-9}", (sp.sqrt(x) - 3) / (x - 9), "9", 9,
+     limchain(9, [r"\frac{x-9}{(x-9)\left(\sqrt x+3\right)}", r"\frac{1}{\sqrt x+3}"], r"\frac16")),
+    (r"\frac{1-\cos^2 x}{\sin x}", (1 - sp.cos(x)**2) / sp.sin(x), "0", 0, limchain(0, [r"\frac{\sin^2 x}{\sin x}", r"\sin x"], 0)),
     (r"\frac{|2x-6|}{x-3}", sp.Abs(2 * x - 6) / (x - 3), "3", 3,
      r"$\displaystyle\lim_{x\to3^-}\frac{-2(x-3)}{x-3} = -2$ and $\displaystyle\lim_{x\to3^+}\frac{2(x-3)}{x-3} = 2$: the limit does not exist."),
     (r"\frac{\frac{2}{x}-1}{x-2}", (2 / x - 1) / (x - 2), "2", 2,
@@ -131,14 +130,15 @@ QUIZ = [
              limchain(1, [r"\frac{(x+3)-4}{(x-1)\left(\sqrt{x+3}+2\right)}", r"\frac1{\sqrt{x+3}+2}"], r"\frac14"), work="2cm"),
     ),
     Variants(
-        Item(r"Find $\displaystyle\lim_{x\to3}\frac{x-5}{(x-3)^2}$. Type DNE if it does not exist.", infinite(-1),
-             r"$\frac{-2}{0}$; the denominator is positive on both sides, so both one-sided limits are $-\infty$: the limit is $-\infty$.",
+        Item(r"Let $f(x) = \begin{cases} x + 3, & x < 2 \\ x^2 + 1, & x \ge 2. \end{cases}$ Find $\displaystyle\lim_{x\to2} f(x)$. "
+             r"Type DNE if it does not exist.", num(5),
+             r"Split into sides: from the left, $2 + 3 = 5$; from the right, $4 + 1 = 5$. The sides agree, so the limit is $5$.", work="1.8cm"),
+        Item(r"Find $\displaystyle\lim_{x\to-4}\frac{|x+4|}{x+4}$. Type DNE if it does not exist.", dne(),
+             r"From the left, $|x+4| = -(x+4)$ and the quotient is $-1$; from the right it is $1$. The sides disagree: the limit does not exist.",
              work="1.8cm"),
-        Item(r"Find $\displaystyle\lim_{x\to-2}\frac{x+6}{(x+2)^2}$. Type DNE if it does not exist.", infinite(1),
-             r"$\frac{4}{0}$; the top is positive and the bottom is positive on both sides, so the limit is $\infty$.", work="1.8cm"),
-        Item(r"Find $\displaystyle\lim_{x\to1}\frac{x+1}{x-1}$. Type DNE if it does not exist.", dne(),
-             r"$\frac20$; the bottom is negative on the left and positive on the right, so the sides go to $-\infty$ and $\infty$. "
-             r"The limit does not exist.", work="1.8cm"),
+        Item(r"Let $g(x) = \begin{cases} 2x - 1, & x < 3 \\ 8 - x, & x \ge 3. \end{cases}$ Find $\displaystyle\lim_{x\to3} g(x)$. "
+             r"Type DNE if it does not exist.", num(5),
+             r"Split into sides: from the left, $6 - 1 = 5$; from the right, $8 - 3 = 5$. The sides agree, so the limit is $5$.", work="1.8cm"),
     ),
     Variants(
         MCQ(r"Which method fits $\displaystyle\lim_{x\to4}\frac{x-4}{\sqrt x - 2}$ best?",
@@ -166,11 +166,11 @@ QUIZ = [
 ]
 same("q1", lim((x**2 - 3 * x - 4) / (x + 1), -1), -5)
 same("q2", lim((sp.sqrt(x + 9) - 3) / x, 0), sp.Rational(1, 6))
-same("q3", lim((x - 5) / (x - 3)**2, 3), -sp.oo)
+same("q3", [2 + 3, 2**2 + 1, lim(sp.Abs(x + 4) / (x + 4), -4, "-"), lim(sp.Abs(x + 4) / (x + 4), -4, "+"), 2 * 3 - 1, 8 - 3], [5, 5, -1, 1, 5, 5])
 same("q4", lim((x - 4) / (sp.sqrt(x) - 2), 4), 4)
 same("q versions", [lim((x**2 + x - 6) / (x**2 - 4), 2), lim((x**2 - 5 * x) / (x + 1), 4), lim((1 / (x - 2) + sp.Rational(1, 2)) / x, 0),
-                    lim((sp.sqrt(x + 3) - 2) / (x - 1), 1), lim((x + 6) / (x + 2)**2, -2), lim(x**2 / sp.Abs(x), 0)],
-     [sp.Rational(5, 4), sp.Rational(-4, 5), sp.Rational(-1, 4), sp.Rational(1, 4), sp.oo, 0])
+                    lim((sp.sqrt(x + 3) - 2) / (x - 1), 1), lim(x**2 / sp.Abs(x), 0)],
+     [sp.Rational(5, 4), sp.Rational(-4, 5), sp.Rational(-1, 4), sp.Rational(1, 4), 0])
 
 # ---------------------------------------------------------------- test prep
 MCQS = [
@@ -178,9 +178,9 @@ MCQS = [
         limchain(2, [r"\frac{(x-2)(x+1)}{(x-2)(x+2)}", r"\frac{x+1}{x+2}"], r"\frac34")),
     MCQ(r"$\displaystyle\lim_{x\to0}\frac{x}{\sqrt{x+1}-1}$ is", [r"$2$", r"$1$", r"$\dfrac12$", r"$0$"], "A",
         limchain(0, [r"\frac{x\left(\sqrt{x+1}+1\right)}{(x+1)-1}", r"\left(\sqrt{x+1}+1\right)"], 2), why_not={"C": "inverted the result"}),
-    MCQ(r"$\displaystyle\lim_{x\to-2^+}\frac{x-1}{x+2}$ is", [r"$-\infty$", r"$0$", r"$\infty$", r"$-\dfrac14$"], "A",
-        r"$\frac{-3}{0}$. For $x$ slightly above $-2$, $x + 2 > 0$ and $x - 1 < 0$, so the quotient is large and negative.",
-        why_not={"C": "ignored the sign of the numerator"}),
+    MCQ(r"$\displaystyle\lim_{x\to\pi/2}\frac{1-\sin^2 x}{\cos x}$ is", [r"$1$", r"$0$", r"$-1$", r"Does not exist"], "B",
+        r"Substitution yields $\frac00$. The Pythagorean identity turns the top into $\cos^2 x$: "
+        + limchain(r"\pi/2", [r"\frac{\cos^2 x}{\cos x}", r"\cos x"], 0), why_not={"D": "$\\frac00$ doesn't mean the limit fails to exist"}),
     MCQ(r"Let $g(x) = \begin{cases} \dfrac{\sin^2 x}{1-\cos x}, & x \ne 0 \\ 5, & x = 0. \end{cases}$ What is $\displaystyle\lim_{x\to0} g(x)$?",
         [r"$0$", r"$1$", r"$5$", r"$2$"], "D",
         limchain(0, [r"\frac{(1-\cos x)(1+\cos x)}{1-\cos x}", r"(1+\cos x)"], 2) + r". The value $g(0) = 5$ does not affect the limit.",
@@ -188,7 +188,7 @@ MCQS = [
 ]
 same("m1", lim((x**2 - x - 2) / (x**2 - 4), 2), sp.Rational(3, 4))
 same("m2", lim(x / (sp.sqrt(x + 1) - 1), 0), 2)
-same("m3", lim((x - 1) / (x + 2), -2, "+"), -sp.oo)
+same("m3", lim((1 - sp.sin(x)**2) / sp.cos(x), sp.pi / 2), 0)
 same("m4", lim(sp.sin(x)**2 / (1 - sp.cos(x)), 0), 2)
 
 # AP does not ask this topic as free response; the multiple-choice questions above cover it.

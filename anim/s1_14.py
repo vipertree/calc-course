@@ -29,6 +29,47 @@ class Lesson(TranscriptScene):
         self.clear()
         self.title()
 
+        # Adder (2026-10-30): before any sign rules, see what a number over zero does, with numbers plugged in
+        with self.beat("A number over zero") as b:
+            fx = M(r"f(x) = \frac{1}{x - 2}", 46, FUNC).to_corner(UL, buff=0.6)
+            sub = M(r"x = 2:\ \ \frac{1}{2 - 2} = \frac{1}{0}", 40, SECANT).next_to(fx, DOWN, buff=0.3, aligned_edge=LEFT)
+            self.play(Write(fx), run_time=0.8)
+            self.play(Write(sub), run_time=0.8)
+            vals = [("1.9", "-0.1", "-10"), ("1.99", "-0.01", "-100"), ("1.999", "-0.001", "-1000"),
+                    ("2.1", "0.1", "10"), ("2.01", "0.01", "100"), ("2.001", "0.001", "1000")]
+            head = VGroup(M("x", 34, DIM), M("x - 2", 34, DIM), M("f(x)", 34, DIM))
+            cells = [VGroup(*[M(v, 34, INK if j == 0 else (TANGENT if i < 3 else DERIV)) for j, v in enumerate(row)]) for i, row in enumerate(vals)]
+            grid = VGroup(head, *cells)
+            for r in grid:
+                for j, cell in enumerate(r):
+                    cell.move_to(RIGHT * 1.75 * j, aligned_edge=LEFT)
+            grid.arrange(DOWN, buff=0.2, aligned_edge=LEFT).next_to(sub, DOWN, buff=0.45, aligned_edge=LEFT)
+            rule = Line(head.get_corner(DL) + DOWN * 0.08, head.get_corner(DR) + DOWN * 0.08 + RIGHT * 0.4, color=DIM, stroke_width=2)
+            gx, gl = plot_axes([1, 3, 0.5], [-12, 12, 4], w=5.0, h=5.6, coords=False)
+            VGroup(gx, gl).to_edge(RIGHT, buff=0.6).shift(DOWN * 0.2)
+            self.play(FadeIn(head), Create(rule), FadeIn(gx), FadeIn(gl), FadeIn(asymptote(gx, 2, [-12, 12])), run_time=0.8)
+            b.line(1)
+            dl = Dot(gx.c2p(1.9, -10), color=TANGENT)
+            self.play(FadeIn(cells[0]), FadeIn(dl), run_time=0.8)
+            b.line(2)
+            down = Arrow(gx.c2p(1.95, -9), gx.c2p(1.95, -12.6), buff=0, color=TANGENT, stroke_width=5)
+            self.play(FadeIn(cells[1]), run_time=0.6)
+            self.play(FadeIn(cells[2]), GrowArrow(down), run_time=0.8)
+            b.line(3)
+            dr = Dot(gx.c2p(2.1, 10), color=DERIV)
+            up = Arrow(gx.c2p(2.05, 9), gx.c2p(2.05, 12.6), buff=0, color=DERIV, stroke_width=5)
+            self.play(FadeIn(cells[3]), FadeIn(dr), run_time=0.7)
+            self.play(FadeIn(cells[4]), FadeIn(cells[5]), GrowArrow(up), run_time=0.9)
+            b.line(4)
+            self.play(Create(branch_plot(gx, lambda x: 1 / (x - 2), 2, [1, 3], gap=0.085, color=FUNC, stroke_width=4)), run_time=1.4)
+            b.line(5)
+            col = VGroup(*[c[1] for c in cells])
+            neg = SurroundingRectangle(VGroup(*[c[1] for c in cells[:3]]), color=TANGENT, buff=0.08)
+            pos = SurroundingRectangle(VGroup(*[c[1] for c in cells[3:]]), color=DERIV, buff=0.08)
+            self.play(Create(neg), run_time=0.6)
+            self.play(Create(pos), run_time=0.6)
+        self.clear()
+
         ax, al = plot_axes([0, 4, 1], [0, 8, 2], w=7, h=5.2)
         VGroup(ax, al).to_edge(LEFT, buff=0.8).shift(DOWN * 0.3)
         f = lambda x: 1 / (x - 2) ** 2
@@ -49,29 +90,13 @@ class Lesson(TranscriptScene):
             self.play(FadeIn(a2), FadeIn(asymptote(a2, 2, [-6, 6])), Create(branch_plot(a2, lambda x: 1 / (x - 2), 2, [0, 4], gap=0.17, color=FUNC, stroke_width=4)), run_time=1.4)
         self.clear()
 
-        with self.beat("Finding the sign") as b:
-            e = M(r"\frac{x + 3}{(x - 1)(x + 2)}\quad \text{near } x = 1", 54, FUNC).to_edge(UP, buff=0.6)
-            self.play(Write(e), run_time=1.2)
-            nl = NumberLine(x_range=[0, 2, 1], length=8, color=DIM, include_numbers=True, font_size=30).shift(DOWN * 0.2)
-            self.play(Create(nl), run_time=0.6)
-            top = M(r"x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", 40).next_to(e, DOWN, buff=0.6)
-            self.play(Write(top), run_time=1)
-            b.line(1)
-            sg = VGroup(M(r"x - 1 < 0", 36, SECANT).next_to(nl.n2p(0.5), DOWN, buff=0.5), M(r"x - 1 > 0", 36, TANGENT).next_to(nl.n2p(1.5), DOWN, buff=0.5))
-            self.play(FadeIn(sg), run_time=0.8)
-            b.line(2)
-            fr = VGroup(M(r"\frac{(+)}{(-)(+)} = -", 44, SECANT).next_to(sg[0], DOWN, buff=0.35),
-                        M(r"\frac{(+)}{(+)(+)} = +", 44, TANGENT).next_to(sg[1], DOWN, buff=0.35))
-            self.play(Write(fr[0]), run_time=0.9)
-            self.play(Write(fr[1]), run_time=0.9)
-            b.line(3)
-            res = VGroup(M(r"\lim_{x\to1^-}\frac{x + 3}{(x - 1)(x + 2)} = -\infty", 38, SECANT),
-                         M(r"\lim_{x\to1^+}\frac{x + 3}{(x - 1)(x + 2)} = \infty", 38, TANGENT)).arrange(RIGHT, buff=0.9).to_edge(DOWN, buff=0.3)
-            self.play(FadeOut(top), Write(res), run_time=1.2)
-        self.clear()
-        self.example("A sign chart", r"Let $f(x) = \dfrac{x + 3}{(x - 1)(x + 2)}$. Find $\displaystyle\lim_{x\to1^-} f(x)$ and $\displaystyle\lim_{x\to1^+} f(x)$.",
-                     [r"\text{near } x = 1: \ x + 3 \approx 4 > 0, \quad x + 2 \approx 3 > 0", r"\text{left: } \frac{(+)}{(-)(+)} = -,\ \text{so}\ \lim_{x\to1^-} f(x) = -\infty", r"\text{right: } \frac{(+)}{(+)(+)} = +,\ \text{so}\ \lim_{x\to1^+} f(x) = \infty"], at=[1, 2, 3], follow=True)
-
+        # one worked example (the old lesson did it twice): a test number on each side, the sign fraction every time
+        ch = staged_chart([1], ["-", "+"], name=r"\text{sign of } f", width=6)
+        self.example("Finding the sign", r"Let $f(x) = \dfrac{x + 3}{(x - 1)(x + 2)}$. Find $\displaystyle\lim_{x\to1^-} f(x)$ and $\displaystyle\lim_{x\to1^+} f(x)$.",
+                     [r"\text{plug in: } \frac{4}{(0)(3)} = \frac{4}{0}", r"\text{left, } x = 0.9:\ \ \frac{3.9}{(-0.1)(2.9)}", r"\frac{(+)}{(-)(+)} = -",
+                      r"\lim_{x\to1^-} f(x) = -\infty", r"\text{right, } x = 1.1:\ \ \frac{4.1}{(0.1)(3.1)}", r"\frac{(+)}{(+)(+)} = +, \ \text{so}\ \lim_{x\to1^+} f(x) = \infty",
+                      r"TEXT:Only the signs matter: near $1$, every factor but $x - 1$ keeps its sign."],
+                     at=[1, 2, 2, 3, 4, 4, 5], follow=True, figure=ch, figure_at=2, cues={2: reveal_sign(ch, 0), 5: reveal_sign(ch, 1)})
         with self.beat("Not every zero of the denominator") as b:
             e = M(r"\frac{x^2 - 1}{x - 1} = \frac{(x - 1)(x + 1)}{x - 1}", 56).shift(UP * 1.6)
             self.play(Write(e), run_time=1.4)
@@ -104,7 +129,7 @@ class Lesson(TranscriptScene):
 
         self.examples_card()
         self.example("Example 1: One side at a time", r"Find $\displaystyle\lim_{x\to4^-}\frac{2x + 1}{x - 4}$ and $\displaystyle\lim_{x\to4^+}\frac{2x + 1}{x - 4}$.",
-                     [r"\frac{9}{0}:\ \text{unbounded}", r"2x + 1 \approx 9 > 0", r"x \to 4^-:\ \frac{(+)}{(-)} = -,\ \text{so}\ \lim_{x\to4^-}\frac{2x + 1}{x - 4} = -\infty", r"x \to 4^+:\ \frac{(+)}{(+)} = +,\ \text{so}\ \lim_{x\to4^+}\frac{2x + 1}{x - 4} = \infty"],
+                     [r"\frac{9}{0}:\ \text{heads off toward infinity}", r"2x + 1 \approx 9 > 0", r"x \to 4^-:\ \frac{(+)}{(-)} = -,\ \text{so}\ \lim_{x\to4^-}\frac{2x + 1}{x - 4} = -\infty", r"x \to 4^+:\ \frac{(+)}{(+)} = +,\ \text{so}\ \lim_{x\to4^+}\frac{2x + 1}{x - 4} = \infty"],
                      at=[1, 2, 3, 4])
         self.example("Example 2: Which zeros make asymptotes?", r"Find the vertical asymptotes of $f(x) = \dfrac{x^2 - 9}{x^2 - 2x - 3}$.",
                      [r"\text{denominator } 0 \text{ at } x = 3,\ x = -1", r"\frac{(x - 3)(x + 3)}{(x - 3)(x + 1)}", r"x = 3:\ \text{hole}; \quad x = -1:\ \text{vertical asymptote}"],

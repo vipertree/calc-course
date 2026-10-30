@@ -25,6 +25,13 @@ FIG_LN = graph("t1_14_ln", [("ln(x)", 0.02, 4.5)], xr=(-0.5, 4.5), yr=(-4, 2), v
 NOTES = [
     Video("s1_14.py::Lesson", "Infinite limits", 5.1),
 
+    Section("A number over zero"),
+    Text(r"At $x = 2$, $f(x) = \dfrac{1}{x - 2}$ gives $\dfrac{1}{0}$. Plug in numbers close to $2$: "
+         r"\[ \begin{array}{c|ccc|ccc} x & 1.9 & 1.99 & 1.999 & 2.1 & 2.01 & 2.001 \\ \hline x - 2 & -0.1 & -0.01 & -0.001 & 0.1 & 0.01 & 0.001 \\ "
+         r"f(x) & -10 & -100 & \mblank{-1000} & 10 & 100 & \mblank{1000} \end{array} \] "
+         r"Dividing by a smaller and smaller number makes the outputs head off toward \blank{infinity}. "
+         r"The sign of the bottom decides which way: a tiny \blank{negative} number on the left, a tiny positive number on the right."),
+
     Section("Infinite limits"),
     Definition("Infinite limit", (
         r"$\displaystyle \lim_{x\to c} f(x) = \infty$ means the values of $f(x)$ \blank{grow without bound} as $x$ approaches $c$ "
@@ -38,7 +45,7 @@ NOTES = [
         r"$\displaystyle \lim_{x\to c^-} f(x)$, \[ \lim_{x\to c^+} f(x) \] is $\infty$ or $-\infty$.")),
 
     Section("Finding the signs"),
-    VideoExample('A sign chart', work="3cm"),
+    VideoExample('Finding the sign', work="3cm"),
     Text(r"\textbf{Cancel first.} $\displaystyle \dfrac{x^2-1}{x-1} = x + 1$ for $x \ne 1$: the zero of the denominator \blank{cancels}, so "
          r"$x = 1$ is a hole, not a vertical asymptote."),
     BigIdea(r"A vertical asymptote comes from a nonzero quantity divided by one shrinking to zero. The signs on each side tell you "

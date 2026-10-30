@@ -69,6 +69,9 @@ NOTES = [
         r"Let $F(x) = \int_a^x f(t)\,dt$. A function $g(x)$ on top is $F$ of the inner function: \[ \int_a^{g(x)} f(t)\,dt = F(g(x)). \] "
         r"By the chain rule, \[ \frac{d}{dx}F(g(x)) = F'(g(x)) \cdot g'(x) = f(g(x)) \cdot \blank{g'(x)}. \]")),
     VideoExample('With the chain rule', work="3cm"),
+    Formula("The Fundamental Theorem, with a function on top", (
+        r"\[ \frac{d}{dx}\int_a^{u(x)} f(t)\,dt = \blank{f(u(x))} \cdot u'(x). \] "
+        r"Put the top limit into $f$, then multiply by the top limit's derivative.")),
     Text(r"\textbf{$x$ on the bottom.} Swap the limits first, which changes the sign: \[ \int_x^b f(t)\,dt = -\int_b^x f(t)\,dt. \] "
          r"\textbf{$x$ at both ends.} Split the integral at a fixed number $c$, so each piece has one moving limit: "
          r"\[ \int_{u(x)}^{v(x)} f(t)\,dt = -\int_c^{u(x)} f(t)\,dt + \int_c^{v(x)} f(t)\,dt. \]"),

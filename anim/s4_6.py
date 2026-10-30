@@ -47,7 +47,7 @@ class Lesson(TranscriptScene):
         ax, al = plot_axes([0, 6, 1], [0, 5, 1], w=7, h=5, coords=False)
         VGroup(ax, al).to_edge(LEFT, buff=0.8).shift(DOWN * 0.3)
         f = lambda s: 0.12 * (s - 1) ** 2 + 1
-        a, xb = 2.0, 2.5
+        a, xb = 2.0, 3.3
         fa, sl = f(a), 0.24 * (a - 1)
         with self.beat("The tangent line as an estimate") as b:
             curve = ax.plot(f, x_range=[0, 6], color=FUNC, stroke_width=5)
@@ -60,7 +60,7 @@ class Lesson(TranscriptScene):
             self.play(Create(tl), run_time=0.8)
             # Adder (2026-10-30): "local" means local. Zoom in on the point so the step really is small, and walk a dot
             # from the known value f(a) a little way along the tangent to the estimate.
-            Z = 0.26
+            Z = 0.42
             cam = self.camera.frame
             saved = cam.copy()
             # strokes are drawn in frame units, so thin them as the camera closes in or they swell to rope

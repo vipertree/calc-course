@@ -10,6 +10,7 @@ and the words come from transcripts/<topic>.md, so editing a transcript changes 
 [pause] and [long pause] become silences in the narration track. At the end, `self.finish()` fails the render if any
 transcript beat was never used, so script and video can't drift apart.
 """
+import json
 import os
 import re
 import sys
@@ -76,6 +77,25 @@ class Beat:
                 if late > 0.5:      # the pictures fell behind the words: shorten the animations before this line
                     print(f"LATE {self.scene.NUM} {self.scene._beat_now!r} line {i}: {late:.1f} s", file=sys.stderr)
             self.scene.wait_until_bookmark(mark)
+
+    def word(self, phrase, nth=1):
+        """Wait until the narrator says this phrase (the nth time in this beat), for a cue on a spoken word rather than
+        a line: "the left side". Uses the word timings of Adder's recording; with a synthetic voice it doesn't wait."""
+        vb = getattr(self.scene, "_voice_beats", {}).get(self.scene._beat_now)
+        words = self.scene._rec_words() if vb else []
+        norm = lambda w: re.sub(r"[^a-z0-9]", "", w.lower())
+        toks = [norm(t) for t in phrase.split()]
+        hits = [w["s"] for i, w in enumerate(words) if vb["rec_start"] <= w["s"] < vb["rec_end"]
+                and [norm(x["w"]) for x in words[i:i + len(toks)]] == toks] if vb else []
+        if len(hits) < nth:
+            if vb:
+                print(f"WORD {self.scene.NUM} {self.scene._beat_now!r}: {phrase!r} not heard", file=sys.stderr)
+            return
+        rel = hits[nth - 1] - vb["rec_start"]
+        rel += vb["think"] * sum(1 for x in vb["inserts"] if x <= rel)
+        gap = getattr(self.tr, "start_t", float(self.scene.renderer.time)) + rel - float(self.scene.renderer.time)
+        if gap > 0.02:
+            self.scene.wait(gap)
 
     def rest(self):
         """Seconds of narration left in this beat."""
@@ -238,6 +258,14 @@ class TranscriptScene(LessonScene):
             ln = re.sub(r"\[(long )?pause\]", pause, ln)
             out.append((f"<bookmark mark='L{i}'/>" if i else "") + ln)
         return re.sub(r"\s+", " ", " ".join(out)).strip()
+
+    def _rec_words(self):
+        """The words of Adder's recording for this lesson, with times on the edited recording's clock."""
+        if not hasattr(self, "_words_cache"):
+            uu, tt = self.NUM.split(".")
+            p = os.path.join(ROOT, "voice", "aligned", f"{int(uu):02d}-{int(tt):02d}.edited.words.json")
+            self._words_cache = json.load(open(p))["words"] if os.path.exists(p) else []
+        return self._words_cache
 
     @contextmanager
     def beat(self, name, think=False):

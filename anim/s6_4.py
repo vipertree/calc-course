@@ -16,6 +16,7 @@ from style import *
 # the rule kept in the corner during the examples (formulas stay on screen)
 REF_FTC = r"\begin{array}{c} F(x) = \int_a^x f(t)\,dt \\ \text{so } F'(x) = f(x) \end{array}"
 REF_CHAIN = r"\begin{array}{c} F(x) = \int_a^x f(t)\,dt \\ \left[F(g(x))\right]' = F'(g(x))\, g'(x) \end{array}"
+REF_TOP = r"\frac{d}{dx}\int_a^{u(x)} f(t)\,dt = f(u(x))\, u'(x)"
 
 
 def stack(xr, yF, yf, w=8.0, hF=2.7, hf=2.3, coords=True, Flab="F", flab="f"):
@@ -267,22 +268,38 @@ class Lesson(TranscriptScene):
                       r"h'(x) = F'(g(x)) \cdot g'(x)", r"F'(g(x)) = \cos\left(x^2\right)", r"h'(x) = \cos\left(x^2\right) \cdot 2x = 2x\cos\left(x^2\right)"],
                      at=[1, 2, 3, 4, 5, 6], ref=REF_CHAIN, follow=True)
 
+        # Adder (2026-10-30): after the first chain-rule example, the FTC itself with a function on top
+        with self.beat("A function on top, in one step") as b:
+            top = formula_box(M(r"\frac{d}{dx}\int_a^{u(x)} f(t)\,dt = f\big(u(x)\big) \cdot u'(x)", 56), ACCUM).shift(UP * 1.9)
+            self.play(FadeIn(top), run_time=1.2)
+            b.line(1)
+            self.play(Indicate(top[1], color=ACCUM), run_time=1)
+            b.line(2)
+            words = T("Put the top limit into $f$, then multiply by the top limit's derivative.", 38).next_to(top, DOWN, buff=0.6)
+            self.play(FadeIn(words), run_time=0.8)
+            b.line(3)
+            check = VGroup(M(r"f(t) = \cos t, \ \ u(x) = x^2, \ \ u'(x) = 2x", 42),
+                           M(r"h'(x) = \cos\left(x^2\right) \cdot 2x", 46, ACCUM)).arrange(DOWN, buff=0.35).next_to(words, DOWN, buff=0.7)
+            self.play(FadeIn(check[0]), run_time=0.8)
+            self.play(Write(check[1]), run_time=1)
+        self.clear()
+
         with self.beat("Close") as b:
             card = VGroup(M(r"F(x) = \int_a^x f(t)\,dt: \ \text{a running total of area}", 42, ACCUM),
                           formula_box(M(r"\text{If } F(x) = \int_a^x f(t)\,dt, \ \text{ then } \ F'(x) = f(x)", 44), ACCUM),
-                          M(r"\text{a function of } x \text{ on top: } \ F'(g(x)) \cdot g'(x)", 40), M(r"F(a) = 0", 40, DIM)).arrange(DOWN, buff=0.5)
+                          M(r"\text{a function on top: } \ \frac{d}{dx}\int_a^{u(x)} f(t)\,dt = f(u(x)) \cdot u'(x)", 40), M(r"F(a) = 0", 40, DIM)).arrange(DOWN, buff=0.5)
             card.set_max_width(12.5)
             self.play(LaggedStart(*[FadeIn(c) for c in card], lag_ratio=0.4), run_time=2)
         self.clear()
 
         self.examples_card()
         self.example("Example 1: A function on top", r"$k(x) = \displaystyle\int_3^{\sin x} e^{t^2}\,dt$. Find $k'(x)$.",
-                     [r"F(x) = \int_3^x e^{t^2}\,dt, \ \ g(x) = \sin x, \ \ g'(x) = \cos x", r"F'(g(x)) = e^{(\sin x)^2}", r"k'(x) = e^{\sin^2 x} \cdot \cos x"],
-                     at=[1, 2, 3], ref=REF_CHAIN)
+                     [r"f(t) = e^{t^2}, \ \ u(x) = \sin x, \ \ u'(x) = \cos x", r"f(u(x)) = e^{(\sin x)^2}", r"k'(x) = e^{\sin^2 x} \cdot \cos x"],
+                     at=[1, 2, 3], ref=REF_TOP)
         self.example("Example 2: x on the bottom", r"$m(x) = \displaystyle\int_x^5 \left(t^4 + 1\right) dt$. Find $m'(x)$.",
                      [r"m(x) = -\int_5^x \left(t^4 + 1\right) dt", r"m'(x) = -\left(x^4 + 1\right)"], at=[1, 2], ref=REF_FTC)
         self.example("Example 3: x at both ends", r"$R(x) = \displaystyle\int_{3x}^{x^2} \sqrt{t^4 + 1}\,dt$. Find $R'(x)$.",
                      [r"R(x) = \int_{3x}^{0} \sqrt{t^4 + 1}\,dt + \int_0^{x^2} \sqrt{t^4 + 1}\,dt", r"R(x) = -\int_0^{3x} \sqrt{t^4 + 1}\,dt + \int_0^{x^2} \sqrt{t^4 + 1}\,dt",
                       r"\text{first piece: } -\sqrt{(3x)^4 + 1} \cdot 3 = -3\sqrt{81x^4 + 1}", r"\text{second piece: } \sqrt{\left(x^2\right)^4 + 1} \cdot 2x = 2x\sqrt{x^8 + 1}",
-                      r"R'(x) = 2x\sqrt{x^8 + 1} - 3\sqrt{81x^4 + 1}"], at=[1, 2, 3, 4, 5], ref=REF_CHAIN)
+                      r"R'(x) = 2x\sqrt{x^8 + 1} - 3\sqrt{81x^4 + 1}"], at=[1, 2, 3, 4, 5], ref=REF_TOP)
         self.finish()

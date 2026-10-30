@@ -17,6 +17,15 @@ def jump_graph(w=7.4, h=5.2):
 class Lesson(TranscriptScene):
     NUM = "1.3"
 
+    def flash_side(self, piece, at=None):
+        """Point at one side of a graph as the narrator names it: an arrow, and the piece thickens and turns red for a moment."""
+        target = at if at is not None else piece.point_from_proportion(0.5)
+        arrow = Arrow(target + UP * 1.1 + LEFT * 0.5, target, buff=0.08, color=TANGENT, stroke_width=6, max_tip_length_to_length_ratio=0.3)
+        w, col = piece.get_stroke_width(), piece.get_stroke_color()
+        self.play(GrowArrow(arrow), piece.animate.set_stroke(TANGENT, width=w * 2.2), run_time=0.45)
+        self.wait(0.5)
+        self.play(FadeOut(arrow), piece.animate.set_stroke(col, width=w), run_time=0.5)
+
     def construct(self):
         ax, al, L, R, o, c = jump_graph()
         g = VGroup(ax, al, L, R, o, c).to_edge(LEFT, buff=0.7).shift(DOWN * 0.2)
@@ -100,6 +109,11 @@ class Lesson(TranscriptScene):
             for i in range(3):
                 b.line(i + 1 if i < 2 else 2)
                 self.play(FadeIn(boxes[i]), FadeIn(names[i]), run_time=0.9)
+                if i == 0:      # Adder: point at each side as it's named
+                    b.word("left side")
+                    self.flash_side(boxes[0][1][0])
+                    b.word("right side")
+                    self.flash_side(boxes[0][1][1])
             b.line(3)
             inf = M(r"\lim_{x\to0}\frac{1}{x^2} = \infty \ \ (\text{still does not exist})", 40).to_edge(DOWN, buff=0.6)
             self.play(Write(inf), run_time=1.2)
@@ -119,7 +133,7 @@ class Lesson(TranscriptScene):
         self.clear()
 
         with self.beat("Graphs can hide things") as b:
-            screen = RoundedRectangle(width=7, height=4.6, corner_radius=0.25, color=DIM, stroke_width=6, fill_color="#20302A", fill_opacity=1).shift(LEFT * 2)
+            screen = RoundedRectangle(width=7, height=4.6, corner_radius=0.25, color=DIM, stroke_width=6, fill_color=PANEL, fill_opacity=1).shift(LEFT * 2)
             a, _ = plot_axes([-1, 3, 1], [-1, 4, 1], w=6, h=3.8, coords=False)
             a.move_to(screen)
             ln = a.plot(lambda x: x + 1, x_range=[-1, 3], color=DERIV, stroke_width=4)
@@ -146,7 +160,13 @@ class Lesson(TranscriptScene):
             self.play(Write(r1), run_time=1.4)
             b.line(1)
             r2 = VGroup(M(r"\lim_{x\to2^-} f(x) = -1", 40), M(r"\lim_{x\to2^+} f(x) = 1", 40), M(r"\lim_{x\to2} f(x)\ \text{DNE}", 40, TANGENT)).arrange(DOWN, aligned_edge=LEFT).next_to(r1, DOWN, buff=0.6, aligned_edge=LEFT)
-            self.play(Write(r2), run_time=2)
+            b.word("left side")
+            self.play(Write(r2[0]), run_time=0.6)
+            self.flash_side(pieces[1], at=ax3.c2p(1.4, -0.4))
+            b.word("right side")
+            self.play(Write(r2[1]), run_time=0.6)
+            self.flash_side(pieces[2], at=ax3.c2p(2.8, 1.8))
+            self.play(Write(r2[2]), run_time=0.8)
         self.clear()
 
         with self.beat("Close") as b:

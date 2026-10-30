@@ -31,8 +31,10 @@ class ClassData:
         self.sets = {k: S.settings_for(c, k) for k in S.KINDS}
         self.steps = {(r["user"], r["topic"]): r["n"] for r in
                       StepDone.objects.filter(user__in=ids).values("user", "topic").annotate(n=Count("id"))}
-        self.tried = {(r["user"], r["topic"]): r["n"] for r in
-                      Response.objects.filter(user__in=ids, area="practice").values("user", "topic").annotate(n=Count("item", distinct=True))}
+        self.tried, self.practice_last = {}, {}
+        for r in Response.objects.filter(user__in=ids, area="practice").values("user", "topic").annotate(n=Count("item", distinct=True), t=Max("at")):
+            self.tried[(r["user"], r["topic"])] = r["n"]
+            self.practice_last[(r["user"], r["topic"])] = r["t"]
         self.attempts = defaultdict(list)
         for a in QuizAttempt.objects.filter(user__in=ids, classroom=c).order_by("at"):
             self.attempts[(a.user_id, a.topic)].append(a)

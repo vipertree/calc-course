@@ -11,4 +11,7 @@ urlpatterns = [
     re_path(r"^(?P<pk>\d+)/quizzes/(?P<ref>\d{1,2}\.\d{1,2}|U\d{1,2}(?:BC)?)/$", v.quiz_page, name="cw_quiz"),
     path("<int:pk>/students/", v.students_page, name="cw_students"),
     path("<int:pk>/students/<int:uid>/", v.student_page, name="cw_student"),
+    path("<int:pk>/gradebook/", v.gradebook_page, name="cw_gradebook"),
+    path("<int:pk>/gradebook/enter/", v.enter_page, name="cw_enter"),
+    re_path(r"^(?P<pk>\d+)/gradebook/(?P<fmt>totals|items|powerschool)\.csv$", v.export, name="cw_export"),
 ]

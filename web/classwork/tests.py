@@ -342,3 +342,82 @@ class DashboardTests(TestCase):
             self.assertEqual(other.get(self.base + path).status_code, 404, path)
         other.post(self.base + "quizzes/2.5/", {"action": "accept", "item": self.served[0], "given": "2x"})
         self.assertFalse(AnswerFix.objects.exists())
+
+
+from . import grades as G  # noqa: E402
+from .models import Category, Curve, Mark, TeacherItem  # noqa: E402
+
+
+class GradebookTests(DashboardTests):
+    """Same class as DashboardTests: four students, Quiz 2.5 taken by all (kids 0 and 2 did better)."""
+
+    def book(self):
+        return G.Book(Classroom.objects.get(pk=self.c.pk))
+
+    def cat(self, src):
+        return next(c for c in self.book().cats if c.source == src)
+
+    def test_defaults_and_shared_weights(self):
+        b = self.book()
+        self.assertEqual([c.source for c in b.cats], ["unittest", "quiz", "practice", "exam"])
+        q = b.category(self.cat("quiz"), self.kids[0].id)
+        self.assertAlmostEqual(b.final(self.kids[0].id), round(100 * q, 1))     # only quizzes have items: they're the grade
+
+    def test_drop_lowest_and_missing_past_due_counts_zero(self):
+        Dated.objects.create(classroom=self.c, kind="quiz", ref="2.6", due=timezone.now() - dt.timedelta(days=1))
+        Setup.objects.create(classroom=self.c, kinds={"quiz": {"dates": "dated"}})
+        k = self.kids[0].id
+        self.assertEqual(self.book().raw(self.cat("quiz"), k, "2.6"), 0.0)
+        c = self.cat("quiz")
+        c.rules = {"drop_lowest": 1}
+        c.save()
+        b = self.book()
+        self.assertEqual(b.category(c, k), b.raw(c, k, "2.5"))
+
+    def test_practice_counts_completion_not_correctness(self):
+        pub = __import__("course.content", fromlist=["public"]).public("2.5")
+        from course.models import Response
+        for it in pub["practice"]:
+            Response.objects.create(user=self.kids[1], topic="2.5", item=it["id"], area="practice", given="0", correct=False)
+        self.assertEqual(self.book().raw(self.cat("practice"), self.kids[1].id, "2.5"), 1.0)
+
+    def test_curves_never_lower_a_score(self):
+        Curve.objects.create(classroom=self.c, kind="quiz", ref="2.5", method="mean", params={"target": 90})
+        b = self.book()
+        for k in self.kids:
+            self.assertGreaterEqual(b.score(self.cat("quiz"), k.id, "2.5"), b.raw(self.cat("quiz"), k.id, "2.5"))
+            self.assertLessEqual(b.score(self.cat("quiz"), k.id, "2.5"), 1.0)
+
+    def test_own_items_and_entry_page(self):
+        self.web.post(self.base + "gradebook/", {"action": "add_category", "name": "Participation", "source": "own", "weight": "10"})
+        cat = Category.objects.get(classroom=self.c, source="own")
+        self.web.post(self.base + "gradebook/", {"action": "add_item", "cat": cat.pk, "name": "Week 1", "points": "10"})
+        it = TeacherItem.objects.get(category=cat)
+        self.web.post(self.base + "gradebook/enter/", {"item": f"own:{it.pk}", f"v{self.kids[0].pk}": "8", f"v{self.kids[1].pk}": "ex"})
+        b = self.book()
+        own = next(c for c in b.cats if c.source == "own")
+        self.assertEqual(b.raw(own, self.kids[0].id, f"own{it.pk}"), 0.8)
+        self.assertIsNone(b.raw(own, self.kids[1].id, f"own{it.pk}"))
+
+    def test_paper_unit_test_parts_and_absent(self):
+        url = self.base + "gradebook/enter/"
+        k0, k1 = self.kids[0].pk, self.kids[1].pk
+        parts = G.test_parts("U2")
+        data = {"item": "unittest:U2", f"p{k0}.mc": "10", f"p{k0}.frq1": "5", f"x{k1}": "ab"}
+        self.web.post(url, data)
+        q = ClassData(Classroom.objects.get(pk=self.c.pk)).quiz(k0, "U2")
+        self.assertEqual(q, (15.0, sum(p[2] for p in parts[:2])))
+        self.assertIsNone(self.book().raw(self.cat("unittest"), k1, "U2"))
+        self.assertTrue(Mark.objects.filter(student_id=k1, ref="U2", absent=True).exists())
+
+    def test_exports(self):
+        for fmt in ("totals", "items", "powerschool"):
+            r = self.web.get(self.base + f"gradebook/{fmt}.csv")
+            self.assertEqual(r.status_code, 200)
+            self.assertIn("Kid 0", r.content.decode())
+
+    def test_another_teacher_cannot_export_or_enter(self):
+        other = Client()
+        other.force_login(teacher("t3"))
+        self.assertEqual(other.get(self.base + "gradebook/totals.csv").status_code, 404)
+        self.assertEqual(other.get(self.base + "gradebook/").status_code, 404)

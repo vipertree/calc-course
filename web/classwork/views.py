@@ -790,3 +790,224 @@ def _student_post(request, c, st):
         Accommodation.objects.update_or_create(classroom=c, student=st, defaults={
             "time_factor": float(tf) if tf in ("1", "1.25", "1.5", "2") else 1.0, "note": P.get("note", "")[:120]})
     return redirect(back)
+
+
+# ------------------------------------------------------------------ gradebook
+import csv  # noqa: E402
+
+from django.http import HttpResponse  # noqa: E402
+
+from . import grades as G  # noqa: E402
+from .models import Category, Curve, Mark, TeacherItem  # noqa: E402
+
+SOURCES = [("unittest", "Unit tests"), ("quiz", "Quizzes"), ("practice", "Practice (done or not)"), ("notes", "Lesson notes (done or not)"),
+           ("exam", "Practice exams"), ("own", "Your own items")]
+
+
+def _f(v, default=0.0):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
+@never_cache
+@teacher_required
+def gradebook_page(request, pk):
+    c = own_class(request, pk)
+    if request.method == "POST":
+        return _gradebook_post(request, c)
+    book = G.Book(c)
+    rows = book.rows()
+    detail = next((cat for cat in book.cats if str(cat.pk) == request.GET.get("detail")), None)
+    items = book.items(detail) if detail else []
+    if detail:
+        for r in rows:
+            r["items"] = [None if v is None else round(100 * v) for v in (book.score(detail, r["s"].id, k) for k, _ in items)]
+    sort = request.GET.get("sort", "name")
+    if sort == "grade":
+        rows.sort(key=lambda r: (r["final"] is None, r["final"] or 0))
+    weights = sum(cat.weight for cat in book.cats)
+    gradeable = []
+    for cat in book.cats:
+        if cat.source in ("quiz", "unittest", "exam"):
+            for k, label in book.items(cat):
+                cv = book.curves.get((cat.source, k))
+                raws = [v for v in (book.raw(cat, u, k) for u in book.data.ids) if v is not None]
+                cur = [v for v in (book.score(cat, u, k) for u in book.data.ids) if v is not None]
+                gradeable.append({"key": f"{cat.source}:{k}", "label": label, "curve": cv,
+                                  "before": round(100 * sum(raws) / len(raws)) if raws else None,
+                                  "after": round(100 * sum(cur) / len(cur)) if cur else None})
+    return render(request, "classwork/gradebook.html", {
+        "c": c, "tab": "gradebook", "cats": book.cats, "rows": rows, "detail": detail, "items": items, "weights": weights,
+        "rules": {cat.pk: [{"key": key, "label": label, "options": [{"v": v, "label": l, "on": cat.rules.get(key, opts[0][0]) == v}
+                                                                     for v, l in opts]} for key, label, opts in G.RULES.get(cat.source, [])]
+                  for cat in book.cats},
+        "sources": SOURCES, "gradeable": gradeable, "methods": Curve.METHODS[:4],
+        "bonuses": Adjustment.objects.filter(classroom=c, kind="bonus"), "scale": book.scale, "sort": sort,
+        "own_cats": [cat for cat in book.cats if cat.source == "own"],
+        "entry": _entry_choices(c, book),
+    })
+
+
+def _entry_choices(c, book):
+    """What can be entered by hand: paper quizzes and tests, notes and practice marked done, the teacher's own items."""
+    out = []
+    lessons = [n for u in content.syllabus() for n in cal.unit_topics(u["n"], c.course)]
+    sets = book.data.sets
+    if sets["unittest"]["where"] != "off":
+        out += [(f"unittest:{t['num']}", content.test_label(t["num"])) for n in sorted(content.unit_tests())
+                for t in [content.pick_test(n, c.course)] if t]
+    if sets["quiz"]["where"] != "off":
+        out += [(f"quiz:{n}", f"Quiz {content.label(n)}") for n in lessons]
+    if sets["notes"]["where"] == "paper" or sets["notes"]["record"] == "mark":
+        out += [(f"notes:{n}", f"{content.label(n)} notes, done") for n in lessons]
+    if sets["practice"]["where"] == "paper":
+        out += [(f"practice:{n}", f"{content.label(n)} practice, done") for n in lessons]
+    out += [(f"own:{i.pk}", f"{i.name} ({cat.name})") for cat in book.cats if cat.source == "own" for i in cat.items.all()]
+    return out
+
+
+def _gradebook_post(request, c):
+    P = request.POST
+    act = P.get("action")
+    back = reverse("cw_gradebook", args=[c.pk])
+    cats = {str(cat.pk): cat for cat in G.categories(c)}
+    if act == "weights":
+        for k, cat in cats.items():
+            cat.weight = max(0.0, _f(P.get(f"w{k}"), cat.weight))
+            for key, _, opts in G.RULES.get(cat.source, []):
+                v = P.get(f"r{k}.{key}")
+                match = next((o for o, _ in opts if str(o) == v), None)
+                if v is not None and (match is not None or v == str(match)):
+                    cat.rules = {**cat.rules, key: match}
+            cat.save()
+        messages.success(request, "Weights saved.")
+    elif act == "add_category":
+        name = " ".join((P.get("name") or "").split())[:60]
+        src = P.get("source")
+        if name and src in dict(SOURCES):
+            Category.objects.create(classroom=c, name=name, source=src, weight=max(0.0, _f(P.get("weight"), 10)), order=len(cats))
+    elif act == "delete_category" and P.get("cat") in cats:
+        cats[P.get("cat")].delete()
+    elif act == "add_item" and P.get("cat") in cats and cats[P.get("cat")].source == "own":
+        name = " ".join((P.get("name") or "").split())[:80]
+        if name:
+            it = TeacherItem.objects.create(category=cats[P.get("cat")], name=name, points=max(1.0, _f(P.get("points"), 10)),
+                                            day=_date(P.get("day")), done_only=bool(P.get("done_only")))
+            return redirect(back + f"enter/?item=own:{it.pk}")
+    elif act == "curve":
+        kind, _, ref = (P.get("item") or "").partition(":")
+        method = P.get("method")
+        if kind in ("quiz", "unittest", "exam") and ref and method in dict(Curve.METHODS):
+            Curve.objects.update_or_create(classroom=c, kind=kind, ref=ref, defaults={
+                "method": method, "params": {"target": _f(P.get("target"), 80), "points": _f(P.get("points"), 5)},
+                "allow_over": bool(P.get("allow_over"))})
+    elif act == "uncurve":
+        kind, _, ref = (P.get("item") or "").partition(":")
+        Curve.objects.filter(classroom=c, kind=kind, ref=ref).delete()
+    elif act == "bonus":
+        pts = _f(P.get("points"), 0)
+        if pts:
+            Adjustment.objects.create(classroom=c, kind="bonus", params={"points": pts}, note=(P.get("note") or "")[:120])
+    elif act == "unbonus":
+        Adjustment.objects.filter(classroom=c, kind="bonus", pk=P.get("adj")).delete()
+    elif act == "scale":
+        sc = []
+        for name in ("A", "B", "C", "D"):
+            v = _f(P.get(f"s{name}"), None)
+            if v is not None:
+                sc.append([name, v])
+        s = Setup.objects.filter(classroom=c).first() or Setup(classroom=c)
+        s.grading = {**(s.grading or {}), "scale": sorted(sc, key=lambda x: -x[1])}
+        s.save()
+    return redirect(back)
+
+
+@never_cache
+@teacher_required
+def enter_page(request, pk):
+    """Type in scores for one item: a paper quiz or unit test (by part), notes or practice done on paper, an own item."""
+    c = own_class(request, pk)
+    key = request.GET.get("item") or request.POST.get("item") or ""
+    kind, _, ref = key.partition(":")
+    students = _students(c)
+    book = G.Book(c)
+    if (key, ) not in [(k,) for k, _ in _entry_choices(c, book)]:
+        return redirect("cw_gradebook", pk=c.pk)
+    own = TeacherItem.objects.filter(category__classroom=c, pk=ref).first() if kind == "own" else None
+    parts = G.test_parts(ref) if kind == "unittest" else [("", "Score", (book.data.counts(ref).get("quiz") or 5))] if kind == "quiz" else []
+    if request.method == "POST":
+        for s in students:
+            if kind == "own":
+                G.save_own_score(own, s, request.POST.get(f"v{s.pk}", ""))
+                continue
+            flags = {"excused": request.POST.get(f"x{s.pk}") == "ex", "absent": request.POST.get(f"x{s.pk}") == "ab"}
+            if kind in ("notes", "practice"):
+                done = bool(request.POST.get(f"d{s.pk}"))
+                if done or any(flags.values()):
+                    Mark.objects.update_or_create(classroom=c, student=s, kind=kind, ref=ref, part="",
+                                                  defaults={"done": done, **flags, "by": request.user})
+                else:
+                    Mark.objects.filter(classroom=c, student=s, kind=kind, ref=ref, part="").delete()
+                continue
+            for part, _, possible in parts:
+                v = request.POST.get(f"p{s.pk}.{part}", "").strip()
+                if v == "" or any(flags.values()):
+                    Mark.objects.filter(classroom=c, student=s, kind=kind, ref=ref, part=part).delete()
+                else:
+                    Mark.objects.update_or_create(classroom=c, student=s, kind=kind, ref=ref, part=part,
+                                                  defaults={"points": max(0.0, min(_f(v), float(possible))), "possible": possible,
+                                                            "excused": False, "absent": False, "by": request.user})
+            if any(flags.values()):
+                Mark.objects.update_or_create(classroom=c, student=s, kind=kind, ref=ref, part="",
+                                              defaults={**flags, "points": None, "by": request.user})
+            elif kind == "unittest":
+                Mark.objects.filter(classroom=c, student=s, kind=kind, ref=ref, part="", points__isnull=True).delete()
+        messages.success(request, "Scores saved.")
+        return redirect(reverse("cw_enter", args=[c.pk]) + f"?item={key}")
+    marks = {(m.student_id, m.part): m for m in Mark.objects.filter(classroom=c, kind=kind, ref=ref)} if kind != "own" else {}
+    scores = {sc.student_id: sc for sc in own.scores.all()} if own else {}
+    rows = []
+    for s in students:
+        flag = marks.get((s.pk, ""))
+        rows.append({"s": s, "name": s.profile.display_name,
+                     "parts": [{"part": p, "v": "" if marks.get((s.pk, p)) is None or marks[(s.pk, p)].points is None else f"{marks[(s.pk, p)].points:g}"}
+                               for p, _, _ in parts],
+                     "done": bool(marks.get((s.pk, "")) and marks[(s.pk, "")].done),
+                     "flag": "ex" if flag and flag.excused else "ab" if flag and flag.absent else "",
+                     "own": "ex" if scores.get(s.pk) and scores[s.pk].excused else ("" if not scores.get(s.pk) or scores[s.pk].points is None else f"{scores[s.pk].points:g}"),
+                     "site": book.data.quiz(s.pk, ref) if kind in ("quiz", "unittest") and not any(marks.get((s.pk, p)) for p, _, _ in parts) else None})
+    return render(request, "classwork/enter.html", {"c": c, "tab": "gradebook", "key": key, "kind": kind, "ref": ref, "own": own,
+                                                    "parts": parts, "rows": rows, "label": dict(_entry_choices(c, book)).get(key, key),
+                                                    "choices": _entry_choices(c, book)})
+
+
+@teacher_required
+def export(request, pk, fmt):
+    c = own_class(request, pk)
+    book = G.Book(c)
+    rows = book.rows()
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    name = "".join(ch if ch.isalnum() else "-" for ch in c.name).strip("-") or "class"
+    resp["Content-Disposition"] = f'attachment; filename="{name}-{fmt}.csv"'
+    w = csv.writer(resp)
+    if fmt == "powerschool":
+        # PowerSchool's score import: one row per student, an identifier column and the score (percent)
+        w.writerow(["Student", "Username", "Score", "Letter"])
+        for r in rows:
+            w.writerow([r["name"], r["s"].username, "" if r["final"] is None else r["final"], r["letter"]])
+        return resp
+    if fmt == "items":
+        cols = [(cat, k, label) for cat in book.cats for k, label in book.items(cat)]
+        w.writerow(["Student", "Username"] + [f"{cat.name}: {label}" for cat, _, label in cols] + ["Grade", "Letter"])
+        for r in rows:
+            vals = [book.score(cat, r["s"].id, k) for cat, k, _ in cols]
+            w.writerow([r["name"], r["s"].username] + ["" if v is None else round(100 * v, 1) for v in vals] +
+                       ["" if r["final"] is None else r["final"], r["letter"]])
+        return resp
+    w.writerow(["Student", "Username"] + [f"{cat.name} ({cat.weight:g}%)" for cat in book.cats] + ["Grade", "Letter"])
+    for r in rows:
+        w.writerow([r["name"], r["s"].username] + ["" if v is None else v for v in r["cats"]] +
+                   ["" if r["final"] is None else r["final"], r["letter"]])
+    return resp

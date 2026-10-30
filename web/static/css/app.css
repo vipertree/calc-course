@@ -995,3 +995,15 @@ details.pop > div.stack { margin-top: 10px; padding: 12px 14px; background: var(
 .cw-need-group li a { color: var(--ink); }
 .cw-pace .line.r span { left: auto; right: 6px; }
 .cw-given { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; }
+.cw-grades td, .cw-grades th { text-align: right; white-space: nowrap; }
+.cw-grades td:first-child, .cw-grades th:first-child { text-align: left; }
+.cw-grades th a { color: var(--dim); }
+.cw-cat { padding: 8px 0; border-top: 1px solid var(--soft); }
+.cw-cat-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cw-w { display: inline-flex !important; align-items: center; gap: 4px; margin: 0 !important; }
+.cw-w input, .cw-num, .cw-inline input[size] { width: 4.2rem !important; padding: 4px 6px; text-align: right; border: 1px solid var(--rule); border-radius: 6px; background: var(--panel); color: var(--ink); font: inherit; }
+.cw-rule { display: flex !important; justify-content: space-between; align-items: center; gap: 8px; font: 400 .85rem var(--font-ui) !important; margin: 6px 0 0 !important; }
+.cw-rule select { width: auto; padding: 4px 6px; font-size: .85rem; }
+.cw-own { border-top: 1px solid var(--soft); margin-top: 12px; padding-top: 6px; }
+.cw-own h3 { margin: 4px 0; font-size: 1rem; }
+.cw-enter select { width: auto; }

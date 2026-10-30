@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Gradebook · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<div class="cw-home">
+  <div class="cw-col-main">
+    <section class="card">
+      <div class="cw-cardhead"><h2>Grades</h2>
+        <span class="muted">Sort: {% if sort == "grade" %}<a href="?sort=name">name</a> · <strong>lowest grade</strong>{% else %}<strong>name</strong> · <a href="?sort=grade">lowest grade</a>{% endif %}</span></div>
+      <div class="table-wrap"><table class="cw-table cw-grades">
+        <thead><tr><th>Student</th>{% for cat in cats %}<th><a href="?detail={{ cat.pk }}{% if sort == 'grade' %}&amp;sort=grade{% endif %}">{{ cat.name }} {{ cat.weight|floatformat:"-1" }}%</a></th>{% endfor %}<th>Grade</th></tr></thead>
+        <tbody>{% for r in rows %}<tr>
+          <td><a href="{% url 'cw_student' c.pk r.s.id %}"><strong>{{ r.name }}</strong></a></td>
+          {% for v in r.cats %}<td class="{% if v is not None and v < 60 %}lowp{% endif %}">{% if v is None %}<span class="muted">–</span>{% else %}{{ v|floatformat:"-1" }}{% endif %}</td>{% endfor %}
+          <td class="nowrap"><strong>{% if r.final is None %}–{% else %}{{ r.final|floatformat:"-1" }} {{ r.letter }}{% endif %}</strong></td>
+        </tr>{% empty %}<tr><td colspan="9" class="muted">No students yet.</td></tr>{% endfor %}</tbody>
+      </table></div>
+      <p class="muted">A category with nothing in it yet is left out of a student's grade, and its weight is shared among the others. Click a category to see every item in it.</p>
+    </section>
+
+    {% if detail %}<section class="card" id="detail">
+      <div class="cw-cardhead"><h2>{{ detail.name }}, item by item</h2><a href="?">Close</a></div>
+      {% if items %}<div class="table-wrap"><table class="cw-table cw-grades">
+        <thead><tr><th>Student</th>{% for k, label in items %}<th class="mathy">{{ label }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for r in rows %}<tr><td><strong>{{ r.name }}</strong></td>{% for v in r.items %}<td class="{% if v is not None and v < 60 %}lowp{% endif %}">{% if v is None %}<span class="muted">–</span>{% else %}{{ v }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
+      </table></div>{% else %}<p class="muted">Nothing in this category yet.</p>{% endif %}
+      <p class="muted">Percent per item. A dash doesn't count: not due yet, excused, or not entered. To change one, <a href="#enter">enter scores</a> or open the student.</p>
+    </section>{% endif %}
+
+    <section class="card" id="enter">
+      <h2>Enter scores</h2>
+      <form method="get" action="{% url 'cw_enter' c.pk %}" class="cw-inline">
+        <label>For<select name="item">{% for k, l in entry %}<option value="{{ k }}">{{ l }}</option>{% endfor %}</select></label>
+        <button class="btn primary">Open</button>
+      </form>
+      <p class="muted">Paper quizzes and tests (unit tests part by part), notes or practice done on paper, and your own items. A score you type here replaces what the site recorded.</p>
+    </section>
+
+    <section class="card">
+      <h2>Curves</h2>
+      {% if gradeable %}<div class="table-wrap"><table class="cw-table">
+        <thead><tr><th>Assessment</th><th>Class average</th><th>Curve</th><th></th></tr></thead>
+        <tbody>{% for g in gradeable %}<tr>
+          <td><strong>{{ g.label }}</strong></td>
+          <td>{% if g.before is not None %}{{ g.before }}%{% if g.curve %} → <strong>{{ g.after }}%</strong>{% endif %}{% else %}–{% endif %}</td>
+          <td class="muted">{% if g.curve %}{{ g.curve.get_method_display }}{% if g.curve.method == "mean" %} to {{ g.curve.params.target|floatformat:"-1" }}%{% elif g.curve.method == "add" %}: +{{ g.curve.params.points|floatformat:"-1" }}{% endif %}{% else %}none{% endif %}</td>
+          <td class="nowrap">{% if g.curve %}<form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="uncurve"><input type="hidden" name="item" value="{{ g.key }}"><button class="linkbtn">Take it off</button></form>
+            {% else %}<details class="pop inline"><summary class="btn small">Curve</summary><form method="post" class="stack">{% csrf_token %}
+              <input type="hidden" name="action" value="curve"><input type="hidden" name="item" value="{{ g.key }}">
+              <label>Method<select name="method">{% for v, l in methods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></label>
+              <label>Class average to (set the average)<input type="text" inputmode="decimal" name="target" value="80"></label>
+              <label>Points to add (add points)<input type="text" inputmode="decimal" name="points" value="5"></label>
+              <label class="check"><input type="checkbox" name="allow_over"> Scores may go over 100%</label>
+              <p><button class="btn primary small">Apply</button></p></form></details>{% endif %}</td>
+        </tr>{% endfor %}</tbody>
+      </table></div>
+      <p class="muted">A curve never lowers a score, and caps at 100% unless you allow more. You can take it off later.</p>
+      {% else %}<p class="muted">Quizzes, tests and exams appear here once they have scores.</p>{% endif %}
+    </section>
+  </div>
+
+  <div class="cw-home-side">
+    <section class="card">
+      <h2>Send grades out</h2>
+      <div class="cw-miss"><span><strong>Spreadsheet (CSV)</strong><br><span class="muted">Category totals, or every item</span></span>
+        <span class="nowrap"><a class="btn small" href="{% url 'cw_export' c.pk 'totals' %}">Totals</a> <a class="btn small" href="{% url 'cw_export' c.pk 'items' %}">Items</a></span></div>
+      <div class="cw-miss"><span><strong>PowerSchool</strong><br><span class="muted">One score per student, for its import</span></span><a class="btn small" href="{% url 'cw_export' c.pk 'powerschool' %}">Download</a></div>
+      <div class="cw-miss"><span><strong>Google Classroom, Canvas</strong><br><span class="muted">Import the CSV for now. Direct sync needs the site registered with each; not set up yet.</span></span></div>
+    </section>
+
+    <section class="card">
+      <h2>Categories and weights</h2>
+      <form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="weights">
+        {% for cat in cats %}<div class="cw-cat">
+          <div class="cw-cat-top"><strong>{{ cat.name }}</strong><label class="cw-w"><input type="text" inputmode="decimal" name="w{{ cat.pk }}" value="{{ cat.weight|floatformat:'-1' }}" aria-label="{{ cat.name }} weight">%</label></div>
+          {% for key, rl in rules.items %}{% if key == cat.pk %}{% for r in rl %}<label class="cw-rule">{{ r.label }}<select name="r{{ cat.pk }}.{{ r.key }}">{% for o in r.options %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select></label>{% endfor %}{% endif %}{% endfor %}
+        </div>{% endfor %}
+        <p class="muted">Weights add to {{ weights|floatformat:"-1" }}%.{% if weights != 100 %} They don't need to add to 100: each one counts in proportion.{% endif %}</p>
+        <p><button class="btn small">Save weights</button></p>
+      </form>
+      <details class="pop"><summary class="btn small">Add a category</summary><form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="add_category">
+        <label>Name<input type="text" name="name" maxlength="60" placeholder="Class participation" required></label>
+        <label>Comes from<select name="source">{% for v, l in sources %}<option value="{{ v }}"{% if v == "own" %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+        <label>Weight<input type="text" inputmode="decimal" name="weight" value="10"></label>
+        <p><button class="btn primary small">Add</button></p></form></details>
+      {% for cat in own_cats %}<div class="cw-own"><h3>{{ cat.name }}</h3>
+        <ul class="plain cw-exc">{% for i in cat.items.all %}<li><span>{{ i.name }} <span class="muted">({{ i.points|floatformat:"-1" }} pts{% if i.day %}, {{ i.day|date:"M j" }}{% endif %})</span></span><a href="{% url 'cw_enter' c.pk %}?item=own:{{ i.pk }}">Enter scores</a></li>{% empty %}<li class="muted">No items yet.</li>{% endfor %}</ul>
+        <details class="pop"><summary class="btn small">Add an item</summary><form method="post" class="stack">{% csrf_token %}<input type="hidden" name="action" value="add_item"><input type="hidden" name="cat" value="{{ cat.pk }}">
+          <label>Name<input type="text" name="name" maxlength="80" placeholder="Participation, week of Nov 2" required></label>
+          <label>Points<input type="text" inputmode="decimal" name="points" value="10"></label>
+          <label>Date<input type="date" name="day"></label>
+          <p><button class="btn primary small">Add and enter scores</button></p></form></details>
+        <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="delete_category"><input type="hidden" name="cat" value="{{ cat.pk }}">
+          <details class="pop inline"><summary class="linkbtn">Delete this category</summary><div class="stack"><p>Delete {{ cat.name }} and every score in it?</p><p><button class="btn small">Delete</button></p></div></details></form>
+      </div>{% endfor %}
+    </section>
+
+    <section class="card">
+      <h2>Class-wide changes</h2>
+      {% for b in bonuses %}<div class="cw-miss"><span><strong>{% if b.params.points > 0 %}+{% endif %}{{ b.params.points|floatformat:"-1" }}%</strong> on every final grade{% if b.note %} · {{ b.note }}{% endif %}</span>
+        <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="unbonus"><input type="hidden" name="adj" value="{{ b.pk }}"><button class="linkbtn">Remove</button></form></div>{% endfor %}
+      <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="bonus">
+        <label>Points on every final grade<input type="text" inputmode="decimal" name="points" value="2" size="4"></label>
+        <label>Why<input type="text" name="note" maxlength="120" placeholder="Snow week"></label>
+        <button class="btn small">Add</button></form>
+      <p class="muted">Dropping one question for everyone is on each quiz's page.</p>
+    </section>
+
+    <section class="card">
+      <h2>Letter grades</h2>
+      <form method="post" class="cw-inline">{% csrf_token %}<input type="hidden" name="action" value="scale">
+        {% for name, lo in scale %}<label>{{ name }} from<input type="text" inputmode="decimal" name="s{{ name }}" value="{{ lo|floatformat:'-1' }}" size="3"></label>{% endfor %}
+        <button class="btn small">Save</button></form>
+    </section>
+  </div>
+</div>
+{% endblock %}

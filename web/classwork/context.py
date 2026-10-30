@@ -9,4 +9,5 @@ def tabs(request):
         return {}
     return {"cw_tabs": [(k, label, reverse(name, args=[pk])) for k, label, name in (
         ("home", "Home", "cw_home"), ("progress", "Progress", "cw_progress"), ("quizzes", "Quizzes and tests", "cw_quizzes"),
-        ("calendar", "Calendar", "cw_calendar"), ("students", "Students", "cw_students"), ("setup", "Setup", "cw_setup"))]}
+        ("calendar", "Calendar", "cw_calendar"), ("students", "Students", "cw_students"), ("gradebook", "Gradebook", "cw_gradebook"),
+        ("setup", "Setup", "cw_setup"))]}

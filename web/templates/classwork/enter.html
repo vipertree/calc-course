@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Enter scores · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<div class="cw-intro">
+  <div><p class="muted"><a href="{% url 'cw_gradebook' c.pk %}">Gradebook</a> ›</p><h2 class="cw-big mathy">{{ label }}</h2>
+    <p class="muted">{% if kind == "own" %}Type points out of {{ own.points|floatformat:"-1" }}, or "ex" for excused. Leave a box empty for no score yet.{% elif kind == "notes" or kind == "practice" %}Tick the students who did it.{% else %}Type each student's points. Enter moves down the column, Tab along the row. An empty box means the site's own record counts, if there is one.{% endif %}</p></div>
+  <form method="get" class="cw-inline cw-autosubmit"><label>Switch to<select name="item">{% for k, l in choices %}<option value="{{ k }}"{% if k == key %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label><noscript><button class="btn small">Open</button></noscript></form>
+</div>
+<form method="post" class="card cw-enter">{% csrf_token %}<input type="hidden" name="item" value="{{ key }}">
+  <div class="table-wrap"><table class="cw-table">
+    <thead><tr><th>Student</th>
+      {% if kind == "own" %}<th>Points</th>{% elif kind == "notes" or kind == "practice" %}<th>Done</th>{% else %}{% for p, l, n in parts %}<th>{{ l }}</th>{% endfor %}<th>On the site</th>{% endif %}
+      {% if kind != "own" %}<th>Not counted</th>{% endif %}</tr></thead>
+    <tbody>{% for r in rows %}<tr>
+      <td><strong>{{ r.name }}</strong></td>
+      {% if kind == "own" %}<td><input class="cw-num" type="text" inputmode="decimal" name="v{{ r.s.pk }}" value="{{ r.own }}" aria-label="{{ r.name }} points"></td>
+      {% elif kind == "notes" or kind == "practice" %}<td><input type="checkbox" name="d{{ r.s.pk }}"{% if r.done %} checked{% endif %} aria-label="{{ r.name }} did it"></td>
+      {% else %}{% for x in r.parts %}<td><input class="cw-num" type="text" inputmode="decimal" name="p{{ r.s.pk }}.{{ x.part }}" value="{{ x.v }}" aria-label="{{ r.name }} {{ x.part|default:'score' }}"></td>{% endfor %}
+        <td class="muted">{% if r.site %}{{ r.site.0|floatformat:"-1" }}/{{ r.site.1 }}{% else %}–{% endif %}</td>{% endif %}
+      {% if kind != "own" %}<td><select name="x{{ r.s.pk }}" aria-label="{{ r.name }}: counted or not"><option value="">Counts</option><option value="ex"{% if r.flag == "ex" %} selected{% endif %}>Excused</option><option value="ab"{% if r.flag == "ab" %} selected{% endif %}>Absent (make up later)</option></select></td>{% endif %}
+    </tr>{% endfor %}</tbody>
+  </table></div>
+  <p><button class="btn primary">Save scores</button></p>
+</form>
+{% endblock %}
+{% block scripts %}<script nonce="{{ CSP_NONCE }}">
+document.querySelectorAll(".cw-autosubmit select").forEach((el) => el.addEventListener("change", () => el.form.submit()));
+// Enter in a score box moves down the column, like a spreadsheet; Enter on the last row saves
+document.querySelectorAll(".cw-enter input.cw-num").forEach((el) => el.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const col = el.closest("td").cellIndex, row = el.closest("tr").nextElementSibling;
+  const below = row && row.cells[col] && row.cells[col].querySelector("input");
+  if (below) { e.preventDefault(); below.focus(); below.select(); }
+}));
+</script>{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Setup · {{ c.name }}{% endblock %}
+{% block main %}
+{% include "classwork/_nav.html" %}
+<div class="cw-intro">
+  <div>
+    <h2>How this class uses each kind of work</h2>
+    <p class="muted">Each row is its own choice. Your dashboard tracks only what you use here, and work done on paper shows what you enter. Dates for single items, and exceptions for single students, go on the calendar.</p>
+  </div>
+  <form method="post" class="cw-template">{% csrf_token %}
+    <label>Start from a template
+      <select name="apply_template" required><option value="">Choose one</option>{% for k, label in templates %}<option value="{{ k }}"{% if k == template %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <details class="pop inline"><summary class="btn small">Fill in</summary>
+      <div class="stack"><p>Replace every row below with this template's settings? Your due dates stay where they are.</p>
+        <p><button class="btn primary small">Fill in the table</button></p></div></details>
+  </form>
+</div>
+
+<form method="post" id="setup-form">{% csrf_token %}
+<section class="card cw-setup">
+  <div class="table-wrap"><table>
+    <thead><tr><th>Work</th><th>Done where</th><th>Students can open it</th><th>Due dates</th><th>What gets recorded</th><th>Students see results</th><th></th></tr></thead>
+    <tbody>{% for r in rows %}<tr{% if r.off %} class="cw-off"{% endif %}>
+      <th scope="row"><strong>{{ r.name }}</strong><span class="muted cw-sub">{{ r.blurb }}</span></th>
+      {% for col in r.cols %}<td>{% if col.options %}<select name="{{ col.name }}" aria-label="{{ r.name }}: {% cycle 'done where' 'opens' 'due dates' 'what gets recorded' 'students see results' %}">{% for o in col.options %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select>{% else %}<span class="muted cw-fixed">{{ col.fixed|default:"–" }}</span>{% endif %}</td>{% endfor %}
+      {% resetcycle %}
+      <td>{% if r.details %}<details class="pop inline cw-more"><summary class="btn small">More</summary>
+        <div class="stack">{% for d in r.details %}<label>{{ d.label }}<select name="{{ d.name }}">{% for o in d.options %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select></label>{% endfor %}</div>
+      </details>{% endif %}</td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+
+<div class="cw-cards">
+  <section class="card"><h3>What students see</h3>
+    {% for o in show %}<label class="cw-check"><input type="checkbox" name="show.{{ o.k }}"{% if o.on %} checked{% endif %}> {{ o.label }}</label>{% endfor %}
+  </section>
+  <section class="card"><h3>What your dashboard watches</h3>
+    {% for o in watch %}<label class="cw-check"><input type="checkbox" name="watch.{{ o.k }}"{% if o.on %} checked{% endif %}> {{ o.label }}</label>{% endfor %}
+    <label class="cw-check"><input type="checkbox" name="watch.inactive"{% if inactive_days %} checked{% endif %}> Students inactive for more than
+      <input type="text" inputmode="numeric" name="watch.inactive_days" value="{{ inactive_days|default:5 }}" size="2" class="cw-days" aria-label="days"> days</label>
+  </section>
+</div>
+<p class="cw-save"><button class="btn primary">Save setup</button></p>
+</form>
+{% endblock %}

@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "config.apps.CalcStaticFilesConfig",
     "accounts",
     "course",
+    "classwork",
 ]
 
 MIDDLEWARE = [

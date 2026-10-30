@@ -1,0 +1,7 @@
+<div class="cw-head">
+  <div class="cw-title"><h1>{{ c.name }}</h1><span class="muted">AP Calculus {{ c.course }} · {{ c.enrollments.count }} student{{ c.enrollments.count|pluralize }} · join code <strong>{{ c.code }}</strong></span>
+    <a class="muted" href="{% url 'teacher' %}">All classes</a></div>
+</div>
+<nav class="cw-tabs" aria-label="Class sections">
+  <a href="{% url 'cw_setup' c.pk %}"{% if tab == "setup" %} class="on" aria-current="page"{% endif %}>Setup</a>
+</nav>

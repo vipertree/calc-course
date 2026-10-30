@@ -837,3 +837,37 @@ details.unit > summary h2 { margin: 0; }
 .test-versions p { margin: 0; }
 .test-versions .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
 .test-versions .small { font-size: .9rem; }
+
+/* ------------------------------------------------------------ teacher class pages (classwork) */
+.cw-head { margin-bottom: 4px; }
+.cw-title { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.cw-title h1 { margin: 0; }
+.cw-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin: 12px 0 22px; border-bottom: 2px solid var(--soft); font-family: var(--font-ui); }
+.cw-tabs a { padding: 10px 14px; color: var(--ink); font-weight: 700; text-decoration: none; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.cw-tabs a:hover { border-bottom-color: var(--soft); }
+.cw-tabs a.on { border-bottom-color: var(--accent); }
+.cw-intro { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+.cw-intro > div { flex: 1 1 520px; }
+.cw-intro h2 { margin: 0 0 4px; }
+.cw-intro p { margin: 0; max-width: 46rem; }
+.cw-template { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; font: 600 .9rem var(--font-ui); }
+.cw-template select { width: auto; display: block; margin-top: 4px; }
+details.pop > div.stack { margin-top: 10px; padding: 12px 14px; background: var(--panel-2); border: 1px solid var(--rule); border-radius: var(--radius); }
+.cw-setup { padding: 6px 10px 10px; }
+.cw-setup table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: .95rem; }
+.cw-setup th, .cw-setup td { text-align: left; padding: 8px; border-bottom: 1px solid var(--soft); vertical-align: top; }
+.cw-setup thead th { font: 700 .78rem var(--font-ui); color: var(--dim); border-bottom: 2px solid var(--rule); vertical-align: bottom; }
+.cw-setup select { width: auto; max-width: 13rem; padding: 6px 8px; font-size: .9rem; }
+.cw-setup tr.cw-off td select:not([name$=".where"]) { opacity: .45; }
+.cw-sub { display: block; font-weight: 400; font-size: .82rem; margin-top: 2px; }
+.cw-fixed { display: inline-block; padding: 6px 0; font-size: .9rem; }
+.cw-more { position: relative; margin-left: 0; }
+.cw-more[open] { display: inline-block; margin: 0; }
+.cw-more[open] > div.stack { position: absolute; right: 0; top: 100%; z-index: 15; width: 17rem; box-shadow: 0 6px 24px rgb(0 0 0 / .18); }
+.cw-more .stack select { width: 100%; max-width: none; }
+.cw-cards { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+.cw-cards > .card { flex: 1 1 340px; min-width: 0; margin: 0; }
+.cw-cards h3 { margin: 0 0 8px; }
+.cw-check { display: flex; gap: 8px; align-items: center; padding: 5px 0; flex-wrap: wrap; }
+.cw-days { width: 3.2rem !important; padding: 3px 6px !important; display: inline-block; }
+.cw-save { margin-top: 16px; }

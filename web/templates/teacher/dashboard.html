@@ -18,6 +18,7 @@
   <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
     <h2 style="margin:0">{{ r.c.name }}</h2><span class="muted">AP Calculus {{ r.c.course }}</span>
     <span class="grow" style="flex:1"></span>
+    <a class="btn small" href="{% url 'cw_setup' r.c.pk %}">Setup</a>
     <span>Join code <span class="code">{{ r.c.code }}</span></span>
     <form method="post" action="{% url 'toggle_class' r.c.pk %}">{% csrf_token %}<button class="btn small">{% if r.c.open %}Close joining{% else %}Open joining{% endif %}</button></form>
   </div>

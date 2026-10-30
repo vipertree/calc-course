@@ -23,7 +23,7 @@ def mvt_c(f, a, b):
 same("ex1", mvt_c(x**3 - x, 0, 2), [2 / sp.sqrt(3)])
 
 NOTES = [
-    Video("s5_1.py::Lesson", "The Mean Value Theorem", 4),
+    Video("s5_1.py::Lesson", "The Mean Value Theorem", 8.0),
 
     Section("The theorem"),
     Text(r"If you drive $150$ miles in $2$ hours, your average speed is $75$ mph. At some moment, your speedometer must have read exactly "

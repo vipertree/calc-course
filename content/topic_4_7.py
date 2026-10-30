@@ -18,7 +18,7 @@ same("lnx", sp.limit(sp.log(x) / x, x, oo), 0)
 same("twice", sp.limit((sp.exp(x) - 1 - x) / x**2, x, 0), sp.Rational(1, 2))
 
 NOTES = [
-    Video("s4_7.py::Lesson", "L'Hospital's Rule", 4),
+    Video("s4_7.py::Lesson", "L'Hospital's Rule", 4.4),
 
     Section("Indeterminate forms"),
     Text(r"In Unit 1, a limit that came out as $\frac00$ needed algebra: factor, use a conjugate, or use a known limit. "

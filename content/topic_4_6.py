@@ -23,7 +23,7 @@ same("given", 7 + (-3) * sp.Rational(1, 10), sp.Rational(67, 10))
 same("cbrt", lin(sp.cbrt(x), 8, sp.Rational(812, 100)), sp.Rational(201, 100))
 
 NOTES = [
-    Video("s4_6.py::Lesson", "Zoom in on a curve", 4),
+    Video("s4_6.py::Lesson", "Zoom in on a curve", 6.4),
 
     Section("Local linearity"),
     Text(r"Zoom in far enough on a differentiable function and its graph looks like a straight line: its \blank{tangent line}. "

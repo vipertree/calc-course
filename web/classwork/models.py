@@ -211,3 +211,16 @@ class TeacherNote(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["classroom", "student"], name="one_note_per_student")]
+
+
+class TimedStart(models.Model):
+    """When a student started a timed quiz or test in a class, and the time they were given (minutes, with any extra
+    time). The server's clock: closing the page doesn't stop it."""
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="timed_starts")
+    classroom = models.ForeignKey("accounts.Classroom", on_delete=models.CASCADE, related_name="timed_starts")
+    ref = models.CharField(max_length=12)
+    started = models.DateTimeField(auto_now_add=True)
+    seconds = models.PositiveIntegerField()
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["student", "classroom", "ref"], name="one_start_per_timed_item")]

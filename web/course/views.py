@@ -293,7 +293,8 @@ def unit_test(request, num):
             user=request.user, topic=num, classroom=g["classroom"]).exists()):
         return _gate_page(request, g, "unittest", {"L": {"title": content.test_label(num), "label": num}, "num": num, "test_page": True})
     pub, info = assess.draw(request, num, pub)
-    state = {"correct": [], "steps_done": [], "drafts": _drafts(request.user, num),
+    clock = _timed_state(request, num, info, g)
+    state = {"correct": [], "steps_done": [], "drafts": _drafts(request.user, num), "timer": clock,
              "frq": {s.part: s.earned for s in FRQScore.objects.filter(user=request.user, topic=num)},
              "quiz": [{"score": a.score, "total": a.total, "at": a.at.isoformat()}
                       for a in QuizAttempt.objects.filter(user=request.user, topic=num)[:5]],
@@ -354,6 +355,7 @@ def lesson(request, num, area="notes"):
     blanks = (content.private(num) or {}).get("blanks", {})
     state["shown"] = {b: blanks[b] for b in set(state["correct"]) | {k for k, d in drafts.items() if d["r"]} if b in blanks}
     if info is not None:
+        state["timer"] = _timed_state(request, num, info, g)
         state["assess"] = assess.state(request, num, info, content.private(num))
         if state["assess"]["mode"] == "class":
             state["quiz"] = []
@@ -439,6 +441,8 @@ def api_check(request, num):
     spec = priv["items"].get(item)
     if spec is None:
         raise Http404
+    if num.startswith("U") and _locked_for_timer(request, num, item):
+        return JsonResponse({"error": "time is up"}, status=403)
     if num.startswith("U") and area == "frq" and assess.withheld(request, num):
         if given:
             Response.objects.create(user=request.user, topic=num, item=item, area=area, given=given,
@@ -478,6 +482,8 @@ def api_draft(request, num):
     if not Draft.objects.filter(user=request.user, topic=num, item=item).exists() and \
             Draft.objects.filter(user=request.user, topic=num).count() >= 400:
         return JsonResponse({"error": "too many"}, status=400)
+    if _locked_for_timer(request, num, item):
+        return JsonResponse({"error": "time is up"}, status=403)
     defaults = {"value": _str(d.get("value"), 2000)}
     if d.get("revealed"):
         defaults["revealed"] = True
@@ -514,7 +520,7 @@ def api_quiz(request, num):
     served = [it["id"] for it in served_pub["quiz"]]          # grade only what this taker was given
     cls = info["classroom"]
     from classwork.access import gate
-    g = gate(request.user, "unittest" if num.startswith("U") else "quiz", num)
+    g = gate(request.user, g_kind(num), num)
     if g["state"] in ("not_yet", "off", "paper"):
         return JsonResponse({"error": "not open"}, status=403)
     if g["state"] == "closed":
@@ -524,6 +530,43 @@ def api_quiz(request, num):
     answers = d.get("answers")
     if not isinstance(answers, dict):
         answers = {}
+    from classwork.access import timer
+    t = timer(request.user, g_kind(num), num, g)
+    if t is not None:
+        if not t["started"]:
+            return JsonResponse({"error": "start the clock first"}, status=403)
+        if t["expired"]:
+            answers = _saved_answers(request.user, num, served)      # time is up: what was saved by the deadline counts
+    a, detail, score = _record_attempt(request.user, num, priv, served, answers, cls, info["form"])
+    if cls is not None:
+        if assess.visible(request, num):
+            return JsonResponse({"submitted": True, "released": True, **assess.result_payload(a, priv)})
+        return JsonResponse({"submitted": True, "released": False})
+    assess.new_draw(request, num)                             # the next attempt gets a fresh draw
+    return JsonResponse({"score": score, "total": len(served), "detail": detail})
+
+
+def _locked_for_timer(request, num, item):
+    """A timed quiz or test's answer box takes no changes before the clock starts or after time is up."""
+    from classwork.access import gate, timer
+    pub = content.public(num) or {}
+    ids = {v["id"] for row in (pub.get("quiz_variants") or [[q] for q in pub.get("quiz", [])]) + (pub.get("frq_variants") or []) for v in row}
+    if item not in ids and not any(item.startswith(i) for i in ids):
+        return False
+    t = timer(request.user, g_kind(num), num)
+    return t is not None and (not t["started"] or t["expired"])
+
+
+def g_kind(num):
+    return "unittest" if num.startswith("U") else "quiz"
+
+
+def _saved_answers(user, num, served):
+    return {d.item: d.value for d in Draft.objects.filter(user=user, topic=num, item__in=served)}
+
+
+def _record_attempt(user, num, priv, served, answers, cls, form):
+    """Grade the served questions against these answers and store the attempt. -> (attempt, detail, score)."""
     detail, score = {}, 0
     for iid in served:
         spec = priv["items"][iid]
@@ -532,15 +575,37 @@ def api_quiz(request, num):
         score += ok
         detail[iid] = {"given": given, "correct": ok, "solution": spec["solution"],
                        "display": spec["answer"].get("display", "")}
-    a = QuizAttempt.objects.create(user=request.user, topic=num, score=score, total=len(served), served=served,
-                                   classroom=cls, form=info["form"],
+    a = QuizAttempt.objects.create(user=user, topic=num, score=score, total=len(served), served=served,
+                                   classroom=cls, form=form,
                                    detail={k: {"given": v["given"], "correct": v["correct"]} for k, v in detail.items()})
-    if cls is not None:
-        if assess.visible(request, num):
-            return JsonResponse({"submitted": True, "released": True, **assess.result_payload(a, priv)})
-        return JsonResponse({"submitted": True, "released": False})
-    assess.new_draw(request, num)                             # the next attempt gets a fresh draw
-    return JsonResponse({"score": score, "total": len(served), "detail": detail})
+    return a, detail, score
+
+
+def _timed_state(request, num, info, g):
+    """The clock for this page, finishing a timed quiz or test from its saved answers if time ran out unsubmitted."""
+    from classwork.access import timer
+    t = timer(request.user, g_kind(num), num, g)
+    if t is None or info is None or info["mode"] != "class":
+        return None
+    cls = info["classroom"]
+    if t["expired"] and not QuizAttempt.objects.filter(user=request.user, topic=num, classroom=cls).exists():
+        pub, priv = content.public(num), content.private(num)
+        served_pub, _ = assess.draw(request, num, pub)
+        served = [it["id"] for it in served_pub["quiz"]]
+        _record_attempt(request.user, num, priv, served, _saved_answers(request.user, num, served), cls, info["form"])
+    t["start_url"] = reverse("api_start", args=[num])
+    return t
+
+
+@login_required
+@require_POST
+def api_start(request, num):
+    """Start the clock on a timed quiz or unit test."""
+    from classwork.access import start
+    t = start(request.user, g_kind(num), num)
+    if t is None:
+        return JsonResponse({"error": "not timed or not open"}, status=400)
+    return JsonResponse(t)
 
 
 @login_required

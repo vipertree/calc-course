@@ -441,3 +441,61 @@ class StudentPageTests(DashboardTests):
         web = Client()
         web.force_login(self.kids[0])
         self.assertNotIn("Your grade", web.get("/me/").content.decode())
+
+
+from .models import Accommodation, TimedStart  # noqa: E402
+
+
+class TimerTests(StudentGateTests):
+    """Timed quizzes: a Start screen, the server's clock, extra time, and what happens when time runs out."""
+
+    def items(self):
+        pub = __import__("course.content", fromlist=["public"]).public("2.5")
+        rows = pub.get("quiz_variants") or [[q] for q in pub["quiz"]]
+        return [r[0]["id"] for r in rows]
+
+    def test_untimed_by_default(self):
+        self.assertIsNone(__import__("classwork.access", fromlist=["timer"]).timer(self.kid, "quiz", "2.5"))
+
+    def test_must_start_before_submitting(self):
+        self.configure(quiz={"timer": "15"})
+        self.assertEqual(self.quiz_post().status_code, 403)
+        r = self.web.post("/api/2.5/start/")
+        self.assertEqual(json.loads(r.content)["seconds"], 900)
+        self.assertEqual(self.quiz_post().status_code, 200)
+
+    def test_extra_time_from_an_accommodation_or_an_exception(self):
+        self.configure(quiz={"timer": "20"})
+        Accommodation.objects.create(classroom=self.c, student=self.kid, time_factor=1.5)
+        self.assertEqual(json.loads(self.web.post("/api/2.5/start/").content)["seconds"], 1800)
+        TimedStart.objects.all().delete()
+        d = self.date("quiz")
+        StudentException.objects.create(dated=d, student=self.kid, time_factor=2.0)
+        self.assertEqual(json.loads(self.web.post("/api/2.5/start/").content)["seconds"], 2400)
+
+    def test_restarting_does_not_reset_the_clock(self):
+        self.configure(quiz={"timer": "10"})
+        self.web.post("/api/2.5/start/")
+        TimedStart.objects.update(started=timezone.now() - dt.timedelta(minutes=8))
+        r = json.loads(self.web.post("/api/2.5/start/").content)
+        self.assertLessEqual(r["remaining"], 121)
+
+    def test_after_time_is_up_saved_answers_count_and_new_ones_dont(self):
+        self.configure(quiz={"timer": "10"})
+        self.web.post("/api/2.5/start/")
+        pub = __import__("course.content", fromlist=["public"]).public("2.5")
+        versions = [v["id"] for v in (pub.get("quiz_variants") or [[q] for q in pub["quiz"]])[0]]   # the class gets one of them
+        for v in versions:
+            self.web.post("/api/2.5/draft/", json.dumps({"item": v, "value": "saved in time"}), content_type="application/json")
+        TimedStart.objects.update(started=timezone.now() - dt.timedelta(minutes=20))
+        late = self.web.post("/api/2.5/draft/", json.dumps({"item": versions[0], "value": "too late"}), content_type="application/json")
+        self.assertEqual(late.status_code, 403)
+        self.web.get("/topic/2.5/quiz/")                     # opening the page hands it in
+        a = QuizAttempt.objects.get(user=self.kid, topic="2.5")
+        self.assertEqual(a.detail[a.served[0]]["given"], "saved in time")
+
+    def test_start_screen_on_the_page(self):
+        self.configure(quiz={"timer": "15"})
+        page = self.web.get("/topic/2.5/quiz/").content.decode()
+        self.assertIn('"timer"', page)
+        self.assertIn('"started": false', page)

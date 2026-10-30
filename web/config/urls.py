@@ -51,6 +51,7 @@ urlpatterns = [
     re_path(rf"^api/{NUM}/step/$", v.api_step, name="api_step"),
     re_path(rf"^api/{NUM}/draft/$", v.api_draft, name="api_draft"),
     re_path(rf"^api/{NUM}/quiz/$", v.api_quiz, name="api_quiz"),
+    re_path(rf"^api/{NUM}/start/$", v.api_start, name="api_start"),
     re_path(rf"^api/{NUM}/frq/$", v.api_frq_score, name="api_frq"),
     re_path(r"^unit/(?P<num>U\d{1,2}(?:BC)?)/test/$", v.unit_test, name="unit_test"),
     re_path(r"^unit/(?P<num>U\d{1,2}(?:BC)?)/test/print/(?P<form>[A-Z])/(?P<kind>test|key)/$", v.test_pdf, name="test_pdf"),

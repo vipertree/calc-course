@@ -19,6 +19,8 @@ WHERE = [("site", "On the site"), ("paper", "On paper (you enter it)"), ("off", 
 OPENS = [("all", "All at once"), ("schedule", "On your schedule"), ("lesson", "With its lesson")]
 DATES = [("none", "None"), ("dated", "Dated")]
 RESULTS = [("now", "Right away"), ("due", "At the due date"), ("release", "When I release them")]
+TIMERS = [("0", "Untimed"), ("10", "10 minutes"), ("15", "15 minutes"), ("20", "20 minutes"), ("30", "30 minutes"),
+          ("45", "45 minutes"), ("50", "50 minutes"), ("60", "60 minutes"), ("90", "90 minutes")]
 
 CHOICES = {
     "notes": {"where": [("paper", "On paper, in class"), ("site", "On the site"), ("off", "Not used")],
@@ -36,6 +38,7 @@ CHOICES = {
              "record": [("score", "Score"), ("done", "Done or not")],
              "results": RESULTS,
              "attempts": [("one", "One (class form)"), ("best", "Best of unlimited")],
+             "timer": TIMERS,
              "late": [("marked", "Accepted, marked late"), ("lock", "Locked at the due date")]},
     "testprep": {"where": [("site", "On the site"), ("paper", "On paper"), ("off", "Not used")],
                  "opens": [("lesson", "With its lesson"), ("all", "All at once")],
@@ -45,7 +48,7 @@ CHOICES = {
                  "dates": DATES,
                  "record": [("parts", "Score, by part"), ("total", "Total score only")],
                  "results": [("release", "When I release them"), ("now", "Right away")],
-                 "timer": [("0", "Untimed"), ("50", "50 minutes"), ("90", "90 minutes")],
+                 "timer": TIMERS,
                  "late": [("lock", "Locked at the due date"), ("marked", "Accepted, marked late")]},
     "exam": {"where": [("site", "On the site"), ("paper", "On paper (you enter scores)"), ("off", "Not used")],
              "opens": [("all", "All at once"), ("schedule", "On your schedule")],
@@ -60,16 +63,16 @@ DEFAULTS = {
     "practice": {"where": "site", "opens": "lesson", "dates": "none", "record": "done", "results": "now",
                  "done_when": "all", "late": "marked", "solutions": "each"},
     "quiz": {"where": "site", "opens": "all", "dates": "none", "record": "score", "results": "release",
-             "attempts": "one", "late": "marked"},
+             "attempts": "one", "late": "marked", "timer": "0"},
     "testprep": {"where": "site", "opens": "lesson", "dates": "none", "record": "nothing", "results": "now"},
     "unittest": {"where": "site", "opens": "all", "dates": "none", "record": "parts", "results": "release",
                  "timer": "0", "late": "lock"},
     "exam": {"where": "site", "opens": "all", "dates": "none", "record": "score", "results": "now"},
 }
 # Fields that sit in a row's "More" panel rather than its main columns.
-DETAIL = {"practice": ["done_when", "late", "solutions"], "quiz": ["attempts", "late"], "unittest": ["timer", "late"]}
+DETAIL = {"practice": ["done_when", "late", "solutions"], "quiz": ["timer", "attempts", "late"], "unittest": ["timer", "late"]}
 DETAIL_LABELS = {"done_when": "Counts as done when", "late": "Late work", "solutions": "Answers and solutions",
-                 "attempts": "Attempts", "timer": "Time limit"}
+                 "attempts": "Attempts", "timer": "Time limit (extra time is per student)"}
 
 SHOW_DEFAULTS = {"grade": True, "due_dates": True, "unopened": False, "behind": True}
 WATCH_DEFAULTS = {"missing": True, "hard_questions": True, "sliding": True, "inactive_days": 0}

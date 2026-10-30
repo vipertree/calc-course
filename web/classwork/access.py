@@ -27,7 +27,7 @@ def gate(user, kind, ref, now=None):
     d = _dated(c, kind, ref)
     st = S.settings_for(c, kind, ref, d)
     exc = StudentException.objects.filter(dated=d, student=user).first() if d else None
-    out = {"classroom": c, "results": st.get("results", "now"), "attempts": st.get("attempts", "one"),
+    out = {"classroom": c, "results": st.get("results", "now"), "attempts": st.get("attempts", "one"), "timer": int(st.get("timer") or 0),
            "where": st["where"], "record": st.get("record", ""), "late_rule": st.get("late", "marked"),
            "excused": bool(exc and exc.excused), "time_factor": exc.time_factor if exc else 1.0, "dated": d}
 
@@ -77,3 +77,44 @@ def kind_for(num, area):
     if str(num).startswith("U"):
         return "unittest"
     return {"notes": "notes", "practice": "practice", "quiz": "quiz", "testprep": "testprep", "frq": "testprep"}.get(area, "notes")
+
+
+GRACE = 60          # seconds after the deadline a submission still counts (a slow connection, the auto-submit itself)
+
+
+def extra_time(user, classroom, g):
+    """The student's time multiplier: this item's exception if it gives one, else their standing accommodation."""
+    if g.get("time_factor", 1.0) not in (None, 1.0):
+        return g["time_factor"]
+    from .models import Accommodation
+    a = Accommodation.objects.filter(classroom=classroom, student=user).first()
+    return a.time_factor if a else 1.0
+
+
+def timer(user, kind, ref, g=None):
+    """The clock on a timed quiz or test for a class student, or None when it isn't timed:
+    {"seconds": the time they get, "started": bool, "remaining": seconds left (None before starting),
+     "expired": past the deadline and the grace period}."""
+    g = g or gate(user, kind, ref)
+    c = g["classroom"]
+    if c is None or not g.get("timer"):
+        return None
+    from .models import TimedStart
+    t = TimedStart.objects.filter(student=user, classroom=c, ref=ref).first()
+    seconds = t.seconds if t else round(g["timer"] * 60 * extra_time(user, c, g))
+    if t is None:
+        return {"seconds": seconds, "started": False, "remaining": None, "expired": False, "factor": extra_time(user, c, g)}
+    left = (t.started - dt.datetime.now(dt.timezone.utc)).total_seconds() + t.seconds
+    return {"seconds": seconds, "started": True, "remaining": max(0, round(left)), "expired": left < -GRACE,
+            "factor": round(t.seconds / (g["timer"] * 60), 2) if g["timer"] else 1.0}
+
+
+def start(user, kind, ref):
+    """Start the clock (once). Returns the timer, or None when the item isn't timed or isn't open."""
+    g = gate(user, kind, ref)
+    if g["state"] != "open" or not g.get("timer"):
+        return None
+    from .models import TimedStart
+    TimedStart.objects.get_or_create(student=user, classroom=g["classroom"], ref=ref,
+                                     defaults={"seconds": round(g["timer"] * 60 * extra_time(user, g["classroom"], g))})
+    return timer(user, kind, ref, g)

@@ -42,7 +42,7 @@
         <tbody>{% for r in rows %}<tr>
           <td><a href="{% url 'cw_student' c.pk r.s.id %}?quiz={{ ref }}"><strong>{{ r.name }}</strong></a></td>
           {% if r.score %}<td class="{% if r.pct <= 0.4 %}lowp{% endif %}">{{ r.score.0|floatformat:"-1" }}/{{ r.score.1 }}</td><td class="cw-marks">{{ r.marks }}</td>
-            <td class="muted">{{ r.at|date:"M j, g:i a" }}{% if r.late %} <span class="late-tag">late</span>{% endif %}{% if r.tries > 1 %} · {{ r.tries }} tries{% endif %}</td><td></td>
+            <td class="muted">{{ r.at|date:"M j, g:i a" }}{% if r.late %} <span class="late-tag">late</span>{% endif %}{% if r.tries > 1 %} · {{ r.tries }} tries{% endif %}{% if r.used %} · {{ r.used }} of {{ r.given }} min{% endif %}</td><td></td>
           {% else %}<td class="muted">{% if r.exc.excused %}excused{% elif r.exc.reopened %}reopened{% elif r.missing %}missing{% else %}not yet{% endif %}</td><td></td><td></td>
             <td class="nowrap">{% if r.missing %}<form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="reopen"><input type="hidden" name="student" value="{{ r.s.id }}"><button class="btn small">Reopen 2 days</button></form>{% endif %}
               <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="action" value="excuse"><input type="hidden" name="student" value="{{ r.s.id }}"><button class="linkbtn">{% if r.exc.excused %}Unexcuse{% else %}Excuse{% endif %}</button></form></td>

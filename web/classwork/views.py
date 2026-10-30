@@ -152,6 +152,7 @@ def calendar_page(request, pk):
             edit = {"d": d, "label": cal.label(kind, ref), "opens": _field(c, d.opens), "due": _field(c, d.due),
                     "late_until": _field(c, d.late_until),
                     "results": [{"v": v, "label": l, "on": v == s.get("results")} for v, l in S.CHOICES[kind].get("results", [])],
+                    "timer": [{"v": v, "label": l, "on": v == s.get("timer")} for v, l in S.CHOICES[kind].get("timer", [])],
                     "exceptions": [{"e": e, "name": e.student.profile.display_name, "due": e.due and e.due.astimezone(cal.zone(c))}
                                    for e in d.exceptions.select_related("student__profile")]}
     lessons, tests = _refs(c)
@@ -223,6 +224,13 @@ def _calendar_post(request, c):
                     own["results"] = res
                 elif res:
                     own.pop("results", None)
+                tm = P.get("timer")
+                base = S.settings_for(c, d.kind, d.ref)
+                if tm in {v for v, _ in S.CHOICES[d.kind].get("timer", [])}:
+                    if tm != base.get("timer"):
+                        own["timer"] = tm
+                    else:
+                        own.pop("timer", None)
                 d.settings = own
                 d.save()
                 messages.success(request, f"Saved {cal.label(d.kind, d.ref)}.")
@@ -550,6 +558,8 @@ def quiz_page(request, pk, ref):
                           "pct": round(100 * s["right"] / s["seen"]) if s["seen"] else 0, "low": s["seen"] and s["right"] * 2 < s["seen"],
                           "wrong": w and w[0], "wrong_n": w and w[1], "dropped": iid in dropped,
                           "key": (priv["items"].get(iid, {}).get("answer", {}) or {}).get("display", "")})
+    from .models import TimedStart
+    starts = {t.student_id: t for t in TimedStart.objects.filter(classroom=c, ref=ref)}
     rows, hist = [], Counter()
     for s in data.students:
         tries = data.attempts.get((s.id, ref))
@@ -564,7 +574,9 @@ def quiz_page(request, pk, ref):
                 marks.append("–" if iid in dropped else "✓" if det.get("correct") or (fix or 0) >= 1 else "½" if fix else "✗")
             hist[round(q[0]) if q else 0] += 1
             rows.append({"s": s, "name": names[s.id], "score": q, "marks": "".join(marks), "at": a.at.astimezone(cal.zone(c)),
-                         "late": bool(due and a.at > due), "tries": len(tries), "pct": q[0] / q[1] if q and q[1] else 0})
+                         "late": bool(due and a.at > due), "tries": len(tries), "pct": q[0] / q[1] if q and q[1] else 0,
+                         "used": starts.get(s.id) and max(1, round((a.at - starts[s.id].started).total_seconds() / 60)),
+                         "given": starts.get(s.id) and round(starts[s.id].seconds / 60)})
         else:
             exc = data.exceptions.get((d.pk, s.id)) if d else None
             rows.append({"s": s, "name": names[s.id], "score": None, "missing": bool(due and due < data.now),

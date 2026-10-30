@@ -1009,3 +1009,7 @@ details.pop > div.stack { margin-top: 10px; padding: 12px 14px; background: var(
 .cw-enter select { width: auto; }
 .me-grade, .me-due { margin: 12px 0; } .me-due li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--soft); } .me-grade h2, .me-due h2 { margin: 0 0 6px; font-size: 1.2rem; }
 .me-late { color: var(--hi); font: 700 .88rem var(--font-ui); }
+.timer-bar { position: sticky; top: 64px; z-index: 12; margin: 0 0 14px; padding: 8px 14px; border-radius: 8px; background: var(--ink); color: var(--bg);
+  font: 700 1rem var(--font-ui); text-align: center; font-variant-numeric: tabular-nums; }
+.timer-bar.low { background: var(--hi); color: var(--panel); }
+.timer-start { max-width: 40rem; }

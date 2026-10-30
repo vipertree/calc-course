@@ -510,6 +510,43 @@
       showResults(r, A.mode !== "class");
       status.scrollIntoView({ behavior: "smooth" });
     });
+    // a timed quiz or test (the class setup's time limit): a Start screen, then a countdown kept by the server's clock;
+    // at zero the answers entered so far are handed in, and the server grades what was saved by the deadline anyway
+    const T = S.timer;
+    if (T && A.mode === "class" && !A.submitted) {
+      const clock = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+      if (!T.started) {
+        const go = h("button", { class: "btn primary", type: "button" }, `Start the ${what}`);
+        go.addEventListener("click", async () => {
+          go.disabled = true;
+          try { await post(T.start_url, {}); location.reload(); }
+          catch (e) { go.disabled = false; }
+        });
+        wrap.append(h("div", { class: "card timer-start" }, h("h2", { style: "margin-top:0" }, `This ${what} is timed`),
+          h("p", {}, `You have ${Math.round(T.seconds / 60)} minutes${T.factor && T.factor !== 1 ? ", with your extra time" : ""}. ` +
+            "The clock starts when you press Start and keeps running if you leave this page. When time runs out, the answers you've entered are handed in."),
+          h("div", { class: "row" }, go)));
+        app.append(wrap);
+        return;
+      }
+      const bar = h("div", { class: "timer-bar", role: "timer" });
+      const end = Date.now() + T.remaining * 1000;
+      let iv = null;
+      const tick = () => {
+        const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+        bar.textContent = `Time left ${clock(left)}`;
+        bar.classList.toggle("low", left <= 60);
+        if (left <= 0) {
+          clearInterval(iv);
+          bar.textContent = "Time is up. Handing in your answers.";
+          submit.dataset.sure = "1";
+          submit.click();
+        }
+      };
+      iv = setInterval(tick, 1000);
+      tick();
+      wrap.append(bar);
+    }
     const prev = S.quiz.length ? h("p", { class: "muted" }, "Earlier attempts: " + S.quiz.map((a) => `${a.score}/${a.total}`).join(", ")) : null;
     const intro = (opts.intro || "No calculator unless a question says so.") + (A.mode === "class"
       ? ` Everyone in ${A.class_name || "your class"} takes the same ${what}${A.form ? ` (form ${A.form})` : ""}. You can submit once, and your teacher releases the results.`

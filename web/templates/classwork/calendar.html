@@ -38,6 +38,7 @@
         <label>Due<input type="datetime-local" name="due" value="{{ edit.due }}"></label>
         <label>Late work accepted until<input type="datetime-local" name="late_until" value="{{ edit.late_until }}"></label>
         {% if edit.results %}<label>Students see results<select name="results">{% for o in edit.results %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select></label>{% endif %}
+        {% if edit.timer %}<label>Time limit<select name="timer">{% for o in edit.timer %}<option value="{{ o.v }}"{% if o.on %} selected{% endif %}>{{ o.label }}</option>{% endfor %}</select></label>{% endif %}
         <p><button class="btn primary small">Save</button></p>
       </form>
       <h3>For particular students</h3>
@@ -52,7 +53,7 @@
           <input type="hidden" name="back" value="?start={{ start|date:'Y-m-d' }}&amp;edit={{ edit.d.kind }}:{{ edit.d.ref }}">
           <label>Student<select name="student">{% for s in students %}<option value="{{ s.pk }}">{{ s.profile.display_name }}</option>{% endfor %}</select></label>
           <label>Their due date<input type="datetime-local" name="due"></label>
-          <label>Time on a timed test<select name="time_factor"><option value="1">Usual</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+          <label>Extra time on this one<select name="time_factor"><option value="1">Usual</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
           <label class="check"><input type="checkbox" name="excused"> Excused from it</label>
           <p><button class="btn primary small">Add</button></p>
         </form></details>{% endif %}

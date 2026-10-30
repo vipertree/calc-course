@@ -24,9 +24,16 @@ def _rows(pub):
     return rows, frows
 
 
+def class_count(n):
+    """How many of a question's n versions class forms use. With three or more, the last is kept for people working
+    on their own, so a free account never shows a class's quiz question (Adder, 2026-10-30). With one or two
+    versions they share for now, until more are written."""
+    return n - 1 if n >= 3 else n
+
+
 def n_forms(pub):
     rows, frows = _rows(pub)
-    return max([len(r) for r in rows + frows] or [1])
+    return max([class_count(len(r)) for r in rows + frows] or [1])
 
 
 def class_form(classroom, num, n):
@@ -50,15 +57,16 @@ def draw(request, num, pub):
             cls = None                     # a unit the class leaves out: taken on their own, like any free student
     if cls is not None:
         k = class_form(cls, num, n_forms(pub))
-        ids = [r[k % len(r)]["id"] for r in rows + frows]
+        ids = [r[k % class_count(len(r))]["id"] for r in rows + frows]
         info = {"mode": "class", "form": LETTERS[k] if n_forms(pub) > 1 else "", "classroom": cls}
     else:
         key = f"draw:{num}"
         ids = request.session.get(key)
+        own = [r[class_count(len(r)):] or r for r in rows + frows]       # the versions kept for people on their own
         ok = (isinstance(ids, list) and len(ids) == len(rows) + len(frows)
-              and all(any(v["id"] == i for v in r) for i, r in zip(ids, rows + frows)))
+              and all(any(v["id"] == i for v in r) for i, r in zip(ids, own)))
         if not ok:
-            ids = [random.choice(r)["id"] for r in rows + frows]
+            ids = [random.choice(r)["id"] for r in own]
             request.session[key] = ids
         info = {"mode": "individual", "form": "", "classroom": None}
     pick = {v["id"]: v for r in rows + frows for v in r}

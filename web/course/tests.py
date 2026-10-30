@@ -7,7 +7,7 @@ from django.test import Client, TestCase
 
 from accounts.antibot import stamp
 from accounts.models import Classroom, Enrollment, Profile
-from . import content, grading, packets
+from . import assess, content, grading, packets
 from .models import FRQScore, QuizAttempt, Response
 
 
@@ -313,7 +313,14 @@ class Assessments(TestCase):
             r = self.client.post("/api/1.1/quiz/", json.dumps({"answers": {}}), content_type="application/json")
             self.assertIn("score", r.json())
             self.assertEqual(set(r.json()["detail"]), set(ids))    # graded exactly what was served
-        self.assertGreater(len(draws), 1)
+        # people on their own draw only from the versions kept for them (the last of three; any of one or two)
+        pub = content.public("1.1")
+        rows = pub.get("quiz_variants") or [[q] for q in pub["quiz"]]
+        own = [{v["id"] for v in (r[assess.class_count(len(r)):] or r)} for r in rows]
+        for d in draws:
+            self.assertTrue(all(i in o for i, o in zip(d, own)))
+        if any(1 < len(o) for o in own):
+            self.assertGreater(len(draws), 1)
 
     def test_class_shares_one_form_and_waits_for_release(self):
         a, b = Client(), Client()
@@ -754,3 +761,32 @@ class StaticTagTests(TestCase):
         from django.conf import settings
         bad = [str(p) for p in Path(settings.BASE_DIR, "templates").rglob("*.html") if re.search(r"{%\s*static\s+(''|\"\")\s*%}", p.read_text())]
         self.assertEqual(bad, [])
+
+
+class FormSplitTests(TestCase):
+    """Class forms and free accounts never meet on a question with three or more versions."""
+
+    def test_free_draws_avoid_class_versions(self):
+        from django.test import RequestFactory
+        from django.contrib.sessions.backends.db import SessionStore
+        pub = content.public("2.5")
+        rows = pub.get("quiz_variants") or [[q] for q in pub["quiz"]]
+        t = User.objects.create_user("tch", password="pw12345678")
+        Profile.objects.create(user=t, role=Profile.TEACHER, display_name="T")
+        solo = User.objects.create_user("solo", password="pw12345678")
+        Profile.objects.create(user=solo, display_name="Solo", full_access=True)
+        class_ids = set()
+        for i in range(12):                                   # many classes: every class form that exists
+            c = Classroom.objects.create(name=f"C{i}", teacher=t)
+            k = User.objects.create_user(f"k{i}", password="pw12345678")
+            Profile.objects.create(user=k, display_name=f"K{i}")
+            Enrollment.objects.create(classroom=c, student=k)
+            req = RequestFactory().get("/")
+            req.user, req.session = k, SessionStore()
+            class_ids |= {q["id"] for q in assess.draw(req, "2.5", pub)[0]["quiz"]}
+        for _ in range(20):
+            req = RequestFactory().get("/")
+            req.user, req.session = solo, SessionStore()
+            got = {q["id"] for q in assess.draw(req, "2.5", pub)[0]["quiz"]}
+            shared = {q["id"] for r in rows if len(r) < 3 for q in r}
+            self.assertFalse((got & class_ids) - shared)

@@ -92,6 +92,7 @@ class Lesson(TranscriptScene):
         # between the y-lines; zoom in on the hole as the lines tighten. Strokes and labels keep their screen size.
         cam = self.camera.frame
         w0 = cam.width
+        home = cam.get_center().copy()                     # zooming out returns here, not to the hole
         k = lambda: cam.width / w0                         # 1 at rest, smaller when zoomed in
         eps, dlt, xp = ValueTracker(0.5), ValueTracker(0.5), ValueTracker(-0.8)
 
@@ -99,16 +100,16 @@ class Lesson(TranscriptScene):
             e, kk = eps.get_value(), k()
             ls = VGroup(*[DashedLine(ax.c2p(-1, 2 + sg * e), ax.c2p(3, 2 + sg * e), color=SECANT, stroke_width=3 * kk,
                                      dash_length=0.12 * kk) for sg in (1, -1)])
-            lab = T(f"within {e:g} of 2", 30, SECANT).scale(kk).next_to(ls[0], UP, buff=0.08 * kk)
-            lab.move_to([cam.get_center()[0] + cam.width * 0.18, lab.get_center()[1], 0])
+            lab = T(f"within {round(e, 2):g} of 2", 30, SECANT).scale(kk).next_to(ls[0], UP, buff=0.08 * kk)
+            lab.move_to([cam.get_right()[0] - cam.width * 0.12 - lab.width / 2, lab.get_center()[1], 0])
             return VGroup(ls, lab)
 
         def vlines():
             d, kk = dlt.get_value(), k()
             ls = VGroup(*[DashedLine(ax.c2p(1 + sg * d, -1), ax.c2p(1 + sg * d, 4), color=TANGENT, stroke_width=3 * kk,
                                      dash_length=0.12 * kk) for sg in (1, -1)])
-            lab = T(f"within {d:g} of 1", 30, TANGENT).scale(kk)
-            lab.move_to([ax.c2p(1, 0)[0], cam.get_center()[1] - cam.height * 0.36, 0])
+            lab = T(f"within {round(d, 2):g} of 1", 30, TANGENT).scale(kk)
+            lab.next_to(ls[0], RIGHT, buff=0.12 * kk).move_to([lab.get_center()[0], cam.get_center()[1] - cam.height * 0.36, 0])
             return VGroup(ls, lab)
 
         def chosen():
@@ -126,11 +127,11 @@ class Lesson(TranscriptScene):
         def thin(scale):
             """Strokes and the hole, at the camera's zoom (else a 6x zoom turns the line into rope)."""
             return [line.animate.set_stroke(width=lw * scale), *[m.animate.set_stroke(width=w * scale) for m, w in zip(axis_parts, axis_w)],
-                    hole.animate.scale(scale / (hole.width / hole0))]
-        hole0 = hole.width
+                    hole.animate.scale(scale / (hole.width / hole0)).set_stroke(width=hole_w * scale)]
+        hole0, hole_w = hole.width, hole.get_stroke_width()
 
         def zoom_to(scale, run_time):
-            self.play(cam.animate.scale(scale * w0 / cam.width).move_to(ax.c2p(1, 2)), *thin(scale),
+            self.play(cam.animate.scale(scale * w0 / cam.width).move_to(ax.c2p(1, 2) if scale < 0.9 else home), *thin(scale),
                       al.animate.set_opacity(0 if scale < 0.9 else 1), g.animate.set_opacity(0 if scale < 0.9 else 1), run_time=run_time)
 
         with self.beat("The closeness game") as b:
